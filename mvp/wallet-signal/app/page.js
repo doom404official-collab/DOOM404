@@ -6,32 +6,35 @@ import { PublicKey } from "@solana/web3.js";
 export default function Home() {
   const [wallet, setWallet] = useState("");
   const [status, setStatus] = useState("");
-  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [walletData, setWalletData] = useState(null);
 
   async function analyzeWallet() {
     const address = wallet.trim();
 
-    setData(null);
-
+    // Check that something has been entered
     if (!address) {
       setStatus("Please enter a Solana wallet address.");
+      setWalletData(null);
       return;
     }
 
+    // Validate Solana wallet address
     try {
       new PublicKey(address);
     } catch {
-      setStatus("✕ Invalid Solana wallet address");
+      setStatus("❌ Invalid Solana wallet address");
+      setWalletData(null);
       return;
     }
 
     setLoading(true);
     setStatus("Connecting to Solana mainnet...");
+    setWalletData(null);
 
     try {
       const response = await fetch(
-        /api/wallet?address=${encodeURIComponent(address)}
+        '/api/wallet?address=${encodeURIComponent(address)}'
       );
 
       const result = await response.json();
@@ -40,63 +43,85 @@ export default function Home() {
         throw new Error(result.error || "Unable to analyze wallet");
       }
 
-      setData(result);
-      setStatus("✓ Live on-chain data retrieved");
+      setWalletData(result);
+      setStatus("✓ Live Solana wallet data loaded");
     } catch (error) {
-      setStatus(✕ ${error.message});
+      console.error(error);
+      setStatus(
+        ❌ ${error.message || "Unable to connect to Solana mainnet"}
+      );
     } finally {
       setLoading(false);
     }
   }
 
-  const cardStyle = {
-    background: "#111",
-    border: "1px solid #292929",
-    borderRadius: "10px",
-    padding: "20px",
-  };
-
   return (
     <main
       style={{
         minHeight: "100vh",
-        background: "#080808",
-        color: "#fff",
+        background:
+          "radial-gradient(circle at 50% 40%, #260808 0%, #080808 45%, #030303 100%)",
+        color: "#ffffff",
         padding: "60px 24px",
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <p style={{ color: "#ff3030", fontWeight: "bold" }}>
+      <div
+        style={{
+          maxWidth: "800px",
+          margin: "0 auto",
+        }}
+      >
+        <p
+          style={{
+            color: "#ef4444",
+            fontWeight: "700",
+            letterSpacing: "1px",
+          }}
+        >
           DOOM404 // MVP v0.1
         </p>
 
-        <h1 style={{ fontSize: "48px", marginBottom: "10px" }}>
+        <h1
+          style={{
+            fontSize: "56px",
+            margin: "20px 0 10px",
+          }}
+        >
           Wallet Signal
         </h1>
 
-        <p style={{ color: "#999", marginBottom: "40px" }}>
+        <p
+          style={{
+            color: "#aaaaaa",
+            fontSize: "20px",
+            marginBottom: "40px",
+          }}
+        >
           Explore observable activity from a public Solana wallet.
         </p>
 
         <input
           type="text"
-          placeholder="Enter Solana wallet address"
           value={wallet}
-          onChange={(e) => {
-            setWallet(e.target.value);
-            setStatus("");
-            setData(null);
+          onChange={(event) => setWallet(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              analyzeWallet();
+            }
           }}
+          placeholder="Enter Solana wallet address"
           style={{
             width: "100%",
-            padding: "18px",
-            background: "#111",
-            color: "#fff",
-            border: "1px solid #333",
-            borderRadius: "8px",
-            fontSize: "16px",
             boxSizing: "border-box",
+            padding: "16px",
+            fontSize: "16px",
+            color: "#ffffff",
+            background: "#111111",
+            border: "1px solid #333333",
+            borderRadius: "6px",
+            outline: "none",
+            marginBottom: "18px",
           }}
         />
 
@@ -104,85 +129,89 @@ export default function Home() {
           onClick={analyzeWallet}
           disabled={loading}
           style={{
-            marginTop: "16px",
-            padding: "16px 32px",
-            background: loading ? "#661015" : "#e31b23",
-            color: "#fff",
+            padding: "15px 28px",
+            background: loading ? "#7f1d1d" : "#dc2626",
+            color: "#ffffff",
             border: "none",
-            borderRadius: "8px",
-            fontWeight: "bold",
-            cursor: loading ? "wait" : "pointer",
+            borderRadius: "6px",
+            fontWeight: "700",
+            cursor: loading ? "not-allowed" : "pointer",
           }}
         >
           {loading ? "ANALYZING..." : "ANALYZE WALLET"}
         </button>
 
         {status && (
-          <p style={{ marginTop: "22px", color: "#bbb" }}>
+          <p
+            style={{
+              marginTop: "28px",
+              fontSize: "16px",
+            }}
+          >
             {status}
           </p>
         )}
 
-        {data && (
-          <div style={{ marginTop: "40px" }}>
-            <p style={{ color: "#ff3030", fontWeight: "bold" }}>
-              LIVE WALLET DATA
+        {walletData && (
+          <div
+            style={{
+              marginTop: "40px",
+              padding: "24px",
+              background: "#101010",
+              border: "1px solid #292929",
+              borderRadius: "10px",
+            }}
+          >
+            <h2
+              style={{
+                marginTop: 0,
+                marginBottom: "24px",
+              }}
+            >
+              Wallet Analysis
+            </h2>
+
+            <p>
+              <strong>Network:</strong>{" "}
+              {walletData.network || "Solana Mainnet"}
+            </p>
+
+            <p>
+              <strong>SOL Balance:</strong>{" "}
+              {walletData.balanceSOL ?? "N/A"}
+            </p>
+
+            <p>
+              <strong>Transactions Analyzed:</strong>{" "}
+              {walletData.transactionsAnalyzed ?? "N/A"}
+            </p>
+
+            <p>
+              <strong>Latest Transaction:</strong>
+            </p>
+
+            <p
+              style={{
+                color: "#aaaaaa",
+                wordBreak: "break-all",
+                fontSize: "14px",
+              }}
+            >
+              {walletData.latestTransaction || "No transaction found"}
             </p>
 
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                gap: "12px",
+                marginTop: "30px",
+                paddingTop: "20px",
+                borderTop: "1px solid #292929",
+                color: "#777777",
               }}
             >
-              <div style={cardStyle}>
-                <div style={{ color: "#777", fontSize: "13px" }}>NETWORK</div>
-                <div style={{ marginTop: "8px", fontWeight: "bold" }}>
-                  Solana Mainnet
-                </div>
-              </div>
-
-              <div style={cardStyle}>
-                <div style={{ color: "#777", fontSize: "13px" }}>
-                  SOL BALANCE
-                </div>
-                <div style={{ marginTop: "8px", fontWeight: "bold" }}>
-                  {Number(data.balanceSOL).toFixed(8)} SOL
-                </div>
-              </div>
-
-              <div style={cardStyle}>
-                <div style={{ color: "#777", fontSize: "13px" }}>
-                  RECENT TRANSACTIONS
-                </div>
-                <div style={{ marginTop: "8px", fontWeight: "bold" }}>
-                  {data.transactionsAnalyzed}
-                </div>
-              </div>
-            </div>
-
-            <div style={{ ...cardStyle, marginTop: "12px" }}>
-              <div style={{ color: "#777", fontSize: "13px" }}>
-                WALLET
-              </div>
-
-              <div
-                style={{
-                  marginTop: "8px",
-                  wordBreak: "break-all",
-                  fontFamily: "monospace",
-                }}
-              >
-                {data.address}
-              </div>
+              Activity · Diversification · Trading · Maturity
             </div>
           </div>
         )}
-
-        <div style={{ marginTop: "60px", color: "#666" }}>
-          Activity · Diversification · Trading · Maturity
-        </div>
       </div>
     </main>
   );
