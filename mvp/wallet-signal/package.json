@@ -1,0 +1,17 @@
+{
+  "name": "doom404-wallet-signal",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DOOM404 Wallet Signal - Solana wallet analytics MVP",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.98.0",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
