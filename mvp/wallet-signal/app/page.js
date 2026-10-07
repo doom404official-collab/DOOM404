@@ -6,9 +6,13 @@ import { PublicKey } from "@solana/web3.js";
 export default function Home() {
   const [wallet, setWallet] = useState("");
   const [status, setStatus] = useState("");
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  function validateWallet() {
+  async function analyzeWallet() {
     const address = wallet.trim();
+
+    setData(null);
 
     if (!address) {
       setStatus("Please enter a Solana wallet address.");
@@ -16,24 +20,48 @@ export default function Home() {
     }
 
     try {
-      const publicKey = new PublicKey(address);
-
-      if (publicKey.toBase58() === address) {
-        setStatus("✓ Valid Solana wallet address");
-      } else {
-        setStatus("Invalid Solana wallet address");
-      }
+      new PublicKey(address);
     } catch {
       setStatus("✕ Invalid Solana wallet address");
+      return;
+    }
+
+    setLoading(true);
+    setStatus("Connecting to Solana mainnet...");
+
+    try {
+      const response = await fetch(
+        /api/wallet?address=${encodeURIComponent(address)}
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Unable to analyze wallet");
+      }
+
+      setData(result);
+      setStatus("✓ Live on-chain data retrieved");
+    } catch (error) {
+      setStatus(✕ ${error.message});
+    } finally {
+      setLoading(false);
     }
   }
+
+  const cardStyle = {
+    background: "#111",
+    border: "1px solid #292929",
+    borderRadius: "10px",
+    padding: "20px",
+  };
 
   return (
     <main
       style={{
         minHeight: "100vh",
         background: "#080808",
-        color: "#ffffff",
+        color: "#fff",
         padding: "60px 24px",
         fontFamily: "Arial, sans-serif",
       }}
@@ -58,6 +86,7 @@ export default function Home() {
           onChange={(e) => {
             setWallet(e.target.value);
             setStatus("");
+            setData(null);
           }}
           style={{
             width: "100%",
@@ -72,32 +101,82 @@ export default function Home() {
         />
 
         <button
-          onClick={validateWallet}
+          onClick={analyzeWallet}
+          disabled={loading}
           style={{
             marginTop: "16px",
             padding: "16px 32px",
-            background: "#e31b23",
+            background: loading ? "#661015" : "#e31b23",
             color: "#fff",
             border: "none",
             borderRadius: "8px",
             fontWeight: "bold",
-            cursor: "pointer",
+            cursor: loading ? "wait" : "pointer",
           }}
         >
-          ANALYZE WALLET
+          {loading ? "ANALYZING..." : "ANALYZE WALLET"}
         </button>
 
         {status && (
-          <div
-            style={{
-              marginTop: "24px",
-              padding: "16px",
-              background: "#111",
-              border: "1px solid #333",
-              borderRadius: "8px",
-            }}
-          >
+          <p style={{ marginTop: "22px", color: "#bbb" }}>
             {status}
+          </p>
+        )}
+
+        {data && (
+          <div style={{ marginTop: "40px" }}>
+            <p style={{ color: "#ff3030", fontWeight: "bold" }}>
+              LIVE WALLET DATA
+            </p>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                gap: "12px",
+              }}
+            >
+              <div style={cardStyle}>
+                <div style={{ color: "#777", fontSize: "13px" }}>NETWORK</div>
+                <div style={{ marginTop: "8px", fontWeight: "bold" }}>
+                  Solana Mainnet
+                </div>
+              </div>
+
+              <div style={cardStyle}>
+                <div style={{ color: "#777", fontSize: "13px" }}>
+                  SOL BALANCE
+                </div>
+                <div style={{ marginTop: "8px", fontWeight: "bold" }}>
+                  {Number(data.balanceSOL).toFixed(8)} SOL
+                </div>
+              </div>
+
+              <div style={cardStyle}>
+                <div style={{ color: "#777", fontSize: "13px" }}>
+                  RECENT TRANSACTIONS
+                </div>
+                <div style={{ marginTop: "8px", fontWeight: "bold" }}>
+                  {data.transactionsAnalyzed}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ ...cardStyle, marginTop: "12px" }}>
+              <div style={{ color: "#777", fontSize: "13px" }}>
+                WALLET
+              </div>
+
+              <div
+                style={{
+                  marginTop: "8px",
+                  wordBreak: "break-all",
+                  fontFamily: "monospace",
+                }}
+              >
+                {data.address}
+              </div>
+            </div>
           </div>
         )}
 
