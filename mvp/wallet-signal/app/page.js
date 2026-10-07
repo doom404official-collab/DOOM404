@@ -20,14 +20,13 @@ export default function Home() {
     }
 
     // Validate Solana wallet address
-    try {
-      new PublicKey(address);
-    } catch {
-      setStatus("❌ Invalid Solana wallet address");
-      setWalletData(null);
-      return;
-    }
-
+try {
+  new PublicKey(address);
+} catch {
+  setStatus("❌ Invalid Solana wallet address");
+  setWalletData(null);
+  return;
+}
     setLoading(true);
     setStatus("Connecting to Solana mainnet...");
     setWalletData(null);
@@ -48,7 +47,7 @@ export default function Home() {
     } catch (error) {
       console.error(error);
       setStatus(
-        ❌ ${error.message || "Unable to connect to Solana mainnet"}
+        `❌ ${error.message || "Unable to connect to Solana mainnet"}`
       );
     } finally {
       setLoading(false);
