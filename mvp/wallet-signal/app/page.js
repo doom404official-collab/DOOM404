@@ -2,189 +2,64 @@
 
 import { useState } from "react";
 
-const panelStyle = {
-  background: "#141414",
-  border: "1px solid #303030",
-  borderRadius: "14px",
+const cardStyle = {
+  background: "#151515",
+  border: "1px solid #333",
+  borderRadius: "12px",
   padding: "22px",
-  marginTop: "18px"
+  marginTop: "16px"
 };
 
-const labelStyle = {
-  color: "#999",
-  fontSize: "13px",
-  marginBottom: "10px"
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+  gap: "14px"
 };
 
-function formatDate(value) {
-  if (!value) return "Not available";
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Not available";
-  }
-
-  return date.toLocaleString();
-}
-
-function MetricCard({ title, value, subtitle }) {
+function Metric({ label, value, note }) {
   return (
-    <div style={panelStyle}>
-      <p style={labelStyle}>{title}</p>
-
+    <div style={{ ...cardStyle, marginTop: 0 }}>
+      <div style={{ color: "#999", fontSize: "12px" }}>
+        {label}
+      </div>
       <div
         style={{
-          fontSize: "30px",
+          fontSize: "26px",
           fontWeight: "bold",
-          color: "#ffffff",
+          marginTop: "10px",
           overflowWrap: "anywhere"
         }}
       >
         {value}
       </div>
-
-      {subtitle && (
-        <p
-          style={{
-            color: "#888",
-            fontSize: "12px",
-            marginTop: "10px"
-          }}
-        >
-          {subtitle}
-        </p>
+      {note && (
+        <div style={{ color: "#888", fontSize: "12px", marginTop: "8px" }}>
+          {note}
+        </div>
       )}
     </div>
   );
 }
 
-function CoverageBadge({ title, status }) {
-  const labels = {
-    complete_sample: "Sample covers period",
-    rpc_exhausted: "RPC history exhausted",
-    incomplete: "Incomplete",
-    unknown: "Unknown"
-  };
-
-  const color =
-    status === "complete_sample"
-      ? "#55cc88"
-      : status === "rpc_exhausted"
-      ? "#e5b45a"
-      : "#ff6666";
-
+function Section({ title, children }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        gap: "12px",
-        padding: "14px 0",
-        borderBottom: "1px solid #292929"
-      }}
-    >
-      <span style={{ color: "#ddd" }}>
+    <section style={{ marginTop: "38px" }}>
+      <h2 style={{ fontSize: "22px", marginBottom: "18px" }}>
         {title}
-      </span>
-
-      <span
-        style={{
-          color,
-          fontSize: "12px",
-          textAlign: "right"
-        }}
-      >
-        {labels[status] || "Unavailable"}
-      </span>
-    </div>
+      </h2>
+      {children}
+    </section>
   );
 }
 
-function WeeklyChart({ data }) {
-  if (!Array.isArray(data) || data.length === 0) {
-    return (
-      <p style={{ color: "#888" }}>
-        Weekly activity data unavailable.
-      </p>
-    );
-  }
+function formatDate(value) {
+  if (!value) return "Unavailable";
 
-  const weeks = [...data].reverse();
+  const date = new Date(value);
 
-  const max = Math.max(
-    1,
-    ...weeks.map((item) => item.transactions || 0)
-  );
-
-  return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-end",
-          gap: "6px",
-          height: "180px",
-          marginTop: "25px",
-          borderBottom: "1px solid #444"
-        }}
-      >
-        {weeks.map((item) => {
-          const count = item.transactions || 0;
-
-          const height =
-            count === 0
-              ? 3
-              : Math.max(6, (count / max) * 100);
-
-          return (
-            <div
-              key={item.week}
-              title={
-                "Week " +
-                item.week +
-                ": " +
-                count +
-                " transactions"
-              }
-              style={{
-                flex: 1,
-                height: height + "%",
-                background: "#d62828",
-                borderRadius: "4px 4px 0 0",
-                minWidth: 0
-              }}
-            />
-          );
-        })}
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          color: "#888",
-          fontSize: "11px",
-          marginTop: "12px"
-        }}
-      >
-        <span>12 weeks ago</span>
-        <span>Current week</span>
-      </div>
-
-      <p
-        style={{
-          color: "#777",
-          fontSize: "12px",
-          marginTop: "15px"
-        }}
-      >
-        Transaction counts are based on retrieved
-        signatures. Missing history may affect results.
-      </p>
-    </div>
-  );
+  return Number.isNaN(date.getTime())
+    ? "Unavailable"
+    : date.toLocaleString();
 }
 
 export default function Home() {
@@ -192,147 +67,132 @@ export default function Home() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [walletData, setWalletData] = useState(null);
+  const [transactionData, setTransactionData] = useState(null);
+  const [transactionError, setTransactionError] = useState("");
 
   async function analyzeWallet() {
     const address = wallet.trim();
 
     if (!address) {
       setStatus("Please enter a Solana wallet address.");
-      setWalletData(null);
       return;
     }
 
     setLoading(true);
-    setStatus("Retrieving Solana wallet history...");
+    setStatus("Connecting to Solana mainnet...");
     setWalletData(null);
+    setTransactionData(null);
+    setTransactionError("");
 
     try {
-      const response = await fetch(
-        "/api/wallet?address=" +
-          encodeURIComponent(address)
+      const walletResponse = await fetch(
+        "/api/wallet?address=" + encodeURIComponent(address)
       );
 
-      const result = await response.json();
+      const walletResult = await walletResponse.json();
 
-      if (!response.ok) {
+      if (!walletResponse.ok) {
         throw new Error(
-          result.error || "Unable to analyze wallet"
+          walletResult.error || "Unable to analyze wallet"
         );
       }
 
-      setWalletData(result);
-      setStatus("Wallet intelligence data loaded.");
+      setWalletData(walletResult);
+      setStatus("Wallet intelligence loaded.");
+
+      try {
+        const transactionResponse = await fetch(
+          "/api/transactions?address=" + encodeURIComponent(address)
+        );
+
+        const transactionResult = await transactionResponse.json();
+
+        if (!transactionResponse.ok) {
+          throw new Error(
+            transactionResult.error ||
+            "Transaction intelligence unavailable"
+          );
+        }
+
+        setTransactionData(transactionResult);
+        setStatus("Wallet and transaction intelligence loaded.");
+
+      } catch (error) {
+        setTransactionError(error.message);
+        setStatus(
+          "Wallet loaded. Transaction intelligence is temporarily unavailable."
+        );
+      }
 
     } catch (error) {
-      console.error(error);
-
-      setStatus(
-        "Error: " +
-          (error.message || "Unable to retrieve data")
-      );
-
+      setStatus("Error: " + error.message);
     } finally {
       setLoading(false);
     }
   }
 
-  const activity = walletData?.activity || {};
-  const coverage = walletData?.dataCoverage || {};
-  const windows = coverage.coverage || {};
+  const activity = walletData?.activity;
+  const intelligence = walletData?.intelligence;
+  const coverage = walletData?.dataCoverage;
+
+  const categories = transactionData?.categories
+    ? Object.entries(transactionData.categories)
+    : [];
 
   return (
     <main
       style={{
         minHeight: "100vh",
         background: "#080808",
-        color: "#ffffff",
-        padding: "45px 20px",
+        color: "#fff",
+        padding: "50px 20px",
         fontFamily: "Arial, sans-serif"
       }}
     >
-      <div
-        style={{
-          maxWidth: "1050px",
-          margin: "0 auto"
-        }}
-      >
-        <header>
-          <p
-            style={{
-              color: "#ff4444",
-              fontWeight: "bold",
-              letterSpacing: "2px",
-              fontSize: "12px"
-            }}
-          >
-            DOOM404 // INTELLIGENCE SYSTEM
-          </p>
+      <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
 
-          <h1
-            style={{
-              fontSize: "clamp(34px, 7vw, 62px)",
-              marginBottom: "12px"
-            }}
-          >
-            Wallet Signal
-          </h1>
-
-          <p
-            style={{
-              color: "#aaa",
-              fontSize: "17px",
-              lineHeight: "1.6"
-            }}
-          >
-            Explore observable Solana wallet activity
-            through transparent blockchain intelligence.
-          </p>
-
-          <div
-            style={{
-              display: "inline-block",
-              marginTop: "12px",
-              padding: "8px 12px",
-              border: "1px solid #663333",
-              borderRadius: "6px",
-              color: "#ff6666",
-              fontSize: "12px"
-            }}
-          >
-            MVP v0.2 // HISTORICAL INTELLIGENCE
-          </div>
-        </header>
-
-        <section
+        <p
           style={{
-            ...panelStyle,
-            marginTop: "35px"
+            color: "#ff4444",
+            fontWeight: "bold",
+            letterSpacing: "2px",
+            fontSize: "12px"
           }}
         >
-          <p style={labelStyle}>
+          DOOM404 // INTELLIGENCE SYSTEM
+        </p>
+
+        <h1 style={{ fontSize: "clamp(36px, 7vw, 62px)" }}>
+          Wallet Signal
+        </h1>
+
+        <p style={{ color: "#aaa", lineHeight: 1.7 }}>
+          Explore observable Solana wallet activity,
+          transaction behaviour and transparent intelligence signals.
+        </p>
+
+        <div style={cardStyle}>
+          <label
+            htmlFor="wallet-address"
+            style={{ color: "#aaa", fontSize: "13px" }}
+          >
             SOLANA WALLET ADDRESS
-          </p>
+          </label>
 
           <input
-            type="text"
+            id="wallet-address"
             value={wallet}
-            onChange={(event) =>
-              setWallet(event.target.value)
-            }
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !loading) {
-                analyzeWallet();
-              }
-            }}
-            placeholder="Paste a public Solana wallet address"
+            onChange={(event) => setWallet(event.target.value)}
+            placeholder="Enter a public Solana wallet address"
             style={{
               width: "100%",
               boxSizing: "border-box",
-              padding: "16px",
+              marginTop: "12px",
+              padding: "15px",
               background: "#090909",
-              color: "#fff",
               border: "1px solid #444",
               borderRadius: "8px",
+              color: "#fff",
               fontSize: "15px"
             }}
           />
@@ -341,43 +201,27 @@ export default function Home() {
             onClick={analyzeWallet}
             disabled={loading}
             style={{
-              marginTop: "18px",
-              padding: "16px 24px",
-              background: loading ? "#555" : "#cc2222",
+              width: "100%",
+              marginTop: "16px",
+              padding: "16px",
+              background: loading ? "#555" : "#c92a2a",
               color: "#fff",
               border: "none",
               borderRadius: "8px",
-              cursor: loading ? "wait" : "pointer",
               fontWeight: "bold",
-              fontSize: "14px",
-              width: "100%"
+              cursor: loading ? "wait" : "pointer"
             }}
           >
-            {loading
-              ? "ANALYZING WALLET..."
-              : "ANALYZE WALLET"}
+            {loading ? "ANALYZING..." : "ANALYZE WALLET"}
           </button>
-
-          <p
-            style={{
-              color: "#777",
-              fontSize: "12px",
-              marginTop: "15px"
-            }}
-          >
-            Public wallet addresses only.
-            Never enter a seed phrase or private key.
-          </p>
-        </section>
+        </div>
 
         {status && (
           <div
             role="status"
             style={{
-              ...panelStyle,
-              color: status.startsWith("Error")
-                ? "#ff6666"
-                : "#ddd"
+              ...cardStyle,
+              color: status.startsWith("Error") ? "#ff7777" : "#ddd"
             }}
           >
             {status}
@@ -385,291 +229,305 @@ export default function Home() {
         )}
 
         {walletData && (
-          <div style={{ marginTop: "35px" }}>
-            <h2>01 // Wallet Overview</h2>
+          <>
+            <Section title="01 // Wallet Overview">
+              <div style={cardStyle}>
+                <p style={{ overflowWrap: "anywhere" }}>
+                  {walletData.address}
+                </p>
+                <p style={{ color: "#888" }}>
+                  Network: {walletData.network || "Unknown"}
+                </p>
+              </div>
 
-            <div style={panelStyle}>
-              <p style={labelStyle}>
-                WALLET ADDRESS
-              </p>
+              <div style={gridStyle}>
+                <Metric
+                  label="SOL BALANCE"
+                  value={walletData.balanceSOL ?? "Unavailable"}
+                  note="SOL"
+                />
+                <Metric
+                  label="TRANSACTIONS RETRIEVED"
+                  value={
+                    coverage?.transactionsRetrieved ??
+                    walletData.transactionsAnalyzed ??
+                    0
+                  }
+                />
+                <Metric
+                  label="ACTIVE DAYS OBSERVED"
+                  value={activity?.activeDaysObserved ?? "Unavailable"}
+                />
+              </div>
+            </Section>
 
-              <p
-                style={{
-                  overflowWrap: "anywhere",
-                  lineHeight: "1.6"
-                }}
-              >
-                {walletData.address}
-              </p>
+            <Section title="02 // Activity Intelligence">
+              <div style={gridStyle}>
+                <Metric
+                  label="LAST 7 DAYS"
+                  value={activity?.transactions7d ?? "Unavailable"}
+                />
+                <Metric
+                  label="LAST 30 DAYS"
+                  value={activity?.transactions30d ?? "Unavailable"}
+                />
+                <Metric
+                  label="LAST 90 DAYS"
+                  value={activity?.transactions90d ?? "Unavailable"}
+                />
+              </div>
 
-              <p
-                style={{
-                  color: "#888",
-                  fontSize: "13px"
-                }}
-              >
-                Network: {walletData.network}
-              </p>
-            </div>
+              {Array.isArray(activity?.weeklyActivity) && (
+                <div style={cardStyle}>
+                  <h3>Weekly Transaction Activity</h3>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-end",
+                      gap: "7px",
+                      height: "140px",
+                      marginTop: "22px"
+                    }}
+                  >
+                    {activity.weeklyActivity
+                      .slice()
+                      .reverse()
+                      .map((item, index) => {
+                        const max = Math.max(
+                          1,
+                          ...activity.weeklyActivity.map(
+                            (week) => week.transactions
+                          )
+                        );
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fit, minmax(220px, 1fr))",
-                gap: "16px"
-              }}
-            >
-              <MetricCard
-                title="SOL BALANCE"
-                value={
-                  walletData.balanceSOL ?? "Unavailable"
-                }
-                subtitle="SOL"
-              />
+                        return (
+                          <div
+                            key={index}
+                            title={
+                              "Week " + item.week +
+                              ": " + item.transactions + " transactions"
+                            }
+                            style={{
+                              flex: 1,
+                              height:
+                                Math.max(
+                                  3,
+                                  (item.transactions / max) * 100
+                                ) + "%",
+                              background: "#c92a2a",
+                              borderRadius: "4px 4px 0 0"
+                            }}
+                          />
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+            </Section>
 
-              <MetricCard
-                title="TRANSACTIONS RETRIEVED"
-                value={
-                  walletData.transactionsAnalyzed ?? 0
-                }
-                subtitle="Retrieved transaction signatures"
-              />
+            <Section title="03 // Wallet Intelligence">
+              <div style={gridStyle}>
+                <Metric
+                  label="MATURITY SCORE"
+                  value={
+                    intelligence?.maturityScore ??
+                    "Not available"
+                  }
+                />
+                <Metric
+                  label="CONSISTENCY SCORE"
+                  value={
+                    intelligence?.consistencyScore ??
+                    "Not available"
+                  }
+                />
+                <Metric
+                  label="WALLET SCORE"
+                  value={
+                    intelligence?.score ??
+                    intelligence?.walletScore ??
+                    "Not available"
+                  }
+                />
+              </div>
 
-              <MetricCard
-                title="ACTIVE DAYS OBSERVED"
-                value={
-                  activity.activeDaysObserved ?? "N/A"
-                }
-                subtitle="Across retrieved history"
-              />
-            </div>
+              <div style={cardStyle}>
+                <p>
+                  Classification:{" "}
+                  <strong>
+                    {intelligence?.disclaimer
+                      ? "Behavioural analysis"
+                      : "Observational only"}
+                  </strong>
+                </p>
+                <p style={{ color: "#999", lineHeight: 1.6 }}>
+                  Scores describe observed wallet behaviour,
+                  not trustworthiness or fraud risk.
+                </p>
+              </div>
+            </Section>
 
-            <h2 style={{ marginTop: "45px" }}>
-              02 // Activity Intelligence
-            </h2>
+            <Section title="04 // Transaction Intelligence">
+              {transactionData ? (
+                <>
+                  <div style={gridStyle}>
+                    <Metric
+                      label="TRANSACTIONS DECODED"
+                      value={
+                        transactionData.transactionsDecoded ?? 0
+                      }
+                    />
+                    <Metric
+                      label="FAILED TO DECODE"
+                      value={
+                        transactionData.failedToDecode ?? 0
+                      }
+                    />
+                    <Metric
+                      label="RPC RATE LIMITED"
+                      value={
+                        transactionData.rateLimited ? "YES" : "NO"
+                      }
+                    />
+                  </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fit, minmax(200px, 1fr))",
-                gap: "16px"
-              }}
-            >
-              <MetricCard
-                title="LAST 7 DAYS"
-                value={activity.transactions7d ?? "N/A"}
-                subtitle="Transactions observed"
-              />
+                  <div style={cardStyle}>
+                    <h3>Transaction Categories</h3>
 
-              <MetricCard
-                title="LAST 30 DAYS"
-                value={activity.transactions30d ?? "N/A"}
-                subtitle="Transactions observed"
-              />
+                    {categories.length === 0 ? (
+                      <p style={{ color: "#999" }}>
+                        No classifications available.
+                      </p>
+                    ) : (
+                      categories.map(([name, count]) => (
+                        <div
+                          key={name}
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            gap: "16px",
+                            padding: "12px 0",
+                            borderBottom: "1px solid #333"
+                          }}
+                        >
+                          <span>{name}</span>
+                          <strong>{count}</strong>
+                        </div>
+                      ))
+                    )}
+                  </div>
 
-              <MetricCard
-                title="LAST 90 DAYS"
-                value={activity.transactions90d ?? "N/A"}
-                subtitle="Transactions observed"
-              />
-            </div>
+                  <div style={cardStyle}>
+                    <h3>Recent Transactions</h3>
 
-            <div style={panelStyle}>
-              <h3>Weekly Transaction Activity</h3>
+                    {(transactionData.transactions || []).map(
+                      (transaction) => (
+                        <div
+                          key={transaction.signature}
+                          style={{
+                            padding: "16px 0",
+                            borderBottom: "1px solid #333"
+                          }}
+                        >
+                          <p style={{ color: "#ff7777" }}>
+                            {transaction.category}
+                          </p>
+                          <p style={{ color: "#999", fontSize: "13px" }}>
+                            {formatDate(transaction.timestamp)}
+                          </p>
+                          <a
+                            href={
+                              "https://solscan.io/tx/" +
+                              transaction.signature
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              color: "#ddd",
+                              overflowWrap: "anywhere"
+                            }}
+                          >
+                            {transaction.signature}
+                          </a>
+                        </div>
+                      )
+                    )}
+                  </div>
 
-              <WeeklyChart
-                data={activity.weeklyActivity}
-              />
-            </div>
+                  <p style={{ color: "#888", fontSize: "13px" }}>
+                    Coverage:{" "}
+                    {transactionData.dataCoverage?.status ||
+                      "Sample only"}
+                    . Classification is based on a limited
+                    transaction sample and does not establish fraud.
+                  </p>
+                </>
+              ) : (
+                <div style={cardStyle}>
+                  <p style={{ color: "#aaa" }}>
+                    {transactionError ||
+                      "Transaction intelligence not loaded."}
+                  </p>
+                </div>
+              )}
+            </Section>
 
-            <h2 style={{ marginTop: "45px" }}>
-              03 // Wallet History
-            </h2>
+            <Section title="05 // Data Reliability">
+              <div style={cardStyle}>
+                <p>
+                  Transactions retrieved:{" "}
+                  {coverage?.transactionsRetrieved ??
+                    walletData.transactionsAnalyzed ??
+                    "Unavailable"}
+                </p>
+                <p>
+                  Historical limit reached:{" "}
+                  {coverage?.historyLimitReached
+                    ? "Yes"
+                    : "No"}
+                </p>
+                <p>
+                  Complete wallet history:{" "}
+                  {coverage?.completeWalletHistory ||
+                    "Not independently verified"}
+                </p>
+                <p style={{ color: "#999", fontSize: "13px" }}>
+                  RPC history coverage is not independently
+                  guaranteed. Missing data may affect analysis.
+                </p>
+              </div>
+            </Section>
 
-            <div style={panelStyle}>
-              <p style={labelStyle}>
-                EARLIEST OBSERVED ACTIVITY
-              </p>
-
-              <p>
-                {formatDate(
-                  activity.firstObservedTransaction
-                )}
-              </p>
-
-              <p style={labelStyle}>
-                LATEST OBSERVED ACTIVITY
-              </p>
-
-              <p>
-                {formatDate(
-                  activity.latestObservedTransaction
-                )}
-              </p>
-
-              <p
-                style={{
-                  color: "#888",
-                  fontSize: "12px"
-                }}
-              >
-                Earliest observed activity is not
-                necessarily the wallet creation date.
-              </p>
-            </div>
-
-            <div style={panelStyle}>
-              <p style={labelStyle}>
-                LATEST TRANSACTION SIGNATURE
-              </p>
-
-              <p
-                style={{
-                  overflowWrap: "anywhere",
-                  fontSize: "13px",
-                  lineHeight: "1.7"
-                }}
-              >
-                {walletData.latestTransaction ||
-                  "No transactions found"}
-              </p>
-            </div>
-
-            <h2 style={{ marginTop: "45px" }}>
-              04 // Data Reliability
-            </h2>
-
-            <div style={panelStyle}>
-              <CoverageBadge
-                title="7-Day History"
-                status={windows.coverage7d}
-              />
-
-              <CoverageBadge
-                title="30-Day History"
-                status={windows.coverage30d}
-              />
-
-              <CoverageBadge
-                title="90-Day History"
-                status={windows.coverage90d}
-              />
-
-              <p
-                style={{
-                  marginTop: "20px",
-                  color: coverage.scoringEligible
-                    ? "#55cc88"
-                    : "#e5b45a",
-                  fontWeight: "bold"
-                }}
-              >
-                {coverage.scoringEligible
-                  ? "INITIAL SCORING REQUIREMENTS MET"
-                  : "INSUFFICIENT COVERAGE FOR SCORING"}
-              </p>
-
-              <p
-                style={{
-                  color: "#888",
-                  fontSize: "12px",
-                  lineHeight: "1.7"
-                }}
-              >
-                Transactions retrieved:{" "}
-                {coverage.transactionsRetrieved ?? "N/A"}
-                <br />
-                Pages fetched:{" "}
-                {coverage.pagesFetched ?? "N/A"}
-                <br />
-                Historical limit reached:{" "}
-                {coverage.historyLimitReached
-                  ? "Yes"
-                  : "No"}
-                <br />
-                Complete wallet history:{" "}
-                {coverage.completeWalletHistory ||
-                  "Not verified"}
-              </p>
-
-              <p
-                style={{
-                  color: "#999",
-                  fontSize: "12px",
-                  lineHeight: "1.6"
-                }}
-              >
-                Coverage classifications describe the
-                retrieved RPC sample. They do not
-                independently guarantee complete
-                blockchain history.
-              </p>
-            </div>
-
-            <h2 style={{ marginTop: "45px" }}>
-              05 // GLITCH Scanner
-            </h2>
-
-            <div
-              style={{
-                ...panelStyle,
-                borderColor: "#663333"
-              }}
-            >
-              <p
-                style={{
-                  color: "#ff5555",
-                  fontWeight: "bold"
-                }}
-              >
-                GLITCH SCANNER // IN DEVELOPMENT
-              </p>
-
-              <p
-                style={{
-                  color: "#aaa",
-                  lineHeight: "1.7"
-                }}
-              >
-                Future modules will examine observable
-                transaction patterns, fund movements,
-                and documented incident reports to
-                highlight potential risks.
-              </p>
-
-              <p
-                style={{
-                  color: "#888",
-                  fontSize: "12px"
-                }}
-              >
-                No fraud or scam determination is
-                currently performed.
-              </p>
-            </div>
-          </div>
+            <Section title="06 // GLITCH Scanner">
+              <div style={cardStyle}>
+                <p style={{ color: "#ff7777" }}>
+                  GLITCH SCANNER // IN DEVELOPMENT
+                </p>
+                <p style={{ color: "#aaa", lineHeight: 1.7 }}>
+                  Planned: SOL and token transfer analysis,
+                  counterparty patterns, unusual activity
+                  detection and evidence-based warnings.
+                </p>
+                <p style={{ color: "#888", fontSize: "13px" }}>
+                  No scammer determination is made by this version.
+                </p>
+              </div>
+            </Section>
+          </>
         )}
 
         <footer
           style={{
-            marginTop: "80px",
-            paddingTop: "25px",
-            borderTop: "1px solid #292929",
+            marginTop: "70px",
             color: "#777",
-            fontSize: "12px",
-            lineHeight: "1.8"
+            fontSize: "13px"
           }}
         >
-          DOOM404 // WALLET INTELLIGENCE
-          <br />
-          Public blockchain observations only.
-          <br />
-          No wallet connection or private keys required.
-          <br />
-          Activity metrics are not financial advice
-          or proof of wallet trustworthiness.
+          DOOM404 // Wallet Signal v0.4.2
+          <p>
+            Public blockchain data only.
+            No wallet connection or private keys required.
+          </p>
         </footer>
       </div>
     </main>
