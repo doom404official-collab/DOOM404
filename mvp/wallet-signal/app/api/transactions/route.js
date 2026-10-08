@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const SAMPLE_LIMIT = 5;
+const SAMPLE_LIMIT = 20;
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
