@@ -17,17 +17,10 @@ function calculateCoverage(
   oldestTimestamp,
   now,
   reachedEnd,
-  timestampsAvailable,
-  hasTransactions
+  timestampsAvailable
 ) {
   if (!timestampsAvailable) {
     return "unknown";
-  }
-
-  if (!hasTransactions) {
-    return reachedEnd
-      ? "rpc_exhausted"
-      : "unknown";
   }
 
   const windowStart = now - days * DAY;
@@ -44,6 +37,28 @@ function calculateCoverage(
   }
 
   return "incomplete";
+}
+
+function calculateMaturityScore(ageDays) {
+  if (ageDays === null) return null;
+
+  if (ageDays < 7) return 2;
+  if (ageDays < 30) return 5;
+  if (ageDays < 90) return 10;
+  if (ageDays < 180) return 15;
+  if (ageDays < 365) return 20;
+
+  return 25;
+}
+
+function calculateConsistencyScore(activeDays) {
+  if (activeDays <= 2) return 0;
+  if (activeDays <= 7) return 5;
+  if (activeDays <= 20) return 10;
+  if (activeDays <= 45) return 20;
+  if (activeDays <= 65) return 25;
+
+  return 30;
 }
 
 export async function GET(request) {
@@ -86,11 +101,7 @@ export async function GET(request) {
     let reachedEnd = false;
     let pagesFetched = 0;
 
-    for (
-      let page = 0;
-      page < MAX_PAGES;
-      page++
-    ) {
+    for (let page = 0; page < MAX_PAGES; page++) {
       const options = {
         limit: PAGE_SIZE
       };
@@ -123,9 +134,7 @@ export async function GET(request) {
       }
     }
 
-    const now = Math.floor(
-      Date.now() / 1000
-    );
+    const now = Math.floor(Date.now() / 1000);
 
     const timestamps = signatures
       .map((tx) => tx.blockTime)
@@ -139,12 +148,12 @@ export async function GET(request) {
       timestamps.length === signatures.length;
 
     const oldestTimestamp =
-      timestamps.length > 0
+      timestamps.length
         ? Math.min(...timestamps)
         : null;
 
     const newestTimestamp =
-      timestamps.length > 0
+      timestamps.length
         ? Math.max(...timestamps)
         : null;
 
@@ -156,41 +165,40 @@ export async function GET(request) {
 
     const transactions7d =
       timestamps.filter(
-        (time) =>
-          time >= now - 7 * DAY
+        (time) => time >= now - 7 * DAY
       ).length;
 
     const transactions30d =
       timestamps.filter(
-        (time) =>
-          time >= now - 30 * DAY
+        (time) => time >= now - 30 * DAY
       ).length;
 
     const transactions90d =
       timestamps.filter(
-        (time) =>
-          time >= now - 90 * DAY
+        (time) => time >= now - 90 * DAY
       ).length;
+
+    const activeDays90d = new Set(
+      timestamps
+        .filter(
+          (time) => time >= now - 90 * DAY
+        )
+        .map(
+          (time) => Math.floor(time / DAY)
+        )
+    ).size;
 
     const weeklyActivity = [];
 
-    for (
-      let week = 0;
-      week < 13;
-      week++
-    ) {
-      const weekEnd =
-        now - week * 7 * DAY;
+    for (let week = 0; week < 13; week++) {
+      const weekEnd = now - week * 7 * DAY;
+      const weekStart = weekEnd - 7 * DAY;
 
-      const weekStart =
-        weekEnd - 7 * DAY;
-
-      const count =
-        timestamps.filter(
-          (time) =>
-            time >= weekStart &&
-            time < weekEnd
-        ).length;
+      const count = timestamps.filter(
+        (time) =>
+          time >= weekStart &&
+          time < weekEnd
+      ).length;
 
       weeklyActivity.push({
         week: week + 1,
@@ -198,47 +206,57 @@ export async function GET(request) {
       });
     }
 
-    const coverage7d =
-      calculateCoverage(
-        7,
-        oldestTimestamp,
-        now,
-        reachedEnd,
-        timestampsAvailable,
-        signatures.length > 0
-      );
+    const coverage7d = calculateCoverage(
+      7,
+      oldestTimestamp,
+      now,
+      reachedEnd,
+      timestampsAvailable
+    );
 
-    const coverage30d =
-      calculateCoverage(
-        30,
-        oldestTimestamp,
-        now,
-        reachedEnd,
-        timestampsAvailable,
-        signatures.length > 0
-      );
+    const coverage30d = calculateCoverage(
+      30,
+      oldestTimestamp,
+      now,
+      reachedEnd,
+      timestampsAvailable
+    );
 
-    const coverage90d =
-      calculateCoverage(
-        90,
-        oldestTimestamp,
-        now,
-        reachedEnd,
-        timestampsAvailable,
-        signatures.length > 0
-      );
-
-    const coverage = {
-      coverage7d,
-      coverage30d,
-      coverage90d
-    };
+    const coverage90d = calculateCoverage(
+      90,
+      oldestTimestamp,
+      now,
+      reachedEnd,
+      timestampsAvailable
+    );
 
     const scoringEligible =
       timestampsAvailable &&
       coverage7d === "complete_sample" &&
       coverage30d === "complete_sample" &&
       coverage90d === "complete_sample";
+
+    const observedAgeDays =
+      oldestTimestamp !== null
+        ? Math.floor(
+            (now - oldestTimestamp) / DAY
+          )
+        : null;
+
+    const maturityScore =
+      scoringEligible
+        ? calculateMaturityScore(observedAgeDays)
+        : null;
+
+    const consistencyScore =
+      scoringEligible
+        ? calculateConsistencyScore(activeDays90d)
+        : null;
+
+    const preliminaryScore =
+      scoringEligible
+        ? maturityScore + consistencyScore
+        : null;
 
     return NextResponse.json({
       address: publicKey.toBase58(),
@@ -257,6 +275,8 @@ export async function GET(request) {
       activity: {
         activeDaysObserved:
           uniqueDays.size,
+
+        activeDays90d,
 
         transactions7d,
         transactions30d,
@@ -279,6 +299,34 @@ export async function GET(request) {
         weeklyActivity
       },
 
+      intelligence: {
+        version: "0.3",
+
+        observedAgeDays,
+
+        maturityScore,
+
+        maturityMaxScore: 25,
+
+        activeDays90d,
+
+        consistencyScore,
+
+        consistencyMaxScore: 30,
+
+        preliminaryScore,
+
+        preliminaryMaxScore: 55,
+
+        scoringStatus:
+          scoringEligible
+            ? "preliminary"
+            : "insufficient_data",
+
+        disclaimer:
+          "Activity scores describe observed behaviour, not trustworthiness or fraud risk."
+      },
+
       dataCoverage: {
         pageSize: PAGE_SIZE,
 
@@ -296,7 +344,11 @@ export async function GET(request) {
 
         timestampsAvailable,
 
-        coverage,
+        coverage: {
+          coverage7d,
+          coverage30d,
+          coverage90d
+        },
 
         scoringEligible,
 
@@ -307,14 +359,14 @@ export async function GET(request) {
 
   } catch (error) {
     console.error(
-      "Wallet analysis error:",
+      "Wallet intelligence error:",
       error
     );
 
     return NextResponse.json(
       {
         error:
-          "Unable to retrieve Solana wallet data"
+          "Unable to retrieve wallet intelligence"
       },
       { status: 500 }
     );
