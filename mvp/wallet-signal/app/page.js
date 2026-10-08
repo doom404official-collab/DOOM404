@@ -1,7 +1,6 @@
-"use client";
+ "use client";
 
 import { useState } from "react";
-import { PublicKey } from "@solana/web3.js";
 
 export default function Home() {
   const [wallet, setWallet] = useState("");
@@ -12,70 +11,74 @@ export default function Home() {
   async function analyzeWallet() {
     const address = wallet.trim();
 
-    // Check that something has been entered
     if (!address) {
       setStatus("Please enter a Solana wallet address.");
       setWalletData(null);
       return;
     }
 
-    // Validate Solana wallet address
-try {
-  new PublicKey(address);
-} catch {
-  setStatus("❌ Invalid Solana wallet address");
-  setWalletData(null);
-  return;
-}
     setLoading(true);
     setStatus("Connecting to Solana mainnet...");
     setWalletData(null);
 
     try {
       const response = await fetch(
-        '/api/wallet?address=${encodeURIComponent(address)}'
+        `/api/wallet?address=${encodeURIComponent(address)}`
       );
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Unable to analyze wallet");
+        throw new Error(
+          result.error || "Unable to analyze wallet"
+        );
       }
 
       setWalletData(result);
-      setStatus("✓ Live Solana wallet data loaded");
+      setStatus("Live Solana wallet data loaded successfully.");
+
     } catch (error) {
       console.error(error);
+
       setStatus(
-        `❌ ${error.message || "Unable to connect to Solana mainnet"}`
+        "Error: " +
+        (error.message || "Unable to connect to Solana mainnet")
       );
+
     } finally {
       setLoading(false);
     }
   }
 
+  const cardStyle = {
+    background: "#151515",
+    padding: "22px",
+    borderRadius: "12px",
+    border: "1px solid #333",
+    marginTop: "18px"
+  };
+
   return (
     <main
       style={{
         minHeight: "100vh",
-        background:
-          "radial-gradient(circle at 50% 40%, #260808 0%, #080808 45%, #030303 100%)",
+        background: "#080808",
         color: "#ffffff",
         padding: "60px 24px",
-        fontFamily: "Arial, sans-serif",
+        fontFamily: "Arial, sans-serif"
       }}
     >
       <div
         style={{
           maxWidth: "800px",
-          margin: "0 auto",
+          margin: "0 auto"
         }}
       >
+
         <p
           style={{
-            color: "#ef4444",
-            fontWeight: "700",
-            letterSpacing: "1px",
+            color: "#ff4444",
+            fontWeight: "bold"
           }}
         >
           DOOM404 // MVP v0.1
@@ -83,8 +86,8 @@ try {
 
         <h1
           style={{
-            fontSize: "56px",
-            margin: "20px 0 10px",
+            fontSize: "clamp(36px, 7vw, 64px)",
+            marginBottom: "16px"
           }}
         >
           Wallet Signal
@@ -93,124 +96,136 @@ try {
         <p
           style={{
             color: "#aaaaaa",
-            fontSize: "20px",
-            marginBottom: "40px",
+            fontSize: "18px"
           }}
         >
           Explore observable activity from a public Solana wallet.
         </p>
 
-        <input
-          type="text"
-          value={wallet}
-          onChange={(event) => setWallet(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              analyzeWallet();
-            }
-          }}
-          placeholder="Enter Solana wallet address"
-          style={{
-            width: "100%",
-            boxSizing: "border-box",
-            padding: "16px",
-            fontSize: "16px",
-            color: "#ffffff",
-            background: "#111111",
-            border: "1px solid #333333",
-            borderRadius: "6px",
-            outline: "none",
-            marginBottom: "18px",
-          }}
-        />
+        <div style={{ marginTop: "40px" }}>
 
-        <button
-          onClick={analyzeWallet}
-          disabled={loading}
-          style={{
-            padding: "15px 28px",
-            background: loading ? "#7f1d1d" : "#dc2626",
-            color: "#ffffff",
-            border: "none",
-            borderRadius: "6px",
-            fontWeight: "700",
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {loading ? "ANALYZING..." : "ANALYZE WALLET"}
-        </button>
+          <input
+            type="text"
+            value={wallet}
+            onChange={(e) => setWallet(e.target.value)}
+            placeholder="Enter Solana wallet address"
+            style={{
+              width: "100%",
+              boxSizing: "border-box",
+              padding: "16px",
+              background: "#151515",
+              color: "#ffffff",
+              border: "1px solid #444",
+              borderRadius: "8px",
+              fontSize: "16px"
+            }}
+          />
+
+          <button
+            onClick={analyzeWallet}
+            disabled={loading}
+            style={{
+              marginTop: "20px",
+              padding: "16px 28px",
+              background: loading ? "#555" : "#cc2222",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "8px",
+              cursor: loading ? "wait" : "pointer",
+              fontWeight: "bold",
+              fontSize: "15px"
+            }}
+          >
+            {loading ? "ANALYZING..." : "ANALYZE WALLET"}
+          </button>
+
+        </div>
 
         {status && (
-          <p
+          <div
+            role="status"
             style={{
               marginTop: "28px",
-              fontSize: "16px",
+              padding: "16px",
+              background: "#151515",
+              borderRadius: "8px",
+              color: status.startsWith("Error")
+                ? "#ff5555"
+                : "#dddddd"
             }}
           >
             {status}
-          </p>
+          </div>
         )}
 
         {walletData && (
-          <div
-            style={{
-              marginTop: "40px",
-              padding: "24px",
-              background: "#101010",
-              border: "1px solid #292929",
-              borderRadius: "10px",
-            }}
-          >
-            <h2
-              style={{
-                marginTop: 0,
-                marginBottom: "24px",
-              }}
-            >
-              Wallet Analysis
-            </h2>
+          <div style={{ marginTop: "35px" }}>
 
-            <p>
-              <strong>Network:</strong>{" "}
-              {walletData.network || "Solana Mainnet"}
-            </p>
+            <h2>Wallet Analysis</h2>
 
-            <p>
-              <strong>SOL Balance:</strong>{" "}
-              {walletData.balanceSOL ?? "N/A"}
-            </p>
-
-            <p>
-              <strong>Transactions Analyzed:</strong>{" "}
-              {walletData.transactionsAnalyzed ?? "N/A"}
-            </p>
-
-            <p>
-              <strong>Latest Transaction:</strong>
-            </p>
-
-            <p
-              style={{
-                color: "#aaaaaa",
-                wordBreak: "break-all",
-                fontSize: "14px",
-              }}
-            >
-              {walletData.latestTransaction || "No transaction found"}
-            </p>
-
-            <div
-              style={{
-                marginTop: "30px",
-                paddingTop: "20px",
-                borderTop: "1px solid #292929",
-                color: "#777777",
-              }}
-            >
-              Activity · Diversification · Trading · Maturity
+            <div style={cardStyle}>
+              <h3>Wallet Address</h3>
+              <p style={{ overflowWrap: "anywhere" }}>
+                {walletData.address}
+              </p>
             </div>
+
+            <div style={cardStyle}>
+              <h3>Network</h3>
+              <p>{walletData.network || "Unknown"}</p>
+            </div>
+
+            <div style={cardStyle}>
+              <h3>SOL Balance</h3>
+              <p
+                style={{
+                  fontSize: "28px",
+                  color: "#ff5555"
+                }}
+              >
+                {walletData.balanceSOL ?? "Unavailable"} SOL
+              </p>
+            </div>
+
+            <div style={cardStyle}>
+              <h3>Transactions Analyzed</h3>
+              <p style={{ fontSize: "28px" }}>
+                {walletData.transactionsAnalyzed ?? 0}
+              </p>
+            </div>
+
+            <div style={cardStyle}>
+              <h3>Latest Transaction</h3>
+              <p style={{ overflowWrap: "anywhere" }}>
+                {walletData.latestTransaction || "No transactions found"}
+              </p>
+            </div>
+
+            <div style={cardStyle}>
+              <h3>DOOM404 Intelligence</h3>
+              <p style={{ color: "#aaaaaa" }}>
+                Wallet activity scoring, diversification,
+                trading behaviour and maturity analysis
+                are planned for future development.
+              </p>
+            </div>
+
           </div>
         )}
+
+        <footer
+          style={{
+            marginTop: "80px",
+            color: "#777",
+            fontSize: "13px"
+          }}
+        >
+          DOOM404 // Wallet Signal MVP
+          <br />
+          Public blockchain data only.
+          No wallet connection or private keys required.
+        </footer>
+
       </div>
     </main>
   );
