@@ -3,10 +3,14 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const SAMPLE_LIMIT = 20;
+const SAMPLE_LIMIT = 5;
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function getProgramId(instruction) {
-  if (!instruction) return "";
+  if (!instruction) return "Unknown";
 
   if (typeof instruction.programId === "string") {
     return instruction.programId;
@@ -16,89 +20,37 @@ function getProgramId(instruction) {
     return instruction.programId.toBase58();
   }
 
-  return "";
+  return "Unknown";
 }
 
-function classifyTransaction(tx) {
-  if (!tx) {
-    return {
-      category: "unknown",
-      confidence: "low"
-    };
-  }
-
+function classifyTransaction(transaction) {
   const instructions =
-    tx.transaction?.message?.instructions || [];
+    transaction?.transaction?.message?.instructions || [];
 
-  const programs = new Set();
-  const types = new Set();
+  const programs = instructions.map(getProgramId);
 
-  for (const instruction of instructions) {
-    const programId = getProgramId(instruction);
+  const systemProgram =
+    "11111111111111111111111111111111";
 
-    if (programId) {
-      programs.add(programId);
-    }
+  const tokenProgram =
+    "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
 
-    if (instruction.parsed?.type) {
-      types.add(instruction.parsed.type);
-    }
-  }
+  const token2022Program =
+    "TokenzQdBNbLqP5VEhdkAS6EPFfC4V6Q3QY3FZx";
 
-  const programList = [...programs];
-  const typeList = [...types];
+  let category = "Other / Unknown";
 
-  const hasSystemTransfer =
-    instructions.some(
-      (instruction) =>
-        instruction.program === "system" &&
-        instruction.parsed?.type === "transfer"
-    );
-
-  const hasTokenTransfer =
-    instructions.some(
-      (instruction) =>
-        (
-          instruction.program === "spl-token" ||
-          instruction.program === "spl-token-2022"
-        ) &&
-        (
-          instruction.parsed?.type === "transfer" ||
-          instruction.parsed?.type === "transferChecked"
-        )
-    );
-
-  const hasStakeInstruction =
-    instructions.some(
-      (instruction) =>
-        instruction.program === "stake"
-    );
-
-  const hasMultiplePrograms =
-    programList.length >= 3;
-
-  let category = "other";
-  let confidence = "low";
-
-  if (hasStakeInstruction) {
-    category = "staking";
-    confidence = "medium";
-  } else if (hasTokenTransfer && hasMultiplePrograms) {
-    category = "possible_swap_or_complex_token_activity";
-    confidence = "low";
-  } else if (hasTokenTransfer) {
-    category = "token_transfer";
-    confidence = "medium";
-  } else if (hasSystemTransfer) {
-    category = "sol_transfer";
-    confidence = "medium";
+  if (programs.includes(tokenProgram) ||
+      programs.includes(token2022Program)) {
+    category = "Token Program Interaction";
+  } else if (programs.includes(systemProgram)) {
+    category = "System Program Interaction";
   }
 
   return {
     category,
-    confidence,
-    programs: programList,
-    instructionTypes: typeList
+    programs: [...new Set(programs)],
+    success: transaction?.meta?.err === null
   };
 }
 
@@ -129,10 +81,10 @@ export async function GET(request) {
       process.env.SOLANA_RPC_URL ||
       "https://api.mainnet-beta.solana.com";
 
-    const connection = new Connection(
-      rpcUrl,
-      "confirmed"
-    );
+    const connection = new Connection(rpcUrl, {
+      commitment: "confirmed",
+      disableRetryOnRateLimit: true
+    });
 
     const signatures =
       await connection.getSignaturesForAddress(
@@ -140,72 +92,103 @@ export async function GET(request) {
         { limit: SAMPLE_LIMIT }
       );
 
-    const results = [];
+    const transactions = [];
+    const categories = {};
+    let failedToDecode = 0;
+    let rateLimited = false;
 
-    for (let i = 0; i < signatures.length; i += 5) {
-      const batch = signatures.slice(i, i + 5);
+    for (const entry of signatures) {
+      try {
+        const transaction =
+          await connection.getParsedTransaction(
+            entry.signature,
+            {
+              maxSupportedTransactionVersion: 0,
+              commitment: "confirmed"
+            }
+          );
 
-      const transactions =
-        await connection.getParsedTransactions(
-          batch.map((item) => item.signature),
-          {
-            commitment: "confirmed",
-            maxSupportedTransactionVersion: 0
-          }
-        );
-
-      for (let j = 0; j < batch.length; j++) {
-        const signatureInfo = batch[j];
-        const transaction = transactions[j];
+        if (!transaction) {
+          failedToDecode++;
+          continue;
+        }
 
         const classification =
           classifyTransaction(transaction);
 
-        results.push({
-          signature: signatureInfo.signature,
-          blockTime: signatureInfo.blockTime,
-          success:
-            transaction?.meta
-              ? transaction.meta.err === null
-              : null,
+        categories[classification.category] =
+          (categories[classification.category] || 0) + 1;
+
+        transactions.push({
+          signature: entry.signature,
+          timestamp: entry.blockTime
+            ? new Date(entry.blockTime * 1000).toISOString()
+            : null,
           ...classification
         });
+
+      } catch (error) {
+        console.error(
+          "Transaction decode error:",
+          error.message
+        );
+
+        failedToDecode++;
+
+        if (
+          error.code === 429 ||
+          String(error.message).includes("429") ||
+          String(error.message).includes("Too many requests")
+        ) {
+          rateLimited = true;
+          break;
+        }
       }
-    }
 
-    const categories = {};
-
-    for (const item of results) {
-      categories[item.category] =
-        (categories[item.category] || 0) + 1;
+      await wait(700);
     }
 
     return NextResponse.json({
+      engineVersion: "0.4.1",
       address: publicKey.toBase58(),
       network: "mainnet-beta",
-      engineVersion: "0.4",
-      transactionsRequested: signatures.length,
-      transactionsDecoded:
-        results.filter(
-          (item) =>
-            item.category !== "unknown"
-        ).length,
-      sampleLimit: SAMPLE_LIMIT,
+      transactionsRequested: SAMPLE_LIMIT,
+      signaturesRetrieved: signatures.length,
+      transactionsDecoded: transactions.length,
+      failedToDecode,
+      rateLimited,
       categories,
-      transactions: results,
-      disclaimer:
-        "Preliminary instruction-based classification. Complex swaps, inner instructions and fund flows are not yet fully decoded."
+      transactions,
+      dataCoverage: {
+        status: rateLimited
+          ? "Partial - RPC rate limit reached"
+          : failedToDecode > 0
+          ? "Partial - some transactions unavailable"
+          : "Sample decoded",
+        note:
+          "Classification is based on observed program interactions. " +
+          "It does not establish whether a wallet is fraudulent."
+      }
     });
 
   } catch (error) {
-    console.error("Transaction intelligence error:", error);
+    console.error(
+      "Transaction intelligence error:",
+      error
+    );
+
+    const isRateLimit =
+      error.code === 429 ||
+      String(error.message).includes("429");
 
     return NextResponse.json(
       {
-        error:
-          "Unable to retrieve transaction intelligence"
+        error: isRateLimit
+          ? "Solana RPC rate limit reached. Please retry later."
+          : "Unable to retrieve transaction intelligence",
+        rateLimited: isRateLimit
       },
-      { status: 500 }
+      { status: isRateLimit ? 429 : 500 }
     );
   }
 }
