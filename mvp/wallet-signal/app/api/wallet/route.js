@@ -8,6 +8,10 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
+const PAGE_SIZE = 1000;
+const MAX_PAGES = 5;
+const DAY = 86400;
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -24,6 +28,11 @@ export async function GET(request) {
 
     try {
       publicKey = new PublicKey(address.trim());
+
+      if (!PublicKey.isOnCurve(publicKey.toBytes())) {
+        // Program-derived addresses can also be analyzed.
+        // No rejection is required.
+      }
     } catch {
       return NextResponse.json(
         { error: "Invalid Solana wallet address" },
@@ -40,18 +49,47 @@ export async function GET(request) {
       "confirmed"
     );
 
-    const [balanceLamports, signatures] =
-      await Promise.all([
-        connection.getBalance(publicKey),
-        connection.getSignaturesForAddress(
+    const balanceLamports =
+      await connection.getBalance(publicKey);
+
+    let signatures = [];
+    let before = undefined;
+    let reachedEnd = false;
+    let pagesFetched = 0;
+
+    for (let page = 0; page < MAX_PAGES; page++) {
+      const options = {
+        limit: PAGE_SIZE
+      };
+
+      if (before) {
+        options.before = before;
+      }
+
+      const batch =
+        await connection.getSignaturesForAddress(
           publicKey,
-          { limit: 100 }
-        )
-      ]);
+          options
+        );
+
+      pagesFetched++;
+
+      if (batch.length === 0) {
+        reachedEnd = true;
+        break;
+      }
+
+      signatures.push(...batch);
+
+      before = batch[batch.length - 1].signature;
+
+      if (batch.length < PAGE_SIZE) {
+        reachedEnd = true;
+        break;
+      }
+    }
 
     const now = Math.floor(Date.now() / 1000);
-
-    const DAY = 86400;
 
     const timestamps = signatures
       .map((tx) => tx.blockTime)
@@ -80,12 +118,12 @@ export async function GET(request) {
     ).length;
 
     const oldestTimestamp =
-      timestamps.length > 0
+      timestamps.length
         ? Math.min(...timestamps)
         : null;
 
     const newestTimestamp =
-      timestamps.length > 0
+      timestamps.length
         ? Math.max(...timestamps)
         : null;
 
@@ -106,9 +144,6 @@ export async function GET(request) {
         transactions: count
       });
     }
-
-    const historyLimitReached =
-      signatures.length === 100;
 
     const timestampsAvailable =
       timestamps.length === signatures.length;
@@ -134,14 +169,14 @@ export async function GET(request) {
         transactions90d,
 
         firstObservedTransaction:
-          oldestTimestamp
+          oldestTimestamp !== null
             ? new Date(
                 oldestTimestamp * 1000
               ).toISOString()
             : null,
 
         latestObservedTransaction:
-          newestTimestamp
+          newestTimestamp !== null
             ? new Date(
                 newestTimestamp * 1000
               ).toISOString()
@@ -151,15 +186,16 @@ export async function GET(request) {
       },
 
       dataCoverage: {
-        sampleLimit: 100,
-
-        historyLimitReached,
-
+        pageSize: PAGE_SIZE,
+        pagesFetched,
+        maxPages: MAX_PAGES,
+        transactionsRetrieved: signatures.length,
+        reachedEnd,
+        historyLimitReached: !reachedEnd,
         timestampsAvailable,
-
         completeWalletHistory:
-          signatures.length < 100
-            ? "Not verified"
+          reachedEnd && timestampsAvailable
+            ? "Pagination exhausted; RPC history not independently verified"
             : "No"
       }
     });
