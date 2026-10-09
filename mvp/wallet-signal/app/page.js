@@ -304,15 +304,15 @@ export default function Home() {
       <style>{`
         .doom-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 360px); align-items: center; gap: 24px; }
         .doom-mascot { position: relative; width: 100%; max-width: 360px; aspect-ratio: 1; margin: 0 auto; isolation: isolate; cursor: pointer; perspective: 850px; }
-        .doom-mascot__art { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 24px; transform-origin: 50% 75%; animation: doom-breathe 5.2s ease-in-out infinite; box-shadow: 0 16px 60px #d3192433; transition: filter .35s ease; }
-        .doom-mascot__original { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .doom-mascot__light { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 60% 42%, #ff35441c, transparent 36%); animation: doom-glow 4.2s ease-in-out infinite; }
-        .doom-mascot__scan { position: absolute; display: none; left: 4%; right: 4%; top: 0; height: 25%; pointer-events: none; background: linear-gradient(to bottom, transparent, #ff30491a 40%, #ff47624d 82%, #ff9ba8 96%, transparent); filter: drop-shadow(0 0 12px #ff3049); animation: doom-sweep 2.2s ease-in-out infinite alternate; }
+        .doom-mascot__art { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 0; transform-origin: 50% 75%; animation: doom-breathe 5.2s ease-in-out infinite; transition: filter .35s ease; -webkit-mask-image: radial-gradient(ellipse 70% 71% at 50% 49%, #000 36%, #000b 57%, transparent 91%); mask-image: radial-gradient(ellipse 70% 71% at 50% 49%, #000 36%, #000b 57%, transparent 91%); }
+        .doom-mascot__original { width: 100%; height: 100%; object-fit: cover; display: block; mix-blend-mode: screen; }
+        .doom-mascot__light { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 55% 48%, #ff35441b, transparent 58%); animation: doom-glow 4.2s ease-in-out infinite; }
+        .doom-mascot__scan { position: absolute; display: none; left: 7%; right: 7%; top: 0; height: 25%; pointer-events: none; background: linear-gradient(to bottom, transparent, #ff30491a 40%, #ff47624d 82%, #ff9ba8 96%, transparent); filter: drop-shadow(0 0 12px #ff3049); animation: doom-sweep 2.2s ease-in-out infinite alternate; }
         .doom-mascot__sparkles { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(circle at 22% 25%, #6cecb4 0 2px, transparent 4px), radial-gradient(circle at 82% 35%, #6cecb4 0 3px, transparent 5px), radial-gradient(circle at 68% 72%, #6cecb4 0 2px, transparent 4px); }
         .doom-mascot--analysing .doom-mascot__scan { display: block; }
         .doom-mascot--analysing .doom-mascot__art { animation: doom-focus 3.6s ease-in-out infinite; }
         .doom-mascot--signal-ready .doom-mascot__sparkles { opacity: 1; animation: doom-celebrate 2.4s ease-in-out infinite; }
-        .doom-mascot--signal-ready .doom-mascot__art { box-shadow: 0 12px 55px #36d38a44; }
+        .doom-mascot--signal-ready .doom-mascot__art { filter: drop-shadow(0 0 12px #36d38a33); }
         .doom-mascot--active .doom-mascot__art, .doom-mascot:hover .doom-mascot__art { filter: brightness(1.13); }
         .doom-mascot__indicator { position: absolute; z-index: 4; bottom: 0; left: 50%; transform: translateX(-50%); background: #101010eb; color: #ff707b; border: 1px solid #8c2935; border-radius: 999px; padding: 7px 13px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; white-space: nowrap; }
         .doom-mascot--signal-ready .doom-mascot__indicator { color: #6cecb4; border-color: #287f56; }
