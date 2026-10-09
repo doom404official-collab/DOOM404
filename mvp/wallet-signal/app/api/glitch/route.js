@@ -274,8 +274,38 @@ export async function GET(request) {
       note: "Observed explicit SOL transfers only; not a safety or fraud assessment."
     };
 
+    // Evidence quality describes the sampled data, not wallet safety.
+    const sampleCompleteness = signatures.length === 0
+      ? "no_observations"
+      : rateLimited || unavailable > 0
+        ? "limited"
+        : signatures.length < SAMPLE_LIMIT
+          ? "bounded_sample"
+          : "sample_limit_reached";
+    const evidenceConfidence = decoded === 0
+      ? "insufficient"
+      : rateLimited || unavailable > 0
+        ? "limited"
+        : "sample_only";
+    const observations = [];
+    if (frequency.busiestDay) {
+      observations.push("Most observed activity occurred on " + frequency.busiestDay.date +
+        " (" + frequency.busiestDay.count + " decoded transactions).");
+    }
+    if (frequency.longestQuietPeriodHours !== null) {
+      observations.push("Largest gap between sampled timestamped transactions: " +
+        frequency.longestQuietPeriodHours + " hours.");
+    }
+    if (concentration.top1VolumeSharePercent !== null) {
+      observations.push("Largest observed SOL transfer counterparty represented " +
+        concentration.top1VolumeSharePercent + "% of sampled explicit SOL transfer volume.");
+    }
+    if (!observations.length) {
+      observations.push("Not enough decoded activity to establish frequency or transfer concentration.");
+    }
+
     return NextResponse.json({
-      engineVersion: "0.6.0",
+      engineVersion: "0.9.0",
       scanner: "DOOM404 GLITCH",
       address: walletAddress,
       network: "mainnet-beta",
@@ -298,6 +328,14 @@ export async function GET(request) {
       },
       topCounterparties,
       behaviorIntelligence: { frequency, concentration },
+      evidence: {
+        confidence: evidenceConfidence,
+        sampleCompleteness,
+        decodedTransactions: decoded,
+        unavailableTransactions: unavailable,
+        observations,
+        interpretation: "Descriptive observations from a limited sample; not fraud detection, financial advice, or a wallet trust score."
+      },
       transfers,
       limitations: [
         "Only explicit parsed System Program SOL transfers are counted.",
