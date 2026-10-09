@@ -59,8 +59,9 @@ function Metric({ label, value, note }) {
 }
 
 function Section({ title, children }) {
+  const [expanded, setExpanded] = useState(title.startsWith("01 //"));
   return (
-    <details className="doom-result-section" defaultOpen={title.startsWith("01 //")}>
+    <details className="doom-result-section" open={expanded} onToggle={(event) => setExpanded(event.currentTarget.open)}>
       <summary className="doom-result-heading">
         <span>{title}</span><span className="doom-result-chevron" aria-hidden="true">⌄</span>
       </summary>
