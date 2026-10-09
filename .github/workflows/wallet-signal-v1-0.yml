@@ -1,0 +1,34 @@
+name: Wallet Signal v1.0 readiness
+on:
+  push:
+    branches: [feature/wallet-signal-v1-0-readiness]
+  workflow_dispatch:
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: RPC unit tests
+        run: node --test tests/solanaRpc.test.mjs
+      - name: Install dependencies
+        working-directory: mvp/wallet-signal
+        run: npm install --no-audit --no-fund
+      - name: Build production application
+        working-directory: mvp/wallet-signal
+        run: npm run build
+      - name: Start server and run API readiness tests
+        working-directory: mvp/wallet-signal
+        run: |
+          npm run start -- --hostname 127.0.0.1 --port 3000 > /tmp/wallet-signal-next.log 2>&1 &
+          for i in $(seq 1 45); do
+            if curl --silent --fail http://127.0.0.1:3000/ > /dev/null; then break; fi
+            sleep 2
+          done
+          node tests/input-validation.mjs
+          node tests/live-smoke.mjs
+        env:
+          SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
