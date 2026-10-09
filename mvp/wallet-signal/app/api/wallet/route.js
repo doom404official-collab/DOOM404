@@ -236,6 +236,52 @@ export async function GET(request) {
       coverage30d === "complete_sample" &&
       coverage90d === "complete_sample";
 
+    const scoringReasons = [];
+
+    if (signatures.length === 0) {
+      scoringReasons.push(
+        "No transactions were returned by the RPC provider."
+      );
+    }
+
+    if (!timestampsAvailable) {
+      scoringReasons.push(
+        "Some retrieved transactions lack usable timestamps."
+      );
+    }
+
+    if (timestampsAvailable) {
+      const incompleteWindows = [
+        [7, coverage7d],
+        [30, coverage30d],
+        [90, coverage90d]
+      ].filter(([, coverage]) => coverage !== "complete_sample");
+
+      if (incompleteWindows.length > 0) {
+        const windows = incompleteWindows
+          .map(([days]) => days + "-day")
+          .join(", ");
+
+        if (reachedEnd) {
+          scoringReasons.push(
+            "The available wallet history does not reach the start of the " +
+            windows +
+            " observation window(s)."
+          );
+        } else {
+          scoringReasons.push(
+            "The RPC retrieval limit was reached before the " +
+            windows +
+            " observation window(s) could be fully covered."
+          );
+        }
+      }
+    }
+
+    const scoringExplanation = scoringEligible
+      ? "The required 7-, 30- and 90-day observation windows are covered by the retrieved sample."
+      : "Scores are withheld until the required observation windows have sufficient coverage.";
+
     const observedAgeDays =
       oldestTimestamp !== null
         ? Math.floor(
@@ -322,6 +368,10 @@ export async function GET(request) {
           scoringEligible
             ? "preliminary"
             : "insufficient_data",
+
+        scoringExplanation,
+
+        scoringReasons,
 
         disclaimer:
           "Activity scores describe observed behaviour, not trustworthiness or fraud risk."
