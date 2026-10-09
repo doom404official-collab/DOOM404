@@ -437,6 +437,22 @@ export default function Home() {
           .doom-mascot {max-width:525px!important;aspect-ratio:1.36!important}
           .doom-mascot__original {transform:scale(1.2)!important}
         }
+        /* Fit the live scan status into the first desktop viewport. */
+        @media (min-width:701px) {
+          .doom-hero {min-height:clamp(315px,46vh,400px)!important;padding:0 0 4px!important}
+          .doom-mascot {max-width:570px!important;aspect-ratio:1.55!important}
+          .doom-wallet-form {padding:12px 20px!important}
+          .doom-wallet-form__row {margin-top:7px!important}
+          .doom-wallet-form__input,.doom-wallet-form__button {padding:12px 16px!important}
+          .doom-scan-panel {margin-top:8px!important;padding:10px 16px!important;gap:12px!important}
+          .doom-scan-panel__icon {width:56px!important;height:56px!important}
+          .doom-scan-panel__track {margin-top:8px!important}
+          .doom-scan-panel__subtitle {margin-top:2px!important}
+        }
+        @media (min-width:701px) and (max-height:800px) {
+          .doom-hero {min-height:clamp(290px,44vh,355px)!important}
+          .doom-mascot {max-width:530px!important;aspect-ratio:1.58!important}
+        }
         @media (prefers-reduced-motion: reduce) { .doom-mascot__art, .doom-mascot__light, .doom-mascot__scan, .doom-mascot__sparkles { animation: none !important; } .doom-mascot__scan { display: none !important; } }
       `}</style>
       <div
