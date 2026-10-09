@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 function formatCoverage(status) {
   const labels = {
@@ -164,6 +164,7 @@ export default function Home() {
   const [transactionError, setTransactionError] = useState("");
   const [glitchError, setGlitchError] = useState("");
   const [analysisFinished, setAnalysisFinished] = useState(false);
+  const requestVersion = useRef(0);
 
   async function fetchModule(endpoint, address) {
     const response = await fetch(
@@ -190,6 +191,7 @@ export default function Home() {
       return;
     }
 
+    const version = ++requestVersion.current;
     setLoading(true);
     setAnalysisFinished(false);
     setStatus("Connecting to Solana Mainnet...");
@@ -211,8 +213,10 @@ export default function Home() {
           address
         );
 
+        if (version !== requestVersion.current) return;
         setWalletData(result);
       } catch (error) {
+        if (version !== requestVersion.current) return;
         setWalletError(error.message);
       }
 
@@ -224,8 +228,10 @@ export default function Home() {
           address
         );
 
+        if (version !== requestVersion.current) return;
         setTransactionData(result);
       } catch (error) {
+        if (version !== requestVersion.current) return;
         setTransactionError(error.message);
       }
 
@@ -237,18 +243,22 @@ export default function Home() {
           address
         );
 
+        if (version !== requestVersion.current) return;
         setGlitchData(result);
       } catch (error) {
+        if (version !== requestVersion.current) return;
         setGlitchError(error.message);
       }
 
-      setStatus("Analysis requests completed. Signal readiness depends on data coverage.");
+      if (version === requestVersion.current) setStatus("Analysis requests completed. Signal readiness depends on data coverage.");
 
     } catch (error) {
-      setStatus("Analysis error: " + error.message);
+      if (version === requestVersion.current) setStatus("Analysis error: " + error.message);
     } finally {
-      setAnalysisFinished(true);
-      setLoading(false);
+      if (version === requestVersion.current) {
+        setAnalysisFinished(true);
+        setLoading(false);
+      }
     }
   }
 
@@ -376,8 +386,17 @@ export default function Home() {
             id="wallet-address"
             value={wallet}
             onChange={(event) => {
+              requestVersion.current += 1;
               setWallet(event.target.value);
               setAnalysisFinished(false);
+              setLoading(false);
+              setWalletData(null);
+              setTransactionData(null);
+              setGlitchData(null);
+              setWalletError("");
+              setTransactionError("");
+              setGlitchError("");
+              setStatus("");
             }}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !loading) {
