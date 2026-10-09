@@ -20,6 +20,11 @@ jobs:
       - name: Build production application
         working-directory: mvp/wallet-signal
         run: npm run build
+      - name: Install browser test dependencies
+        working-directory: mvp/wallet-signal
+        run: |
+          npm install --no-save --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
       - name: Start server and run API readiness tests
         working-directory: mvp/wallet-signal
         run: |
@@ -32,9 +37,17 @@ jobs:
           node tests/live-smoke.mjs
           node tests/wallet-diversity.mjs
           node tests/high-volume.mjs
+          node tests/visual-acceptance.mjs
         env:
           SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
           WALLET_SIGNAL_ACTIVE_TEST_ADDRESS: 1nc1nerator11111111111111111111111111111111
           WALLET_SIGNAL_REQUIRE_ACTIVE: "true"
           WALLET_SIGNAL_HIGH_VOLUME_TEST_ADDRESS: 1nc1nerator11111111111111111111111111111111
           WALLET_SIGNAL_MIN_SIGNATURES: "1000"
+      - name: Upload visual test screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wallet-signal-visual-acceptance
+          path: mvp/wallet-signal/test-artifacts/*.png
+          if-no-files-found: ignore
