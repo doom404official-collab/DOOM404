@@ -510,52 +510,52 @@ export default function Home() {
         <Metric
   label="MATURITY SCORE"
   value={
-    walletData.intelligence?.scoring?.maturityScore != null
-      ? walletData.intelligence.scoring.maturityScore + " / 25"
+    walletData.intelligence?.maturityScore != null
+      ? walletData.intelligence.maturityScore + " / 25"
       : "Unavailable"
   }
   note="Observed wallet age"
 />
 
-        <Metric
+<Metric
   label="CONSISTENCY SCORE"
   value={
-    walletData.intelligence?.scoring?.consistencyScore != null
-      ? walletData.intelligence.scoring.consistencyScore + " / 30"
+    walletData.intelligence?.consistencyScore != null
+      ? walletData.intelligence.consistencyScore + " / 30"
       : "Unavailable"
   }
   note="Observed activity consistency"
 />
-        <Metric
+
+<Metric
   label="PRELIMINARY WALLET SCORE"
   value={
-    walletData.intelligence?.scoring?.preliminaryScore != null
-      ? walletData.intelligence.scoring.preliminaryScore +
+    walletData.intelligence?.preliminaryScore != null
+      ? walletData.intelligence.preliminaryScore +
         " / " +
-        (walletData.intelligence.scoring.preliminaryMaxScore ?? 55)
+        (walletData.intelligence.preliminaryMaxScore ?? 55)
       : "Unavailable"
   }
   note="Descriptive activity score only"
 />
 
-        <Metric
-          label="OBSERVED WALLET AGE"
-          value={
-            walletData.intelligence?.observedAgeDays != null
-              ? walletData.intelligence.observedAgeDays + " days"
-              : "Unavailable"
-          }
-          note="Based on available transaction history"
-        />
+<Metric
+  label="OBSERVED WALLET AGE"
+  value={
+    walletData.intelligence?.observedAgeDays != null
+      ? walletData.intelligence.observedAgeDays + " days"
+      : "Unavailable"
+  }
+  note="Based on available transaction history"
+/>
 
-        <Metric
-          label="ACTIVE DAYS — LAST 90 DAYS"
-          value={
-            walletData.intelligence?.activeDays90d ??
-            "Unavailable"
-          }
-          note="Days with observed transaction activity"
-        />
+<Metric
+  label="ACTIVE DAYS — LAST 90 DAYS"
+  value={
+    walletData.intelligence?.activeDays90d ?? "Unavailable"
+  }
+  note="Days with observed transaction activity"
+/>
       </div>
 
       <div style={cardStyle}>
