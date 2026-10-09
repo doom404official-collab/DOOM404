@@ -132,25 +132,35 @@ function ErrorPanel({ message }) {
 
 
 function MascotDisplay({ loading, complete }) {
+  const [reacting, setReacting] = useState(false);
   const mode = loading ? "scanning" : complete ? "complete" : "idle";
   return (
-    <div className={"doom-mascot doom-mascot--" + mode} aria-label={loading ? "DOOM404 robot scanning wallet" : complete ? "DOOM404 robot: analysis complete" : "DOOM404 robot ready"}>
-      <div className="doom-mascot__ring" aria-hidden="true" />
-      <div className="doom-mascot__beam" aria-hidden="true" />
-      <div className="doom-mascot__scanline" aria-hidden="true" />
-      <div className="doom-mascot__glow" aria-hidden="true" />
-      <img
-        className="doom-mascot__image"
-        draggable="false"
-        src="/doom404-mascot.png..jpeg"
-        alt="DOOM404 official red-hooded robot mascot"
-        width="440"
-        height="440"
-      />
-      <div className="doom-mascot__indicator" aria-live="polite">
-        {loading ? "SCANNING" : complete ? "✓ SIGNAL READY" : "SYSTEM READY"}
-      </div>
-    </div>
+    <button
+      type="button"
+      className={"doom-mascot doom-mascot--" + mode + (reacting ? " doom-mascot--reacting" : "")}
+      aria-label={loading ? "DOOM404 robot scanning wallet. Tap to interact." : "DOOM404 robot mascot. Tap to interact."}
+      onClick={() => setReacting((value) => !value)}
+      title="Tap DOOM404 to interact"
+    >
+      <span className="doom-mascot__ring" aria-hidden="true" />
+      <span className="doom-mascot__glow" aria-hidden="true" />
+      <span className="doom-mascot__character" aria-hidden="true">
+        <img
+          className="doom-mascot__image"
+          draggable="false"
+          src="/doom404-mascot.png..jpeg"
+          alt=""
+          width="440"
+          height="440"
+        />
+        <span className="doom-mascot__eyeblink" />
+      </span>
+      <span className="doom-mascot__beam" aria-hidden="true" />
+      <span className="doom-mascot__scanline" aria-hidden="true" />
+      <span className="doom-mascot__indicator" aria-live="polite">
+        {loading ? "SCANNING" : reacting ? "♥ HELLO HUMAN" : complete ? "✓ SIGNAL READY" : "SYSTEM READY"}
+      </span>
+    </button>
   );
 }
 
@@ -295,8 +305,15 @@ export default function Home() {
 
       <style>{`
         .doom-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 360px); align-items: center; gap: 24px; }
-        .doom-mascot { position: relative; width: 100%; max-width: 360px; aspect-ratio: 1; isolation: isolate; perspective: 900px; margin: 0 auto; }
-        .doom-mascot__image { position: relative; z-index: 2; display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 24px; mask-image: radial-gradient(ellipse 74% 78% at 50% 50%, #000 56%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse 74% 78% at 50% 50%, #000 56%, transparent 100%); filter: drop-shadow(0 18px 30px #e51d3544); animation: doom-float 4.5s ease-in-out infinite; transform-style: preserve-3d; }
+        .doom-mascot { position: relative; display: block; width: 100%; max-width: 360px; aspect-ratio: 1; isolation: isolate; perspective: 900px; margin: 0 auto; padding: 0; border: 0; background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .doom-mascot:focus-visible { outline: 2px solid #ff6575; outline-offset: 5px; border-radius: 20px; }
+        .doom-mascot__character { position: absolute; z-index: 2; inset: 0; display: block; transform-origin: 50% 74%; animation: doom-breathe 6.8s ease-in-out infinite; transition: filter .25s ease; }
+        .doom-mascot:hover .doom-mascot__character { filter: brightness(1.1); }
+        .doom-mascot--reacting .doom-mascot__character { animation: doom-greet .9s ease-in-out infinite alternate; }
+        .doom-mascot--scanning .doom-mascot__character { animation: doom-focus 2.7s ease-in-out infinite; }
+        .doom-mascot__eyeblink { position: absolute; z-index: 3; left: 44%; top: 37%; width: 31%; height: 8%; border-radius: 45%; background: #09080d; opacity: 0; transform: scaleY(.08); transform-origin: center; animation: doom-blink 7.3s ease-in-out infinite; pointer-events: none; }
+        .doom-mascot--scanning .doom-mascot__eyeblink { animation-duration: 4.2s; }
+        .doom-mascot__image { position: relative; z-index: 2; display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 24px; mask-image: radial-gradient(ellipse 74% 78% at 50% 50%, #000 56%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse 74% 78% at 50% 50%, #000 56%, transparent 100%); filter: drop-shadow(0 18px 30px #e51d3544); transform-style: preserve-3d; }
         .doom-mascot__ring { position: absolute; inset: 6%; border: 2px solid #ff304b99; border-radius: 50%; box-shadow: 0 0 35px #ed203d77; animation: doom-ring 5s ease-in-out infinite; }
         .doom-mascot__beam { position: absolute; z-index: 3; left: 13%; right: 13%; top: 12%; height: 4px; background: #ff5b68; box-shadow: 0 0 16px 4px #ff304b99; opacity: 0; pointer-events: none; }
         .doom-mascot__scanline { position: absolute; z-index: 3; inset: 12% 10%; border-radius: 50%; background: repeating-linear-gradient(0deg, transparent 0px, transparent 8px, #ff304b18 9px, transparent 10px); opacity: 0; pointer-events: none; }
@@ -307,14 +324,17 @@ export default function Home() {
         .doom-mascot--complete .doom-mascot__ring { border-color: #54e3a2; box-shadow: 0 0 35px #54e3a277; }
         .doom-mascot__indicator { position: absolute; z-index: 4; bottom: 0; left: 50%; transform: translateX(-50%); background: #101010e8; color: #ff707b; border: 1px solid #8c2935; border-radius: 999px; padding: 7px 13px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; white-space: nowrap; }
         .doom-mascot--complete .doom-mascot__indicator { color: #6cecb4; border-color: #287f56; }
-        @keyframes doom-float { 0%,100% { transform: translateY(0) rotateY(-4deg) rotateX(2deg); } 50% { transform: translateY(-12px) rotateY(4deg) rotateX(-2deg); } }
+        @keyframes doom-breathe { 0%,100% { transform: rotate(-1deg) scale(1); } 26% { transform: rotate(.6deg) scale(1.012); } 56% { transform: rotate(1.3deg) scale(1.025); } 78% { transform: rotate(-.4deg) scale(1.008); } }
+        @keyframes doom-focus { 0%,100% { transform: rotate(-1.5deg) scale(1.018); } 50% { transform: rotate(1deg) scale(1.045); } }
+        @keyframes doom-greet { from { transform: rotate(-5deg) scale(1.03); } to { transform: rotate(5deg) scale(1.06); } }
+        @keyframes doom-blink { 0%, 37%, 39%, 65%, 67%, 100% { opacity: 0; transform: scaleY(.08); } 37.5%, 65.5% { opacity: .92; transform: scaleY(1); } }
         @keyframes doom-ring { 0%,100% { transform: scale(.94); opacity: .55; } 50% { transform: scale(1.05); opacity: 1; } }
         @keyframes doom-scan { from { transform: translateY(0); } to { transform: translateY(230px); } }
         @keyframes doom-glow { 0%,100% { opacity: .55; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.08); } }
         @keyframes doom-scanpulse { 0%,100% { opacity: .25; } 50% { opacity: .85; } }
         @media (max-width: 640px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(165px, 46%); gap: 8px; } .doom-mascot { transform: scale(1.06); transform-origin: center; } .doom-mascot__indicator { font-size: 8px; padding: 5px 8px; letter-spacing: .5px; } }
         @media (max-width: 380px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(130px, 43%); } .doom-mascot { transform: none; } }
-        @media (prefers-reduced-motion: reduce) { .doom-mascot__image, .doom-mascot__ring, .doom-mascot__beam, .doom-mascot__scanline, .doom-mascot__glow { animation: none !important; } .doom-mascot__beam { opacity: 0 !important; } }
+        @media (prefers-reduced-motion: reduce) { .doom-mascot__character, .doom-mascot__eyeblink, .doom-mascot__image, .doom-mascot__ring, .doom-mascot__beam, .doom-mascot__scanline, .doom-mascot__glow { animation: none !important; } .doom-mascot__eyeblink { opacity: 0 !important; } .doom-mascot__beam { opacity: 0 !important; } }
       `}</style>
       <div
         style={{
