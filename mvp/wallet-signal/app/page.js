@@ -60,12 +60,12 @@ function Metric({ label, value, note }) {
 
 function Section({ title, children }) {
   return (
-    <section style={{ marginTop: "38px" }}>
-      <h2 style={{ fontSize: "22px", marginBottom: "18px" }}>
-        {title}
-      </h2>
-      {children}
-    </section>
+    <details className="doom-result-section" open={undefined} defaultOpen={title.startsWith("01 //")}>
+      <summary className="doom-result-heading">
+        <span>{title}</span><span className="doom-result-chevron" aria-hidden="true">⌄</span>
+      </summary>
+      <div className="doom-result-content">{children}</div>
+    </details>
   );
 }
 
@@ -300,10 +300,13 @@ export default function Home() {
   return (
     <main
       style={{
-        minHeight: "100vh",
+        minHeight: analysisFinished ? "100vh" : "100dvh",
+        height: analysisFinished ? "auto" : "100dvh",
+        overflowY: analysisFinished ? "visible" : "hidden",
+        boxSizing: "border-box",
         background: "#080808",
         color: "#fff",
-        padding: "50px 20px",
+        padding: "clamp(12px, 3vh, 30px) 20px",
         fontFamily: "Arial, sans-serif"
       }}
     >
@@ -321,6 +324,13 @@ export default function Home() {
         @keyframes doom-scan { from { transform: translateY(10%); } to { transform: translateY(85%); } }
         @media (max-width: 640px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(120px, 40%); gap: 8px; } .doom-mascot__indicator { font-size: 8px; padding: 5px 8px; letter-spacing: .5px; } }
         @media (max-width: 380px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(105px, 36%); gap: 6px; } .doom-mascot__indicator { letter-spacing: 0; } }
+        .doom-result-section { margin-top: 16px; border: 1px solid #383838; border-radius: 12px; background: #111; overflow: hidden; }
+        .doom-result-heading { cursor: pointer; list-style: none; padding: 18px 20px; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .doom-result-heading::-webkit-details-marker { display: none; }
+        .doom-result-heading:focus-visible { outline: 2px solid #ff5b65; outline-offset: -3px; }
+        .doom-result-chevron { color: #ff7777; font-size: 25px; transition: transform .2s ease; }
+        .doom-result-section[open] .doom-result-chevron { transform: rotate(180deg); }
+        .doom-result-content { padding: 0 18px 20px; }
       `}</style>
       <div
         style={{
@@ -460,6 +470,8 @@ export default function Home() {
           </div>
         )}
 
+        {analysisFinished && (
+        <div key={requestVersion.current} id="wallet-results">
         {glitchEvidence && (
           <section aria-label="GLITCH evidence summary" style={cardStyle}>
             <h2 style={{ fontSize: "18px", marginTop: 0 }}>GLITCH // Evidence Quality</h2>
@@ -1262,7 +1274,9 @@ export default function Home() {
           )}
         </Section>
 
-        <footer
+        </div>
+        )}
+        {analysisFinished && <footer
           style={{
             marginTop: "70px",
             paddingTop: "20px",
@@ -1273,7 +1287,7 @@ export default function Home() {
           }}
         >
           <strong>
-            DOOM404 // Wallet Signal v0.6.0
+            DOOM404 // Wallet Signal v1.0
           </strong>
 
           <p>
@@ -1284,7 +1298,7 @@ export default function Home() {
           <p>
             Higher. Stronger. Together.
           </p>
-        </footer>
+        </footer>}
       </div>
     </main>
   );
