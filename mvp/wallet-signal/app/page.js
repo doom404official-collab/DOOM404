@@ -228,6 +228,9 @@ export default function Home() {
 
   const glitchSummary = glitchData?.summary || {};
   const glitchCoverage = glitchData?.coverage || {};
+  const behavior = glitchData?.behaviorIntelligence || {};
+  const frequency = behavior.frequency || {};
+  const concentration = behavior.concentration || {};
 
   const counterparties =
     glitchData?.topCounterparties || [];
@@ -815,6 +818,76 @@ export default function Home() {
               </div>
 
               <div style={cardStyle}>
+                <h3>GLITCH v0.6 // Wallet Behavior Intelligence</h3>
+                <p style={{ color: "#aaa", lineHeight: 1.7 }}>
+                  Frequency and concentration are based on the recent decoded
+                  transaction sample, not the wallet's complete history.
+                </p>
+                <div style={gridStyle}>
+                  <Metric
+                    label="SAMPLED ACTIVE DAYS"
+                    value={frequency.activeDaysInSample ?? "Unavailable"}
+                    note="Days with timestamped decoded transactions"
+                  />
+                  <Metric
+                    label="BUSIEST OBSERVED DAY"
+                    value={frequency.busiestDay
+                      ? frequency.busiestDay.count + " transactions"
+                      : "Unavailable"}
+                    note={frequency.busiestDay?.date || "No timestamped activity"}
+                  />
+                  <Metric
+                    label="LONGEST OBSERVED GAP"
+                    value={frequency.longestQuietPeriodHours != null
+                      ? formatNumber(frequency.longestQuietPeriodHours, 2) + " hours"
+                      : "Unavailable"}
+                    note="Between sampled decoded transactions"
+                  />
+                  <Metric
+                    label="TOP COUNTERPARTY SOL SHARE"
+                    value={concentration.top1VolumeSharePercent != null
+                      ? formatNumber(concentration.top1VolumeSharePercent, 2) + "%"
+                      : "Unavailable"}
+                    note="Share of observed explicit SOL transfer volume"
+                  />
+                  <Metric
+                    label="TOP 3 SOL SHARE"
+                    value={concentration.top3VolumeSharePercent != null
+                      ? formatNumber(concentration.top3VolumeSharePercent, 2) + "%"
+                      : "Unavailable"}
+                    note="Share of observed explicit SOL transfer volume"
+                  />
+                  <Metric
+                    label="TOP COUNTERPARTY INTERACTIONS"
+                    value={concentration.top1InteractionSharePercent != null
+                      ? formatNumber(concentration.top1InteractionSharePercent, 2) + "%"
+                      : "Unavailable"}
+                    note="Share of observed explicit SOL transfer interactions"
+                  />
+                </div>
+                {frequency.dailyActivity?.length > 0 && (
+                  <div style={{ marginTop: "20px" }}>
+                    <h4>Observed Daily Transaction Frequency</h4>
+                    {frequency.dailyActivity.map((day) => (
+                      <div key={day.date} style={{
+                        display: "flex", justifyContent: "space-between",
+                        borderBottom: "1px solid #333", padding: "8px 0",
+                        color: "#ccc", gap: "12px"
+                      }}>
+                        <span>{day.date}</span>
+                        <strong>{day.count}</strong>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p style={{ color: "#999", fontSize: "13px", lineHeight: 1.7 }}>
+                  These observations do not establish suspicious intent,
+                  identity, wallet safety, or fraud. Sampling and incomplete
+                  decoding can materially affect the results.
+                </p>
+              </div>
+
+              <div style={cardStyle}>
                 <h3>Counterparty Intelligence</h3>
 
                 <p
@@ -1033,7 +1106,7 @@ export default function Home() {
                     lineHeight: 1.7
                   }}
                 >
-                  GLITCH Scanner v0.5.1 is an observational
+                  GLITCH Scanner v0.6.0 is an observational
                   analytics tool. No fraud or wallet safety
                   determination is made.
                 </p>
@@ -1060,7 +1133,7 @@ export default function Home() {
           }}
         >
           <strong>
-            DOOM404 // Wallet Signal v0.5.1
+            DOOM404 // Wallet Signal v0.6.0
           </strong>
 
           <p>
