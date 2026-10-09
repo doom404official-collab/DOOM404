@@ -262,7 +262,9 @@ export default function Home() {
   }
 
   const hasModuleError = Boolean(walletError || transactionError || glitchError);
-  const signalReady = analysisFinished && !loading && !hasModuleError &&
+  const walletAnalysisComplete = analysisFinished && !loading && Boolean(walletData) && !walletError;
+  const emptyWallet = walletAnalysisComplete && walletData?.dataCoverage?.transactionsRetrieved === 0;
+  const signalReady = walletAnalysisComplete && !hasModuleError &&
     walletData?.dataCoverage?.scoringEligible === true &&
     walletData?.intelligence?.scoringStatus === "preliminary";
 
@@ -301,8 +303,8 @@ export default function Home() {
     <main
       style={{
         minHeight: analysisFinished ? "100vh" : "100dvh",
-        height: analysisFinished && !hasModuleError && walletData && transactionData && glitchData ? "auto" : "100dvh",
-        overflowY: analysisFinished && !hasModuleError && walletData && transactionData && glitchData ? "visible" : "hidden",
+        height: analysisFinished && walletData && !walletError ? "auto" : "100dvh",
+        overflowY: analysisFinished && walletData && !walletError ? "visible" : "hidden",
         boxSizing: "border-box",
         background: "#080808",
         color: "#fff",
@@ -452,9 +454,13 @@ export default function Home() {
           <p role="status" style={{ color: signalReady ? "#6cecb4" : "#ffb86b", fontSize: "13px", marginTop: "12px" }}>
             {signalReady
               ? "Signal ready — preliminary activity score supported by observed coverage."
-              : hasModuleError
-                ? "Signal not ready — one or more analysis modules failed. Review the errors below and retry."
-                : "Signal not ready — wallet history or scoring coverage is insufficient. Review module results below."}
+              : walletError || !walletData
+                ? "Analysis failed — wallet information could not be retrieved. Please retry."
+                : emptyWallet
+                  ? "Analysis complete — no observable transaction history. Insufficient evidence for a behavioral signal."
+                  : hasModuleError
+                    ? "Wallet overview complete — some optional intelligence modules are unavailable. Available results are shown below."
+                    : "Analysis complete — wallet history or scoring coverage is insufficient for a behavioral signal."}
           </p>
         )}
 
@@ -470,8 +476,9 @@ export default function Home() {
           </div>
         )}
 
-        {analysisFinished && !hasModuleError && walletData && transactionData && glitchData && (
+        {walletAnalysisComplete && (
         <div key={requestVersion.current} id="wallet-results">
+        {emptyWallet && <p role="status" style={{ color: "#ffb86b", fontSize: "14px" }}>New or inactive wallet: no observable transactions in the queried history. Behavioral scoring is unavailable; this is not a wallet safety assessment.</p>}
         {glitchEvidence && (
           <section aria-label="GLITCH evidence summary" style={cardStyle}>
             <h2 style={{ fontSize: "18px", marginTop: 0 }}>GLITCH // Evidence Quality</h2>
@@ -1276,7 +1283,7 @@ export default function Home() {
 
         </div>
         )}
-        {analysisFinished && !hasModuleError && walletData && transactionData && glitchData && <footer
+        {walletAnalysisComplete && <footer
           style={{
             marginTop: "70px",
             paddingTop: "20px",
