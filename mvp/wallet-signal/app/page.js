@@ -508,36 +508,35 @@ export default function Home() {
     <>
       <div style={gridStyle}>
         <Metric
-          label="MATURITY SCORE"
-          value={
-            walletData.intelligence?.maturityScore != null
-              ? walletData.intelligence.maturityScore + " / 25"
-              : "Unavailable"
-          }
-          note="Observed wallet age"
-        />
+  label="MATURITY SCORE"
+  value={
+    walletData.intelligence?.scoring?.maturityScore != null
+      ? walletData.intelligence.scoring.maturityScore + " / 25"
+      : "Unavailable"
+  }
+  note="Observed wallet age"
+/>
 
         <Metric
-          label="CONSISTENCY SCORE"
-          value={
-            walletData.intelligence?.consistencyScore != null
-              ? walletData.intelligence.consistencyScore + " / 30"
-              : "Unavailable"
-          }
-          note="Observed activity consistency"
-        />
-
+  label="CONSISTENCY SCORE"
+  value={
+    walletData.intelligence?.scoring?.consistencyScore != null
+      ? walletData.intelligence.scoring.consistencyScore + " / 30"
+      : "Unavailable"
+  }
+  note="Observed activity consistency"
+/>
         <Metric
-          label="PRELIMINARY WALLET SCORE"
-          value={
-            walletData.intelligence?.preliminaryScore != null
-              ? walletData.intelligence.preliminaryScore +
-                " / " +
-                (walletData.intelligence.preliminaryMaxScore ?? 55)
-              : "Unavailable"
-          }
-          note="Descriptive activity score only"
-        />
+  label="PRELIMINARY WALLET SCORE"
+  value={
+    walletData.intelligence?.scoring?.preliminaryScore != null
+      ? walletData.intelligence.scoring.preliminaryScore +
+        " / " +
+        (walletData.intelligence.scoring.preliminaryMaxScore ?? 55)
+      : "Unavailable"
+  }
+  note="Descriptive activity score only"
+/>
 
         <Metric
           label="OBSERVED WALLET AGE"
