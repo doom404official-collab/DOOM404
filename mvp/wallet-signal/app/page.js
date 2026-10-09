@@ -407,17 +407,17 @@ export default function Home() {
           .doom-hero__title {font-size:clamp(46px,4.9vw,65px)!important}
           .doom-hero__description {line-height:1.4!important}
         }
-        /* Final hero artwork enhancement: larger mascot without taller hero. */
+        /* Desktop mascot refinement: enlarge the original art, retain compact form layout. */
         @media (min-width:701px) {
           .doom-hero {overflow:visible!important}
-          .doom-mascot {max-width:490px!important;aspect-ratio:1.65!important;overflow:visible!important}
-          .doom-mascot__art {overflow:visible!important;transform-origin:50% 50%;-webkit-mask-image:radial-gradient(ellipse 95% 90% at 50% 50%,#000 52%,#000e 75%,transparent 100%)!important;mask-image:radial-gradient(ellipse 95% 90% at 50% 50%,#000 52%,#000e 75%,transparent 100%)!important}
-          .doom-mascot__original {transform:scale(1.35);transform-origin:center center}
-          .doom-mascot__indicator {bottom:-3px}
+          .doom-mascot {width:100%!important;max-width:520px!important;aspect-ratio:1.7!important;overflow:visible!important}
+          .doom-mascot__art {overflow:visible!important;transform-origin:center center;-webkit-mask-image:radial-gradient(ellipse 99% 94% at 50% 50%,#000 55%,#000e 77%,transparent 100%)!important;mask-image:radial-gradient(ellipse 99% 94% at 50% 50%,#000 55%,#000e 77%,transparent 100%)!important}
+          .doom-mascot__original {transform:scale(1.52)!important;transform-origin:center center}
+          .doom-mascot__indicator {bottom:-4px}
         }
         @media (min-width:701px) and (max-height:800px) {
-          .doom-mascot {max-width:430px!important;aspect-ratio:1.65!important}
-          .doom-mascot__original {transform:scale(1.35)}
+          .doom-mascot {max-width:470px!important;aspect-ratio:1.7!important}
+          .doom-mascot__original {transform:scale(1.48)!important}
         }
         @media (prefers-reduced-motion: reduce) { .doom-mascot__art, .doom-mascot__light, .doom-mascot__scan, .doom-mascot__sparkles { animation: none !important; } .doom-mascot__scan { display: none !important; } }
       `}</style>
