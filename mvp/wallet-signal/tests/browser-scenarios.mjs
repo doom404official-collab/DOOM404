@@ -39,6 +39,7 @@ async function scenario(name, config) {
     if (config.failWallet) {
       assert.equal(await results.count(), 0, "Core RPC failure must not expose results");
       await page.getByText(/Analysis failed/).waitFor();
+      await page.screenshot({ path: "test-artifacts/scenario-core-rpc-failure.png", fullPage: true });
     } else {
       await results.waitFor();
       const sections = results.locator("details.doom-result-section");
@@ -55,10 +56,12 @@ async function scenario(name, config) {
       }
       if (config.failOptional) await page.getByText(/optional intelligence modules are unavailable/i).waitFor();
       if (config.eligible && !config.failOptional) await page.getByText("✓ SIGNAL READY").waitFor();
+      assert.ok(await results.isVisible(), "Results must be visible before the visual capture");
+      await page.screenshot({ path: "test-artifacts/scenario-" + name.replaceAll(/[^a-z0-9]+/gi, "-").toLowerCase() + ".png", fullPage: true });
       await page.locator("#wallet-address").fill("11111111111111111111111111111112");
       assert.equal(await results.count(), 0, "Editing address must clear results");
     }
-    await page.screenshot({ path: "test-artifacts/scenario-" + name.replaceAll(/[^a-z0-9]+/gi, "-").toLowerCase() + ".png", fullPage: true });
+
     console.log("PASS scenario: " + name);
   } finally { await page.close(); }
 }
