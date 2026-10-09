@@ -315,6 +315,20 @@ export default function Home() {
       >
 
         <style>{`
+          /* Cinematic depth and interaction polish; lightweight CSS, no 3D library. */
+          .doom-hero{isolation:isolate}
+          .doom-hero::before{content:"";position:absolute;inset:-28px -12px;background:radial-gradient(ellipse at 80% 48%,rgba(215,15,44,.19),transparent 53%);z-index:0;pointer-events:none}
+          .doom-mascot{transform:translateZ(0);will-change:transform}
+          .doom-mascot::after{content:"";position:absolute;left:16%;right:16%;bottom:2%;height:11%;border-radius:50%;background:rgba(255,30,53,.28);filter:blur(17px);animation:doomShadow 3.7s ease-in-out infinite}
+          .doom-halo{background:radial-gradient(circle at 50% 50%,rgba(250,21,55,.06),transparent 70%)}
+          .doom-robot svg{width:100%;height:100%}
+          .doom-hero + .doom-wallet-entry{border:1px solid rgba(255,79,91,.24)!important;box-shadow:0 12px 40px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.04)}
+          .doom-wallet-entry input:focus-visible{outline:2px solid #ff5668;outline-offset:2px;box-shadow:0 0 0 5px rgba(255,50,72,.14)}
+          .doom-wallet-entry button{transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;box-shadow:0 8px 24px rgba(190,20,37,.22)}
+          .doom-wallet-entry button:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(228,32,55,.4);filter:brightness(1.12)}
+          .doom-wallet-entry button:not(:disabled):active{transform:translateY(0)}
+          @keyframes doomShadow{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(.78);opacity:.5}}
+          @media(prefers-reduced-motion:reduce){.doom-mascot::after{animation:none!important}.doom-wallet-entry button{transition:none!important}}
           .doom-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:260px;position:relative}
           .doom-hero-copy{flex:1;min-width:0;position:relative;z-index:2}
           .doom-status{color:#ff626c;font-weight:800;letter-spacing:2px;font-size:13px;line-height:1.7;margin-top:22px}
@@ -348,7 +362,7 @@ export default function Home() {
           <DoomMascot loading={loading} complete={!loading && Boolean(walletData || transactionData || glitchData)} />
         </div>
 
-        <div style={cardStyle}>
+        <div className="doom-wallet-entry" style={cardStyle}>
           <label
             htmlFor="wallet-address"
             style={{
