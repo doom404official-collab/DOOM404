@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function formatCoverage(status) {
   const labels = {
@@ -134,6 +134,15 @@ function ErrorPanel({ message }) {
 function MascotDisplay({ loading, complete }) {
   const mode = loading ? "analysing" : complete ? "signal-ready" : "getting-ready";
   const [active, setActive] = useState(false);
+  const [readyLabelVisible, setReadyLabelVisible] = useState(false);
+  useEffect(() => {
+    if (!complete || loading) {
+      setReadyLabelVisible(false);
+      return;
+    }
+    const timer = setTimeout(() => setReadyLabelVisible(true), 1100);
+    return () => clearTimeout(timer);
+  }, [complete, loading]);
   return (
     <div
       className={"doom-mascot doom-mascot--" + mode + (active ? " doom-mascot--active" : "")}
@@ -156,7 +165,7 @@ function MascotDisplay({ loading, complete }) {
         <div className="doom-mascot__sparkles" aria-hidden="true" />
       </div>
       <div className="doom-mascot__indicator" aria-live="polite">
-        {loading ? "SCANNING" : complete ? "✓ SIGNAL READY" : active ? "HELLO, BUILDER" : "SYSTEM READY"}
+        {loading ? "SCANNING" : complete ? (readyLabelVisible ? "✓ SIGNAL READY" : "SIGNAL LOCKED") : active ? "HELLO, BUILDER" : "SYSTEM READY"}
       </div>
     </div>
   );
@@ -302,12 +311,30 @@ export default function Home() {
     >
 
       <style>{`
-        .doom-hero { display:grid;grid-template-columns:minmax(260px,36%) minmax(0,1fr);align-items:center;gap:0;min-height:440px;position:relative;isolation:isolate }
+        .doom-hero { display:grid;grid-template-columns:minmax(0, 0.9fr) minmax(0, 1.1fr);align-items:center;gap:clamp(20px,3vw,48px);min-height:0;padding:24px 0 36px;position:relative;isolation:isolate }
+.doom-hero > * {min-width:0}
+@media (min-width:701px) {
+  .doom-hero {min-height:0;padding:4px 0 8px;gap:clamp(16px,2.5vw,32px)}
+  .doom-hero__copy {padding:0}
+  .doom-hero__title {font-size:clamp(42px,5vw,66px)!important;margin:16px 0 12px!important}
+  .doom-hero__description {font-size:clamp(16px,1.35vw,19px);line-height:1.5!important}
+  .doom-mascot {max-width:410px;aspect-ratio:1.35}
+  .doom-wallet-form {margin-top:0;padding:16px 22px}
+  .doom-wallet-form__row {margin-top:10px}
+  .doom-wallet-form__input,.doom-wallet-form__button {padding:14px 18px}
+}
+@media (min-width:701px) and (max-height:800px) {
+  .doom-mascot {max-width:355px}
+  .doom-hero__title {font-size:clamp(40px,4.5vw,58px)!important}
+  .doom-hero__description {font-size:16px}
+  .doom-hero {padding:0 0 6px}
+}
+@media (min-width:701px) and (max-width:1100px) {.doom-hero{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;padding:16px 0 28px}.doom-hero__title{font-size:clamp(46px,5.5vw,68px)!important}.doom-mascot{max-width:460px!important}}
 .doom-hero::before {content:"";position:absolute;z-index:-1;inset:-35px -20px -15px 25%;background:radial-gradient(ellipse at 60% 50%,#ad0b2633,transparent 70%);pointer-events:none}
 .doom-hero__copy {position:relative;z-index:2;padding:25px 0 40px}
 .doom-hero__title {font-size:clamp(54px,6.5vw,90px)!important;line-height:1.02;letter-spacing:-2px;margin:34px 0 20px!important}
 .doom-hero__description {font-size:clamp(17px,1.7vw,23px);max-width:410px;line-height:1.65!important}
-.doom-wallet-form {margin-top:-14px;position:relative;z-index:3;background:#131315eb;border:1px solid #444;border-radius:16px;padding:24px 28px}
+.doom-wallet-form {margin-top:12px;position:relative;z-index:3;background:#131315eb;border:1px solid #444;border-radius:16px;padding:24px 28px}
 .doom-wallet-form__row {display:flex;gap:16px;align-items:stretch;margin-top:14px}
 .doom-wallet-form__input {flex:1;min-width:0;box-sizing:border-box;padding:18px 20px;background:#090909;border:1px solid #444;border-radius:9px;color:white;font-size:17px}
 .doom-wallet-form__button {flex:0 0 30%;min-width:180px;padding:18px;background:#d62b35;color:white;border:0;border-radius:9px;font-weight:700;font-size:16px;cursor:pointer}
@@ -320,7 +347,7 @@ export default function Home() {
 .doom-scan-panel__track {margin-top:18px;height:9px;background:#3d2027;border-radius:999px;overflow:hidden}
 .doom-scan-panel__bar {width:35%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#b71e35,#ff4759,#ffabb2);box-shadow:0 0 14px #ff364c;animation:doom-progress 1.7s ease-in-out infinite alternate}
 @keyframes doom-progress {from{transform:translateX(-90%)}to{transform:translateX(280%)}}
-        .doom-mascot { position: relative; width: 100%; max-width: 720px; aspect-ratio: 1.23; margin: 0 auto; isolation: isolate; cursor: pointer; perspective: 850px; }
+        .doom-mascot { position: relative; width: 100%; max-width: 540px; aspect-ratio: 1.23; margin: 0 auto; isolation: isolate; cursor: pointer; perspective: 850px; }
         .doom-mascot__art { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 0; transform-origin: 50% 75%; animation: doom-breathe 5.2s ease-in-out infinite; transition: filter .35s ease; -webkit-mask-image: radial-gradient(ellipse 83% 78% at 50% 50%, #000 38%, #000b 65%, transparent 95%); mask-image: radial-gradient(ellipse 83% 78% at 50% 50%, #000 38%, #000b 65%, transparent 95%); }
         .doom-mascot__original { width: 100%; height: 100%; object-fit: contain; display: block; mix-blend-mode: screen; }
         .doom-mascot__light { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 55% 48%, #ff35441b, transparent 58%); animation: doom-glow 4.2s ease-in-out infinite; }
@@ -338,7 +365,121 @@ export default function Home() {
         @keyframes doom-glow { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
         @keyframes doom-sweep { from { transform: translateY(0); } to { transform: translateY(310%); } }
         @keyframes doom-celebrate { 0%,100% { opacity: .25; transform: scale(.95); } 50% { opacity: 1; transform: scale(1.08); } }
-        @media(max-width:700px){.doom-hero{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);min-height:360px}.doom-hero__copy{padding:20px 0}.doom-hero__title{font-size:clamp(38px,8vw,55px)!important;letter-spacing:-1px;margin:24px 0 18px!important}.doom-hero__description{font-size:14px}.doom-mascot{width:125%;max-width:none;margin-left:-16%;aspect-ratio:.85}.doom-mascot__indicator{font-size:8px;padding:5px 8px;letter-spacing:.5px;bottom:13%}.doom-wallet-form{margin-top:4px;padding:20px}.doom-wallet-form__row{flex-direction:column;gap:12px}.doom-wallet-form__button{flex:auto;min-width:0}.doom-scan-panel{padding:15px;gap:12px}.doom-scan-panel__icon{width:58px;height:58px}.doom-scan-panel__title{font-size:14px}.doom-scan-panel__subtitle{font-size:12px}}
+        @media(max-width:700px){.doom-hero{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);min-height:360px;gap:0;padding:0}.doom-hero__copy{padding:20px 0}.doom-hero__title{font-size:clamp(38px,8vw,55px)!important;letter-spacing:-1px;margin:24px 0 18px!important}.doom-hero__description{font-size:14px}.doom-mascot{width:125%;max-width:none;margin-left:-16%;aspect-ratio:.85}.doom-mascot__indicator{font-size:8px;padding:5px 8px;letter-spacing:.5px;bottom:13%}.doom-wallet-form{margin-top:4px;padding:20px}.doom-wallet-form__row{flex-direction:column;gap:12px}.doom-wallet-form__button{flex:auto;min-width:0}.doom-scan-panel{padding:15px;gap:12px}.doom-scan-panel__icon{width:58px;height:58px}.doom-scan-panel__title{font-size:14px}.doom-scan-panel__subtitle{font-size:12px}}
+        /* Final desktop overrides: placed last to win over earlier hero rules. */
+        @media (min-width:701px) {
+          .doom-hero {min-height:0!important;padding:0 0 8px!important;gap:20px!important;align-items:center}
+          .doom-hero__copy {padding:0!important}
+          .doom-hero__title {font-size:clamp(38px,4.3vw,58px)!important;margin:12px 0 10px!important;line-height:1.06}
+          .doom-hero__description {font-size:clamp(15px,1.25vw,18px)!important;line-height:1.45!important;margin:0}
+          .doom-mascot {max-width:320px!important;aspect-ratio:1.3!important}
+          .doom-wallet-form {margin-top:0!important;padding:14px 20px!important}
+          .doom-wallet-form__row {margin-top:8px!important}
+          .doom-wallet-form__input,.doom-wallet-form__button {padding:12px 16px!important}
+        }
+        @media (min-width:701px) and (max-height:800px) {
+          .doom-mascot {max-width:285px!important}
+          .doom-hero__title {font-size:clamp(36px,4vw,52px)!important}
+          .doom-hero__description {font-size:15px!important}
+          .doom-hero {padding-bottom:4px!important}
+        }
+        /* Balanced desktop sizing: larger hero while retaining the form above fold. */
+        @media (min-width:701px) {
+          .doom-hero {padding:12px 0 14px!important;gap:28px!important}
+          .doom-hero__title {font-size:clamp(48px,5.2vw,72px)!important;margin:16px 0 14px!important}
+          .doom-hero__description {font-size:clamp(17px,1.45vw,21px)!important;line-height:1.55!important}
+          .doom-mascot {max-width:405px!important;aspect-ratio:1.3!important}
+          .doom-wallet-form {padding:18px 24px!important}
+          .doom-wallet-form__input,.doom-wallet-form__button {padding:15px 18px!important}
+        }
+        @media (min-width:701px) and (max-height:800px) {
+          .doom-hero {padding:4px 0 8px!important}
+          .doom-hero__title {font-size:clamp(44px,4.7vw,62px)!important}
+          .doom-mascot {max-width:355px!important}
+          .doom-wallet-form {padding:14px 20px!important}
+          .doom-wallet-form__input,.doom-wallet-form__button {padding:12px 16px!important}
+        }
+        /* Restore immersive large mascot; reclaim height from whitespace, not artwork. */
+        @media (min-width:701px) {
+          .doom-hero {padding:0 0 0!important;gap:24px!important;align-items:center}
+          .doom-hero__copy {padding:0!important}
+          .doom-hero__title {font-size:clamp(48px,5.4vw,74px)!important;margin:8px 0 8px!important}
+          .doom-hero__description {font-size:clamp(16px,1.4vw,20px)!important;line-height:1.45!important}
+          .doom-mascot {max-width:490px!important;aspect-ratio:1.55!important}
+          .doom-mascot__art {border-radius:0!important;-webkit-mask-image:radial-gradient(ellipse 94% 92% at 50% 48%,#000 46%,#000e 68%,transparent 99%)!important;mask-image:radial-gradient(ellipse 94% 92% at 50% 48%,#000 46%,#000e 68%,transparent 99%)!important}
+          .doom-wallet-form {margin-top:-4px!important;padding:14px 20px!important}
+          .doom-wallet-form__row {margin-top:8px!important}
+          .doom-wallet-form__input,.doom-wallet-form__button {padding:12px 16px!important}
+        }
+        @media (min-width:701px) and (max-height:800px) {
+          .doom-mascot {max-width:430px!important;aspect-ratio:1.65!important}
+          .doom-hero__title {font-size:clamp(46px,4.9vw,65px)!important}
+          .doom-hero__description {line-height:1.4!important}
+        }
+        /* Desktop mascot refinement: enlarge the original art, retain compact form layout. */
+        @media (min-width:701px) {
+          .doom-hero {overflow:visible!important}
+          .doom-mascot {width:100%!important;max-width:520px!important;aspect-ratio:1.7!important;overflow:visible!important}
+          .doom-mascot__art {overflow:visible!important;transform-origin:center center;-webkit-mask-image:radial-gradient(ellipse 99% 94% at 50% 50%,#000 55%,#000e 77%,transparent 100%)!important;mask-image:radial-gradient(ellipse 99% 94% at 50% 50%,#000 55%,#000e 77%,transparent 100%)!important}
+          .doom-mascot__original {transform:scale(1.52)!important;transform-origin:center center}
+          .doom-mascot__indicator {bottom:-4px}
+        }
+        @media (min-width:701px) and (max-height:800px) {
+          .doom-mascot {max-width:470px!important;aspect-ratio:1.7!important}
+          .doom-mascot__original {transform:scale(1.48)!important}
+        }
+        /* Desktop hero balance: large blended mascot, wallet form visible, overview below fold. */
+        @media (min-width:701px) {
+          .doom-hero {min-height:clamp(410px,57vh,510px)!important;padding:8px 0 16px!important;align-items:center!important;overflow:hidden!important}
+          .doom-mascot {max-width:570px!important;aspect-ratio:1.36!important;overflow:visible!important}
+          .doom-mascot__art {overflow:hidden!important;-webkit-mask-image:radial-gradient(ellipse 99% 96% at 50% 50%,#000 54%,#000e 76%,transparent 100%)!important;mask-image:radial-gradient(ellipse 99% 96% at 50% 50%,#000 54%,#000e 76%,transparent 100%)!important}
+          /* Dissolve rectangular artwork edges into the dark hero without shrinking the robot. */
+          .doom-mascot__art {
+            -webkit-mask-image:radial-gradient(ellipse 72% 78% at 62% 49%,#000 37%,#000e 57%,#0008 76%,transparent 100%)!important;
+            mask-image:radial-gradient(ellipse 72% 78% at 62% 49%,#000 37%,#000e 57%,#0008 76%,transparent 100%)!important;
+          }
+          .doom-mascot__original {transform:scale(1.22)!important}
+          .doom-wallet-form {margin-top:0!important}
+        }
+        @media (min-width:701px) and (max-height:800px) {
+          .doom-hero {min-height:clamp(380px,55vh,450px)!important;padding:4px 0 8px!important}
+          .doom-mascot {max-width:525px!important;aspect-ratio:1.36!important}
+          .doom-mascot__original {transform:scale(1.2)!important}
+        }
+        /* Fit the live scan status into the first desktop viewport. */
+        @media (min-width:701px) {
+          .doom-hero {min-height:clamp(315px,46vh,400px)!important;padding:0 0 4px!important}
+          .doom-mascot {max-width:570px!important;aspect-ratio:1.55!important}
+          .doom-wallet-form {padding:12px 20px!important}
+          .doom-wallet-form__row {margin-top:7px!important}
+          .doom-wallet-form__input,.doom-wallet-form__button {padding:12px 16px!important}
+          .doom-scan-panel {margin-top:8px!important;padding:10px 16px!important;gap:12px!important}
+          .doom-scan-panel__icon {width:56px!important;height:56px!important}
+          .doom-scan-panel__track {margin-top:8px!important}
+          .doom-scan-panel__subtitle {margin-top:2px!important}
+        }
+        @media (min-width:701px) and (max-height:800px) {
+          .doom-hero {min-height:clamp(290px,44vh,355px)!important}
+          .doom-mascot {max-width:530px!important;aspect-ratio:1.58!important}
+        }
+        /* The original mascot itself emits a soft green glow on success; no orbital ring. */
+        .doom-mascot--signal-ready .doom-mascot__art {
+          filter: drop-shadow(0 0 20px #38f79a9c) drop-shadow(0 0 45px #1cdb7970);
+          animation: doom-success-glow 2.4s ease-in-out infinite;
+        }
+        .doom-mascot--signal-ready .doom-mascot__light {
+          background: radial-gradient(ellipse at 52% 48%, #47ffac4d 0%, #30e88c22 45%, transparent 72%);
+          animation: doom-success-light 2.4s ease-in-out infinite;
+        }
+        @keyframes doom-success-glow {
+          0%,100% { filter: drop-shadow(0 0 12px #38f79a77) drop-shadow(0 0 32px #1cdb7950); }
+          50% { filter: drop-shadow(0 0 24px #52ffc2cc) drop-shadow(0 0 54px #1cdb7999); }
+        }
+        @keyframes doom-success-light { 0%,100% {opacity:.65} 50% {opacity:1} }
+        @media (prefers-reduced-motion: reduce) {
+          .doom-mascot--signal-ready .doom-mascot__art,
+          .doom-mascot--signal-ready .doom-mascot__light {animation:none}
+        }
         @media (prefers-reduced-motion: reduce) { .doom-mascot__art, .doom-mascot__light, .doom-mascot__scan, .doom-mascot__sparkles { animation: none !important; } .doom-mascot__scan { display: none !important; } }
       `}</style>
       <div
