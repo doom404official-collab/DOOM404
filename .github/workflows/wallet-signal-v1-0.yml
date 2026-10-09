@@ -30,5 +30,6 @@ jobs:
           done
           node tests/input-validation.mjs
           node tests/live-smoke.mjs
+          node tests/wallet-diversity.mjs
         env:
           SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
