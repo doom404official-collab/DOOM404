@@ -1,0 +1,32 @@
+name: Wallet Signal v0.8 validation
+on:
+  push:
+    branches: [feature/wallet-signal-v0-8-coverage]
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: RPC unit tests
+        run: node --test tests/solanaRpc.test.mjs
+      - name: Install application dependencies
+        working-directory: mvp/wallet-signal
+        run: npm install --no-audit --no-fund
+      - name: Build Wallet Signal
+        working-directory: mvp/wallet-signal
+        run: npm run build
+      - name: Live Mainnet smoke checks
+        working-directory: mvp/wallet-signal
+        run: |
+          npm run start -- --hostname 127.0.0.1 --port 3000 > /tmp/wallet-signal-next.log 2>&1 &
+          for i in $(seq 1 45); do
+            if curl --silent --fail http://127.0.0.1:3000/ > /dev/null; then break; fi
+            sleep 2
+          done
+          node tests/live-smoke.mjs
+        env:
+          SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
