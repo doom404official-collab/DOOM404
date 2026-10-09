@@ -304,6 +304,22 @@ export default function Home() {
       <style>{`
         .doom-hero { display:grid;grid-template-columns:minmax(0, 0.9fr) minmax(0, 1.1fr);align-items:center;gap:clamp(20px,3vw,48px);min-height:0;padding:24px 0 36px;position:relative;isolation:isolate }
 .doom-hero > * {min-width:0}
+@media (min-width:701px) {
+  .doom-hero {min-height:0;padding:4px 0 8px;gap:clamp(16px,2.5vw,32px)}
+  .doom-hero__copy {padding:0}
+  .doom-hero__title {font-size:clamp(42px,5vw,66px)!important;margin:16px 0 12px!important}
+  .doom-hero__description {font-size:clamp(16px,1.35vw,19px);line-height:1.5!important}
+  .doom-mascot {max-width:410px;aspect-ratio:1.35}
+  .doom-wallet-form {margin-top:0;padding:16px 22px}
+  .doom-wallet-form__row {margin-top:10px}
+  .doom-wallet-form__input,.doom-wallet-form__button {padding:14px 18px}
+}
+@media (min-width:701px) and (max-height:800px) {
+  .doom-mascot {max-width:355px}
+  .doom-hero__title {font-size:clamp(40px,4.5vw,58px)!important}
+  .doom-hero__description {font-size:16px}
+  .doom-hero {padding:0 0 6px}
+}
 @media (min-width:701px) and (max-width:1100px) {.doom-hero{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;padding:16px 0 28px}.doom-hero__title{font-size:clamp(46px,5.5vw,68px)!important}.doom-mascot{max-width:460px!important}}
 .doom-hero::before {content:"";position:absolute;z-index:-1;inset:-35px -20px -15px 25%;background:radial-gradient(ellipse at 60% 50%,#ad0b2633,transparent 70%);pointer-events:none}
 .doom-hero__copy {position:relative;z-index:2;padding:25px 0 40px}
