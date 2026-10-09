@@ -252,7 +252,8 @@ export default function Home() {
     }
   }
 
-  const signalReady = analysisFinished && !loading &&
+  const hasModuleError = Boolean(walletError || transactionError || glitchError);
+  const signalReady = analysisFinished && !loading && !hasModuleError &&
     walletData?.dataCoverage?.scoringEligible === true &&
     walletData?.intelligence?.scoringStatus === "preliminary";
 
@@ -375,7 +376,7 @@ export default function Home() {
             id="wallet-address"
             value={wallet}
             onChange={(event) =>
-              setWallet(event.target.value)
+              (setWallet(event.target.value), setAnalysisFinished(false))
             }
             onKeyDown={(event) => {
               if (event.key === "Enter" && !loading) {
@@ -423,7 +424,11 @@ export default function Home() {
 
         {analysisFinished && !loading && (
           <p role="status" style={{ color: signalReady ? "#6cecb4" : "#ffb86b", fontSize: "13px", marginTop: "12px" }}>
-            {signalReady ? "Signal ready — preliminary activity score supported by observed coverage." : "Signal not ready — wallet history or scoring coverage is insufficient. Review module results below."}
+            {signalReady
+              ? "Signal ready — preliminary activity score supported by observed coverage."
+              : hasModuleError
+                ? "Signal not ready — one or more analysis modules failed. Review the errors below and retry."
+                : "Signal not ready — wallet history or scoring coverage is insufficient. Review module results below."}
           </p>
         )}
 
