@@ -1,8 +1,5 @@
-import {
-  Connection,
-  PublicKey,
-  LAMPORTS_PER_SOL
-} from "@solana/web3.js";
+import { createReliableConnection } from "../../../lib/reliableConnection.js";
+import { PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 import { NextResponse } from "next/server";
 
@@ -84,14 +81,7 @@ export async function GET(request) {
       );
     }
 
-    const rpcUrl =
-      process.env.SOLANA_RPC_URL ||
-      "https://api.mainnet-beta.solana.com";
-
-    const connection = new Connection(
-      rpcUrl,
-      "confirmed"
-    );
+    const connection = createReliableConnection();
 
     const balanceLamports =
       await connection.getBalance(publicKey);
