@@ -301,8 +301,8 @@ export default function Home() {
     <main
       style={{
         minHeight: analysisFinished ? "100vh" : "100dvh",
-        height: analysisFinished ? "auto" : "100dvh",
-        overflowY: analysisFinished ? "visible" : "hidden",
+        height: analysisFinished && !hasModuleError && walletData && transactionData && glitchData ? "auto" : "100dvh",
+        overflowY: analysisFinished && !hasModuleError && walletData && transactionData && glitchData ? "visible" : "hidden",
         boxSizing: "border-box",
         background: "#080808",
         color: "#fff",
@@ -470,7 +470,7 @@ export default function Home() {
           </div>
         )}
 
-        {analysisFinished && (
+        {analysisFinished && !hasModuleError && walletData && transactionData && glitchData && (
         <div key={requestVersion.current} id="wallet-results">
         {glitchEvidence && (
           <section aria-label="GLITCH evidence summary" style={cardStyle}>
@@ -1276,7 +1276,7 @@ export default function Home() {
 
         </div>
         )}
-        {analysisFinished && <footer
+        {analysisFinished && !hasModuleError && walletData && transactionData && glitchData && <footer
           style={{
             marginTop: "70px",
             paddingTop: "20px",
