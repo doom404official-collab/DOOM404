@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 function formatCoverage(status) {
   const labels = {
     complete_sample: "Available sample fully checked",
@@ -7,10 +11,6 @@ function formatCoverage(status) {
   };
   return labels[status] || (status ? String(status).replaceAll("_", " ") : "Not available");
 }
-
-"use client";
-
-import { useState } from "react";
 
 const cardStyle = {
   background: "#151515",
