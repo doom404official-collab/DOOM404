@@ -420,6 +420,12 @@ export default function Home() {
           </button>
         </div>
 
+        {analysisFinished && !loading && (
+          <p role="status" style={{ color: signalReady ? "#6cecb4" : "#ffb86b", fontSize: "13px", marginTop: "12px" }}>
+            {signalReady ? "Signal ready — preliminary activity score supported by observed coverage." : "Signal not ready — wallet history or scoring coverage is insufficient. Review module results below."}
+          </p>
+        )}
+
         {status && (
           <div
             role="status"
