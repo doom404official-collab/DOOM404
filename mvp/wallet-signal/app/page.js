@@ -419,6 +419,19 @@ export default function Home() {
           .doom-mascot {max-width:470px!important;aspect-ratio:1.7!important}
           .doom-mascot__original {transform:scale(1.48)!important}
         }
+        /* Desktop hero balance: large blended mascot, wallet form visible, overview below fold. */
+        @media (min-width:701px) {
+          .doom-hero {min-height:clamp(410px,57vh,510px)!important;padding:8px 0 16px!important;align-items:center!important;overflow:hidden!important}
+          .doom-mascot {max-width:570px!important;aspect-ratio:1.36!important;overflow:visible!important}
+          .doom-mascot__art {overflow:hidden!important;-webkit-mask-image:radial-gradient(ellipse 99% 96% at 50% 50%,#000 54%,#000e 76%,transparent 100%)!important;mask-image:radial-gradient(ellipse 99% 96% at 50% 50%,#000 54%,#000e 76%,transparent 100%)!important}
+          .doom-mascot__original {transform:scale(1.22)!important}
+          .doom-wallet-form {margin-top:0!important}
+        }
+        @media (min-width:701px) and (max-height:800px) {
+          .doom-hero {min-height:clamp(380px,55vh,450px)!important;padding:4px 0 8px!important}
+          .doom-mascot {max-width:525px!important;aspect-ratio:1.36!important}
+          .doom-mascot__original {transform:scale(1.2)!important}
+        }
         @media (prefers-reduced-motion: reduce) { .doom-mascot__art, .doom-mascot__light, .doom-mascot__scan, .doom-mascot__sparkles { animation: none !important; } .doom-mascot__scan { display: none !important; } }
       `}</style>
       <div
