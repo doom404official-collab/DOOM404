@@ -134,7 +134,7 @@ function ErrorPanel({ message }) {
 function MascotDisplay({ loading, complete }) {
   const mode = loading ? "scanning" : complete ? "complete" : "idle";
   return (
-    <div className={"doom-mascot doom-mascot--" + mode} aria-label={loading ? "DOOM404 robot scanning wallet" : complete ? "DOOM404 robot: analysis complete" : "DOOM404 robot ready"}>
+    <div className={"doom-mascot doom-mascot--" + mode} aria-label={loading ? "DOOM404 robot scanning wallet" : complete ? "DOOM404 robot: preliminary signal ready" : "DOOM404 robot ready"}>
       <div className="doom-mascot__beam" aria-hidden="true" />
       <img
         className="doom-mascot__image"
@@ -311,7 +311,7 @@ export default function Home() {
       <style>{`
         .doom-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 360px); align-items: center; gap: 24px; }
         .doom-mascot { position: relative; width: 100%; max-width: 360px; aspect-ratio: 1; isolation: isolate; perspective: 900px; margin: 0 auto; }
-        .doom-mascot__image { position: relative; z-index: 2; display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 24px; box-shadow: 0 20px 65px #d3192433; animation: doom-float 4.5s ease-in-out infinite; transform-style: preserve-3d; }
+        .doom-mascot__image { position: relative; z-index: 2; display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 0; filter: drop-shadow(0 16px 30px #d3192433); animation: doom-float 4.5s ease-in-out infinite; transform-style: preserve-3d; }
         .doom-mascot__beam { position: absolute; z-index: 3; inset: 12% 8%; border-top: 3px solid #ff4a5d; filter: drop-shadow(0 0 12px #ff304b); opacity: 0; pointer-events: none; }
         .doom-mascot--scanning .doom-mascot__beam { opacity: 1; animation: doom-scan 1.8s ease-in-out infinite alternate; }
         .doom-mascot__indicator { position: absolute; z-index: 4; bottom: 0; left: 50%; transform: translateX(-50%); background: #101010e8; color: #ff707b; border: 1px solid #8c2935; border-radius: 999px; padding: 7px 13px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; white-space: nowrap; }
@@ -320,6 +320,7 @@ export default function Home() {
         @keyframes doom-float { 0%,100% { transform: translateY(0) rotateY(-4deg) rotateX(2deg); } 50% { transform: translateY(-12px) rotateY(4deg) rotateX(-2deg); } }
         @keyframes doom-scan { from { transform: translateY(10%); } to { transform: translateY(85%); } }
         @media (max-width: 640px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(120px, 40%); gap: 8px; } .doom-mascot__indicator { font-size: 8px; padding: 5px 8px; letter-spacing: .5px; } }
+        @media (max-width: 380px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(105px, 36%); gap: 6px; } .doom-mascot__indicator { letter-spacing: 0; } }
       `}</style>
       <div
         style={{
