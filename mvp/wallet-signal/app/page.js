@@ -424,6 +424,11 @@ export default function Home() {
           .doom-hero {min-height:clamp(410px,57vh,510px)!important;padding:8px 0 16px!important;align-items:center!important;overflow:hidden!important}
           .doom-mascot {max-width:570px!important;aspect-ratio:1.36!important;overflow:visible!important}
           .doom-mascot__art {overflow:hidden!important;-webkit-mask-image:radial-gradient(ellipse 99% 96% at 50% 50%,#000 54%,#000e 76%,transparent 100%)!important;mask-image:radial-gradient(ellipse 99% 96% at 50% 50%,#000 54%,#000e 76%,transparent 100%)!important}
+          /* Dissolve rectangular artwork edges into the dark hero without shrinking the robot. */
+          .doom-mascot__art {
+            -webkit-mask-image:radial-gradient(ellipse 72% 78% at 62% 49%,#000 37%,#000e 57%,#0008 76%,transparent 100%)!important;
+            mask-image:radial-gradient(ellipse 72% 78% at 62% 49%,#000 37%,#000e 57%,#0008 76%,transparent 100%)!important;
+          }
           .doom-mascot__original {transform:scale(1.22)!important}
           .doom-wallet-form {margin-top:0!important}
         }
