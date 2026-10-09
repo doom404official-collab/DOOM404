@@ -38,6 +38,7 @@ jobs:
           node tests/wallet-diversity.mjs
           node tests/high-volume.mjs
           node tests/visual-acceptance.mjs
+          node tests/browser-scenarios.mjs
         env:
           SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
           WALLET_SIGNAL_ACTIVE_TEST_ADDRESS: 1nc1nerator11111111111111111111111111111111
