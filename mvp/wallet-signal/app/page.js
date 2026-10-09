@@ -504,53 +504,90 @@ export default function Home() {
         </Section>
 
         <Section title="03 // Wallet Intelligence">
-          {walletData ? (
-            <>
-              <div style={gridStyle}>
-                <Metric
-                  label="MATURITY SCORE"
-                  value={
-                    intelligence.maturityScore ??
-                    "Unavailable"
-                  }
-                />
+  {walletData ? (
+    <>
+      <div style={gridStyle}>
+        <Metric
+          label="MATURITY SCORE"
+          value={
+            walletData.scoring?.maturityScore != null
+              ? walletData.scoring.maturityScore + " / 25"
+              : "Unavailable"
+          }
+          note="Observed wallet age"
+        />
 
-                <Metric
-                  label="CONSISTENCY SCORE"
-                  value={
-                    intelligence.consistencyScore ??
-                    "Unavailable"
-                  }
-                />
+        <Metric
+          label="CONSISTENCY SCORE"
+          value={
+            walletData.scoring?.consistencyScore != null
+              ? walletData.scoring.consistencyScore + " / 30"
+              : "Unavailable"
+          }
+          note="Observed activity consistency"
+        />
 
-                <Metric
-                  label="OBSERVED WALLET SCORE"
-                  value={
-                    intelligence.score ??
-                    intelligence.walletScore ??
-                    "Unavailable"
-                  }
-                />
-              </div>
+        <Metric
+          label="PRELIMINARY WALLET SCORE"
+          value={
+            walletData.scoring?.preliminaryScore != null
+              ? walletData.scoring.preliminaryScore +
+                " / " +
+                (walletData.scoring.preliminaryMaxScore ?? 55)
+              : "Unavailable"
+          }
+          note="Descriptive activity score only"
+        />
 
-              <div style={cardStyle}>
-                <p style={{ color: "#aaa", lineHeight: 1.7 }}>
-                  Wallet scores describe observed activity
-                  patterns only. They are not measures of
-                  trustworthiness, financial health or fraud risk.
-                </p>
-              </div>
-            </>
-          ) : (
-            <ErrorPanel
-              message={
-                walletError ||
-                "Wallet intelligence not loaded."
-              }
-            />
-          )}
-        </Section>
+        <Metric
+          label="OBSERVED WALLET AGE"
+          value={
+            walletData.scoring?.observedAgeDays != null
+              ? walletData.scoring.observedAgeDays + " days"
+              : "Unavailable"
+          }
+          note="Based on available transaction history"
+        />
 
+        <Metric
+          label="ACTIVE DAYS — LAST 90 DAYS"
+          value={
+            walletData.scoring?.activeDays90d ??
+            "Unavailable"
+          }
+          note="Days with observed transaction activity"
+        />
+      </div>
+
+      <div style={cardStyle}>
+        <h3>Wallet Intelligence Interpretation</h3>
+
+        <p style={{ color: "#aaa", lineHeight: 1.7 }}>
+          Maturity measures observed wallet age.
+          Consistency measures how regularly the wallet
+          has been active during the observed period.
+        </p>
+
+        <p style={{ color: "#aaa", lineHeight: 1.7 }}>
+          These scores describe observable blockchain
+          activity only. They do not establish whether
+          a wallet is trustworthy, safe or fraudulent.
+        </p>
+
+        <p style={{ color: "#ff7777", fontSize: "13px" }}>
+          DOOM404 // Preliminary Wallet Intelligence
+        </p>
+      </div>
+    </>
+  ) : (
+    <ErrorPanel
+      message={
+        walletError ||
+        "Analyze a wallet to view wallet intelligence."
+      }
+    />
+  )}
+</Section>
         <Section title="04 // Transaction Intelligence">
           {transactionData ? (
             <>
