@@ -407,6 +407,18 @@ export default function Home() {
           .doom-hero__title {font-size:clamp(46px,4.9vw,65px)!important}
           .doom-hero__description {line-height:1.4!important}
         }
+        /* Final hero artwork enhancement: larger mascot without taller hero. */
+        @media (min-width:701px) {
+          .doom-hero {overflow:visible!important}
+          .doom-mascot {max-width:490px!important;aspect-ratio:1.65!important;overflow:visible!important}
+          .doom-mascot__art {overflow:visible!important;transform-origin:50% 50%;-webkit-mask-image:radial-gradient(ellipse 95% 90% at 50% 50%,#000 52%,#000e 75%,transparent 100%)!important;mask-image:radial-gradient(ellipse 95% 90% at 50% 50%,#000 52%,#000e 75%,transparent 100%)!important}
+          .doom-mascot__original {transform:scale(1.35);transform-origin:center center}
+          .doom-mascot__indicator {bottom:-3px}
+        }
+        @media (min-width:701px) and (max-height:800px) {
+          .doom-mascot {max-width:430px!important;aspect-ratio:1.65!important}
+          .doom-mascot__original {transform:scale(1.35)}
+        }
         @media (prefers-reduced-motion: reduce) { .doom-mascot__art, .doom-mascot__light, .doom-mascot__scan, .doom-mascot__sparkles { animation: none !important; } .doom-mascot__scan { display: none !important; } }
       `}</style>
       <div
