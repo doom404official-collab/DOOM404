@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function formatCoverage(status) {
   const labels = {
@@ -134,6 +134,15 @@ function ErrorPanel({ message }) {
 function MascotDisplay({ loading, complete }) {
   const mode = loading ? "analysing" : complete ? "signal-ready" : "getting-ready";
   const [active, setActive] = useState(false);
+  const [readyLabelVisible, setReadyLabelVisible] = useState(false);
+  useEffect(() => {
+    if (!complete || loading) {
+      setReadyLabelVisible(false);
+      return;
+    }
+    const timer = setTimeout(() => setReadyLabelVisible(true), 1100);
+    return () => clearTimeout(timer);
+  }, [complete, loading]);
   return (
     <div
       className={"doom-mascot doom-mascot--" + mode + (active ? " doom-mascot--active" : "")}
@@ -143,6 +152,7 @@ function MascotDisplay({ loading, complete }) {
       role="img"
       aria-label={"Original DOOM404 mascot, " + mode.replaceAll("-", " ")}
     >
+      <div className="doom-mascot__ready-ring" aria-hidden="true" />
       <div className="doom-mascot__art">
         <img
           className="doom-mascot__original"
@@ -156,7 +166,7 @@ function MascotDisplay({ loading, complete }) {
         <div className="doom-mascot__sparkles" aria-hidden="true" />
       </div>
       <div className="doom-mascot__indicator" aria-live="polite">
-        {loading ? "SCANNING" : complete ? "✓ SIGNAL READY" : active ? "HELLO, BUILDER" : "SYSTEM READY"}
+        {loading ? "SCANNING" : complete ? (readyLabelVisible ? "✓ SIGNAL READY" : "SIGNAL LOCKED") : active ? "HELLO, BUILDER" : "SYSTEM READY"}
       </div>
     </div>
   );
@@ -453,6 +463,12 @@ export default function Home() {
           .doom-hero {min-height:clamp(290px,44vh,355px)!important}
           .doom-mascot {max-width:530px!important;aspect-ratio:1.58!important}
         }
+        /* Success sequence: green halo appears before the ready label. */
+        .doom-mascot__ready-ring {position:absolute;z-index:2;pointer-events:none;left:50%;top:47%;width:67%;aspect-ratio:1;border:3px solid #55f5a6;border-radius:50%;box-shadow:0 0 12px #39f49b,0 0 36px #39f49b88,inset 0 0 22px #39f49b55;transform:translate(-50%,-50%) scale(.85);opacity:0}
+        .doom-mascot--signal-ready .doom-mascot__ready-ring {animation:doom-ready-halo 1.1s ease-out forwards}
+        .doom-mascot--signal-ready .doom-mascot__indicator {transition:opacity .3s ease}
+        @keyframes doom-ready-halo {0%{opacity:0;transform:translate(-50%,-50%) scale(.83)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:.85;transform:translate(-50%,-50%) scale(1)}}
+        @media (prefers-reduced-motion: reduce) {.doom-mascot--signal-ready .doom-mascot__ready-ring {animation:none;opacity:.85;transform:translate(-50%,-50%) scale(1)}}
         @media (prefers-reduced-motion: reduce) { .doom-mascot__art, .doom-mascot__light, .doom-mascot__scan, .doom-mascot__sparkles { animation: none !important; } .doom-mascot__scan { display: none !important; } }
       `}</style>
       <div
