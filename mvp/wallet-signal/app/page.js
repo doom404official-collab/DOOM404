@@ -515,7 +515,9 @@ export default function Home() {
   value={
     walletData.intelligence?.maturityScore != null
       ? walletData.intelligence.maturityScore + " / 25"
-      : "Unavailable"
+      : walletData.intelligence?.scoringStatus === "insufficient_data"
+        ? "Insufficient data for scoring"
+        : "Unavailable"
   }
   note="Observed wallet age"
 />
@@ -525,7 +527,9 @@ export default function Home() {
   value={
     walletData.intelligence?.consistencyScore != null
       ? walletData.intelligence.consistencyScore + " / 30"
-      : "Unavailable"
+      : walletData.intelligence?.scoringStatus === "insufficient_data"
+        ? "Insufficient data for scoring"
+        : "Unavailable"
   }
   note="Observed activity consistency"
 />
@@ -537,7 +541,9 @@ export default function Home() {
       ? walletData.intelligence.preliminaryScore +
         " / " +
         (walletData.intelligence.preliminaryMaxScore ?? 55)
-      : "Unavailable"
+      : walletData.intelligence?.scoringStatus === "insufficient_data"
+        ? "Insufficient data for scoring"
+        : "Unavailable"
   }
   note="Descriptive activity score only"
 />
