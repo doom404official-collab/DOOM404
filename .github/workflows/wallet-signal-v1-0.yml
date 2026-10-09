@@ -31,7 +31,10 @@ jobs:
           node tests/input-validation.mjs
           node tests/live-smoke.mjs
           node tests/wallet-diversity.mjs
+          node tests/high-volume.mjs
         env:
           SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
           WALLET_SIGNAL_ACTIVE_TEST_ADDRESS: 1nc1nerator11111111111111111111111111111111
           WALLET_SIGNAL_REQUIRE_ACTIVE: "true"
+          WALLET_SIGNAL_HIGH_VOLUME_TEST_ADDRESS: 1nc1nerator11111111111111111111111111111111
+          WALLET_SIGNAL_MIN_SIGNATURES: "1000"
