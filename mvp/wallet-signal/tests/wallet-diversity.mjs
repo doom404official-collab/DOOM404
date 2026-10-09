@@ -11,10 +11,21 @@ const cases = [
   { label: "system-program", address: "11111111111111111111111111111111", expectedEmpty: false }
 ];
 const extra = process.env.WALLET_SIGNAL_ACTIVE_TEST_ADDRESS?.trim();
+const highVolume = process.env.WALLET_SIGNAL_HIGH_VOLUME_TEST_ADDRESS?.trim();
+const requireActive = process.env.WALLET_SIGNAL_REQUIRE_ACTIVE === "true";
+if (requireActive && !extra) {
+  throw new Error("Active-wallet validation requested, but WALLET_SIGNAL_ACTIVE_TEST_ADDRESS is missing.");
+}
 if (extra) {
   new PublicKey(extra); // fail early on invalid test configuration
-  cases.push({ label: "configured-active", address: extra, expectedEmpty: false });
+  cases.push({ label: "configured-active", address: extra, expectedEmpty: false, requireHistory: true });
 }
+if (highVolume) {
+  new PublicKey(highVolume);
+  cases.push({ label: "configured-high-volume", address: highVolume, expectedEmpty: false, requireHistory: true });
+}
+if (!extra) console.warn("NOT TESTED: active wallet (set WALLET_SIGNAL_ACTIVE_TEST_ADDRESS)");
+if (!highVolume) console.warn("NOT TESTED: high-volume wallet (set WALLET_SIGNAL_HIGH_VOLUME_TEST_ADDRESS)");
 let failures = 0;
 for (const scenario of cases) {
   for (const moduleName of ["wallet", "transactions", "glitch"]) {
@@ -30,6 +41,7 @@ for (const scenario of cases) {
         assert.equal(typeof body.balanceSOL, "number");
         assert.ok(body.intelligence && body.dataCoverage);
         assert.equal(typeof body.dataCoverage.scoringEligible, "boolean");
+        if (scenario.requireHistory) assert.ok(body.dataCoverage.transactionsRetrieved > 0, "Expected observed wallet history");
         if (scenario.expectedEmpty) {
           assert.equal(body.dataCoverage.transactionsRetrieved, 0);
           assert.equal(body.dataCoverage.scoringEligible, false);
@@ -38,6 +50,7 @@ for (const scenario of cases) {
         assert.ok(Array.isArray(body.transactions));
         assert.equal(typeof body.signaturesRetrieved, "number");
         if (scenario.expectedEmpty) assert.equal(body.signaturesRetrieved, 0);
+        if (scenario.requireHistory) assert.ok(body.signaturesRetrieved > 0, "Expected observed transactions");
       } else {
         assert.ok(Array.isArray(body.transfers));
         assert.ok(body.coverage && body.evidence);
