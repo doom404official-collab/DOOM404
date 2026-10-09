@@ -131,23 +131,37 @@ function ErrorPanel({ message }) {
 }
 
 
-function MascotDisplay({ loading, complete }) {
-  const mode = loading ? "scanning" : complete ? "complete" : "idle";
+function MascotDisplay({ loading, complete, error }) {
+  const [reacting, setReacting] = useState(false);
+  const mode = loading ? "scanning" : error ? "error" : complete ? "complete" : "idle";
+  function react() {
+    setReacting(true);
+  }
   return (
-    <div className={"doom-mascot doom-mascot--" + mode} aria-label={loading ? "DOOM404 robot scanning wallet" : complete ? "DOOM404 robot: analysis complete" : "DOOM404 robot ready"}>
-      <div className="doom-mascot__ring" aria-hidden="true" />
-      <div className="doom-mascot__beam" aria-hidden="true" />
-      <img
-        className="doom-mascot__image"
-        src="/doom404-mascot.png..jpeg"
-        alt="DOOM404 official red-hooded robot mascot"
-        width="440"
-        height="440"
-      />
-      <div className="doom-mascot__indicator" aria-live="polite">
-        {loading ? "SCANNING" : complete ? "✓ SIGNAL READY" : "SYSTEM READY"}
-      </div>
-    </div>
+    <button
+      type="button"
+      className={"doom-mascot doom-mascot--" + mode + (reacting ? " doom-mascot--reacting" : "")}
+      onClick={react}
+      onAnimationEnd={(event) => {
+        if (event.animationName === "doom-tap") setReacting(false);
+      }}
+      aria-label={"DOOM404 robot " + (loading ? "scanning" : error ? "reporting an error" : complete ? "showing completed analysis" : "ready") + ". Tap to interact."}
+    >
+      <span className="doom-mascot__ring" aria-hidden="true" />
+      <span className="doom-mascot__body">
+        <img
+          className="doom-mascot__image"
+          src="/doom404-mascot.png..jpeg"
+          alt=""
+          width="440"
+          height="440"
+        />
+      </span>
+      <span className="doom-mascot__beam" aria-hidden="true" />
+      <span className="doom-mascot__indicator" aria-live="polite">
+        {loading ? "SCANNING" : error ? "SIGNAL INTERRUPTED" : complete ? "✓ SIGNAL READY" : "SYSTEM READY"}
+      </span>
+    </button>
   );
 }
 
@@ -292,20 +306,28 @@ export default function Home() {
 
       <style>{`
         .doom-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 360px); align-items: center; gap: 24px; }
-        .doom-mascot { position: relative; width: 100%; max-width: 360px; aspect-ratio: 1; isolation: isolate; perspective: 900px; margin: 0 auto; }
-        .doom-mascot__image { position: relative; z-index: 2; display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 24px; box-shadow: 0 20px 65px #d3192433; animation: doom-float 4.5s ease-in-out infinite; transform-style: preserve-3d; }
-        .doom-mascot__ring { position: absolute; inset: 6%; border: 2px solid #ff304b99; border-radius: 50%; box-shadow: 0 0 35px #ed203d77; animation: doom-ring 5s ease-in-out infinite; }
-        .doom-mascot__beam { position: absolute; z-index: 3; inset: 12% 8%; border-top: 3px solid #ff4a5d; filter: drop-shadow(0 0 12px #ff304b); opacity: 0; pointer-events: none; }
-        .doom-mascot--scanning .doom-mascot__beam { opacity: 1; animation: doom-scan 1.8s ease-in-out infinite alternate; }
-        .doom-mascot--scanning .doom-mascot__ring { animation: doom-ring .9s ease-in-out infinite; }
+        .doom-hero { min-width: 0; }
+        .doom-mascot { appearance: none; background: transparent; color: inherit; border: 0; padding: 0; display: block; position: relative; width: 100%; max-width: 360px; aspect-ratio: 1; isolation: isolate; perspective: 900px; margin: 0 auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .doom-mascot:focus-visible { outline: 2px solid #ff6677; outline-offset: 5px; border-radius: 22px; }
+        .doom-mascot__body { display: block; position: relative; z-index: 2; width: 100%; height: 100%; border-radius: 24px; transform-style: preserve-3d; animation: doom-breathe 6.8s ease-in-out infinite; }
+        .doom-mascot__image { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 24px; box-shadow: 0 20px 65px #d3192433; }
+        .doom-mascot__ring { position: absolute; z-index: 1; inset: 6%; border: 2px solid #ff304b99; border-radius: 50%; box-shadow: 0 0 35px #ed203d77; animation: doom-ring 5s ease-in-out infinite; }
+        .doom-mascot__beam { position: absolute; z-index: 3; top: 30%; left: 37%; width: 26%; height: 3px; border-radius: 8px; background: #ff5668; box-shadow: 0 0 9px 3px #ff304b88; opacity: 0; pointer-events: none; }
+        .doom-mascot--scanning .doom-mascot__beam { opacity: .9; animation: doom-face-scan 1.5s ease-in-out infinite alternate; }
+        .doom-mascot--scanning .doom-mascot__ring { animation-duration: 1.1s; }
+        .doom-mascot--scanning .doom-mascot__body { animation-duration: 3.2s; }
         .doom-mascot--complete .doom-mascot__ring { border-color: #54e3a2; box-shadow: 0 0 35px #54e3a277; }
+        .doom-mascot--error .doom-mascot__ring { border-color: #ffa24d; box-shadow: 0 0 35px #ffa24d66; }
         .doom-mascot__indicator { position: absolute; z-index: 4; bottom: 0; left: 50%; transform: translateX(-50%); background: #101010e8; color: #ff707b; border: 1px solid #8c2935; border-radius: 999px; padding: 7px 13px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; white-space: nowrap; }
         .doom-mascot--complete .doom-mascot__indicator { color: #6cecb4; border-color: #287f56; }
-        @keyframes doom-float { 0%,100% { transform: translateY(0) rotateY(-4deg) rotateX(2deg); } 50% { transform: translateY(-12px) rotateY(4deg) rotateX(-2deg); } }
-        @keyframes doom-ring { 0%,100% { transform: scale(.94); opacity: .55; } 50% { transform: scale(1.05); opacity: 1; } }
-        @keyframes doom-scan { from { transform: translateY(10%); } to { transform: translateY(85%); } }
-        @media (max-width: 640px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(120px, 40%); gap: 8px; } .doom-mascot__indicator { font-size: 8px; padding: 5px 8px; letter-spacing: .5px; } }
-        @media (prefers-reduced-motion: reduce) { .doom-mascot__image, .doom-mascot__ring, .doom-mascot__beam { animation: none !important; } .doom-mascot__beam { opacity: 0 !important; } }
+        .doom-mascot--error .doom-mascot__indicator { color: #ffc28c; border-color: #a7652e; }
+        .doom-mascot--reacting .doom-mascot__body { animation: doom-tap .65s cubic-bezier(.2,.7,.2,1) 1; }
+        @keyframes doom-breathe { 0%,100% { transform: rotateY(-2deg) rotateX(1deg) scale(1); } 28% { transform: rotateY(3deg) rotateX(-2deg) scale(1.015); } 63% { transform: rotateY(-3deg) rotateX(2deg) scale(.995); } 84% { transform: rotateY(1deg) rotateX(0deg) scale(1.008); } }
+        @keyframes doom-tap { 0%,100% { transform: rotateY(0) rotateZ(0) scale(1); } 35% { transform: rotateY(12deg) rotateZ(-3deg) scale(1.06); } 65% { transform: rotateY(-6deg) rotateZ(2deg) scale(.99); } }
+        @keyframes doom-ring { 0%,100% { transform: scale(.95); opacity: .55; } 50% { transform: scale(1.04); opacity: .9; } }
+        @keyframes doom-face-scan { from { transform: translateY(0); opacity: .65; } to { transform: translateY(42px); opacity: 1; } }
+        @media (max-width: 640px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(120px, 46%); gap: 8px; } .doom-mascot__indicator { font-size: 8px; padding: 5px 8px; letter-spacing: .5px; } .doom-mascot__beam { height: 2px; } @keyframes doom-face-scan { from { transform: translateY(0); } to { transform: translateY(20px); } } }
+        @media (prefers-reduced-motion: reduce) { .doom-mascot__body, .doom-mascot__ring, .doom-mascot__beam { animation: none !important; } .doom-mascot__beam { opacity: 0 !important; } }
       `}</style>
       <div
         style={{
@@ -349,7 +371,7 @@ export default function Home() {
     
     
           </div>
-          <MascotDisplay loading={loading} complete={!loading && status === "Analysis completed."} />
+          <MascotDisplay loading={loading} complete={!loading && status === "Analysis completed."} error={!loading && (Boolean(walletError) || Boolean(transactionError) || Boolean(glitchError))} />
         </div>
 
         <div style={cardStyle}>
