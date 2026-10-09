@@ -1,4 +1,5 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { createReliableConnection } from "../../../lib/reliableConnection.js";
+import { PublicKey } from "@solana/web3.js";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -77,14 +78,7 @@ export async function GET(request) {
       );
     }
 
-    const rpcUrl =
-      process.env.SOLANA_RPC_URL ||
-      "https://api.mainnet-beta.solana.com";
-
-    const connection = new Connection(rpcUrl, {
-      commitment: "confirmed",
-      disableRetryOnRateLimit: true
-    });
+    const connection = createReliableConnection();
 
     const signatures =
       await connection.getSignaturesForAddress(
