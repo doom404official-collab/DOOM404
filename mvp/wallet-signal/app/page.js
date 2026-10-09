@@ -357,6 +357,23 @@ export default function Home() {
         @keyframes doom-sweep { from { transform: translateY(0); } to { transform: translateY(310%); } }
         @keyframes doom-celebrate { 0%,100% { opacity: .25; transform: scale(.95); } 50% { opacity: 1; transform: scale(1.08); } }
         @media(max-width:700px){.doom-hero{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);min-height:360px;gap:0;padding:0}.doom-hero__copy{padding:20px 0}.doom-hero__title{font-size:clamp(38px,8vw,55px)!important;letter-spacing:-1px;margin:24px 0 18px!important}.doom-hero__description{font-size:14px}.doom-mascot{width:125%;max-width:none;margin-left:-16%;aspect-ratio:.85}.doom-mascot__indicator{font-size:8px;padding:5px 8px;letter-spacing:.5px;bottom:13%}.doom-wallet-form{margin-top:4px;padding:20px}.doom-wallet-form__row{flex-direction:column;gap:12px}.doom-wallet-form__button{flex:auto;min-width:0}.doom-scan-panel{padding:15px;gap:12px}.doom-scan-panel__icon{width:58px;height:58px}.doom-scan-panel__title{font-size:14px}.doom-scan-panel__subtitle{font-size:12px}}
+        /* Final desktop overrides: placed last to win over earlier hero rules. */
+        @media (min-width:701px) {
+          .doom-hero {min-height:0!important;padding:0 0 8px!important;gap:20px!important;align-items:center}
+          .doom-hero__copy {padding:0!important}
+          .doom-hero__title {font-size:clamp(38px,4.3vw,58px)!important;margin:12px 0 10px!important;line-height:1.06}
+          .doom-hero__description {font-size:clamp(15px,1.25vw,18px)!important;line-height:1.45!important;margin:0}
+          .doom-mascot {max-width:320px!important;aspect-ratio:1.3!important}
+          .doom-wallet-form {margin-top:0!important;padding:14px 20px!important}
+          .doom-wallet-form__row {margin-top:8px!important}
+          .doom-wallet-form__input,.doom-wallet-form__button {padding:12px 16px!important}
+        }
+        @media (min-width:701px) and (max-height:800px) {
+          .doom-mascot {max-width:285px!important}
+          .doom-hero__title {font-size:clamp(36px,4vw,52px)!important}
+          .doom-hero__description {font-size:15px!important}
+          .doom-hero {padding-bottom:4px!important}
+        }
         @media (prefers-reduced-motion: reduce) { .doom-mascot__art, .doom-mascot__light, .doom-mascot__scan, .doom-mascot__sparkles { animation: none !important; } .doom-mascot__scan { display: none !important; } }
       `}</style>
       <div
