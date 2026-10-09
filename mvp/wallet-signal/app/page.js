@@ -463,13 +463,13 @@ export default function Home() {
           .doom-hero {min-height:clamp(290px,44vh,355px)!important}
           .doom-mascot {max-width:530px!important;aspect-ratio:1.58!important}
         }
-        /* Success sequence: green halo appears before the ready label. */
-        .doom-mascot__ready-ring {position:absolute;z-index:2;pointer-events:none;left:50%;top:47%;width:67%;aspect-ratio:1;border:3px solid #55f5a6;border-radius:50%;box-shadow:0 0 12px #39f49b,0 0 36px #39f49b88,inset 0 0 22px #39f49b55;transform:translate(-50%,-50%) scale(.85);opacity:0}
+        /* Signal-ready crosswise orbit: diagonal elliptical ring, not a circular outline. */
+        .doom-mascot__ready-ring {position:absolute;z-index:2;pointer-events:none;left:50%;top:52%;width:87%;height:36%;border:3px solid #55f5a6;border-radius:50%;box-shadow:0 0 12px #39f49b,0 0 30px #39f49b88,inset 0 0 18px #39f49b55;transform:translate(-50%,-50%) rotate(-25deg) scale(.82);opacity:0}
         .doom-mascot--signal-ready .doom-mascot__ready-ring {animation:doom-ready-halo 1.1s ease-out forwards}
         .doom-mascot--signal-ready .doom-mascot__indicator {transition:opacity .3s ease}
-        @keyframes doom-ready-halo {0%{opacity:0;transform:translate(-50%,-50%) scale(.83)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:.85;transform:translate(-50%,-50%) scale(1)}}
-        @media (prefers-reduced-motion: reduce) {.doom-mascot--signal-ready .doom-mascot__ready-ring {animation:none;opacity:.85;transform:translate(-50%,-50%) scale(1)}}
-        @media (prefers-reduced-motion: reduce) { .doom-mascot__art, .doom-mascot__light, .doom-mascot__scan, .doom-mascot__sparkles { animation: none !important; } .doom-mascot__scan { display: none !important; } }
+        @keyframes doom-ready-halo {0%{opacity:0;transform:translate(-50%,-50%) rotate(-25deg) scale(.82)}50%{opacity:1;transform:translate(-50%,-50%) rotate(-25deg) scale(1.05)}100%{opacity:.85;transform:translate(-50%,-50%) rotate(-25deg) scale(1)}}
+        @media (prefers-reduced-motion: reduce) {.doom-mascot--signal-ready .doom-mascot__ready-ring {animation:none;opacity:.85;transform:translate(-50%,-50%) rotate(-25deg) scale(1)}}
+                @media (prefers-reduced-motion: reduce) { .doom-mascot__art, .doom-mascot__light, .doom-mascot__scan, .doom-mascot__sparkles { animation: none !important; } .doom-mascot__scan { display: none !important; } }
       `}</style>
       <div
         style={{
