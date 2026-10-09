@@ -374,6 +374,22 @@ export default function Home() {
           .doom-hero__description {font-size:15px!important}
           .doom-hero {padding-bottom:4px!important}
         }
+        /* Balanced desktop sizing: larger hero while retaining the form above fold. */
+        @media (min-width:701px) {
+          .doom-hero {padding:12px 0 14px!important;gap:28px!important}
+          .doom-hero__title {font-size:clamp(48px,5.2vw,72px)!important;margin:16px 0 14px!important}
+          .doom-hero__description {font-size:clamp(17px,1.45vw,21px)!important;line-height:1.55!important}
+          .doom-mascot {max-width:405px!important;aspect-ratio:1.3!important}
+          .doom-wallet-form {padding:18px 24px!important}
+          .doom-wallet-form__input,.doom-wallet-form__button {padding:15px 18px!important}
+        }
+        @media (min-width:701px) and (max-height:800px) {
+          .doom-hero {padding:4px 0 8px!important}
+          .doom-hero__title {font-size:clamp(44px,4.7vw,62px)!important}
+          .doom-mascot {max-width:355px!important}
+          .doom-wallet-form {padding:14px 20px!important}
+          .doom-wallet-form__input,.doom-wallet-form__button {padding:12px 16px!important}
+        }
         @media (prefers-reduced-motion: reduce) { .doom-mascot__art, .doom-mascot__light, .doom-mascot__scan, .doom-mascot__sparkles { animation: none !important; } .doom-mascot__scan { display: none !important; } }
       `}</style>
       <div
