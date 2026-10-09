@@ -2,6 +2,52 @@
 
 import { useState } from "react";
 
+
+function DoomMascot({ loading, completed, error }) {
+  const mood = loading ? "scanning" : error ? "error" : completed ? "complete" : "idle";
+  return (
+    <div className={"doom-mascot doom-" + mood} aria-hidden="true">
+      <svg viewBox="0 0 240 250" role="img" aria-label="DOOM404 robot mascot" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hood" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stopColor="#ff4747" />
+            <stop offset="0.6" stopColor="#a90017" />
+            <stop offset="1" stopColor="#55000b" />
+          </linearGradient>
+          <linearGradient id="visor" x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#292c34" />
+            <stop offset="1" stopColor="#020307" />
+          </linearGradient>
+        </defs>
+        <ellipse cx="120" cy="235" rx="74" ry="11" fill="#ff2020" opacity=".14" />
+        <g className="doom-body">
+          <path d="M70 151 Q40 164 43 209 L66 223 L177 223 L199 209 Q197 168 171 151Z" fill="url(#hood)" stroke="#fc6262" strokeWidth="3"/>
+          <path d="M91 160 L120 183 L148 160 L161 222 L79 222Z" fill="#19191f" stroke="#661019" strokeWidth="2"/>
+          <text x="120" y="207" fill="#fff" fontWeight="900" fontSize="27" textAnchor="middle">404</text>
+          <g className="doom-left-arm">
+            <path d="M66 172 Q40 174 31 201 L52 210 L79 190Z" fill="#b5091f" stroke="#ff5353" strokeWidth="3"/>
+            <rect x="23" y="196" width="32" height="28" rx="10" fill="#181920" stroke="#e33" strokeWidth="3"/>
+          </g>
+          <g className="doom-right-arm">
+            <path d="M172 173 Q196 177 210 198 L189 211 L162 190Z" fill="#b5091f" stroke="#ff5353" strokeWidth="3"/>
+            <rect x="188" y="194" width="31" height="29" rx="10" fill="#181920" stroke="#e33" strokeWidth="3"/>
+          </g>
+          <path d="M43 99 Q45 26 119 16 Q196 24 199 100 L187 157 Q119 179 53 156Z" fill="url(#hood)" stroke="#f85454" strokeWidth="4"/>
+          <path d="M58 98 Q63 57 120 55 Q178 57 184 98 L178 143 Q120 166 62 143Z" fill="#17171c" stroke="#f94b4b" strokeWidth="3"/>
+          <rect x="66" y="72" width="108" height="75" rx="28" fill="url(#visor)" stroke="#64636a" strokeWidth="4"/>
+          <g className="doom-eyes" fill="none" stroke="#ff4141" strokeWidth="8" strokeLinecap="round">
+            <path d="M84 113 Q98 91 110 113"/>
+            <path d="M132 113 Q145 91 159 113"/>
+          </g>
+          <text x="120" y="48" fill="white" textAnchor="middle" fontSize="16" fontWeight="900">DOOM404</text>
+        </g>
+        {loading && <g className="doom-scan-beam"><path d="M17 128 H223" stroke="#ff4242" strokeWidth="3"/><circle cx="120" cy="128" r="103" fill="none" stroke="#ff3030" strokeWidth="1" strokeDasharray="6 12"/></g>}
+        {completed && <path d="M190 55 l13 13 24-29" fill="none" stroke="#71efb1" strokeWidth="6" strokeLinecap="round"/>}
+      </svg>
+    </div>
+  );
+}
+
 function formatCoverage(status) {
   const labels = {
     complete_sample: "Available sample fully checked",
@@ -22,7 +68,7 @@ const cardStyle = {
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 230px), 1fr))",
   gap: "14px"
 };
 
@@ -34,7 +80,8 @@ function Metric({ label, value, note }) {
       </div>
       <div
         style={{
-          fontSize: "26px",
+          fontSize: "clamp(20px, 2.2vw, 26px)",
+          lineHeight: 1.25,
           fontWeight: "bold",
           marginTop: "10px",
           overflowWrap: "anywhere"
@@ -133,6 +180,7 @@ function ErrorPanel({ message }) {
 export default function Home() {
   const [wallet, setWallet] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hasAnalyzed, setHasAnalyzed] = useState(false);
   const [status, setStatus] = useState("");
 
   const [walletData, setWalletData] = useState(null);
@@ -169,6 +217,7 @@ export default function Home() {
     }
 
     setLoading(true);
+    setHasAnalyzed(false);
     setStatus("Connecting to Solana Mainnet...");
 
     setWalletData(null);
@@ -219,6 +268,7 @@ export default function Home() {
         setGlitchError(error.message);
       }
 
+      setHasAnalyzed(true);
       setStatus("Analysis completed.");
 
     } catch (error) {
@@ -268,43 +318,50 @@ export default function Home() {
         fontFamily: "Arial, sans-serif"
       }}
     >
+
+      <style>{`
+        .doom-hero { display:grid; grid-template-columns: minmax(0,1fr) minmax(170px,260px); gap:22px; align-items:center; }
+        .doom-hero-copy { min-width:0; }
+        .doom-mascot { max-width:260px; margin:auto; filter:drop-shadow(0 0 20px #b000263b); }
+        .doom-mascot svg { width:100%; height:auto; display:block; }
+        .doom-body { transform-origin:120px 200px; animation:doom-breathe 3s ease-in-out infinite; }
+        .doom-eyes { transform-origin:120px 108px; animation:doom-blink 5s ease-in-out infinite; }
+        .doom-scanning .doom-right-arm { transform-origin:174px 181px; animation:doom-gesture .9s ease-in-out infinite alternate; }
+        .doom-scanning .doom-scan-beam { animation:doom-scan 1.3s ease-in-out infinite alternate; }
+        .doom-complete .doom-right-arm { transform-origin:174px 181px; transform:rotate(-22deg); }
+        .doom-status-line { color:#ff7777; font-size:12px; letter-spacing:1px; font-weight:700; line-height:1.6; overflow-wrap:anywhere; }
+        @keyframes doom-breathe { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+        @keyframes doom-blink { 0%,44%,48%,100%{transform:scaleY(1)} 46%{transform:scaleY(.08)} }
+        @keyframes doom-gesture { from{transform:rotate(0deg)} to{transform:rotate(-24deg)} }
+        @keyframes doom-scan { from{transform:translateY(-38px);opacity:.35} to{transform:translateY(40px);opacity:1} }
+        @media(max-width:600px){ .doom-hero{grid-template-columns:minmax(0,1fr) 112px;gap:10px} .doom-hero h1{font-size:clamp(28px,8vw,40px)!important} .doom-hero p{font-size:13px} }
+        @media(prefers-reduced-motion:reduce){ .doom-mascot *, .doom-mascot {animation:none!important;transition:none!important} }
+      `}</style>
       <div
         style={{
           maxWidth: "1050px",
           margin: "0 auto"
         }}
       >
-        <p
-          style={{
-            color: "#ff4444",
-            fontWeight: "bold",
-            letterSpacing: "2px",
-            fontSize: "12px"
-          }}
-        >
-          DOOM404 // INTELLIGENCE SYSTEM
-        </p>
 
-        <h1
-          style={{
-            fontSize: "clamp(36px, 7vw, 62px)",
-            marginBottom: "12px"
-          }}
-        >
-          Wallet Signal
-        </h1>
-
-        <p
-          style={{
-            color: "#aaa",
-            lineHeight: 1.7
-          }}
-        >
-          Explore observable Solana wallet activity,
-          transaction behaviour, SOL transfer flows
-          and transparent intelligence signals.
-        </p>
-
+        <div className="doom-hero">
+          <div className="doom-hero-copy">
+            <p style={{ color: "#ff5555", letterSpacing: "2px", fontWeight: 700, fontSize: 12 }}>
+              DOOM404 // INTELLIGENCE SYSTEM
+            </p>
+            <h1 style={{ fontSize: "clamp(36px, 7vw, 62px)", margin: "12px 0" }}>Wallet Signal</h1>
+            <p style={{ color: "#aaa", lineHeight: 1.7 }}>
+              Explore observable Solana wallet activity, transaction behaviour,
+              SOL transfer flows and transparent intelligence signals.
+            </p>
+            <p className="doom-status-line" aria-live="polite">
+              {loading ? "GLITCH SCANNER // " + status.toUpperCase()
+                : hasAnalyzed ? "ANALYSIS COMPLETE // SIGNALS READY"
+                : "SYSTEM READY // AWAITING WALLET"}
+            </p>
+          </div>
+          <DoomMascot loading={loading} completed={hasAnalyzed} error={Boolean(walletError || transactionError || glitchError)} />
+        </div>
         <div style={cardStyle}>
           <label
             htmlFor="wallet-address"
@@ -1172,7 +1229,7 @@ export default function Home() {
           }}
         >
           <strong>
-            DOOM404 // Wallet Signal v0.6.0
+            DOOM404 // Wallet Signal v0.7 preview
           </strong>
 
           <p>
