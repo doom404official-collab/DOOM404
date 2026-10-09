@@ -1,0 +1,21 @@
+name: Wallet Signal validation
+on:
+  push:
+    branches: [feature/wallet-signal-rpc-reliability]
+  workflow_dispatch:
+jobs:
+  rpc-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run RPC unit tests
+        run: node --test tests/solanaRpc.test.mjs
+      - name: Install Wallet Signal dependencies
+        working-directory: mvp/wallet-signal
+        run: npm install --no-audit --no-fund
+      - name: Build Wallet Signal
+        working-directory: mvp/wallet-signal
+        run: npm run build
