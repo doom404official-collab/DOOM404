@@ -1,5 +1,7 @@
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+await fs.mkdir("test-artifacts", { recursive: true });
 
 const base = process.env.WALLET_SIGNAL_BASE_URL || "http://127.0.0.1:3000";
 const address = "11111111111111111111111111111111";
@@ -56,6 +58,7 @@ async function scenario(name, config) {
       await page.locator("#wallet-address").fill("11111111111111111111111111111112");
       assert.equal(await results.count(), 0, "Editing address must clear results");
     }
+    await page.screenshot({ path: "test-artifacts/scenario-" + name.replaceAll(/[^a-z0-9]+/gi, "-").toLowerCase() + ".png", fullPage: true });
     console.log("PASS scenario: " + name);
   } finally { await page.close(); }
 }
