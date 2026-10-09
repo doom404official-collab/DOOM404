@@ -375,9 +375,10 @@ export default function Home() {
           <input
             id="wallet-address"
             value={wallet}
-            onChange={(event) =>
-              (setWallet(event.target.value), setAnalysisFinished(false))
-            }
+            onChange={(event) => {
+              setWallet(event.target.value);
+              setAnalysisFinished(false);
+            }}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !loading) {
                 analyzeWallet();
