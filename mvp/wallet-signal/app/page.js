@@ -163,6 +163,7 @@ export default function Home() {
   const [walletError, setWalletError] = useState("");
   const [transactionError, setTransactionError] = useState("");
   const [glitchError, setGlitchError] = useState("");
+  const [analysisFinished, setAnalysisFinished] = useState(false);
 
   async function fetchModule(endpoint, address) {
     const response = await fetch(
@@ -190,6 +191,7 @@ export default function Home() {
     }
 
     setLoading(true);
+    setAnalysisFinished(false);
     setStatus("Connecting to Solana Mainnet...");
 
     setWalletData(null);
@@ -240,14 +242,19 @@ export default function Home() {
         setGlitchError(error.message);
       }
 
-      setStatus("Analysis completed.");
+      setStatus("Analysis requests completed. Signal readiness depends on data coverage.");
 
     } catch (error) {
       setStatus("Analysis error: " + error.message);
     } finally {
+      setAnalysisFinished(true);
       setLoading(false);
     }
   }
+
+  const signalReady = analysisFinished && !loading &&
+    walletData?.dataCoverage?.scoringEligible === true &&
+    walletData?.intelligence?.scoringStatus === "preliminary";
 
   const activity = walletData?.activity || {};
   const intelligence = walletData?.intelligence || {};
@@ -349,7 +356,7 @@ export default function Home() {
     
     
           </div>
-          <MascotDisplay loading={loading} complete={!loading && status === "Analysis completed."} />
+          <MascotDisplay loading={loading} complete={signalReady} />
         </div>
 
         <div style={cardStyle}>
