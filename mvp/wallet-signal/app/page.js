@@ -1,3 +1,13 @@
+function formatCoverage(status) {
+  const labels = {
+    complete_sample: "Available sample fully checked",
+    rpc_exhausted: "Available RPC history ended before the full period",
+    partial_sample: "Only part of the period was checked",
+    incomplete_sample: "Observation period not fully covered",
+  };
+  return labels[status] || (status ? String(status).replaceAll("_", " ") : "Not available");
+}
+
 "use client";
 
 import { useState } from "react";
@@ -581,9 +591,9 @@ export default function Home() {
           </ul>
         )}
         <p style={{ color: "#888", fontSize: "13px", lineHeight: 1.7 }}>
-          Observation coverage: 7 days — {walletData.dataCoverage?.coverage?.coverage7d || "unknown"};
-          {" "}30 days — {walletData.dataCoverage?.coverage?.coverage30d || "unknown"};
-          {" "}90 days — {walletData.dataCoverage?.coverage?.coverage90d || "unknown"}.
+          Observation coverage: 7 days — {formatCoverage(walletData.dataCoverage?.coverage?.coverage7d)};
+          {" "}30 days — {formatCoverage(walletData.dataCoverage?.coverage?.coverage30d)};
+          {" "}90 days — {formatCoverage(walletData.dataCoverage?.coverage?.coverage90d)}.
         </p>
         <p style={{ color: "#888", fontSize: "13px", lineHeight: 1.7 }}>
           These are data coverage limitations, not fraud or safety assessments.
