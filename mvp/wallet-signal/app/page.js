@@ -568,6 +568,29 @@ export default function Home() {
       </div>
 
       <div style={cardStyle}>
+        <h3>Scoring Eligibility Explanation</h3>
+        <p style={{ color: "#aaa", lineHeight: 1.7 }}>
+          {walletData.intelligence?.scoringExplanation ||
+            "Scoring eligibility information is not available from this response."}
+        </p>
+        {walletData.intelligence?.scoringReasons?.length > 0 && (
+          <ul style={{ color: "#aaa", lineHeight: 1.7, paddingLeft: "22px" }}>
+            {walletData.intelligence.scoringReasons.map((reason, index) => (
+              <li key={index}>{reason}</li>
+            ))}
+          </ul>
+        )}
+        <p style={{ color: "#888", fontSize: "13px", lineHeight: 1.7 }}>
+          Observation coverage: 7 days — {walletData.dataCoverage?.coverage?.coverage7d || "unknown"};
+          {" "}30 days — {walletData.dataCoverage?.coverage?.coverage30d || "unknown"};
+          {" "}90 days — {walletData.dataCoverage?.coverage?.coverage90d || "unknown"}.
+        </p>
+        <p style={{ color: "#888", fontSize: "13px", lineHeight: 1.7 }}>
+          These are data coverage limitations, not fraud or safety assessments.
+        </p>
+      </div>
+
+      <div style={cardStyle}>
         <h3>Wallet Intelligence Interpretation</h3>
 
         <p style={{ color: "#aaa", lineHeight: 1.7 }}>
