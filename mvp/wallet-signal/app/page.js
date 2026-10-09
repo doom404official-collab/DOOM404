@@ -139,7 +139,7 @@ function MascotDisplay({ loading, complete }) {
       <div className="doom-mascot__beam" aria-hidden="true" />
       <img
         className="doom-mascot__image"
-        src="/doom404-mascot.png.jpeg"
+        src="/doom404-mascot.png..jpeg"
         alt="DOOM404 official red-hooded robot mascot"
         width="440"
         height="440"
