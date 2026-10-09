@@ -60,7 +60,7 @@ function Metric({ label, value, note }) {
 
 function Section({ title, children }) {
   return (
-    <details className="doom-result-section" open={undefined} defaultOpen={title.startsWith("01 //")}>
+    <details className="doom-result-section" defaultOpen={title.startsWith("01 //")}>
       <summary className="doom-result-heading">
         <span>{title}</span><span className="doom-result-chevron" aria-hidden="true">⌄</span>
       </summary>
