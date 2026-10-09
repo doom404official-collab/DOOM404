@@ -296,16 +296,33 @@ export default function Home() {
         minHeight: "100vh",
         background: "#080808",
         color: "#fff",
-        padding: "50px 20px",
+        padding: "28px 20px 50px",
         fontFamily: "Arial, sans-serif"
       }}
     >
 
       <style>{`
-        .doom-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 360px); align-items: center; gap: 24px; }
-        .doom-mascot { position: relative; width: 100%; max-width: 360px; aspect-ratio: 1; margin: 0 auto; isolation: isolate; cursor: pointer; perspective: 850px; }
-        .doom-mascot__art { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 0; transform-origin: 50% 75%; animation: doom-breathe 5.2s ease-in-out infinite; transition: filter .35s ease; -webkit-mask-image: radial-gradient(ellipse 70% 71% at 50% 49%, #000 36%, #000b 57%, transparent 91%); mask-image: radial-gradient(ellipse 70% 71% at 50% 49%, #000 36%, #000b 57%, transparent 91%); }
-        .doom-mascot__original { width: 100%; height: 100%; object-fit: cover; display: block; mix-blend-mode: screen; }
+        .doom-hero { display:grid;grid-template-columns:minmax(260px,36%) minmax(0,1fr);align-items:center;gap:0;min-height:440px;position:relative;isolation:isolate }
+.doom-hero::before {content:"";position:absolute;z-index:-1;inset:-35px -20px -15px 25%;background:radial-gradient(ellipse at 60% 50%,#ad0b2633,transparent 70%);pointer-events:none}
+.doom-hero__copy {position:relative;z-index:2;padding:25px 0 40px}
+.doom-hero__title {font-size:clamp(54px,6.5vw,90px)!important;line-height:1.02;letter-spacing:-2px;margin:34px 0 20px!important}
+.doom-hero__description {font-size:clamp(17px,1.7vw,23px);max-width:410px;line-height:1.65!important}
+.doom-wallet-form {margin-top:-14px;position:relative;z-index:3;background:#131315eb;border:1px solid #444;border-radius:16px;padding:24px 28px}
+.doom-wallet-form__row {display:flex;gap:16px;align-items:stretch;margin-top:14px}
+.doom-wallet-form__input {flex:1;min-width:0;box-sizing:border-box;padding:18px 20px;background:#090909;border:1px solid #444;border-radius:9px;color:white;font-size:17px}
+.doom-wallet-form__button {flex:0 0 30%;min-width:180px;padding:18px;background:#d62b35;color:white;border:0;border-radius:9px;font-weight:700;font-size:16px;cursor:pointer}
+.doom-wallet-form__button:disabled {background:#555;cursor:wait}
+.doom-scan-panel {margin-top:16px;display:flex;align-items:center;gap:20px;padding:20px 24px;background:linear-gradient(110deg,#19080e,#0c090a);border:1px solid #a42d40;border-radius:16px;box-shadow:0 0 30px #a500201a}
+.doom-scan-panel__icon {width:85px;height:85px;object-fit:cover;border-radius:12px}
+.doom-scan-panel__content {flex:1;min-width:0}
+.doom-scan-panel__title {color:#ff4c5e;font-size:17px;font-weight:700;letter-spacing:1px}
+.doom-scan-panel__subtitle {color:#aaa;margin-top:6px;font-size:14px}
+.doom-scan-panel__track {margin-top:18px;height:9px;background:#3d2027;border-radius:999px;overflow:hidden}
+.doom-scan-panel__bar {width:35%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#b71e35,#ff4759,#ffabb2);box-shadow:0 0 14px #ff364c;animation:doom-progress 1.7s ease-in-out infinite alternate}
+@keyframes doom-progress {from{transform:translateX(-90%)}to{transform:translateX(280%)}}
+        .doom-mascot { position: relative; width: 100%; max-width: 720px; aspect-ratio: 1.23; margin: 0 auto; isolation: isolate; cursor: pointer; perspective: 850px; }
+        .doom-mascot__art { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 0; transform-origin: 50% 75%; animation: doom-breathe 5.2s ease-in-out infinite; transition: filter .35s ease; -webkit-mask-image: radial-gradient(ellipse 83% 78% at 50% 50%, #000 38%, #000b 65%, transparent 95%); mask-image: radial-gradient(ellipse 83% 78% at 50% 50%, #000 38%, #000b 65%, transparent 95%); }
+        .doom-mascot__original { width: 100%; height: 100%; object-fit: contain; display: block; mix-blend-mode: screen; }
         .doom-mascot__light { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 55% 48%, #ff35441b, transparent 58%); animation: doom-glow 4.2s ease-in-out infinite; }
         .doom-mascot__scan { position: absolute; display: none; left: 7%; right: 7%; top: 0; height: 25%; pointer-events: none; background: linear-gradient(to bottom, transparent, #ff30491a 40%, #ff47624d 82%, #ff9ba8 96%, transparent); filter: drop-shadow(0 0 12px #ff3049); animation: doom-sweep 2.2s ease-in-out infinite alternate; }
         .doom-mascot__sparkles { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(circle at 22% 25%, #6cecb4 0 2px, transparent 4px), radial-gradient(circle at 82% 35%, #6cecb4 0 3px, transparent 5px), radial-gradient(circle at 68% 72%, #6cecb4 0 2px, transparent 4px); }
@@ -321,18 +338,18 @@ export default function Home() {
         @keyframes doom-glow { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
         @keyframes doom-sweep { from { transform: translateY(0); } to { transform: translateY(310%); } }
         @keyframes doom-celebrate { 0%,100% { opacity: .25; transform: scale(.95); } 50% { opacity: 1; transform: scale(1.08); } }
-        @media (max-width: 640px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(120px, 40%); gap: 8px; } .doom-mascot__indicator { font-size: 8px; padding: 5px 8px; letter-spacing: .5px; } }
+        @media(max-width:700px){.doom-hero{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);min-height:360px}.doom-hero__copy{padding:20px 0}.doom-hero__title{font-size:clamp(38px,8vw,55px)!important;letter-spacing:-1px;margin:24px 0 18px!important}.doom-hero__description{font-size:14px}.doom-mascot{width:125%;max-width:none;margin-left:-16%;aspect-ratio:.85}.doom-mascot__indicator{font-size:8px;padding:5px 8px;letter-spacing:.5px;bottom:13%}.doom-wallet-form{margin-top:4px;padding:20px}.doom-wallet-form__row{flex-direction:column;gap:12px}.doom-wallet-form__button{flex:auto;min-width:0}.doom-scan-panel{padding:15px;gap:12px}.doom-scan-panel__icon{width:58px;height:58px}.doom-scan-panel__title{font-size:14px}.doom-scan-panel__subtitle{font-size:12px}}
         @media (prefers-reduced-motion: reduce) { .doom-mascot__art, .doom-mascot__light, .doom-mascot__scan, .doom-mascot__sparkles { animation: none !important; } .doom-mascot__scan { display: none !important; } }
       `}</style>
       <div
         style={{
-          maxWidth: "1050px",
+          maxWidth: "1400px",
           margin: "0 auto"
         }}
       >
 
         <div className="doom-hero">
-          <div>
+          <div className="doom-hero__copy">
             <p
               style={{
                 color: "#ff4444",
@@ -344,7 +361,7 @@ export default function Home() {
               DOOM404 // INTELLIGENCE SYSTEM
             </p>
     
-            <h1
+            <h1 className="doom-hero__title"
               style={{
                 fontSize: "clamp(36px, 7vw, 62px)",
                 marginBottom: "12px"
@@ -353,7 +370,7 @@ export default function Home() {
               Wallet Signal
             </h1>
     
-            <p
+            <p className="doom-hero__description"
               style={{
                 color: "#aaa",
                 lineHeight: 1.7
@@ -369,7 +386,7 @@ export default function Home() {
           <MascotDisplay loading={loading} complete={!loading && status === "Analysis completed."} />
         </div>
 
-        <div style={cardStyle}>
+        <div className="doom-wallet-form">
           <label
             htmlFor="wallet-address"
             style={{
@@ -380,7 +397,8 @@ export default function Home() {
             SOLANA WALLET ADDRESS
           </label>
 
-          <input
+          <div className="doom-wallet-form__row">
+          <input className="doom-wallet-form__input"
             id="wallet-address"
             value={wallet}
             onChange={(event) =>
@@ -405,7 +423,7 @@ export default function Home() {
             }}
           />
 
-          <button
+          <button className="doom-wallet-form__button"
             onClick={analyzeWallet}
             disabled={loading}
             style={{
@@ -428,19 +446,19 @@ export default function Home() {
               ? "ANALYZING..."
               : "ANALYZE WALLET"}
           </button>
+          </div>
         </div>
 
-        {status && (
-          <div
-            role="status"
-            style={{
-              ...cardStyle,
-              color: "#ddd"
-            }}
-          >
-            {status}
+        {status && (loading ? (
+          <div className="doom-scan-panel" role="status" aria-live="polite">
+            <img className="doom-scan-panel__icon" src="/doom404-mascot.png..jpeg" alt="" />
+            <div className="doom-scan-panel__content">
+              <div className="doom-scan-panel__title">SCANNING WALLET...</div>
+              <div className="doom-scan-panel__subtitle">{status}</div>
+              <div className="doom-scan-panel__track" role="progressbar" aria-label="Wallet analysis in progress"><div className="doom-scan-panel__bar" /></div>
+            </div>
           </div>
-        )}
+        ) : <div role="status" style={{ ...cardStyle, color: "#ddd" }}>{status}</div>)}
 
         <Section title="01 // Wallet Overview">
           {walletData ? (
