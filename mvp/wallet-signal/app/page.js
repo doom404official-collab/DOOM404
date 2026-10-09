@@ -130,6 +130,45 @@ function ErrorPanel({ message }) {
   );
 }
 
+
+function DoomMascot({ loading, complete }) {
+  return (
+    <div className={"doom-mascot " + (loading ? "doom-scanning" : "")} role="img" aria-label={loading ? "DOOM404 robot scanning wallet" : "DOOM404 red-hooded robot mascot"}>
+      <div className="doom-halo" />
+      <div className="doom-robot">
+        <svg viewBox="0 0 300 330" width="100%" height="100%" aria-hidden="true">
+          <defs>
+            <linearGradient id="hood3d" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="#ff6767"/><stop offset=".45" stopColor="#c90020"/><stop offset="1" stopColor="#54000b"/>
+            </linearGradient>
+            <linearGradient id="visor3d" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="#343b49"/><stop offset=".45" stopColor="#06070b"/><stop offset="1" stopColor="#000"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="150" cy="307" rx="98" ry="13" fill="#9f0919" opacity=".35"/>
+          <path d="M82 198 Q49 217 52 267 L92 281 L109 242 Z" fill="url(#hood3d)" stroke="#ff5960" strokeWidth="4"/>
+          <path d="M218 198 Q251 217 248 267 L208 281 L191 242 Z" fill="url(#hood3d)" stroke="#ff5960" strokeWidth="4"/>
+          <path d="M91 194 Q150 177 209 194 L226 284 Q150 308 74 284 Z" fill="url(#hood3d)" stroke="#ff5361" strokeWidth="5"/>
+          <path d="M75 107 Q76 29 150 23 Q223 29 225 107 L239 181 Q217 219 150 221 Q83 219 61 181 Z" fill="url(#hood3d)" stroke="#ff6464" strokeWidth="6"/>
+          <path d="M88 102 Q150 52 212 102 L220 175 Q205 201 150 206 Q95 201 80 175 Z" fill="#12141b" stroke="#f93c4e" strokeWidth="5"/>
+          <rect x="88" y="112" width="124" height="77" rx="28" fill="url(#visor3d)" stroke="#656874" strokeWidth="5"/>
+          <path d="M107 148 Q121 126 135 148 M165 148 Q179 126 193 148" fill="none" stroke="#ff414e" strokeWidth="9" strokeLinecap="round" className="doom-eyes"/>
+          <path d="M101 119 Q123 109 142 112" stroke="#ffffff" strokeOpacity=".2" strokeWidth="5" fill="none"/>
+          <circle cx="75" cy="145" r="13" fill="#1b1d26" stroke="#ff3349" strokeWidth="6"/>
+          <circle cx="225" cy="145" r="13" fill="#1b1d26" stroke="#ff3349" strokeWidth="6"/>
+          <text x="150" y="91" fill="#fff" fontWeight="900" fontSize="16" textAnchor="middle">DOOM404</text>
+          <path d="M112 214 L188 214 L199 270 L101 270 Z" fill="#111319" stroke="#e42b3b" strokeWidth="3"/>
+          <text x="150" y="255" fill="#fff" fontWeight="900" fontSize="35" textAnchor="middle">404</text>
+          <rect x="48" y="259" width="44" height="35" rx="12" fill="#171820" stroke="#fb4150" strokeWidth="5"/>
+          <rect x="208" y="259" width="44" height="35" rx="12" fill="#171820" stroke="#fb4150" strokeWidth="5"/>
+        </svg>
+      </div>
+      {loading && <><div className="doom-scanline" /><div className="doom-orbit doom-orbit-one"/><div className="doom-orbit doom-orbit-two"/></>}
+      {complete && !loading && <span className="doom-check">✓</span>}
+    </div>
+  );
+}
+
 export default function Home() {
   const [wallet, setWallet] = useState("");
   const [loading, setLoading] = useState(false);
@@ -274,38 +313,56 @@ export default function Home() {
           margin: "0 auto"
         }}
       >
-        <p
-          style={{
-            color: "#ff4444",
-            fontWeight: "bold",
-            letterSpacing: "2px",
-            fontSize: "12px"
-          }}
-        >
-          DOOM404 // INTELLIGENCE SYSTEM
-        </p>
 
-        <h1
-          style={{
-            fontSize: "clamp(36px, 7vw, 62px)",
-            marginBottom: "12px"
-          }}
-        >
-          Wallet Signal
-        </h1>
+        <style>{`
+          /* Cinematic depth and interaction polish; lightweight CSS, no 3D library. */
+          .doom-hero{isolation:isolate}
+          .doom-hero::before{content:"";position:absolute;inset:-28px -12px;background:radial-gradient(ellipse at 80% 48%,rgba(215,15,44,.19),transparent 53%);z-index:0;pointer-events:none}
+          .doom-mascot{transform:translateZ(0);will-change:transform}
+          .doom-mascot::after{content:"";position:absolute;left:16%;right:16%;bottom:2%;height:11%;border-radius:50%;background:rgba(255,30,53,.28);filter:blur(17px);animation:doomShadow 3.7s ease-in-out infinite}
+          .doom-halo{background:radial-gradient(circle at 50% 50%,rgba(250,21,55,.06),transparent 70%)}
+          .doom-robot svg{width:100%;height:100%}
+          .doom-hero + .doom-wallet-entry{border:1px solid rgba(255,79,91,.24)!important;box-shadow:0 12px 40px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.04)}
+          .doom-wallet-entry input:focus-visible{outline:2px solid #ff5668;outline-offset:2px;box-shadow:0 0 0 5px rgba(255,50,72,.14)}
+          .doom-wallet-entry button{transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;box-shadow:0 8px 24px rgba(190,20,37,.22)}
+          .doom-wallet-entry button:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(228,32,55,.4);filter:brightness(1.12)}
+          .doom-wallet-entry button:not(:disabled):active{transform:translateY(0)}
+          @keyframes doomShadow{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(.78);opacity:.5}}
+          @media(prefers-reduced-motion:reduce){.doom-mascot::after{animation:none!important}.doom-wallet-entry button{transition:none!important}}
+          .doom-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:260px;position:relative}
+          .doom-hero-copy{flex:1;min-width:0;position:relative;z-index:2}
+          .doom-status{color:#ff626c;font-weight:800;letter-spacing:2px;font-size:13px;line-height:1.7;margin-top:22px}
+          .doom-mascot{width:min(37%,310px);min-width:165px;aspect-ratio:1/1.12;position:relative;perspective:800px;flex-shrink:0;filter:drop-shadow(0 12px 25px rgba(227,20,45,.27))}
+          .doom-halo{position:absolute;inset:8% 5%;border:2px solid #e52940;border-radius:50%;box-shadow:0 0 24px #c91b35, inset 0 0 20px #9a1025;transform:rotateX(18deg);animation:doomHalo 7s ease-in-out infinite}
+          .doom-robot{position:absolute;inset:2%;animation:doomFloat 3.7s ease-in-out infinite;transform-style:preserve-3d}
+          .doom-robot svg{filter:drop-shadow(0 13px 9px rgba(0,0,0,.7))}
+          .doom-scanning .doom-robot{animation:doomAnalyze 1.6s ease-in-out infinite}
+          .doom-scanning .doom-eyes{animation:doomBlink .9s ease-in-out infinite}
+          .doom-scanline{position:absolute;left:10%;right:10%;height:3px;top:15%;background:#ff5266;box-shadow:0 0 18px 5px rgba(255,30,62,.7);animation:doomScan 1.7s linear infinite;pointer-events:none}
+          .doom-orbit{position:absolute;inset:3%;border:1px dashed rgba(255,83,101,.65);border-radius:50%;animation:doomSpin 5s linear infinite}
+          .doom-orbit-two{inset:13%;animation-direction:reverse;animation-duration:3s}
+          .doom-check{position:absolute;right:0;top:12%;color:#76e2b5;font-size:34px;font-weight:900;text-shadow:0 0 15px #1a8f66}
+          @keyframes doomFloat{0%,100%{transform:translateY(0) rotateY(-8deg) rotateX(3deg)}50%{transform:translateY(-13px) rotateY(7deg) rotateX(-2deg)}}
+          @keyframes doomAnalyze{0%,100%{transform:translateY(-4px) rotateY(-12deg) rotateZ(-2deg)}50%{transform:translateY(-15px) rotateY(12deg) rotateZ(2deg)}}
+          @keyframes doomHalo{0%,100%{opacity:.6;transform:rotateX(18deg) scale(.97)}50%{opacity:1;transform:rotateX(18deg) scale(1.04)}}
+          @keyframes doomBlink{0%,80%,100%{opacity:1}90%{opacity:.25}}
+          @keyframes doomScan{0%{top:16%;opacity:0}15%{opacity:1}85%{opacity:1}100%{top:86%;opacity:0}}
+          @keyframes doomSpin{to{transform:rotate(360deg)}}
+          @media(min-width:750px){.doom-hero{min-height:340px}}
+          @media(max-width:500px){.doom-hero{gap:2px;min-height:250px}.doom-mascot{min-width:125px;width:38%}.doom-hero-copy h1{font-size:clamp(30px,8vw,43px)!important}.doom-hero-copy p{font-size:13px;line-height:1.6}}
+          @media(prefers-reduced-motion:reduce){.doom-mascot *, .doom-mascot{animation:none!important}}
+        `}</style>
+        <div className="doom-hero">
+          <div className="doom-hero-copy">
+            <p style={{color:"#ff555f",fontWeight:"bold",letterSpacing:"2px",fontSize:"12px"}}>DOOM404 // INTELLIGENCE SYSTEM</p>
+            <h1 style={{fontSize:"clamp(36px, 7vw, 62px)",marginBottom:"12px"}}>Wallet Signal</h1>
+            <p style={{color:"#aaa",lineHeight:1.7}}>Explore observable Solana wallet activity, transaction behaviour, SOL transfer flows and transparent intelligence signals.</p>
+            <p className="doom-status">{loading ? "GLITCH SCANNER // ANALYZING" : walletData || transactionData || glitchData ? "ANALYSIS COMPLETE // SIGNALS READY" : "SYSTEM READY // AWAITING WALLET"}</p>
+          </div>
+          <DoomMascot loading={loading} complete={!loading && Boolean(walletData || transactionData || glitchData)} />
+        </div>
 
-        <p
-          style={{
-            color: "#aaa",
-            lineHeight: 1.7
-          }}
-        >
-          Explore observable Solana wallet activity,
-          transaction behaviour, SOL transfer flows
-          and transparent intelligence signals.
-        </p>
-
-        <div style={cardStyle}>
+        <div className="doom-wallet-entry" style={cardStyle}>
           <label
             htmlFor="wallet-address"
             style={{
