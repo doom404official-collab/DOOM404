@@ -264,6 +264,7 @@ export default function Home() {
     ? Object.entries(transactionData.categories)
     : [];
 
+  const glitchEvidence = glitchData?.evidence || null;
   const glitchSummary = glitchData?.summary || {};
   const glitchCoverage = glitchData?.coverage || {};
   const behavior = glitchData?.behaviorIntelligence || {};
@@ -436,6 +437,25 @@ export default function Home() {
           >
             {status}
           </div>
+        )}
+
+        {glitchEvidence && (
+          <section aria-label="GLITCH evidence summary" style={cardStyle}>
+            <h2 style={{ fontSize: "18px", marginTop: 0 }}>GLITCH // Evidence Quality</h2>
+            <p style={{ color: "#ddd" }}>
+              Evidence: <strong>{String(glitchEvidence.confidence).replaceAll("_", " ")}</strong>
+              {" · "}Coverage: {String(glitchEvidence.sampleCompleteness).replaceAll("_", " ")}
+            </p>
+            <p style={{ color: "#999", fontSize: "13px" }}>
+              {glitchEvidence.decodedTransactions} transactions decoded; {glitchEvidence.unavailableTransactions} unavailable.
+            </p>
+            <ul style={{ color: "#ccc", lineHeight: 1.7 }}>
+              {(glitchEvidence.observations || []).map((observation, index) => (
+                <li key={index}>{observation}</li>
+              ))}
+            </ul>
+            <p style={{ color: "#999", fontSize: "12px" }}>{glitchEvidence.interpretation}</p>
+          </section>
         )}
 
         <Section title="01 // Wallet Overview">
