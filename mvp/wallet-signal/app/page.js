@@ -130,6 +130,27 @@ function ErrorPanel({ message }) {
   );
 }
 
+
+function MascotDisplay({ loading, complete }) {
+  const mode = loading ? "scanning" : complete ? "complete" : "idle";
+  return (
+    <div className={"doom-mascot doom-mascot--" + mode} aria-label={loading ? "DOOM404 robot scanning wallet" : complete ? "DOOM404 robot: analysis complete" : "DOOM404 robot ready"}>
+      <div className="doom-mascot__ring" aria-hidden="true" />
+      <div className="doom-mascot__beam" aria-hidden="true" />
+      <img
+        className="doom-mascot__image"
+        src="/doom404-mascot.png.jpeg"
+        alt="DOOM404 official red-hooded robot mascot"
+        width="440"
+        height="440"
+      />
+      <div className="doom-mascot__indicator" aria-live="polite">
+        {loading ? "SCANNING" : complete ? "✓ SIGNAL READY" : "SYSTEM READY"}
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [wallet, setWallet] = useState("");
   const [loading, setLoading] = useState(false);
@@ -268,42 +289,68 @@ export default function Home() {
         fontFamily: "Arial, sans-serif"
       }}
     >
+
+      <style>{`
+        .doom-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 360px); align-items: center; gap: 24px; }
+        .doom-mascot { position: relative; width: 100%; max-width: 360px; aspect-ratio: 1; isolation: isolate; perspective: 900px; margin: 0 auto; }
+        .doom-mascot__image { position: relative; z-index: 2; display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 24px; box-shadow: 0 20px 65px #d3192433; animation: doom-float 4.5s ease-in-out infinite; transform-style: preserve-3d; }
+        .doom-mascot__ring { position: absolute; inset: 6%; border: 2px solid #ff304b99; border-radius: 50%; box-shadow: 0 0 35px #ed203d77; animation: doom-ring 5s ease-in-out infinite; }
+        .doom-mascot__beam { position: absolute; z-index: 3; inset: 12% 8%; border-top: 3px solid #ff4a5d; filter: drop-shadow(0 0 12px #ff304b); opacity: 0; pointer-events: none; }
+        .doom-mascot--scanning .doom-mascot__beam { opacity: 1; animation: doom-scan 1.8s ease-in-out infinite alternate; }
+        .doom-mascot--scanning .doom-mascot__ring { animation: doom-ring .9s ease-in-out infinite; }
+        .doom-mascot--complete .doom-mascot__ring { border-color: #54e3a2; box-shadow: 0 0 35px #54e3a277; }
+        .doom-mascot__indicator { position: absolute; z-index: 4; bottom: 0; left: 50%; transform: translateX(-50%); background: #101010e8; color: #ff707b; border: 1px solid #8c2935; border-radius: 999px; padding: 7px 13px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; white-space: nowrap; }
+        .doom-mascot--complete .doom-mascot__indicator { color: #6cecb4; border-color: #287f56; }
+        @keyframes doom-float { 0%,100% { transform: translateY(0) rotateY(-4deg) rotateX(2deg); } 50% { transform: translateY(-12px) rotateY(4deg) rotateX(-2deg); } }
+        @keyframes doom-ring { 0%,100% { transform: scale(.94); opacity: .55; } 50% { transform: scale(1.05); opacity: 1; } }
+        @keyframes doom-scan { from { transform: translateY(10%); } to { transform: translateY(85%); } }
+        @media (max-width: 640px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(120px, 40%); gap: 8px; } .doom-mascot__indicator { font-size: 8px; padding: 5px 8px; letter-spacing: .5px; } }
+        @media (prefers-reduced-motion: reduce) { .doom-mascot__image, .doom-mascot__ring, .doom-mascot__beam { animation: none !important; } .doom-mascot__beam { opacity: 0 !important; } }
+      `}</style>
       <div
         style={{
           maxWidth: "1050px",
           margin: "0 auto"
         }}
       >
-        <p
-          style={{
-            color: "#ff4444",
-            fontWeight: "bold",
-            letterSpacing: "2px",
-            fontSize: "12px"
-          }}
-        >
-          DOOM404 // INTELLIGENCE SYSTEM
-        </p>
 
-        <h1
-          style={{
-            fontSize: "clamp(36px, 7vw, 62px)",
-            marginBottom: "12px"
-          }}
-        >
-          Wallet Signal
-        </h1>
-
-        <p
-          style={{
-            color: "#aaa",
-            lineHeight: 1.7
-          }}
-        >
-          Explore observable Solana wallet activity,
-          transaction behaviour, SOL transfer flows
-          and transparent intelligence signals.
-        </p>
+        <div className="doom-hero">
+          <div>
+            <p
+              style={{
+                color: "#ff4444",
+                fontWeight: "bold",
+                letterSpacing: "2px",
+                fontSize: "12px"
+              }}
+            >
+              DOOM404 // INTELLIGENCE SYSTEM
+            </p>
+    
+            <h1
+              style={{
+                fontSize: "clamp(36px, 7vw, 62px)",
+                marginBottom: "12px"
+              }}
+            >
+              Wallet Signal
+            </h1>
+    
+            <p
+              style={{
+                color: "#aaa",
+                lineHeight: 1.7
+              }}
+            >
+              Explore observable Solana wallet activity,
+              transaction behaviour, SOL transfer flows
+              and transparent intelligence signals.
+            </p>
+    
+    
+          </div>
+          <MascotDisplay loading={loading} complete={!loading && status === "Analysis completed."} />
+        </div>
 
         <div style={cardStyle}>
           <label
