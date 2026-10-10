@@ -105,6 +105,7 @@ export async function GET(request) {
     let decoded = 0;
     let unavailable = 0;
     let rateLimited = false;
+    const decodeDiagnostics = { nullResponses: 0, rpcErrors: 0, unsupportedVersions: 0, rateLimitErrors: 0, otherErrors: 0, unattempted: 0 };
     const decodedActivity = [];
 
     for (const entry of signatures) {
@@ -120,6 +121,7 @@ export async function GET(request) {
 
         if (!transaction) {
           unavailable++;
+          decodeDiagnostics.nullResponses++;
           continue;
         }
 
@@ -153,24 +155,27 @@ export async function GET(request) {
 
       } catch (error) {
         unavailable++;
-
-        console.error(
-          "GLITCH decode error:",
-          error.message
-        );
-
-        if (
-          error.code === 429 ||
-          String(error.message).includes("429")
-        ) {
+        const message = String(error?.message || "Unknown RPC error");
+        const causeMessage = String(error?.cause?.message || "");
+        const combined = message + " " + causeMessage;
+        if (/429|rate limit|too many requests/i.test(combined)) {
+          decodeDiagnostics.rateLimitErrors++;
           rateLimited = true;
-          break;
+        } else if (/unsupported transaction version|maxSupportedTransactionVersion/i.test(combined)) {
+          decodeDiagnostics.unsupportedVersions++;
+        } else if (/rpc|fetch|timeout|abort|503|502|504|403|401|unavailable/i.test(combined)) {
+          decodeDiagnostics.rpcErrors++;
+        } else {
+          decodeDiagnostics.otherErrors++;
         }
+        console.error("GLITCH decode failure", { signature: entry.signature.slice(0, 8), reason: message.slice(0, 180) });
+        if (rateLimited) break;
       }
 
       await wait(700);
     }
 
+    decodeDiagnostics.unattempted = Math.max(0, signatures.length - decoded - unavailable);
     const incoming = transfers.filter(
       (item) => item.direction === "incoming"
     );
@@ -314,17 +319,17 @@ export async function GET(request) {
         transactionsDecoded: decoded,
         transactionsUnavailable: unavailable,
         rateLimited,
+        decodeDiagnostics,
         sampleLimit: SAMPLE_LIMIT,
         scope:
           "Most recent sampled transactions only"
       },
       summary: {
-        incomingTransferCount: incoming.length,
-        outgoingTransferCount: outgoing.length,
-        incomingSOL: sumSOL(incoming),
-        outgoingSOL: sumSOL(outgoing),
-        uniqueCounterparties:
-          Object.keys(counterparties).length
+        incomingTransferCount: decoded === 0 ? null : incoming.length,
+        outgoingTransferCount: decoded === 0 ? null : outgoing.length,
+        incomingSOL: decoded === 0 ? null : sumSOL(incoming),
+        outgoingSOL: decoded === 0 ? null : sumSOL(outgoing),
+        uniqueCounterparties: decoded === 0 ? null : Object.keys(counterparties).length
       },
       topCounterparties,
       behaviorIntelligence: { frequency, concentration },
