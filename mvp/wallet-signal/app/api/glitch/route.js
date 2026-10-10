@@ -96,6 +96,11 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const address = searchParams.get("address");
+    const deep = searchParams.get("mode") === "deep";
+    const before = searchParams.get("before");
+    if (before && (!deep || !/^[1-9A-HJ-NP-Za-km-z]{64,88}$/.test(before))) {
+      return NextResponse.json({ error: "Invalid deep-analysis cursor" }, { status: 400 });
+    }
 
     if (!address) {
       return NextResponse.json(
@@ -122,9 +127,11 @@ export async function GET(request) {
     const signatures =
       await connection.getSignaturesForAddress(
         publicKey,
-        { limit: SAMPLE_LIMIT }
+        { limit: deep ? SAMPLE_LIMIT + 1 : SAMPLE_LIMIT, ...(deep && before ? { before } : {}) }
       );
 
+    const pageHasMore = deep && signatures.length > SAMPLE_LIMIT;
+    if (pageHasMore) signatures.pop();
     const transfers = [];
     let decoded = 0;
     let unavailable = 0;
@@ -321,14 +328,14 @@ export async function GET(request) {
       ? "no_observations"
       : rateLimited || unavailable > 0
         ? "limited"
-        : signatures.length < SAMPLE_LIMIT
+        : (deep ? !pageHasMore : signatures.length < SAMPLE_LIMIT)
           ? "rpc_visible_history_exhausted"
           : "sample_limit_reached";
     const evidenceConfidence = decoded === 0
       ? "insufficient"
       : rateLimited || unavailable > 0
         ? "limited"
-        : signatures.length < SAMPLE_LIMIT ? "rpc_visible_history_examined" : "sample_only";
+        : (deep ? !pageHasMore : signatures.length < SAMPLE_LIMIT) ? "rpc_visible_history_examined" : "sample_only";
     const observations = [];
     if (frequency.busiestDay) {
       observations.push("Most observed activity occurred on " + frequency.busiestDay.date +
@@ -347,7 +354,15 @@ export async function GET(request) {
     }
 
     return NextResponse.json({
-      engineVersion: "0.9.0",
+      engineVersion: "0.9.1",
+      analysisMode: deep ? "deep_page" : "quick",
+      pagination: deep ? {
+        nextCursor: pageHasMore && !rateLimited ? signatures.at(-1)?.signature : null,
+        hasMore: pageHasMore && !rateLimited,
+        pageDecoded: decoded,
+        pageUnavailable: unavailable,
+        pageComplete: !rateLimited && unavailable === 0
+      } : null,
       scanner: "DOOM404 GLITCH",
       address: walletAddress,
       network: "mainnet-beta",
@@ -359,7 +374,7 @@ export async function GET(request) {
         decodeDiagnostics,
         decodeMethod: "batch_with_bounded_backoff_and_individual_fallback",
         sampleLimit: SAMPLE_LIMIT,
-        scope: signatures.length < SAMPLE_LIMIT && !rateLimited && unavailable === 0
+        scope: (deep ? !pageHasMore : signatures.length < SAMPLE_LIMIT) && !rateLimited && unavailable === 0
           ? "RPC-visible history exhausted within quick scan limit; archival completeness unverified"
           : "Most recent sampled transactions only"
       },
