@@ -152,6 +152,60 @@ function MascotDisplay({ loading, complete, partial }) {
   );
 }
 
+function HistoryExplorer({ address }) {
+  const [items, setItems] = useState([]);
+  const [cursor, setCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [started, setStarted] = useState(false);
+  const requestId = useRef(0);
+
+  async function loadMore() {
+    if (busy || !hasMore) return;
+    const id = ++requestId.current;
+    setBusy(true);
+    setError("");
+    try {
+      const url = "/api/history?address=" + encodeURIComponent(address) + (cursor ? "&before=" + encodeURIComponent(cursor) : "");
+      const response = await fetch(url, { cache: "no-store" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "History unavailable");
+      if (id !== requestId.current) return;
+      setItems(old => {
+        const known = new Set(old.map(row => row.signature));
+        return [...old, ...(data.items || []).filter(row => !known.has(row.signature))];
+      });
+      setCursor(data.pagination?.nextCursor || null);
+      setHasMore(Boolean(data.pagination?.hasMore));
+      setStarted(true);
+    } catch (failure) {
+      if (id === requestId.current) setError(failure.message);
+    } finally {
+      if (id === requestId.current) setBusy(false);
+    }
+  }
+
+  return (
+    <Section title="07 // Transaction History">
+      <div style={cardStyle}>
+        <p style={{ color: "#ddd" }}>Browse RPC-visible transaction signatures in pages. This does not yet decode all transaction details or establish complete chain-history coverage.</p>
+        <p style={{ color: "#aaa" }}>Records loaded: {items.length}{started && !hasMore ? " · No further signatures returned by this RPC" : " · Total history unknown"}</p>
+        {items.map(row => (
+          <div key={row.signature} style={{ borderTop: "1px solid #333", padding: "12px 0", overflowWrap: "anywhere" }}>
+            <span style={{ color: row.status === "success" ? "#83d4a0" : "#ff8888" }}>{row.status.toUpperCase()}</span>
+            {" · "}{row.timestamp || "Timestamp unavailable"}
+            <div style={{ fontSize: "12px", color: "#bbb" }}>{row.signature}</div>
+          </div>
+        ))}
+        {error && <p role="alert" style={{ color: "#ff8888" }}>{error}</p>}
+        {hasMore && <button type="button" disabled={busy} onClick={loadMore} style={{ background: "#a52222", color: "white", border: 0, borderRadius: 8, padding: "12px 18px", cursor: "pointer" }}>{busy ? "LOADING HISTORY..." : started ? "LOAD MORE TRANSACTIONS" : "LOAD TRANSACTION HISTORY"}</button>}
+        {started && !hasMore && <p style={{ color: "#aaa" }}>RPC history exhausted. Older archival records may still exist elsewhere.</p>}
+      </div>
+    </Section>
+  );
+}
+
 export default function Home() {
   const [wallet, setWallet] = useState("");
   const [loading, setLoading] = useState(false);
@@ -982,6 +1036,8 @@ export default function Home() {
             </p>
           </div>
         </Section>
+
+        <HistoryExplorer key={walletData?.address || wallet.trim()} address={walletData?.address || wallet.trim()} />
 
         <Section title="06 // GLITCH Scanner">
           <div style={cardStyle}>
