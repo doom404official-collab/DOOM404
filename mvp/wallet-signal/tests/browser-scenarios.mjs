@@ -44,12 +44,16 @@ async function scenario(name, config) {
       await results.waitFor();
       const sections = results.locator("details.doom-result-section");
       assert.ok(await sections.count() >= 2, "Results must have expandable sections");
-      assert.equal(await sections.first().evaluate(e => e.open), true, "Overview defaults open");
-      assert.equal(await sections.nth(1).evaluate(e => e.open), false, "Other sections default closed");
-      await sections.nth(1).locator("summary").click();
-      assert.equal(await sections.nth(1).evaluate(e => e.open), true, "Section expands");
-      await sections.nth(1).locator("summary").click();
-      assert.equal(await sections.nth(1).evaluate(e => e.open), false, "Section collapses");
+      const overview = sections.filter({ has: page.locator("summary", { hasText: "01 // Wallet Overview" }) });
+      const evidence = sections.filter({ has: page.locator("summary", { hasText: "GLITCH // Evidence Quality" }) });
+      assert.equal(await overview.count(), 1, "Wallet Overview section exists");
+      assert.equal(await evidence.count(), 1, "GLITCH Evidence Quality section exists");
+      assert.equal(await overview.evaluate(e => e.open), true, "Overview defaults open");
+      assert.equal(await evidence.evaluate(e => e.open), false, "Evidence defaults closed");
+      await evidence.locator("summary").click();
+      assert.equal(await evidence.evaluate(e => e.open), true, "Evidence section expands");
+      await evidence.locator("summary").click();
+      assert.equal(await evidence.evaluate(e => e.open), false, "Evidence section collapses");
       if (config.count === 0) {
         await page.getByText(/no observable transaction history/i).first().waitFor();
         assert.equal(await page.getByText("✓ SIGNAL READY").count(), 0);
