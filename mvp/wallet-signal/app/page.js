@@ -327,6 +327,16 @@ export default function Home() {
         @keyframes doom-scan { from { transform: translateY(10%); } to { transform: translateY(85%); } }
         @media (max-width: 640px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(120px, 40%); gap: 8px; } .doom-mascot__indicator { font-size: 8px; padding: 5px 8px; letter-spacing: .5px; } }
         @media (max-width: 380px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(105px, 36%); gap: 6px; } .doom-mascot__indicator { letter-spacing: 0; } }
+        .doom-scan-panel { display:flex; align-items:center; gap:16px; margin-top:16px; padding:14px 18px; border:1px solid #922b3f; border-radius:16px; background:linear-gradient(110deg,#220b12,#11090d 65%,#210911); box-shadow:0 0 22px #b91b3022; }
+        .doom-scan-thumb { width:76px; height:76px; flex-shrink:0; object-fit:cover; border-radius:12px; }
+        .doom-scan-content { flex:1; min-width:0; }
+        .doom-scan-title { color:#ff5369; font-size:16px; font-weight:800; letter-spacing:1.3px; }
+        .doom-scan-stage { color:#b8a5aa; margin:6px 0 13px; font-size:13px; }
+        .doom-scan-track { height:10px; border-radius:999px; overflow:hidden; background:#46212c; }
+        .doom-scan-indeterminate { width:34%; height:100%; border-radius:999px; background:linear-gradient(90deg,#a81735,#ff3b58,#ff9aa9); box-shadow:0 0 16px #ff365c99; animation:doom-scan-progress 1.7s ease-in-out infinite alternate; }
+        @keyframes doom-scan-progress { from { transform:translateX(0); } to { transform:translateX(194%); } }
+        @media (max-width:640px) { .doom-scan-panel { gap:12px; padding:12px; } .doom-scan-thumb { width:56px; height:56px; } .doom-scan-title { font-size:14px; } }
+        @media (prefers-reduced-motion:reduce) { .doom-scan-indeterminate { animation:none; width:100%; opacity:.75; } }
         .doom-result-section { margin-top: 16px; border: 1px solid #383838; border-radius: 12px; background: #111; overflow: hidden; }
         .doom-result-heading { cursor: pointer; list-style: none; padding: 18px 20px; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
         .doom-result-heading::-webkit-details-marker { display: none; }
@@ -451,6 +461,17 @@ export default function Home() {
           </button>
         </div>
 
+        {loading && (
+          <div className="doom-scan-panel" role="status" aria-live="polite" aria-label="Scanning wallet in progress">
+            <img className="doom-scan-thumb" src="/doom404-mascot.png..jpeg" alt="" />
+            <div className="doom-scan-content">
+              <div className="doom-scan-title">SCANNING WALLET...</div>
+              <div className="doom-scan-stage">{status || "Reading on-chain wallet activity..."}</div>
+              <div className="doom-scan-track" aria-label="Analysis in progress, duration unknown"><div className="doom-scan-indeterminate" /></div>
+            </div>
+          </div>
+        )}
+
         {analysisFinished && !loading && (
           <p role="status" style={{ color: signalReady ? "#6cecb4" : "#ffb86b", fontSize: "13px", marginTop: "12px" }}>
             {signalReady
@@ -465,7 +486,7 @@ export default function Home() {
           </p>
         )}
 
-        {status && (
+        {status && !loading && !analysisFinished && (
           <div
             role="status"
             style={{
