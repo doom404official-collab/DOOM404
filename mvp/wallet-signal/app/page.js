@@ -165,6 +165,7 @@ export default function Home() {
   const [transactionError, setTransactionError] = useState("");
   const [glitchError, setGlitchError] = useState("");
   const [analysisFinished, setAnalysisFinished] = useState(false);
+  const [moduleTimings, setModuleTimings] = useState(null);
   const requestVersion = useRef(0);
 
   async function fetchModule(endpoint, address) {
@@ -184,6 +185,17 @@ export default function Home() {
     return result;
   }
 
+  async function timedModule(endpoint, address) {
+    const start = performance.now();
+    try {
+      const data = await fetchModule(endpoint, address);
+      return { data, elapsedMs: Math.round(performance.now() - start) };
+    } catch (error) {
+      error.elapsedMs = Math.round(performance.now() - start);
+      throw error;
+    }
+  }
+
   async function analyzeWallet() {
     const address = wallet.trim();
 
@@ -195,6 +207,7 @@ export default function Home() {
     const version = ++requestVersion.current;
     setLoading(true);
     setAnalysisFinished(false);
+    setModuleTimings(null);
     setStatus("Connecting to Solana Mainnet...");
 
     setWalletData(null);
@@ -210,32 +223,41 @@ export default function Home() {
       // This avoids launching all three RPC-heavy requests simultaneously.
       const startedAt = performance.now();
       setStatus("Loading wallet intelligence...");
+      const timings = {};
       try {
-        const result = await fetchModule("/api/wallet", address);
+        const result = await timedModule("/api/wallet", address);
+        timings.wallet = result.elapsedMs;
         if (version !== requestVersion.current) return;
-        setWalletData(result);
+        setWalletData(result.data);
       } catch (error) {
+        timings.wallet = error.elapsedMs ?? null;
         if (version !== requestVersion.current) return;
         setWalletError(error.message);
       }
 
       setStatus("Analyzing transactions and GLITCH evidence...");
       const [transactionsResult, glitchResult] = await Promise.allSettled([
-        fetchModule("/api/transactions", address),
-        fetchModule("/api/glitch", address)
+        timedModule("/api/transactions", address),
+        timedModule("/api/glitch", address)
       ]);
       if (version !== requestVersion.current) return;
       if (transactionsResult.status === "fulfilled") {
-        setTransactionData(transactionsResult.value);
+        timings.transactions = transactionsResult.value.elapsedMs;
+        setTransactionData(transactionsResult.value.data);
       } else {
+        timings.transactions = transactionsResult.reason?.elapsedMs ?? null;
         setTransactionError(transactionsResult.reason?.message || "Transaction intelligence unavailable");
       }
       if (glitchResult.status === "fulfilled") {
-        setGlitchData(glitchResult.value);
+        timings.glitch = glitchResult.value.elapsedMs;
+        setGlitchData(glitchResult.value.data);
       } else {
+        timings.glitch = glitchResult.reason?.elapsedMs ?? null;
         setGlitchError(glitchResult.reason?.message || "GLITCH evidence unavailable");
       }
-      console.info("[Wallet Signal] analysis elapsed ms", Math.round(performance.now() - startedAt));
+      timings.total = Math.round(performance.now() - startedAt);
+      setModuleTimings(timings);
+      console.info("[Wallet Signal] module timings (ms)", timings);
 
       if (version === requestVersion.current) setStatus("");
 
@@ -420,6 +442,7 @@ export default function Home() {
               requestVersion.current += 1;
               setWallet(event.target.value);
               setAnalysisFinished(false);
+              setModuleTimings(null);
               setLoading(false);
               setWalletData(null);
               setTransactionData(null);
@@ -473,6 +496,12 @@ export default function Home() {
           </button>
           </div>
         </div>
+
+        {analysisFinished && moduleTimings && (
+          <p data-testid="analysis-timing" style={{ color: "#aaa", fontSize: "12px", marginTop: "12px" }}>
+            Analysis time: {(moduleTimings.total / 1000).toFixed(1)}s · Wallet: {moduleTimings.wallet == null ? "n/a" : (moduleTimings.wallet / 1000).toFixed(1) + "s"} · Transactions: {moduleTimings.transactions == null ? "n/a" : (moduleTimings.transactions / 1000).toFixed(1) + "s"} · GLITCH: {moduleTimings.glitch == null ? "n/a" : (moduleTimings.glitch / 1000).toFixed(1) + "s"}
+          </p>
+        )}
 
         {loading && (
           <div className="doom-scan-panel" role="status" aria-live="polite" aria-label="Scanning wallet in progress">
