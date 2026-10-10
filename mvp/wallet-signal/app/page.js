@@ -528,23 +528,31 @@ export default function Home() {
         {walletAnalysisComplete && (
         <div key={requestVersion.current} id="wallet-results">
         {emptyWallet && <p role="status" style={{ color: "#ffb86b", fontSize: "14px" }}>New or inactive wallet: no observable transactions in the queried history. Behavioral scoring is unavailable; this is not a wallet safety assessment.</p>}
-        {glitchEvidence && (
-          <Section title="GLITCH // Evidence Quality">
-            <p style={{ color: "#ddd" }}>
-              Evidence: <strong>{String(glitchEvidence.confidence).replaceAll("_", " ")}</strong>
-              {" · "}Coverage: {String(glitchEvidence.sampleCompleteness).replaceAll("_", " ")}
-            </p>
-            <p style={{ color: "#999", fontSize: "13px" }}>
-              {glitchEvidence.decodedTransactions} transactions decoded; {glitchEvidence.unavailableTransactions} unavailable.
-            </p>
-            <ul style={{ color: "#ccc", lineHeight: 1.7 }}>
-              {(glitchEvidence.observations || []).map((observation, index) => (
-                <li key={index}>{observation}</li>
-              ))}
-            </ul>
-            <p style={{ color: "#999", fontSize: "12px" }}>{glitchEvidence.interpretation}</p>
-          </Section>
-        )}
+        <Section title="GLITCH // Evidence Quality">
+          {glitchEvidence ? (
+            <>
+              <p style={{ color: "#ddd" }}>
+                Evidence: <strong>{String(glitchEvidence.confidence ?? "unavailable").replaceAll("_", " ")}</strong>
+                {" · "}Coverage: {String(glitchEvidence.sampleCompleteness ?? "unavailable").replaceAll("_", " ")}
+              </p>
+              <p style={{ color: "#999", fontSize: "13px" }}>
+                {glitchEvidence.decodedTransactions ?? "Unavailable"} transactions decoded; {glitchEvidence.unavailableTransactions ?? "Unavailable"} unavailable.
+              </p>
+              <ul style={{ color: "#ccc", lineHeight: 1.7 }}>
+                {(glitchEvidence.observations || []).map((observation, index) => (
+                  <li key={index}>{observation}</li>
+                ))}
+              </ul>
+              <p style={{ color: "#999", fontSize: "12px" }}>{glitchEvidence.interpretation}</p>
+            </>
+          ) : (
+            <div role="status" style={{ ...cardStyle, color: "#ffb86b" }}>
+              <strong>Evidence unavailable — GLITCH analysis did not complete.</strong>
+              <p>{glitchError || "No GLITCH evidence was returned. Please retry the analysis."}</p>
+              <p style={{ color: "#aaa", fontSize: "12px" }}>Transaction decoding and transfer coverage cannot be assessed. This is not a wallet safety determination.</p>
+            </div>
+          )}
+        </Section>
 
         <Section title="01 // Wallet Overview">
           {walletData ? (
