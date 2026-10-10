@@ -6,10 +6,6 @@ export const dynamic = "force-dynamic";
 
 const SAMPLE_LIMIT = 20;
 
-function wait(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 function getProgramId(instruction) {
   if (!instruction) return "Unknown";
 
@@ -139,9 +135,8 @@ export async function GET(request) {
         }
       }
 
-      // Keep requests sequential but avoid 14 seconds of fixed idle time for 20 signatures.
-      // RPC 429 responses still stop decoding and are reported as partial coverage.
-      await wait(200);
+      // The shared RPC transport already spaces requests by 300ms and
+      // applies bounded retries/backoff; avoid adding a second fixed delay.
     }
 
     return NextResponse.json({
