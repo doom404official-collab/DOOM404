@@ -133,10 +133,10 @@ function ErrorPanel({ message }) {
 }
 
 
-function MascotDisplay({ loading, complete }) {
+function MascotDisplay({ loading, complete, partial }) {
   const mode = loading ? "scanning" : complete ? "complete" : "idle";
   return (
-    <div className={"doom-mascot doom-mascot--" + mode} aria-label={loading ? "DOOM404 robot scanning wallet" : complete ? "DOOM404 robot: preliminary signal ready" : "DOOM404 robot ready"}>
+    <div className={"doom-mascot doom-mascot--" + mode} aria-label={loading ? "DOOM404 robot scanning wallet" : complete ? "DOOM404 robot: preliminary signal ready" : partial ? "DOOM404 robot: partial analysis" : "DOOM404 robot ready"}>
       <div className="doom-mascot__beam" aria-hidden="true" />
       <img
         className="doom-mascot__image"
@@ -146,7 +146,7 @@ function MascotDisplay({ loading, complete }) {
         height="440"
       />
       <div className="doom-mascot__indicator" aria-live="polite">
-        {loading ? "SCANNING" : complete ? "✓ SIGNAL READY" : "SYSTEM READY"}
+        {loading ? "SCANNING" : complete ? "✓ SIGNAL READY" : partial ? "PARTIAL ANALYSIS" : "SYSTEM READY"}
       </div>
     </div>
   );
@@ -266,9 +266,17 @@ export default function Home() {
   const hasModuleError = Boolean(walletError || transactionError || glitchError);
   const walletAnalysisComplete = analysisFinished && !loading && Boolean(walletData) && !walletError;
   const emptyWallet = walletAnalysisComplete && walletData?.dataCoverage?.transactionsRetrieved === 0;
-  const signalReady = walletAnalysisComplete && !hasModuleError &&
-    walletData?.dataCoverage?.scoringEligible === true &&
+  const glitchDecoded = glitchData?.coverage?.transactionsDecoded ?? 0;
+  const glitchRetrieved = glitchData?.coverage?.signaturesRetrieved ?? 0;
+  const glitchEvidenceSufficient = glitchDecoded > 0 &&
+    glitchData?.evidence?.evidenceQuality !== "insufficient" &&
+    glitchData?.evidence?.sampleCompleteness !== "limited";
+  const walletScoreEligible = walletData?.dataCoverage?.scoringEligible === true &&
     walletData?.intelligence?.scoringStatus === "preliminary";
+  const signalReady = walletAnalysisComplete && !hasModuleError &&
+    walletScoreEligible && (glitchRetrieved === 0 || glitchEvidenceSufficient);
+  const partialAnalysis = walletAnalysisComplete && !hasModuleError &&
+    walletScoreEligible && !signalReady;
 
   const activity = walletData?.activity || {};
   const intelligence = walletData?.intelligence || {};
@@ -404,7 +412,7 @@ export default function Home() {
     
     
           </div>
-          <MascotDisplay loading={loading} complete={signalReady} />
+          <MascotDisplay loading={loading} complete={signalReady} partial={partialAnalysis} />
         </div>
 
         <div className="doom-wallet-card" style={cardStyle}>
@@ -1000,7 +1008,7 @@ export default function Home() {
                 <Metric
                   label="UNIQUE COUNTERPARTIES"
                   value={
-                    glitchSummary.uniqueCounterparties ?? 0
+                    glitchSummary.uniqueCounterparties ?? "Unavailable"
                   }
                   note="Observed addresses"
                 />
