@@ -1,7 +1,7 @@
 name: Wallet Signal v1.0 readiness
 on:
   push:
-    branches: [feature/wallet-signal-v1-0-readiness]
+    branches: [feature/wallet-signal-v1-0-readiness, feature/wallet-signal-v1-0-performance]
   workflow_dispatch:
 jobs:
   readiness:
