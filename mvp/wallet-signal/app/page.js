@@ -338,6 +338,14 @@ export default function Home() {
         @keyframes doom-scan-progress { from { transform:translateX(0); } to { transform:translateX(194%); } }
         @media (max-width:640px) { .doom-scan-panel { gap:12px; padding:12px; } .doom-scan-thumb { width:56px; height:56px; } .doom-scan-title { font-size:14px; } }
         @media (prefers-reduced-motion:reduce) { .doom-scan-indeterminate { animation:none; width:100%; opacity:.75; } }
+        /* Compact only the desktop scanning layout; preserve mascot dimensions. */
+        @media (min-width:641px) {
+          .doom-wallet-card { padding:14px 18px !important; }
+          .doom-wallet-controls { margin-top:8px; }
+          .doom-scan-panel { margin-top:9px; padding:9px 16px; }
+          .doom-scan-thumb { width:62px; height:62px; }
+          .doom-scan-stage { margin:3px 0 8px; }
+        }
         .doom-result-section { margin-top: 16px; border: 1px solid #383838; border-radius: 12px; background: #111; overflow: hidden; }
         .doom-result-heading { cursor: pointer; list-style: none; padding: 18px 20px; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
         .doom-result-heading::-webkit-details-marker { display: none; }
@@ -391,7 +399,7 @@ export default function Home() {
           <MascotDisplay loading={loading} complete={signalReady} />
         </div>
 
-        <div style={cardStyle}>
+        <div className="doom-wallet-card" style={cardStyle}>
           <label
             htmlFor="wallet-address"
             style={{
