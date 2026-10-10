@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
 
 function formatCoverage(status) {
   const labels = {
@@ -163,6 +164,7 @@ function DeepGlitchExplorer({ address }) {
   const stopRequested = useRef(false);
   const activeRequest = useRef(null);
   useEffect(() => () => { stopRequested.current = true; activeRequest.current?.abort(); }, []);
+  const assessment = assessGlitchEvidence(pages, { hasMore });
   const decoded = pages.reduce((sum, page) => sum + (page.coverage?.transactionsDecoded || 0), 0);
   const unavailable = pages.reduce((sum, page) => sum + (page.coverage?.transactionsUnavailable || 0), 0);
   const allTransfers = pages.flatMap(page => page.transfers || []);
@@ -232,6 +234,20 @@ function DeepGlitchExplorer({ address }) {
         {started && <p style={{ color: "#bbb" }}>Cumulative counterparties: {counterparties.size} · Largest counterparty share of observed explicit SOL transfer volume: {concentration === null ? "Not enough data" : concentration + "%"}</p>}
         {started && <p style={{ color: coverageValid && unavailable === 0 ? "#83d4a0" : "#ffb86b" }}>Evidence integrity: {coverageValid ? "No duplicate signatures across loaded pages" : "Duplicate signatures detected"} · {unavailable === 0 ? "All requested records decoded" : "Some records unavailable"}</p>}
         {started && <p style={{ color: "#bbb" }}>{hasMore ? "More history may be available." : "No further history returned by this RPC; archival completeness not verified."}</p>}
+        {started && <div style={{ borderTop: "1px solid #555", marginTop: 18, paddingTop: 16 }}>
+          <h3 style={{ color: "#fff" }}>GLITCH // Experimental Risk Indicators</h3>
+          <p style={{ color: "#ffbd80" }}>Assessment: {assessment.assessmentStatus.replaceAll("_", " ")} · Evidence confidence: {assessment.confidence} · Risk score: Not assessed</p>
+          <p style={{ color: "#bbb" }}>Observed activity does not establish whether a wallet is safe or fraudulent.</p>
+          {assessment.findings.length === 0 && <p style={{ color: "#bbb" }}>No supported behavioral findings under current rules. This does not mean the wallet is safe.</p>}
+          {assessment.findings.map(finding => <div key={finding.id} style={{ borderTop: "1px solid #333", padding: "12px 0" }}>
+            <strong style={{ color: "#fff" }}>{finding.title}</strong>
+            <p style={{ color: "#bbb" }}>{finding.explanation}</p>
+            <p style={{ color: "#aaa", overflowWrap: "anywhere", fontSize: 12 }}>Supporting transaction signatures: {finding.signatures.join(", ")}</p>
+          </div>)}
+          <details><summary style={{ cursor: "pointer", color: "#ddd" }}>Evidence limitations ({assessment.limitations.length})</summary>
+            <ul style={{ color: "#aaa" }}>{assessment.limitations.map(note => <li key={note}>{note}</li>)}</ul>
+          </details>
+        </div>}
         {error && <p role="alert" style={{ color: "#ffb86b" }}>{error}</p>}
         {busy && <p role="status" style={{ color: "#ddd" }}>{autoRunning ? "Analyzing up to 5 pages in this batch. You can stop after the current request." : "Decoding current page..."}</p>}
         {hasMore && <button type="button" disabled={busy} onClick={() => loadPages(false)} style={{ background: "#a52222", color: "white", border: 0, borderRadius: 8, padding: "12px 18px" }}>{busy ? "DECODING..." : started ? "ANALYZE NEXT 20 TRANSACTIONS" : "RUN DEEP ANALYSIS"}</button>}
