@@ -315,7 +315,7 @@ export default function Home() {
     >
 
       <style>{`
-        .doom-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 360px); align-items: center; gap: 24px; }
+        .doom-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 360px); align-items: center; gap: 12px; margin-bottom: -46px; }
         .doom-mascot { position: relative; width: 100%; max-width: 360px; aspect-ratio: 1; isolation: isolate; perspective: 900px; margin: 0 auto; }
         .doom-mascot__image { position: relative; z-index: 2; display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 0; filter: drop-shadow(0 16px 30px #d3192433); animation: doom-float 4.5s ease-in-out infinite; transform-style: preserve-3d; }
         .doom-mascot__beam { position: absolute; z-index: 3; inset: 12% 8%; border-top: 3px solid #ff4a5d; filter: drop-shadow(0 0 12px #ff304b); opacity: 0; pointer-events: none; }
@@ -325,7 +325,7 @@ export default function Home() {
         .doom-mascot--complete .doom-mascot__indicator { color: #6cecb4; border-color: #287f56; }
         @keyframes doom-float { 0%,100% { transform: translateY(0) rotateY(-4deg) rotateX(2deg); } 50% { transform: translateY(-12px) rotateY(4deg) rotateX(-2deg); } }
         @keyframes doom-scan { from { transform: translateY(10%); } to { transform: translateY(85%); } }
-        @media (max-width: 640px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(120px, 40%); gap: 8px; } .doom-mascot__indicator { font-size: 8px; padding: 5px 8px; letter-spacing: .5px; } }
+        @media (max-width: 640px) { .doom-hero { margin-bottom: 0; } .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(120px, 40%); gap: 8px; } .doom-mascot__indicator { font-size: 8px; padding: 5px 8px; letter-spacing: .5px; } }
         @media (max-width: 380px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(105px, 36%); gap: 6px; } .doom-mascot__indicator { letter-spacing: 0; } }
         .doom-wallet-controls { display:grid; grid-template-columns:minmax(0,1fr) 190px; align-items:end; gap:12px; margin-top:12px; }
         .doom-wallet-controls input { min-width:0; }\n        @media (max-width:640px) { .doom-wallet-controls { grid-template-columns:minmax(0,1fr); gap:10px; } }\n        .doom-scan-panel { display:flex; align-items:center; gap:16px; margin-top:16px; padding:14px 18px; border:1px solid #922b3f; border-radius:16px; background:linear-gradient(110deg,#220b12,#11090d 65%,#210911); box-shadow:0 0 22px #b91b3022; }
