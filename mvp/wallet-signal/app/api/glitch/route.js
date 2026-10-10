@@ -334,6 +334,7 @@ export async function GET(request) {
         transactionsUnavailable: unavailable,
         rateLimited,
         decodeDiagnostics,
+        decodeMethod: "batch_with_individual_fallback",
         sampleLimit: SAMPLE_LIMIT,
         scope:
           "Most recent sampled transactions only"
