@@ -152,6 +152,50 @@ function MascotDisplay({ loading, complete, partial }) {
   );
 }
 
+function DeepGlitchExplorer({ address }) {
+  const [pages, setPages] = useState([]);
+  const [cursor, setCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [started, setStarted] = useState(false);
+  const decoded = pages.reduce((sum, page) => sum + (page.coverage?.transactionsDecoded || 0), 0);
+  const unavailable = pages.reduce((sum, page) => sum + (page.coverage?.transactionsUnavailable || 0), 0);
+  const transfers = pages.reduce((sum, page) => sum + (page.transfers?.length || 0), 0);
+  async function loadPage() {
+    if (busy || !hasMore) return;
+    setBusy(true);
+    setError("");
+    try {
+      const url = "/api/glitch?mode=deep&address=" + encodeURIComponent(address) + (cursor ? "&before=" + encodeURIComponent(cursor) : "");
+      const response = await fetch(url, { cache: "no-store" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Deep analysis unavailable");
+      setPages(old => [...old, data]);
+      setStarted(true);
+      const next = data.pagination?.nextCursor || null;
+      setCursor(next);
+      setHasMore(Boolean(data.pagination?.hasMore));
+      if (!data.pagination?.pageComplete) setError("Some transactions could not be decoded. Evidence is incomplete.");
+    } catch (failure) {
+      setError(failure.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <Section title="Deep GLITCH // Evidence Analysis">
+      <div style={cardStyle}>
+        <p style={{ color: "#ddd" }}>Decode additional RPC-visible transactions in 20-transaction pages. Each page is independently assessed; a wallet risk score is not yet available.</p>
+        <p style={{ color: "#bbb" }}>Pages examined: {pages.length} · Transactions decoded: {decoded} · Unavailable: {unavailable} · Explicit SOL transfers: {transfers}</p>
+        {started && <p style={{ color: "#bbb" }}>{hasMore ? "More history may be available." : "No further history returned by this RPC; archival completeness not verified."}</p>}
+        {error && <p role="alert" style={{ color: "#ffb86b" }}>{error}</p>}
+        {hasMore && <button type="button" disabled={busy} onClick={loadPage} style={{ background: "#a52222", color: "white", border: 0, borderRadius: 8, padding: "12px 18px" }}>{busy ? "DECODING..." : started ? "ANALYZE NEXT 20 TRANSACTIONS" : "RUN DEEP ANALYSIS"}</button>}
+      </div>
+    </Section>
+  );
+}
+
 function HistoryExplorer({ address }) {
   const [items, setItems] = useState([]);
   const [cursor, setCursor] = useState(null);
@@ -1038,6 +1082,7 @@ export default function Home() {
         </Section>
 
         <HistoryExplorer key={walletData?.address || wallet.trim()} address={walletData?.address || wallet.trim()} />
+        <DeepGlitchExplorer key={"deep-" + (walletData?.address || wallet.trim())} address={walletData?.address || wallet.trim()} />
 
         <Section title="06 // GLITCH Scanner">
           <div style={cardStyle}>
