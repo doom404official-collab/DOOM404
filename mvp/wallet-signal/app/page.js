@@ -187,7 +187,7 @@ function HistoryExplorer({ address }) {
   }
 
   return (
-    <Section title="07 // Transaction History">
+    <Section title="Transaction History // Explorer">
       <div style={cardStyle}>
         <p style={{ color: "#ddd" }}>Browse RPC-visible transaction signatures in pages. This does not yet decode all transaction details or establish complete chain-history coverage.</p>
         <p style={{ color: "#aaa" }}>Records loaded: {items.length}{started && !hasMore ? " · No further signatures returned by this RPC" : " · Total history unknown"}</p>
