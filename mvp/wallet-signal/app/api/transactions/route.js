@@ -139,7 +139,9 @@ export async function GET(request) {
         }
       }
 
-      await wait(700);
+      // Keep requests sequential but avoid 14 seconds of fixed idle time for 20 signatures.
+      // RPC 429 responses still stop decoding and are reported as partial coverage.
+      await wait(200);
     }
 
     return NextResponse.json({
