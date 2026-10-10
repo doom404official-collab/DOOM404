@@ -6,10 +6,33 @@ export const dynamic = "force-dynamic";
 
 const SAMPLE_LIMIT = 20;
 const BATCH_SIZE = 5;
+const RATE_LIMIT_RETRY_DELAYS_MS = [900, 1800];
 const LAMPORTS_PER_SOL = 1000000000;
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isRateLimitError(error) {
+  const message = [error?.message, error?.cause?.message, error?.cause?.cause?.message]
+    .filter(Boolean).join(" ");
+  return /429|rate limit|too many requests|-32005/i.test(message);
+}
+
+async function decodeWithBackoff(connection, signature, diagnostics) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await connection.getParsedTransaction(signature, {
+        commitment: "confirmed", maxSupportedTransactionVersion: 0
+      });
+    } catch (error) {
+      if (!isRateLimitError(error) || attempt >= RATE_LIMIT_RETRY_DELAYS_MS.length) {
+        return { __decodeError: error };
+      }
+      diagnostics.rateLimitRetries++;
+      await wait(RATE_LIMIT_RETRY_DELAYS_MS[attempt]);
+    }
+  }
 }
 
 function extractTransfers(instructions, walletAddress, signature) {
@@ -106,16 +129,17 @@ export async function GET(request) {
     let decoded = 0;
     let unavailable = 0;
     let rateLimited = false;
-    const decodeDiagnostics = { nullResponses: 0, rpcErrors: 0, unsupportedVersions: 0, rateLimitErrors: 0, otherErrors: 0, unattempted: 0 };
+    const decodeDiagnostics = { nullResponses: 0, rpcErrors: 0, unsupportedVersions: 0, rateLimitErrors: 0, otherErrors: 0, unattempted: 0, rateLimitRetries: 0, recoveredAfterRetry: 0 };
     const decodedActivity = [];
 
     // Batch parsing reduces RPC round trips. Failed batches are retried per
     // signature so one provider error cannot discard the whole sample.
-    let stoppedForRateLimit = false;
-    for (let offset = 0; offset < signatures.length && !stoppedForRateLimit; offset += BATCH_SIZE) {
+    let individualMode = false;
+    for (let offset = 0; offset < signatures.length; offset += BATCH_SIZE) {
       const batch = signatures.slice(offset, offset + BATCH_SIZE);
       let parsed;
       try {
+        if (individualMode) throw new Error("Individual decode mode after RPC throttling");
         parsed = await connection.getParsedTransactions(
           batch.map((entry) => entry.signature),
           { commitment: "confirmed", maxSupportedTransactionVersion: 0 }
@@ -128,16 +152,16 @@ export async function GET(request) {
           count: batch.length,
           reason: String(batchError?.message || batchError).slice(0, 180)
         });
+        if (isRateLimitError(batchError)) individualMode = true;
         parsed = [];
         for (const entry of batch) {
-          try {
-            parsed.push(await connection.getParsedTransaction(entry.signature, {
-              commitment: "confirmed", maxSupportedTransactionVersion: 0
-            }));
-          } catch (error) {
-            parsed.push({ __decodeError: error });
+          const before = decodeDiagnostics.rateLimitRetries;
+          const result = await decodeWithBackoff(connection, entry.signature, decodeDiagnostics);
+          if (decodeDiagnostics.rateLimitRetries > before && !result?.__decodeError && result) {
+            decodeDiagnostics.recoveredAfterRetry++;
           }
-          await wait(200);
+          parsed.push(result);
+          await wait(individualMode ? 450 : 200);
         }
       }
 
@@ -151,7 +175,7 @@ export async function GET(request) {
           if (/429|rate limit|too many requests/i.test(combined)) {
             decodeDiagnostics.rateLimitErrors++;
             rateLimited = true;
-            stoppedForRateLimit = true;
+            individualMode = true;
           } else if (/unsupported transaction version|maxSupportedTransactionVersion/i.test(combined)) {
             decodeDiagnostics.unsupportedVersions++;
           } else if (/rpc|fetch|timeout|abort|503|502|504|403|401|unavailable/i.test(combined)) {
@@ -163,7 +187,6 @@ export async function GET(request) {
             signature: entry.signature.slice(0, 8),
             reason: combined.slice(0, 180)
           });
-          if (stoppedForRateLimit) break;
           continue;
         }
         if (!transaction) {
@@ -186,7 +209,7 @@ export async function GET(request) {
           });
         }
       }
-      if (!stoppedForRateLimit) await wait(250);
+      await wait(individualMode ? 500 : 250);
     }
 
     decodeDiagnostics.unattempted = Math.max(0, signatures.length - decoded - unavailable);
@@ -334,7 +357,7 @@ export async function GET(request) {
         transactionsUnavailable: unavailable,
         rateLimited,
         decodeDiagnostics,
-        decodeMethod: "batch_with_individual_fallback",
+        decodeMethod: "batch_with_bounded_backoff_and_individual_fallback",
         sampleLimit: SAMPLE_LIMIT,
         scope:
           "Most recent sampled transactions only"
