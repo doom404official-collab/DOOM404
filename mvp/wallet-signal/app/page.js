@@ -159,6 +159,10 @@ function DeepGlitchExplorer({ address }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [started, setStarted] = useState(false);
+  const [autoRunning, setAutoRunning] = useState(false);
+  const stopRequested = useRef(false);
+  const activeRequest = useRef(null);
+  useEffect(() => () => { stopRequested.current = true; activeRequest.current?.abort(); }, []);
   const decoded = pages.reduce((sum, page) => sum + (page.coverage?.transactionsDecoded || 0), 0);
   const unavailable = pages.reduce((sum, page) => sum + (page.coverage?.transactionsUnavailable || 0), 0);
   const allTransfers = pages.flatMap(page => page.transfers || []);
@@ -177,29 +181,47 @@ function DeepGlitchExplorer({ address }) {
   const ranked = [...counterparties.values()].sort((a, b) => b.volumeSOL - a.volumeSOL);
   const totalVolume = ranked.reduce((sum, item) => sum + item.volumeSOL, 0);
   const concentration = totalVolume > 0 ? (ranked[0].volumeSOL / totalVolume * 100).toFixed(2) : null;
-  async function loadPage() {
+  async function loadPages(automatic = false) {
     if (busy || !hasMore) return;
+    const maxPages = automatic ? 5 : 1;
+    stopRequested.current = false;
     setBusy(true);
+    setAutoRunning(automatic);
     setError("");
+    let nextCursor = cursor;
+    let more = hasMore;
+    const seen = new Set(uniqueSignatures);
     try {
-      const url = "/api/glitch?mode=deep&address=" + encodeURIComponent(address) + (cursor ? "&before=" + encodeURIComponent(cursor) : "");
-      const response = await fetch(url, { cache: "no-store" });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Deep analysis unavailable");
-      const received = data.pagination?.pageSignatures || [];
-      if (received.length !== new Set(received).size || received.some(signature => uniqueSignatures.has(signature))) {
-        throw new Error("Duplicate transaction signatures detected; analysis halted to protect evidence integrity.");
+      for (let index = 0; index < maxPages && more && !stopRequested.current; index++) {
+        const controller = new AbortController();
+        activeRequest.current = controller;
+        const url = "/api/glitch?mode=deep&address=" + encodeURIComponent(address) + (nextCursor ? "&before=" + encodeURIComponent(nextCursor) : "");
+        const response = await fetch(url, { cache: "no-store", signal: controller.signal });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Deep analysis unavailable");
+        const received = data.pagination?.pageSignatures;
+        if (!Array.isArray(received) || received.length !== new Set(received).size || received.some(signature => seen.has(signature))) {
+          throw new Error("Missing or duplicate transaction signatures; analysis halted to protect evidence integrity.");
+        }
+        received.forEach(signature => seen.add(signature));
+        setPages(old => [...old, data]);
+        setStarted(true);
+        nextCursor = data.pagination?.nextCursor || null;
+        more = Boolean(data.pagination?.hasMore);
+        setCursor(nextCursor);
+        setHasMore(more);
+        if (!data.pagination?.pageComplete) {
+          setError("Some transactions could not be decoded. Deep analysis paused; evidence is incomplete.");
+          break;
+        }
+        if (more && !nextCursor) throw new Error("Pagination cursor missing; analysis halted.");
       }
-      setPages(old => [...old, data]);
-      setStarted(true);
-      const next = data.pagination?.nextCursor || null;
-      setCursor(next);
-      setHasMore(Boolean(data.pagination?.hasMore));
-      if (!data.pagination?.pageComplete) setError("Some transactions could not be decoded. Evidence is incomplete.");
     } catch (failure) {
-      setError(failure.message);
+      if (failure.name !== "AbortError") setError(failure.message);
     } finally {
+      activeRequest.current = null;
       setBusy(false);
+      setAutoRunning(false);
     }
   }
   return (
@@ -211,7 +233,10 @@ function DeepGlitchExplorer({ address }) {
         {started && <p style={{ color: coverageValid && unavailable === 0 ? "#83d4a0" : "#ffb86b" }}>Evidence integrity: {coverageValid ? "No duplicate signatures across loaded pages" : "Duplicate signatures detected"} · {unavailable === 0 ? "All requested records decoded" : "Some records unavailable"}</p>}
         {started && <p style={{ color: "#bbb" }}>{hasMore ? "More history may be available." : "No further history returned by this RPC; archival completeness not verified."}</p>}
         {error && <p role="alert" style={{ color: "#ffb86b" }}>{error}</p>}
-        {hasMore && <button type="button" disabled={busy} onClick={loadPage} style={{ background: "#a52222", color: "white", border: 0, borderRadius: 8, padding: "12px 18px" }}>{busy ? "DECODING..." : started ? "ANALYZE NEXT 20 TRANSACTIONS" : "RUN DEEP ANALYSIS"}</button>}
+        {busy && <p role="status" style={{ color: "#ddd" }}>{autoRunning ? "Analyzing up to 5 pages in this batch. You can stop after the current request." : "Decoding current page..."}</p>}
+        {hasMore && <button type="button" disabled={busy} onClick={() => loadPages(false)} style={{ background: "#a52222", color: "white", border: 0, borderRadius: 8, padding: "12px 18px" }}>{busy ? "DECODING..." : started ? "ANALYZE NEXT 20 TRANSACTIONS" : "RUN DEEP ANALYSIS"}</button>}
+        {hasMore && !busy && <button type="button" onClick={() => loadPages(true)} style={{ marginLeft: 10, background: "#333", color: "white", border: "1px solid #777", borderRadius: 8, padding: "12px 18px" }}>ANALYZE NEXT 100 (AUTO)</button>}
+        {busy && autoRunning && <button type="button" onClick={() => { stopRequested.current = true; }} style={{ marginLeft: 10, background: "#333", color: "white", border: "1px solid #777", borderRadius: 8, padding: "12px 18px" }}>STOP AFTER CURRENT PAGE</button>}
       </div>
     </Section>
   );
