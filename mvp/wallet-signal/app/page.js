@@ -81,6 +81,7 @@ function formatDate(value) {
 }
 
 function formatNumber(value, digits = 4) {
+  if (value === null || value === undefined || value === "") return "Unavailable";
   const number = Number(value);
 
   if (!Number.isFinite(number)) {
@@ -979,7 +980,7 @@ export default function Home() {
                     9
                   )}
                   note={
-                    (glitchSummary.incomingTransferCount ?? 0) +
+                    (glitchSummary.incomingTransferCount == null ? "Unavailable" : glitchSummary.incomingTransferCount) +
                     " incoming transfers"
                   }
                 />
@@ -991,7 +992,7 @@ export default function Home() {
                     9
                   )}
                   note={
-                    (glitchSummary.outgoingTransferCount ?? 0) +
+                    (glitchSummary.outgoingTransferCount == null ? "Unavailable" : glitchSummary.outgoingTransferCount) +
                     " outgoing transfers"
                   }
                 />
@@ -1102,8 +1103,9 @@ export default function Home() {
 
                 {counterparties.length === 0 ? (
                   <p style={{ color: "#999" }}>
-                    No SOL transfer counterparties found
-                    in this sample.
+                    {glitchData.coverage?.transactionsDecoded === 0
+                      ? "Counterparty analysis unavailable — no transaction details were decoded."
+                      : "No SOL transfer counterparties found in the decoded sample."}
                   </p>
                 ) : (
                   counterparties.map((item) => (
@@ -1165,8 +1167,9 @@ export default function Home() {
 
                 {transfers.length === 0 ? (
                   <p style={{ color: "#999" }}>
-                    No explicit SOL transfers found
-                    in this sample.
+                    {glitchData.coverage?.transactionsDecoded === 0
+                      ? "SOL transfer analysis unavailable — no transaction details were decoded."
+                      : "No explicit SOL transfers found in the decoded sample."}
                   </p>
                 ) : (
                   transfers.map((transfer, index) => (
