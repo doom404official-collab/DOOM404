@@ -327,7 +327,8 @@ export default function Home() {
         @keyframes doom-scan { from { transform: translateY(10%); } to { transform: translateY(85%); } }
         @media (max-width: 640px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(120px, 40%); gap: 8px; } .doom-mascot__indicator { font-size: 8px; padding: 5px 8px; letter-spacing: .5px; } }
         @media (max-width: 380px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(105px, 36%); gap: 6px; } .doom-mascot__indicator { letter-spacing: 0; } }
-        .doom-wallet-controls { display:grid; grid-template-columns:minmax(0,1fr) 190px; align-items:end; gap:12px; margin-top:12px; }\n        .doom-wallet-controls input { min-width:0; }\n        @media (max-width:640px) { .doom-wallet-controls { grid-template-columns:minmax(0,1fr); gap:10px; } }\n        .doom-scan-panel { display:flex; align-items:center; gap:16px; margin-top:16px; padding:14px 18px; border:1px solid #922b3f; border-radius:16px; background:linear-gradient(110deg,#220b12,#11090d 65%,#210911); box-shadow:0 0 22px #b91b3022; }
+        .doom-wallet-controls { display:grid; grid-template-columns:minmax(0,1fr) 190px; align-items:end; gap:12px; margin-top:12px; }
+        .doom-wallet-controls input { min-width:0; }\n        @media (max-width:640px) { .doom-wallet-controls { grid-template-columns:minmax(0,1fr); gap:10px; } }\n        .doom-scan-panel { display:flex; align-items:center; gap:16px; margin-top:16px; padding:14px 18px; border:1px solid #922b3f; border-radius:16px; background:linear-gradient(110deg,#220b12,#11090d 65%,#210911); box-shadow:0 0 22px #b91b3022; }
         .doom-scan-thumb { width:76px; height:76px; flex-shrink:0; object-fit:cover; border-radius:12px; }
         .doom-scan-content { flex:1; min-width:0; }
         .doom-scan-title { color:#ff5369; font-size:16px; font-weight:800; letter-spacing:1.3px; }
@@ -401,6 +402,7 @@ export default function Home() {
             SOLANA WALLET ADDRESS
           </label>
 
+          <div className="doom-wallet-controls">
           <input
             id="wallet-address"
             value={wallet}
@@ -426,7 +428,7 @@ export default function Home() {
             style={{
               width: "100%",
               boxSizing: "border-box",
-              marginTop: "12px",
+              marginTop: 0,
               padding: "15px",
               background: "#090909",
               border: "1px solid #444",
@@ -441,7 +443,7 @@ export default function Home() {
             disabled={loading}
             style={{
               width: "100%",
-              marginTop: "16px",
+              marginTop: 0,
               padding: "16px",
               background: loading
                 ? "#555"
@@ -459,6 +461,7 @@ export default function Home() {
               ? "ANALYZING..."
               : "ANALYZE WALLET"}
           </button>
+          </div>
         </div>
 
         {loading && (
