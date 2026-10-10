@@ -269,12 +269,12 @@ export default function Home() {
   const glitchDecoded = glitchData?.coverage?.transactionsDecoded ?? 0;
   const glitchRetrieved = glitchData?.coverage?.signaturesRetrieved ?? 0;
   const glitchEvidenceSufficient = glitchDecoded > 0 &&
-    glitchData?.evidence?.evidenceQuality !== "insufficient" &&
-    glitchData?.evidence?.sampleCompleteness !== "limited";
+    glitchData?.evidence?.confidence === "sample_only" &&
+    ["bounded_sample", "sample_limit_reached"].includes(glitchData?.evidence?.sampleCompleteness);
   const walletScoreEligible = walletData?.dataCoverage?.scoringEligible === true &&
     walletData?.intelligence?.scoringStatus === "preliminary";
   const signalReady = walletAnalysisComplete && !hasModuleError &&
-    walletScoreEligible && (glitchRetrieved === 0 || glitchEvidenceSufficient);
+    walletScoreEligible && glitchEvidenceSufficient;
   const partialAnalysis = walletAnalysisComplete && !hasModuleError &&
     walletScoreEligible && !signalReady;
 
