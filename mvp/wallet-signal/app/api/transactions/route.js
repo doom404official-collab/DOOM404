@@ -152,8 +152,8 @@ export async function GET(request) {
       analysisMode: deepMode ? "deep" : "quick",
       pagination: deepMode ? {
         pageSize: SAMPLE_LIMIT,
-        nextCursor: signatures.length === SAMPLE_LIMIT ? signatures[signatures.length - 1].signature : null,
-        hasMorePotentialHistory: signatures.length === SAMPLE_LIMIT,
+        nextCursor: signatures.length === SAMPLE_LIMIT && !rateLimited ? signatures[signatures.length - 1].signature : null,
+        hasMorePotentialHistory: signatures.length === SAMPLE_LIMIT && !rateLimited,
         // A full page does not prove older history exists. Decode errors do not erase cursor progress.
         pageComplete: !rateLimited && failedToDecode === 0
       } : null,
