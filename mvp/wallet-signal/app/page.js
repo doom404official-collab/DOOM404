@@ -322,7 +322,13 @@ export default function Home() {
         .doom-mascot__beam { position: absolute; z-index: 3; inset: 12% 8%; border-top: 3px solid #ff4a5d; filter: drop-shadow(0 0 12px #ff304b); opacity: 0; pointer-events: none; }
         .doom-mascot--scanning .doom-mascot__beam { opacity: 1; animation: doom-scan 1.8s ease-in-out infinite alternate; }
         .doom-mascot__indicator { position: absolute; z-index: 4; bottom: 0; left: 50%; transform: translateX(-50%); background: #101010e8; color: #ff707b; border: 1px solid #8c2935; border-radius: 999px; padding: 7px 13px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; white-space: nowrap; }
-        .doom-mascot--complete .doom-mascot__image { filter: hue-rotate(125deg) saturate(1.2) drop-shadow(0 0 15px #41f6a799); }
+        /* Signal-ready treatment: preserve the dark visor, intensify emerald accents and dissolve the source image's rectangular edges. */
+        .doom-mascot--complete .doom-mascot__image {
+          filter: hue-rotate(125deg) saturate(1.65) contrast(1.22) brightness(.88) drop-shadow(0 0 12px #26f58c88);
+          -webkit-mask-image: radial-gradient(ellipse 65% 69% at 50% 47%, #000 62%, transparent 100%);
+          mask-image: radial-gradient(ellipse 65% 69% at 50% 47%, #000 62%, transparent 100%);
+        }
+        @media (prefers-reduced-motion: reduce) { .doom-mascot__image { transition: none; animation: none; } }
         .doom-mascot--complete .doom-mascot__indicator { color: #6cecb4; border-color: #287f56; }
         @keyframes doom-float { 0%,100% { transform: translateY(0) rotateY(-4deg) rotateX(2deg); } 50% { transform: translateY(-12px) rotateY(4deg) rotateX(-2deg); } }
         @keyframes doom-scan { from { transform: translateY(10%); } to { transform: translateY(85%); } }
