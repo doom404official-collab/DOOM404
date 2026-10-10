@@ -322,13 +322,13 @@ export async function GET(request) {
       : rateLimited || unavailable > 0
         ? "limited"
         : signatures.length < SAMPLE_LIMIT
-          ? "bounded_sample"
+          ? "rpc_visible_history_exhausted"
           : "sample_limit_reached";
     const evidenceConfidence = decoded === 0
       ? "insufficient"
       : rateLimited || unavailable > 0
         ? "limited"
-        : "sample_only";
+        : signatures.length < SAMPLE_LIMIT ? "rpc_visible_history_examined" : "sample_only";
     const observations = [];
     if (frequency.busiestDay) {
       observations.push("Most observed activity occurred on " + frequency.busiestDay.date +
@@ -359,8 +359,9 @@ export async function GET(request) {
         decodeDiagnostics,
         decodeMethod: "batch_with_bounded_backoff_and_individual_fallback",
         sampleLimit: SAMPLE_LIMIT,
-        scope:
-          "Most recent sampled transactions only"
+        scope: signatures.length < SAMPLE_LIMIT && !rateLimited && unavailable === 0
+          ? "RPC-visible history exhausted within quick scan limit; archival completeness unverified"
+          : "Most recent sampled transactions only"
       },
       summary: {
         incomingTransferCount: decoded === 0 ? null : incoming.length,
@@ -372,12 +373,16 @@ export async function GET(request) {
       topCounterparties,
       behaviorIntelligence: { frequency, concentration },
       evidence: {
+        rpcVisibleHistoryExhausted: signatures.length < SAMPLE_LIMIT && !rateLimited && unavailable === 0,
+        completeChainHistoryVerified: false,
         confidence: evidenceConfidence,
         sampleCompleteness,
         decodedTransactions: decoded,
         unavailableTransactions: unavailable,
         observations,
-        interpretation: "Descriptive observations from a limited sample; not fraud detection, financial advice, or a wallet trust score."
+        interpretation: signatures.length < SAMPLE_LIMIT && !rateLimited && unavailable === 0
+          ? "All signatures returned by this RPC were decoded; archival chain history is not independently verified. Observations are not fraud detection or a wallet trust score."
+          : "Descriptive observations from a limited sample; not fraud detection, financial advice, or a wallet trust score."
       },
       transfers,
       limitations: [
