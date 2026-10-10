@@ -9,12 +9,24 @@ export function createReliableConnection({
   primary = process.env.SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com",
   fallbacks = process.env.SOLANA_RPC_FALLBACK_URLS || "",
   timeoutMs = 8000,
-  retries = 1,
+  retries = 2,
   fetchImpl = fetch
 } = {}) {
   const endpoints = [...new Set([primary, ...fallbacks.split(",").map((x) => x.trim())].filter(Boolean))];
   if (!endpoints.length || !endpoints.every((url) => /^https:\/\//i.test(url))) {
     throw new Error("RPC endpoints must use HTTPS");
+  }
+  let nextSlot = Promise.resolve();
+  function pace() {
+    const slot = nextSlot.then(() => new Promise(resolve => setTimeout(resolve, 300)));
+    nextSlot = slot.catch(() => {});
+    return slot;
+  }
+  function backoff(response, attempt) {
+    const value = response?.headers?.get?.("retry-after");
+    const seconds = value && /^\d+(\.\d+)?$/.test(value) ? Number(value) : NaN;
+    const headerDelay = Number.isFinite(seconds) ? seconds * 1000 : 0;
+    return Math.min(5000, Math.max(headerDelay, 700 * (2 ** attempt)));
   }
   async function resilientFetch(_url, init = {}) {
     let lastError;
@@ -25,7 +37,9 @@ export function createReliableConnection({
         const onAbort = () => controller.abort();
         if (init.signal?.aborted) controller.abort();
         init.signal?.addEventListener?.("abort", onAbort, { once: true });
+        let retryWait = 700 * (2 ** attempt);
         try {
+          await pace();
           const response = await fetchImpl(endpoint, { ...init, signal: controller.signal });
           if (response.ok) {
             // JSON-RPC errors can arrive with HTTP 200. Retry only transient server errors.
@@ -38,6 +52,7 @@ export function createReliableConnection({
             }
           } else if (response.status === 429 || response.status >= 500) {
             lastError = new Error("Solana RPC HTTP " + response.status);
+            retryWait = backoff(response, attempt);
           } else {
             return response; // permanent HTTP error: preserve for web3.js
           }
@@ -48,7 +63,7 @@ export function createReliableConnection({
           clearTimeout(timeout);
           init.signal?.removeEventListener?.("abort", onAbort);
         }
-        if (attempt < retries) await new Promise((resolve) => setTimeout(resolve, 350 * 2 ** attempt));
+        if (attempt < retries) await new Promise((resolve) => setTimeout(resolve, retryWait));
       }
     }
     throw new Error("Solana RPC unavailable after retry and fallback", { cause: lastError });
