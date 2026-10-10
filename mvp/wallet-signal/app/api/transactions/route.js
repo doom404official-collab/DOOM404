@@ -55,6 +55,11 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const address = searchParams.get("address");
+    const deepMode = searchParams.get("mode") === "deep";
+    const cursor = searchParams.get("before");
+    if (cursor && (!deepMode || !/^[1-9A-HJ-NP-Za-km-z]{64,88}$/.test(cursor))) {
+      return NextResponse.json({ error: "Invalid deep-analysis cursor" }, { status: 400 });
+    }
 
     if (!address) {
       return NextResponse.json(
@@ -79,7 +84,7 @@ export async function GET(request) {
     const signatures =
       await connection.getSignaturesForAddress(
         publicKey,
-        { limit: SAMPLE_LIMIT }
+        { limit: SAMPLE_LIMIT, ...(deepMode && cursor ? { before: cursor } : {}) }
       );
 
     const transactions = [];
@@ -144,6 +149,14 @@ export async function GET(request) {
       address: publicKey.toBase58(),
       network: "mainnet-beta",
       transactionsRequested: SAMPLE_LIMIT,
+      analysisMode: deepMode ? "deep" : "quick",
+      pagination: deepMode ? {
+        pageSize: SAMPLE_LIMIT,
+        nextCursor: signatures.length === SAMPLE_LIMIT ? signatures[signatures.length - 1].signature : null,
+        hasMorePotentialHistory: signatures.length === SAMPLE_LIMIT,
+        // A full page does not prove older history exists. Decode errors do not erase cursor progress.
+        pageComplete: !rateLimited && failedToDecode === 0
+      } : null,
       signaturesRetrieved: signatures.length,
       transactionsDecoded: transactions.length,
       failedToDecode,
