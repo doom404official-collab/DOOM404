@@ -206,14 +206,12 @@ export default function Home() {
     setGlitchError("");
 
     try {
+      // Fetch the lightweight overview first, then overlap the two deep modules.
+      // This avoids launching all three RPC-heavy requests simultaneously.
+      const startedAt = performance.now();
       setStatus("Loading wallet intelligence...");
-
       try {
-        const result = await fetchModule(
-          "/api/wallet",
-          address
-        );
-
+        const result = await fetchModule("/api/wallet", address);
         if (version !== requestVersion.current) return;
         setWalletData(result);
       } catch (error) {
@@ -221,35 +219,23 @@ export default function Home() {
         setWalletError(error.message);
       }
 
-      setStatus("Loading transaction intelligence...");
-
-      try {
-        const result = await fetchModule(
-          "/api/transactions",
-          address
-        );
-
-        if (version !== requestVersion.current) return;
-        setTransactionData(result);
-      } catch (error) {
-        if (version !== requestVersion.current) return;
-        setTransactionError(error.message);
+      setStatus("Analyzing transactions and GLITCH evidence...");
+      const [transactionsResult, glitchResult] = await Promise.allSettled([
+        fetchModule("/api/transactions", address),
+        fetchModule("/api/glitch", address)
+      ]);
+      if (version !== requestVersion.current) return;
+      if (transactionsResult.status === "fulfilled") {
+        setTransactionData(transactionsResult.value);
+      } else {
+        setTransactionError(transactionsResult.reason?.message || "Transaction intelligence unavailable");
       }
-
-      setStatus("Running GLITCH Scanner...");
-
-      try {
-        const result = await fetchModule(
-          "/api/glitch",
-          address
-        );
-
-        if (version !== requestVersion.current) return;
-        setGlitchData(result);
-      } catch (error) {
-        if (version !== requestVersion.current) return;
-        setGlitchError(error.message);
+      if (glitchResult.status === "fulfilled") {
+        setGlitchData(glitchResult.value);
+      } else {
+        setGlitchError(glitchResult.reason?.message || "GLITCH evidence unavailable");
       }
+      console.info("[Wallet Signal] analysis elapsed ms", Math.round(performance.now() - startedAt));
 
       if (version === requestVersion.current) setStatus("");
 
