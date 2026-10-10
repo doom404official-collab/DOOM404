@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 const SAMPLE_LIMIT = 20;
+const BATCH_SIZE = 5;
 const LAMPORTS_PER_SOL = 1000000000;
 
 function wait(ms) {
@@ -108,71 +109,84 @@ export async function GET(request) {
     const decodeDiagnostics = { nullResponses: 0, rpcErrors: 0, unsupportedVersions: 0, rateLimitErrors: 0, otherErrors: 0, unattempted: 0 };
     const decodedActivity = [];
 
-    for (const entry of signatures) {
+    // Batch parsing reduces RPC round trips. Failed batches are retried per
+    // signature so one provider error cannot discard the whole sample.
+    let stoppedForRateLimit = false;
+    for (let offset = 0; offset < signatures.length && !stoppedForRateLimit; offset += BATCH_SIZE) {
+      const batch = signatures.slice(offset, offset + BATCH_SIZE);
+      let parsed;
       try {
-        const transaction =
-          await connection.getParsedTransaction(
-            entry.signature,
-            {
-              commitment: "confirmed",
-              maxSupportedTransactionVersion: 0
-            }
-          );
+        parsed = await connection.getParsedTransactions(
+          batch.map((entry) => entry.signature),
+          { commitment: "confirmed", maxSupportedTransactionVersion: 0 }
+        );
+        if (!Array.isArray(parsed) || parsed.length !== batch.length) {
+          throw new Error("Incomplete batch decode response");
+        }
+      } catch (batchError) {
+        console.warn("GLITCH batch decode failed; trying individual requests", {
+          count: batch.length,
+          reason: String(batchError?.message || batchError).slice(0, 180)
+        });
+        parsed = [];
+        for (const entry of batch) {
+          try {
+            parsed.push(await connection.getParsedTransaction(entry.signature, {
+              commitment: "confirmed", maxSupportedTransactionVersion: 0
+            }));
+          } catch (error) {
+            parsed.push({ __decodeError: error });
+          }
+          await wait(200);
+        }
+      }
 
+      for (let index = 0; index < batch.length; index++) {
+        const entry = batch[index];
+        const transaction = parsed[index];
+        if (transaction?.__decodeError) {
+          unavailable++;
+          const error = transaction.__decodeError;
+          const combined = String(error?.message || "") + " " + String(error?.cause?.message || "");
+          if (/429|rate limit|too many requests/i.test(combined)) {
+            decodeDiagnostics.rateLimitErrors++;
+            rateLimited = true;
+            stoppedForRateLimit = true;
+          } else if (/unsupported transaction version|maxSupportedTransactionVersion/i.test(combined)) {
+            decodeDiagnostics.unsupportedVersions++;
+          } else if (/rpc|fetch|timeout|abort|503|502|504|403|401|unavailable/i.test(combined)) {
+            decodeDiagnostics.rpcErrors++;
+          } else {
+            decodeDiagnostics.otherErrors++;
+          }
+          console.error("GLITCH decode failure", {
+            signature: entry.signature.slice(0, 8),
+            reason: combined.slice(0, 180)
+          });
+          if (stoppedForRateLimit) break;
+          continue;
+        }
         if (!transaction) {
           unavailable++;
           decodeDiagnostics.nullResponses++;
           continue;
         }
-
         decoded++;
         const blockTime = transaction.blockTime ?? entry.blockTime;
-        if (Number.isFinite(blockTime) && blockTime > 0) {
-          decodedActivity.push(blockTime);
-        }
-
-        const outerInstructions =
-          transaction.transaction?.message?.instructions || [];
-
-        const innerInstructions =
-          (transaction.meta?.innerInstructions || [])
-            .flatMap((group) => group.instructions || []);
-
-        const transactionTransfers = extractTransfers(
-          [...outerInstructions, ...innerInstructions],
-          walletAddress,
-          entry.signature
-        );
-
-        for (const transfer of transactionTransfers) {
+        if (Number.isFinite(blockTime) && blockTime > 0) decodedActivity.push(blockTime);
+        const outerInstructions = transaction.transaction?.message?.instructions || [];
+        const innerInstructions = (transaction.meta?.innerInstructions || [])
+          .flatMap((group) => group.instructions || []);
+        for (const transfer of extractTransfers(
+          [...outerInstructions, ...innerInstructions], walletAddress, entry.signature
+        )) {
           transfers.push({
             ...transfer,
-            timestamp: entry.blockTime
-              ? new Date(entry.blockTime * 1000).toISOString()
-              : null
+            timestamp: blockTime ? new Date(blockTime * 1000).toISOString() : null
           });
         }
-
-      } catch (error) {
-        unavailable++;
-        const message = String(error?.message || "Unknown RPC error");
-        const causeMessage = String(error?.cause?.message || "");
-        const combined = message + " " + causeMessage;
-        if (/429|rate limit|too many requests/i.test(combined)) {
-          decodeDiagnostics.rateLimitErrors++;
-          rateLimited = true;
-        } else if (/unsupported transaction version|maxSupportedTransactionVersion/i.test(combined)) {
-          decodeDiagnostics.unsupportedVersions++;
-        } else if (/rpc|fetch|timeout|abort|503|502|504|403|401|unavailable/i.test(combined)) {
-          decodeDiagnostics.rpcErrors++;
-        } else {
-          decodeDiagnostics.otherErrors++;
-        }
-        console.error("GLITCH decode failure", { signature: entry.signature.slice(0, 8), reason: message.slice(0, 180) });
-        if (rateLimited) break;
       }
-
-      await wait(700);
+      if (!stoppedForRateLimit) await wait(250);
     }
 
     decodeDiagnostics.unattempted = Math.max(0, signatures.length - decoded - unavailable);
