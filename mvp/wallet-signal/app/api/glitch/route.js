@@ -359,6 +359,7 @@ export async function GET(request) {
       pagination: deep ? {
         nextCursor: pageHasMore && !rateLimited ? signatures.at(-1)?.signature : null,
         hasMore: pageHasMore && !rateLimited,
+        pageSignatures: signatures.map(entry => entry.signature),
         pageDecoded: decoded,
         pageUnavailable: unavailable,
         pageComplete: !rateLimited && unavailable === 0
