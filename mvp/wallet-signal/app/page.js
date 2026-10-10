@@ -161,7 +161,22 @@ function DeepGlitchExplorer({ address }) {
   const [started, setStarted] = useState(false);
   const decoded = pages.reduce((sum, page) => sum + (page.coverage?.transactionsDecoded || 0), 0);
   const unavailable = pages.reduce((sum, page) => sum + (page.coverage?.transactionsUnavailable || 0), 0);
-  const transfers = pages.reduce((sum, page) => sum + (page.transfers?.length || 0), 0);
+  const allTransfers = pages.flatMap(page => page.transfers || []);
+  const transfers = allTransfers.length;
+  const allSignatures = pages.flatMap(page => page.pagination?.pageSignatures || []);
+  const uniqueSignatures = new Set(allSignatures);
+  const coverageValid = allSignatures.length === uniqueSignatures.size;
+  const counterparties = new Map();
+  for (const transfer of allTransfers) {
+    if (!transfer.counterparty || !["incoming", "outgoing"].includes(transfer.direction)) continue;
+    const item = counterparties.get(transfer.counterparty) || { address: transfer.counterparty, interactions: 0, volumeSOL: 0 };
+    item.interactions++;
+    item.volumeSOL += Number(transfer.amountSOL || 0);
+    counterparties.set(transfer.counterparty, item);
+  }
+  const ranked = [...counterparties.values()].sort((a, b) => b.volumeSOL - a.volumeSOL);
+  const totalVolume = ranked.reduce((sum, item) => sum + item.volumeSOL, 0);
+  const concentration = totalVolume > 0 ? (ranked[0].volumeSOL / totalVolume * 100).toFixed(2) : null;
   async function loadPage() {
     if (busy || !hasMore) return;
     setBusy(true);
@@ -171,6 +186,10 @@ function DeepGlitchExplorer({ address }) {
       const response = await fetch(url, { cache: "no-store" });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Deep analysis unavailable");
+      const received = data.pagination?.pageSignatures || [];
+      if (received.length !== new Set(received).size || received.some(signature => uniqueSignatures.has(signature))) {
+        throw new Error("Duplicate transaction signatures detected; analysis halted to protect evidence integrity.");
+      }
       setPages(old => [...old, data]);
       setStarted(true);
       const next = data.pagination?.nextCursor || null;
@@ -187,7 +206,9 @@ function DeepGlitchExplorer({ address }) {
     <Section title="Deep GLITCH // Evidence Analysis">
       <div style={cardStyle}>
         <p style={{ color: "#ddd" }}>Decode additional RPC-visible transactions in 20-transaction pages. Each page is independently assessed; a wallet risk score is not yet available.</p>
-        <p style={{ color: "#bbb" }}>Pages examined: {pages.length} · Transactions decoded: {decoded} · Unavailable: {unavailable} · Explicit SOL transfers: {transfers}</p>
+        <p style={{ color: "#bbb" }}>Pages examined: {pages.length} · Unique signatures: {uniqueSignatures.size} · Transactions decoded: {decoded} · Unavailable: {unavailable} · Explicit SOL transfers: {transfers}</p>
+        {started && <p style={{ color: "#bbb" }}>Cumulative counterparties: {counterparties.size} · Largest counterparty share of observed explicit SOL transfer volume: {concentration === null ? "Not enough data" : concentration + "%"}</p>}
+        {started && <p style={{ color: coverageValid && unavailable === 0 ? "#83d4a0" : "#ffb86b" }}>Evidence integrity: {coverageValid ? "No duplicate signatures across loaded pages" : "Duplicate signatures detected"} · {unavailable === 0 ? "All requested records decoded" : "Some records unavailable"}</p>}
         {started && <p style={{ color: "#bbb" }}>{hasMore ? "More history may be available." : "No further history returned by this RPC; archival completeness not verified."}</p>}
         {error && <p role="alert" style={{ color: "#ffb86b" }}>{error}</p>}
         {hasMore && <button type="button" disabled={busy} onClick={loadPage} style={{ background: "#a52222", color: "white", border: 0, borderRadius: 8, padding: "12px 18px" }}>{busy ? "DECODING..." : started ? "ANALYZE NEXT 20 TRANSACTIONS" : "RUN DEEP ANALYSIS"}</button>}
