@@ -317,6 +317,7 @@ export default function Home() {
       <style>{`
         .doom-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 360px); align-items: center; gap: 12px; margin-bottom: -46px; }
         .doom-mascot { position: relative; width: 100%; max-width: 360px; aspect-ratio: 1; isolation: isolate; perspective: 900px; margin: 0 auto; }
+        @media (min-width:641px) { .doom-hero .doom-mascot { transform:translateY(-28px); } }
         .doom-mascot__image { position: relative; z-index: 2; display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 0; filter: drop-shadow(0 16px 30px #d3192433); animation: doom-float 4.5s ease-in-out infinite; transform-style: preserve-3d; }
         .doom-mascot__beam { position: absolute; z-index: 3; inset: 12% 8%; border-top: 3px solid #ff4a5d; filter: drop-shadow(0 0 12px #ff304b); opacity: 0; pointer-events: none; }
         .doom-mascot--scanning .doom-mascot__beam { opacity: 1; animation: doom-scan 1.8s ease-in-out infinite alternate; }
