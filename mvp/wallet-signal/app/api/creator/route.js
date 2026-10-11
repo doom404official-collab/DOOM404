@@ -50,33 +50,53 @@ export async function GET(request) {
   }
   try {
     const connection = createReliableConnection();
-    const [account, supply] = await Promise.all([
+    // Fetch raw account bytes independently: parsed RPC responses are not always supported.
+    const [rawCheck, parsedCheck, supplyCheck] = await Promise.allSettled([
+      connection.getAccountInfo(mint, "confirmed"),
       connection.getParsedAccountInfo(mint, "confirmed"),
-      connection.getTokenSupply(mint, "confirmed").catch(() => null)
+      connection.getTokenSupply(mint, "confirmed")
     ]);
-    if (!account.value) {
-      return NextResponse.json({ error: "Mint account not found on this RPC" }, { status: 404 });
+    const rawAccount = rawCheck.status === "fulfilled" ? rawCheck.value : null;
+    const parsedAccount = parsedCheck.status === "fulfilled" ? parsedCheck.value?.value : null;
+    const supply = supplyCheck.status === "fulfilled" ? supplyCheck.value : null;
+    if (!rawAccount && !parsedAccount) {
+      if (rawCheck.status === "rejected" || parsedCheck.status === "rejected") {
+        return NextResponse.json({ error: "RPC verification unavailable.", detail: "The Solana RPC could not confirm this account. Please retry later.", errorCode: "RPC_UNAVAILABLE" }, { status: 503 });
+      }
+      return NextResponse.json({ error: "Account not found on the selected Solana RPC.", detail: "Check the full token mint address and network.", errorCode: "ACCOUNT_NOT_FOUND" }, { status: 404 });
     }
-    const parsed = account.value.data?.parsed;
-    const owner = account.value.owner?.toBase58?.() || null;
+    const account = rawAccount || parsedAccount;
+    const owner = account.owner?.toBase58?.() || null;
     const TOKEN_PROGRAMS = {
       "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA": "spl-token",
       "TokenzQdBNbLqP5VEhdkAS6EPFjL6BCrC7QwZQkXQ": "spl-token-2022"
     };
-    const isParsedMint = parsed?.type === "mint" && ["spl-token", "spl-token-2022"].includes(parsed?.program);
-    const isVerifiedSupplyMint = Boolean(supply?.value) && Boolean(TOKEN_PROGRAMS[owner]);
-    if (!isParsedMint && !isVerifiedSupplyMint) {
-      return NextResponse.json({
-        error: "This address could not be verified as a Solana token mint.",
-        detail: "Check that you entered the token contract (mint) address, not a wallet, bonding-curve account, or token holding account.",
-        accountType: parsed?.type || "unknown",
-        accountOwnerProgram: owner,
-        tokenSupplyLookupSucceeded: Boolean(supply?.value)
-      }, { status: 422 });
+    const tokenProgram = TOKEN_PROGRAMS[owner] || null;
+    const parsed = parsedAccount?.data?.parsed;
+    const isParsedMint = parsed?.type === "mint" && Boolean(tokenProgram);
+    const bytes = rawAccount?.data;
+    // Both SPL Token and Token-2022 share the 82-byte base mint layout.
+    // Offset 45 is the initialized flag; token accounts use a different layout.
+    const rawMint = Boolean(tokenProgram && Buffer.isBuffer(bytes) && bytes.length >= 82 &&
+      (tokenProgram === "spl-token-2022" || bytes.length === 82) && bytes[45] === 1 &&
+      bytes[0] <= 1 && bytes[46] <= 1);
+    const supplyMint = Boolean(tokenProgram && supply?.value);
+    if (!isParsedMint && !rawMint && !supplyMint) {
+      if (!tokenProgram) {
+        return NextResponse.json({ error: "Not an SPL Token or Token-2022 account.", detail: "The address is owned by a different program. Check that you pasted the token mint address.", errorCode: "NOT_TOKEN_PROGRAM", accountOwnerProgram: owner }, { status: 422 });
+      }
+      if (rawCheck.status === "rejected" || supplyCheck.status === "rejected") {
+        return NextResponse.json({ error: "Token mint verification inconclusive.", detail: "The RPC could not return enough information to distinguish this account from a token holding account.", errorCode: "RPC_INCONCLUSIVE" }, { status: 503 });
+      }
+      return NextResponse.json({ error: "Address is not a verified token mint.", detail: "This may be a token holding account rather than the mint address.", errorCode: "NOT_MINT", accountType: parsed?.type || "unknown" }, { status: 422 });
     }
     const info = isParsedMint ? (parsed.info || {}) : {};
-    const tokenProgram = isParsedMint ? parsed.program : TOKEN_PROGRAMS[owner];
+    const rawSupply = rawMint ? bytes.readBigUInt64LE(36).toString() : null;
+    const decimals = info.decimals ?? (rawMint ? bytes[44] : null) ?? supply?.value?.decimals ?? null;
+    const displaySupply = supply?.value?.uiAmountString ?? (rawSupply !== null && decimals !== null ?
+      (BigInt(rawSupply) / (10n ** BigInt(decimals))).toString() + (BigInt(rawSupply) % (10n ** BigInt(decimals)) ? "." + (BigInt(rawSupply) % (10n ** BigInt(decimals))).toString().padStart(decimals, "0").replace(/0+$/, "") : "") : null);
     const parsedMintDetailsAvailable = isParsedMint;
+    const verificationMethod = isParsedMint ? "parsed_mint" : rawMint ? "raw_mint_layout" : "token_supply";
     let origin;
     try { origin = await inspectMintOrigin(connection, mint); }
     catch { origin = { status: "unverified", reason: "Mint origin lookup unavailable.", coverage: { archivalCompletenessVerified: false } }; }
@@ -84,8 +104,9 @@ export async function GET(request) {
       mint: mint.toBase58(),
       tokenProgram,
       parsedMintDetailsAvailable,
-      decimals: info.decimals ?? supply?.value?.decimals ?? null,
-      supply: supply?.value?.uiAmountString ?? null,
+      decimals,
+      verificationMethod,
+      supply: displaySupply,
       mintAuthority: info.mintAuthority ?? null,
       freezeAuthority: info.freezeAuthority ?? null,
       authoritiesAreCreatorIdentity: false,
@@ -93,7 +114,7 @@ export async function GET(request) {
       creator: { status: "unverified", address: null, reason: "Mint and freeze authorities do not reliably identify the original token creator. Historical launch transaction and provenance indexing are required." },
       mintOrigin: origin,
       creatorHoldingTime: { status: "not_available", reason: "Verified creator attribution and token sale ledger are not yet connected." },
-      dataCoverage: { source: "Solana RPC parsed mint account and bounded mint history", historicalLaunchesChecked: 0, transactionHistoryDecoded: origin.signature ? 1 : 0 },
+      dataCoverage: { source: "Solana RPC parsed/raw mint account and bounded mint history", historicalLaunchesChecked: 0, transactionHistoryDecoded: origin.signature ? 1 : 0 },
       interpretation: "This is a token mint inspection, not a scam verdict or creator-behavior assessment."
     }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
