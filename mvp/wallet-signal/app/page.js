@@ -716,6 +716,20 @@ export default function Home() {
         {walletAnalysisComplete && (
         <div key={requestVersion.current} id="wallet-results">
         {emptyWallet && <p role="status" style={{ color: "#ffb86b", fontSize: "14px" }}>New or inactive wallet: no observable transactions in the queried history. Behavioral scoring is unavailable; this is not a wallet safety assessment.</p>}
+        <section aria-label="DOOM404 Trust Report" style={{ ...cardStyle, borderColor: "#633", marginBottom: 18 }}>
+          <p style={{ color: "#ff7777", fontSize: 12, fontWeight: 700, letterSpacing: 2 }}>DOOM404 // TRUST REPORT · EARLY ACCESS</p>
+          <h2 style={{ fontSize: 26, margin: "8px 0" }}>Decision: Further verification required</h2>
+          <p style={{ color: "#ddd", lineHeight: 1.65 }}>This scan cannot establish whether this wallet is safe or malicious. Do not treat an absence of detected indicators as clearance to transfer funds.</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, margin: "16px 0" }}>
+            <div style={{ background: "#202020", padding: 14, borderRadius: 8 }}><small style={{ color: "#aaa" }}>Risk verdict</small><p style={{ fontWeight: 700, marginBottom: 0 }}>Not established</p></div>
+            <div style={{ background: "#202020", padding: 14, borderRadius: 8 }}><small style={{ color: "#aaa" }}>Decoded evidence</small><p style={{ fontWeight: 700, marginBottom: 0 }}>{glitchDecoded} transactions</p></div>
+            <div style={{ background: "#202020", padding: 14, borderRadius: 8 }}><small style={{ color: "#aaa" }}>Coverage</small><p style={{ fontWeight: 700, marginBottom: 0 }}>{glitchData?.evidence?.sampleCompleteness ? String(glitchData.evidence.sampleCompleteness).replaceAll("_", " ") : "Unverified"}</p></div>
+          </div>
+          <h3 style={{ marginBottom: 6 }}>What you can decide now</h3>
+          <p style={{ color: "#ccc", lineHeight: 1.65 }}>You can inspect observed wallet activity and supporting transactions. You cannot yet rely on this report for malicious-address screening, creator history, token-launch behavior or a validated wallet risk grade.</p>
+          <p style={{ color: "#ffbf86", lineHeight: 1.65 }}>Recommended next action: Verify the wallet owner and transaction purpose independently before sending funds. Expand GLITCH evidence and inspect transaction signatures below.</p>
+          <p style={{ color: "#999", fontSize: 12 }}>This report uses current on-chain observations only. Threat intelligence and token-creator relationship checks are not yet connected.</p>
+        </section>
         <Section title="GLITCH // Evidence Quality">
           {glitchEvidence ? (
             <>
