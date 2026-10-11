@@ -238,11 +238,24 @@ function DeepGlitchExplorer({ address }) {
           <h3 style={{ color: "#fff" }}>GLITCH // Experimental Risk Indicators</h3>
           <p style={{ color: "#ffbd80" }}>Assessment: {assessment.assessmentStatus.replaceAll("_", " ")} · Evidence confidence: {assessment.confidence} · Risk score: Not assessed</p>
           <p style={{ color: "#bbb" }}>Observed activity does not establish whether a wallet is safe or fraudulent.</p>
+          <p style={{ color: "#aaa" }}>{assessment.confidenceExplanation}</p>
+          <details style={{ marginBottom: 16 }}><summary style={{ cursor: "pointer", color: "#ddd" }}>How indicators are evaluated ({assessment.ruleChecks.length})</summary>
+            {assessment.ruleChecks.map(rule => <div key={rule.id} style={{ padding: "10px 0", borderBottom: "1px solid #333" }}>
+              <strong style={{ color: "#eee" }}>{rule.title}: {rule.triggered ? "Triggered" : "Not triggered"}</strong>
+              <p style={{ color: "#bbb" }}>Threshold: {rule.threshold}</p>
+              <p style={{ color: "#bbb" }}>Observed: {rule.observed}</p>
+            </div>)}
+          </details>
           {assessment.findings.length === 0 && <p style={{ color: "#bbb" }}>No supported behavioral findings under current rules. This does not mean the wallet is safe.</p>}
           {assessment.findings.map(finding => <div key={finding.id} style={{ borderTop: "1px solid #333", padding: "12px 0" }}>
             <strong style={{ color: "#fff" }}>{finding.title}</strong>
             <p style={{ color: "#bbb" }}>{finding.explanation}</p>
-            <p style={{ color: "#aaa", overflowWrap: "anywhere", fontSize: 12 }}>Supporting transaction signatures: {finding.signatures.join(", ")}</p>
+            <p style={{ color: "#aaa", fontSize: 12 }}>Rule: {finding.rule}</p>
+            <p style={{ color: "#aaa", fontSize: 12 }}>Supporting transactions ({finding.supportingTransactions ?? finding.signatures.length}):</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {finding.signatures.map(signature => <a key={signature} href={"https://solscan.io/tx/" + encodeURIComponent(signature)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff", fontSize: 12, overflowWrap: "anywhere" }} title={signature}>{signature.slice(0, 10)}… ↗</a>)}
+            </div>
+            {finding.signatures.length < (finding.supportingTransactions || 0) && <p style={{ color: "#aaa", fontSize: 12 }}>Showing the first {finding.signatures.length} supporting signatures.</p>}
           </div>)}
           <details><summary style={{ cursor: "pointer", color: "#ddd" }}>Evidence limitations ({assessment.limitations.length})</summary>
             <ul style={{ color: "#aaa" }}>{assessment.limitations.map(note => <li key={note}>{note}</li>)}</ul>
