@@ -357,6 +357,11 @@ function CreatorLookup() {
       <p><strong>Mint authority:</strong> {result.mintAuthority || "None"}</p>
       <p><strong>Freeze authority:</strong> {result.freezeAuthority || "None"}</p>
       <p style={{ color: "#ffbf86" }}><strong>Creator identity:</strong> Unverified — authorities do not prove creator ownership.</p>
+      <p><strong>Mint origin investigation:</strong> {result.mintOrigin?.status === "initialization_signer_observed" ? "Initialization signer observed" : "Origin not verified"}</p>
+      {result.mintOrigin?.address && <p><strong>Initialization signer (not verified creator):</strong> {result.mintOrigin.address}</p>}
+      {result.mintOrigin?.signature && <p><a href={"https://solscan.io/tx/" + encodeURIComponent(result.mintOrigin.signature)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>View mint initialization evidence ↗</a></p>}
+      <p style={{ color: "#aaa", fontSize: 12 }}>{result.mintOrigin?.reason}</p>
+      <p style={{ color: "#aaa", fontSize: 12 }}>RPC history exhausted within scan: {result.mintOrigin?.coverage?.historyExhaustedWithinRpc ? "Yes (archival completeness unverified)" : "No / unknown"}</p>
       <p style={{ color: "#aaa" }}>Holding time and prior launches: Not yet assessed. No risk verdict issued.</p>
       <a href={"https://solscan.io/token/" + encodeURIComponent(result.mint)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>Verify mint on Solscan ↗</a>
     </div>}
