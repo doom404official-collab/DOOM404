@@ -12,23 +12,35 @@ async function inspectMintOrigin(connection, mint, cursor = null) {
   let earliest = null;
   let exhausted = false;
   let pages = 0;
+  let oldestPage = [];
   for (let i = 0; i < HISTORY_PAGE_CAP; i++) {
     const rows = await connection.getSignaturesForAddress(mint, { limit: HISTORY_PAGE_SIZE, ...(before ? { before } : {}) }, "confirmed");
     pages++;
     if (!rows.length) { exhausted = true; break; }
     earliest = rows[rows.length - 1];
+    oldestPage = rows;
     if (rows.length < HISTORY_PAGE_SIZE) { exhausted = true; break; }
     before = earliest.signature;
   }
   const coverage = { pagesScanned: pages, historyExhaustedWithinRpc: exhausted, oldestObservedSignature: earliest?.signature || null, nextCursor: exhausted ? null : earliest?.signature || null, archivalCompletenessVerified: false };
   if (!earliest || !exhausted) return { status: "unverified", reason: exhausted ? "No additional mint history returned by this RPC; archival completeness remains unverified." : "Earliest mint history not established within bounded RPC scan. Continue searching older signatures.", coverage };
-  const tx = await connection.getParsedTransaction(earliest.signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
-  if (!tx || tx.meta?.err) return { status: "unverified", reason: "Earliest observed transaction unavailable or failed.", coverage };
-  const instructions = [...(tx.transaction?.message?.instructions || []), ...(tx.meta?.innerInstructions || []).flatMap(x => x.instructions || [])];
-  const initialized = instructions.some(x => ["initializeMint", "initializeMint2"].includes(x.parsed?.type) && x.parsed?.info?.mint === mint.toBase58() && ["spl-token", "spl-token-2022"].includes(x.program));
-  if (!initialized) return { status: "unverified", reason: "Mint initialization was not verified in earliest observed transaction.", coverage };
-  const signer = tx.transaction.message.accountKeys.find(x => x.signer && x.pubkey);
-  return { status: "initialization_signer_observed", address: signer?.pubkey?.toBase58() || null, signature: earliest.signature, blockTime: earliest.blockTime ?? null, reason: "Initialization signer is an origin candidate, not a verified token creator or beneficial owner.", coverage };
+  // Inspect a small window of the oldest RPC-visible transactions, not just one.
+  // Some token launches have multiple setup instructions/transactions.
+  const candidates = oldestPage.slice(-12).reverse().filter(row => !row.err);
+  let checked = 0;
+  for (const row of candidates) {
+    let tx;
+    try { tx = await connection.getParsedTransaction(row.signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 }); }
+    catch { continue; }
+    checked++;
+    if (!tx || tx.meta?.err) continue;
+    const instructions = [...(tx.transaction?.message?.instructions || []), ...(tx.meta?.innerInstructions || []).flatMap(x => x.instructions || [])];
+    const initialized = instructions.some(x => ["initializeMint", "initializeMint2"].includes(x.parsed?.type) && x.parsed?.info?.mint === mint.toBase58() && ["spl-token", "spl-token-2022"].includes(x.program));
+    if (!initialized) continue;
+    const signer = tx.transaction.message.accountKeys.find(x => x.signer && x.pubkey);
+    return { status: "initialization_signer_observed", address: signer?.pubkey?.toBase58() || null, signature: row.signature, blockTime: row.blockTime ?? null, reason: "Verified mint initialization instruction found. Transaction signer is an origin candidate, not a verified creator or beneficial owner.", coverage: { ...coverage, initializationCandidatesChecked: checked } };
+  }
+  return { status: "unverified", reason: "No mint initialization instruction found among the oldest available transactions. Origin and creator remain unverified.", coverage: { ...coverage, initializationCandidatesChecked: checked } };
 }
 
 
