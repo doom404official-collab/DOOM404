@@ -332,17 +332,22 @@ function CreatorLookup() {
   const [busy, setBusy] = useState(false);
   const [historyCursor, setHistoryCursor] = useState(null);
   const [historyBatches, setHistoryBatches] = useState(0);
+  const MAX_HISTORY_BATCHES = 5;
   async function inspect(event, cursor = null) {
     event.preventDefault();
     setBusy(true); setError(""); if (!cursor) { setResult(null); setHistoryCursor(null); setHistoryBatches(0); }
     try {
-      const response = await fetch("/api/creator?mint=" + encodeURIComponent(mint.trim()) + (cursor ? "&before=" + encodeURIComponent(cursor) : ""), { cache: "no-store" });
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 45000);
+      let response;
+      try { response = await fetch("/api/creator?mint=" + encodeURIComponent(mint.trim()) + (cursor ? "&before=" + encodeURIComponent(cursor) : ""), { cache: "no-store", signal: controller.signal }); }
+      finally { clearTimeout(timer); }
       const data = await response.json();
       if (!response.ok) throw new Error([data.error, data.detail].filter(Boolean).join(" " ) || "Token lookup failed");
       setResult(data);
       setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
       setHistoryBatches(n => cursor ? n + 1 : 1);
-    } catch (failure) { setError(failure.message); }
+    } catch (failure) { setError(failure.name === "AbortError" ? "Historical scan timed out after 45 seconds. Retry the same batch or use an archival data provider." : failure.message); }
     finally { setBusy(false); }
   }
   return <section aria-label="Creator Intelligence" style={{ ...cardStyle, borderColor: "#633" }}>
@@ -354,6 +359,7 @@ function CreatorLookup() {
       <button type="submit" disabled={busy} style={{ padding: "12px 18px", border: 0, borderRadius: 8, background: "#a52222", color: "white", cursor: "pointer" }}>{busy ? "INSPECTING..." : "INSPECT TOKEN"}</button>
     </form>
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
+    {busy && <p role="status" style={{ color: "#ddd" }}>Querying Solana history. Each batch checks up to 3,000 signatures; this may take up to 45 seconds.</p>}
     {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
       <p><strong>Mint:</strong> {result.mint}</p>
       <p><strong>Token program:</strong> {result.tokenProgram}</p>
@@ -366,7 +372,8 @@ function CreatorLookup() {
       {result.mintOrigin?.signature && <p><a href={"https://solscan.io/tx/" + encodeURIComponent(result.mintOrigin.signature)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>View mint initialization evidence ↗</a></p>}
       <p style={{ color: "#aaa", fontSize: 12 }}>{result.mintOrigin?.reason}</p>
       <p style={{ color: "#aaa", fontSize: 12 }}>Historical scan batches: {historyBatches} · Pages in latest batch: {result.mintOrigin?.coverage?.pagesScanned ?? 0}. A complete archival history is not guaranteed.</p>
-      {historyCursor && <button type="button" disabled={busy} onClick={() => inspect({ preventDefault() {} }, historyCursor)} style={{ background: "#a52222", color: "white", border: 0, borderRadius: 8, padding: "12px 16px", cursor: "pointer" }}>{busy ? "SEARCHING..." : "SEARCH OLDER MINT HISTORY"}</button>}
+      {historyCursor && historyBatches < MAX_HISTORY_BATCHES && <button type="button" disabled={busy} onClick={() => inspect({ preventDefault() {} }, historyCursor)} style={{ background: "#a52222", color: "white", border: 0, borderRadius: 8, padding: "12px 16px", cursor: "pointer" }}>{busy ? "SEARCHING..." : "SEARCH OLDER MINT HISTORY"}</button>}
+      {historyCursor && historyBatches >= MAX_HISTORY_BATCHES && <p style={{ color: "#ffbf86" }}>RPC search limit reached (up to 15,000 signatures requested). Further origin attribution needs an archival/indexed provider; creator remains unverified.</p>}
       <p style={{ color: "#aaa", fontSize: 12 }}>RPC history exhausted within scan: {result.mintOrigin?.coverage?.historyExhaustedWithinRpc ? "Yes (archival completeness unverified)" : "No / unknown"}</p>
       <p style={{ color: "#aaa" }}>Holding time and prior launches: Not yet assessed. No risk verdict issued.</p>
       <a href={"https://solscan.io/token/" + encodeURIComponent(result.mint)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>Verify mint on Solscan ↗</a>
