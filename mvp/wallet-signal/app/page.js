@@ -370,6 +370,7 @@ function CreatorLookup() {
 
 export default function Home() {
   const [wallet, setWallet] = useState("");
+  const [analysisMode, setAnalysisMode] = useState("wallet");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
 
@@ -639,6 +640,15 @@ export default function Home() {
           <MascotDisplay loading={loading} complete={signalReady} partial={partialAnalysis} />
         </div>
 
+        <div role="tablist" aria-label="Analysis type" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 18 }}>
+          {[{ id: "wallet", label: "WALLET ANALYSIS" }, { id: "token", label: "TOKEN ANALYSIS" }].map(item =>
+            <button key={item.id} type="button" role="tab" aria-selected={analysisMode === item.id} onClick={() => setAnalysisMode(item.id)}
+              style={{ padding: "14px 8px", background: analysisMode === item.id ? "#aa2525" : "#1b1b1b", color: "#fff", border: analysisMode === item.id ? "1px solid #d84949" : "1px solid #555", borderRadius: 9, fontWeight: 700, fontSize: "clamp(11px, 2.5vw, 14px)", cursor: "pointer" }}>
+              {item.label}
+            </button>
+          )}
+        </div>
+        {analysisMode === "token" ? <div role="tabpanel" aria-label="Token Analysis"><CreatorLookup /></div> : <div role="tabpanel" aria-label="Wallet Analysis">
         <div className="doom-wallet-card" style={cardStyle}>
           <label
             htmlFor="wallet-address"
@@ -773,7 +783,6 @@ export default function Home() {
           <p style={{ color: "#ffbf86", lineHeight: 1.65 }}>Recommended next action: Verify the wallet owner and transaction purpose independently before sending funds. Expand GLITCH evidence and inspect transaction signatures below.</p>
           <p style={{ color: "#999", fontSize: 12 }}>This report uses current on-chain observations only. Threat intelligence and token-creator relationship checks are not yet connected.</p>
         </section>
-        <CreatorLookup />
         <Section title="GLITCH // Evidence Quality">
           {glitchEvidence ? (
             <>
@@ -1613,6 +1622,7 @@ export default function Home() {
             Higher. Stronger. Together.
           </p>
         </footer>}
+        </div>
       </div>
     </main>
   );
