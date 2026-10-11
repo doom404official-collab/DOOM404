@@ -7,8 +7,8 @@ export const dynamic = "force-dynamic";
 const HISTORY_PAGE_SIZE = 1000;
 const HISTORY_PAGE_CAP = 3;
 
-async function inspectMintOrigin(connection, mint) {
-  let before;
+async function inspectMintOrigin(connection, mint, cursor = null) {
+  let before = cursor || undefined;
   let earliest = null;
   let exhausted = false;
   let pages = 0;
@@ -20,8 +20,8 @@ async function inspectMintOrigin(connection, mint) {
     if (rows.length < HISTORY_PAGE_SIZE) { exhausted = true; break; }
     before = earliest.signature;
   }
-  const coverage = { pagesScanned: pages, historyExhaustedWithinRpc: exhausted, oldestObservedSignature: earliest?.signature || null, archivalCompletenessVerified: false };
-  if (!earliest || !exhausted) return { status: "unverified", reason: "Earliest mint history not established within bounded RPC scan.", coverage };
+  const coverage = { pagesScanned: pages, historyExhaustedWithinRpc: exhausted, oldestObservedSignature: earliest?.signature || null, nextCursor: exhausted ? null : earliest?.signature || null, archivalCompletenessVerified: false };
+  if (!earliest || !exhausted) return { status: "unverified", reason: exhausted ? "No additional mint history returned by this RPC; archival completeness remains unverified." : "Earliest mint history not established within bounded RPC scan. Continue searching older signatures.", coverage };
   const tx = await connection.getParsedTransaction(earliest.signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
   if (!tx || tx.meta?.err) return { status: "unverified", reason: "Earliest observed transaction unavailable or failed.", coverage };
   const instructions = [...(tx.transaction?.message?.instructions || []), ...(tx.meta?.innerInstructions || []).flatMap(x => x.instructions || [])];
@@ -38,7 +38,12 @@ async function inspectMintOrigin(connection, mint) {
  * Historical creator attribution requires a verified launch transaction/indexer.
  */
 export async function GET(request) {
-  const address = new URL(request.url).searchParams.get("mint") || "";
+  const url = new URL(request.url);
+  const address = url.searchParams.get("mint") || "";
+  const before = url.searchParams.get("before");
+  if (before && !/^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(before)) {
+    return NextResponse.json({ error: "Invalid historical scan cursor" }, { status: 400 });
+  }
   let mint;
   try {
     mint = new PublicKey(address);
@@ -98,7 +103,7 @@ export async function GET(request) {
     const parsedMintDetailsAvailable = isParsedMint;
     const verificationMethod = isParsedMint ? "parsed_mint" : rawMint ? "raw_mint_layout" : "token_supply";
     let origin;
-    try { origin = await inspectMintOrigin(connection, mint); }
+    try { origin = await inspectMintOrigin(connection, mint, before); }
     catch { origin = { status: "unverified", reason: "Mint origin lookup unavailable.", coverage: { archivalCompletenessVerified: false } }; }
     return NextResponse.json({
       mint: mint.toBase58(),
