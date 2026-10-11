@@ -69,7 +69,7 @@ export async function GET(request) {
     const owner = account.owner?.toBase58?.() || null;
     const TOKEN_PROGRAMS = {
       "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA": "spl-token",
-      "TokenzQdBNbLqP5VEhdkAS6EPFjL6BCrC7QwZQkXQ": "spl-token-2022"
+      "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb": "spl-token-2022"
     };
     const tokenProgram = TOKEN_PROGRAMS[owner] || null;
     const parsed = parsedAccount?.data?.parsed;
