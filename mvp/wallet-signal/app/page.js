@@ -336,7 +336,7 @@ function CreatorLookup() {
     try {
       const response = await fetch("/api/creator?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Token lookup failed");
+      if (!response.ok) throw new Error([data.error, data.detail].filter(Boolean).join(" " ) || "Token lookup failed");
       setResult(data);
     } catch (failure) { setError(failure.message); }
     finally { setBusy(false); }
@@ -354,8 +354,8 @@ function CreatorLookup() {
       <p><strong>Mint:</strong> {result.mint}</p>
       <p><strong>Token program:</strong> {result.tokenProgram}</p>
       <p><strong>Supply:</strong> {result.supply ?? "Unavailable"}</p>
-      <p><strong>Mint authority:</strong> {result.mintAuthority || "None"}</p>
-      <p><strong>Freeze authority:</strong> {result.freezeAuthority || "None"}</p>
+      <p><strong>Mint authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.mintAuthority || "None")}</p>
+      <p><strong>Freeze authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.freezeAuthority || "None")}</p>
       <p style={{ color: "#ffbf86" }}><strong>Creator identity:</strong> Unverified — authorities do not prove creator ownership.</p>
       <p><strong>Mint origin investigation:</strong> {result.mintOrigin?.status === "initialization_signer_observed" ? "Initialization signer observed" : "Origin not verified"}</p>
       {result.mintOrigin?.address && <p><strong>Initialization signer (not verified creator):</strong> {result.mintOrigin.address}</p>}
