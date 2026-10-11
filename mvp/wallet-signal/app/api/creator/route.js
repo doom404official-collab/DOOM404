@@ -135,7 +135,7 @@ export async function GET(request) {
       authorityDetailsStatus: parsedMintDetailsAvailable ? "available" : "not_parsed",
       creator: { status: "unverified", address: null, reason: "Mint and freeze authorities do not reliably identify the original token creator. Historical launch transaction and provenance indexing are required." },
       mintOrigin: origin,
-      historicalProvider: { mode: archivalConfigured ? "configured_archival_rpc" : "standard_rpc", diagnostic: providerDiagnostic, connectivity: providerConnectivity, archivalCompletenessVerified: false },
+      historicalProvider: { mode: archivalConfigured ? "configured_archival_rpc" : "standard_rpc", diagnostic: archivalConfigured && providerConnectivity === "confirmed" ? "connection_confirmed" : archivalConfigured && providerConnectivity === "failed" ? "connection_failed" : providerDiagnostic, connectivity: providerConnectivity, archivalCompletenessVerified: false },
       creatorHoldingTime: { status: "not_available", reason: "Verified creator attribution and token sale ledger are not yet connected." },
       dataCoverage: { source: "Solana RPC parsed/raw mint account and bounded mint history", historicalLaunchesChecked: 0, transactionHistoryDecoded: origin.signature ? 1 : 0 },
       interpretation: "This is a token mint inspection, not a scam verdict or creator-behavior assessment."
