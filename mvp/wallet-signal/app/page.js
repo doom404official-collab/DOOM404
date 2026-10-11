@@ -325,6 +325,44 @@ function HistoryExplorer({ address }) {
   );
 }
 
+function CreatorLookup() {
+  const [mint, setMint] = useState("");
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  async function inspect(event) {
+    event.preventDefault();
+    setBusy(true); setError(""); setResult(null);
+    try {
+      const response = await fetch("/api/creator?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Token lookup failed");
+      setResult(data);
+    } catch (failure) { setError(failure.message); }
+    finally { setBusy(false); }
+  }
+  return <section aria-label="Creator Intelligence" style={{ ...cardStyle, borderColor: "#633" }}>
+    <p style={{ color: "#ff7777", fontSize: 12, fontWeight: 700, letterSpacing: 2 }}>DOOM404 // CREATOR INTELLIGENCE · CB-01</p>
+    <h2 style={{ marginTop: 8 }}>Inspect a Solana token</h2>
+    <p style={{ color: "#bbb", lineHeight: 1.6 }}>First verify the token mint. Historical creator identification and holding-time analytics are under development.</p>
+    <form onSubmit={inspect} style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+      <input aria-label="Solana token mint address" value={mint} onChange={e => setMint(e.target.value)} placeholder="Paste Solana token mint address" required style={{ flex: "1 1 260px", minWidth: 0, padding: 12, background: "#101010", border: "1px solid #555", borderRadius: 8, color: "white" }} />
+      <button type="submit" disabled={busy} style={{ padding: "12px 18px", border: 0, borderRadius: 8, background: "#a52222", color: "white", cursor: "pointer" }}>{busy ? "INSPECTING..." : "INSPECT TOKEN"}</button>
+    </form>
+    {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
+    {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
+      <p><strong>Mint:</strong> {result.mint}</p>
+      <p><strong>Token program:</strong> {result.tokenProgram}</p>
+      <p><strong>Supply:</strong> {result.supply ?? "Unavailable"}</p>
+      <p><strong>Mint authority:</strong> {result.mintAuthority || "None"}</p>
+      <p><strong>Freeze authority:</strong> {result.freezeAuthority || "None"}</p>
+      <p style={{ color: "#ffbf86" }}><strong>Creator identity:</strong> Unverified — authorities do not prove creator ownership.</p>
+      <p style={{ color: "#aaa" }}>Holding time and prior launches: Not yet assessed. No risk verdict issued.</p>
+      <a href={"https://solscan.io/token/" + encodeURIComponent(result.mint)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>Verify mint on Solscan ↗</a>
+    </div>}
+  </section>;
+}
+
 export default function Home() {
   const [wallet, setWallet] = useState("");
   const [loading, setLoading] = useState(false);
@@ -730,6 +768,7 @@ export default function Home() {
           <p style={{ color: "#ffbf86", lineHeight: 1.65 }}>Recommended next action: Verify the wallet owner and transaction purpose independently before sending funds. Expand GLITCH evidence and inspect transaction signatures below.</p>
           <p style={{ color: "#999", fontSize: 12 }}>This report uses current on-chain observations only. Threat intelligence and token-creator relationship checks are not yet connected.</p>
         </section>
+        <CreatorLookup />
         <Section title="GLITCH // Evidence Quality">
           {glitchEvidence ? (
             <>
