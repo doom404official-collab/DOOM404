@@ -77,7 +77,7 @@ export async function GET(request) {
     const bytes = rawAccount?.data;
     // Both SPL Token and Token-2022 share the 82-byte base mint layout.
     // Offset 45 is the initialized flag; token accounts use a different layout.
-    const rawMint = Boolean(tokenProgram && Buffer.isBuffer(bytes) && bytes.length >= 82 &&
+    const rawMint = Boolean(tokenProgram && bytes instanceof Uint8Array && bytes.length >= 82 &&
       (tokenProgram === "spl-token-2022" || bytes.length === 82) && bytes[45] === 1 &&
       bytes[0] <= 1 && bytes[46] <= 1);
     const supplyMint = Boolean(tokenProgram && supply?.value);
@@ -91,7 +91,7 @@ export async function GET(request) {
       return NextResponse.json({ error: "Address is not a verified token mint.", detail: "This may be a token holding account rather than the mint address.", errorCode: "NOT_MINT", accountType: parsed?.type || "unknown" }, { status: 422 });
     }
     const info = isParsedMint ? (parsed.info || {}) : {};
-    const rawSupply = rawMint ? bytes.readBigUInt64LE(36).toString() : null;
+    const rawSupply = rawMint ? new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getBigUint64(36, true).toString() : null;
     const decimals = info.decimals ?? (rawMint ? bytes[44] : null) ?? supply?.value?.decimals ?? null;
     const displaySupply = supply?.value?.uiAmountString ?? (rawSupply !== null && decimals !== null ?
       (BigInt(rawSupply) / (10n ** BigInt(decimals))).toString() + (BigInt(rawSupply) % (10n ** BigInt(decimals)) ? "." + (BigInt(rawSupply) % (10n ** BigInt(decimals))).toString().padStart(decimals, "0").replace(/0+$/, "") : "") : null);
