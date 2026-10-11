@@ -1622,7 +1622,7 @@ export default function Home() {
             Higher. Stronger. Together.
           </p>
         </footer>}
-        </div>
+        </div>}
       </div>
     </main>
   );
