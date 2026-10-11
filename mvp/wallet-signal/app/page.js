@@ -330,14 +330,18 @@ function CreatorLookup() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  async function inspect(event) {
+  const [historyCursor, setHistoryCursor] = useState(null);
+  const [historyBatches, setHistoryBatches] = useState(0);
+  async function inspect(event, cursor = null) {
     event.preventDefault();
-    setBusy(true); setError(""); setResult(null);
+    setBusy(true); setError(""); if (!cursor) { setResult(null); setHistoryCursor(null); setHistoryBatches(0); }
     try {
-      const response = await fetch("/api/creator?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
+      const response = await fetch("/api/creator?mint=" + encodeURIComponent(mint.trim()) + (cursor ? "&before=" + encodeURIComponent(cursor) : ""), { cache: "no-store" });
       const data = await response.json();
       if (!response.ok) throw new Error([data.error, data.detail].filter(Boolean).join(" " ) || "Token lookup failed");
       setResult(data);
+      setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
+      setHistoryBatches(n => cursor ? n + 1 : 1);
     } catch (failure) { setError(failure.message); }
     finally { setBusy(false); }
   }
@@ -361,6 +365,8 @@ function CreatorLookup() {
       {result.mintOrigin?.address && <p><strong>Initialization signer (not verified creator):</strong> {result.mintOrigin.address}</p>}
       {result.mintOrigin?.signature && <p><a href={"https://solscan.io/tx/" + encodeURIComponent(result.mintOrigin.signature)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>View mint initialization evidence ↗</a></p>}
       <p style={{ color: "#aaa", fontSize: 12 }}>{result.mintOrigin?.reason}</p>
+      <p style={{ color: "#aaa", fontSize: 12 }}>Historical scan batches: {historyBatches} · Pages in latest batch: {result.mintOrigin?.coverage?.pagesScanned ?? 0}. A complete archival history is not guaranteed.</p>
+      {historyCursor && <button type="button" disabled={busy} onClick={() => inspect({ preventDefault() {} }, historyCursor)} style={{ background: "#a52222", color: "white", border: 0, borderRadius: 8, padding: "12px 16px", cursor: "pointer" }}>{busy ? "SEARCHING..." : "SEARCH OLDER MINT HISTORY"}</button>}
       <p style={{ color: "#aaa", fontSize: 12 }}>RPC history exhausted within scan: {result.mintOrigin?.coverage?.historyExhaustedWithinRpc ? "Yes (archival completeness unverified)" : "No / unknown"}</p>
       <p style={{ color: "#aaa" }}>Holding time and prior launches: Not yet assessed. No risk verdict issued.</p>
       <a href={"https://solscan.io/token/" + encodeURIComponent(result.mint)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>Verify mint on Solscan ↗</a>
