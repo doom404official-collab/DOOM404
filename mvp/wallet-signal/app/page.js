@@ -537,9 +537,9 @@ export default function Home() {
   return (
     <main
       style={{
-        minHeight: analysisFinished ? "100vh" : "100dvh",
-        height: analysisFinished && walletData && !walletError ? "auto" : "100dvh",
-        overflowY: analysisFinished && walletData && !walletError ? "visible" : "hidden",
+        minHeight: analysisMode === "token" || analysisFinished ? "100vh" : "100dvh",
+        height: analysisMode === "token" || (analysisFinished && walletData && !walletError) ? "auto" : "100dvh",
+        overflowY: analysisMode === "token" || (analysisFinished && walletData && !walletError) ? "visible" : "hidden",
         boxSizing: "border-box",
         background: "#080808",
         color: "#fff",
