@@ -58,21 +58,38 @@ export async function GET(request) {
       return NextResponse.json({ error: "Mint account not found on this RPC" }, { status: 404 });
     }
     const parsed = account.value.data?.parsed;
-    if (parsed?.type !== "mint" || !["spl-token", "spl-token-2022"].includes(parsed?.program)) {
-      return NextResponse.json({ error: "Address is not a parsed SPL token mint" }, { status: 422 });
+    const owner = account.value.owner?.toBase58?.() || null;
+    const TOKEN_PROGRAMS = {
+      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA": "spl-token",
+      "TokenzQdBNbLqP5VEhdkAS6EPFjL6BCrC7QwZQkXQ": "spl-token-2022"
+    };
+    const isParsedMint = parsed?.type === "mint" && ["spl-token", "spl-token-2022"].includes(parsed?.program);
+    const isVerifiedSupplyMint = Boolean(supply?.value) && Boolean(TOKEN_PROGRAMS[owner]);
+    if (!isParsedMint && !isVerifiedSupplyMint) {
+      return NextResponse.json({
+        error: "This address could not be verified as a Solana token mint.",
+        detail: "Check that you entered the token contract (mint) address, not a wallet, bonding-curve account, or token holding account.",
+        accountType: parsed?.type || "unknown",
+        accountOwnerProgram: owner,
+        tokenSupplyLookupSucceeded: Boolean(supply?.value)
+      }, { status: 422 });
     }
-    const info = parsed.info || {};
+    const info = isParsedMint ? (parsed.info || {}) : {};
+    const tokenProgram = isParsedMint ? parsed.program : TOKEN_PROGRAMS[owner];
+    const parsedMintDetailsAvailable = isParsedMint;
     let origin;
     try { origin = await inspectMintOrigin(connection, mint); }
     catch { origin = { status: "unverified", reason: "Mint origin lookup unavailable.", coverage: { archivalCompletenessVerified: false } }; }
     return NextResponse.json({
       mint: mint.toBase58(),
-      tokenProgram: parsed.program,
-      decimals: info.decimals ?? null,
+      tokenProgram,
+      parsedMintDetailsAvailable,
+      decimals: info.decimals ?? supply?.value?.decimals ?? null,
       supply: supply?.value?.uiAmountString ?? null,
       mintAuthority: info.mintAuthority ?? null,
       freezeAuthority: info.freezeAuthority ?? null,
       authoritiesAreCreatorIdentity: false,
+      authorityDetailsStatus: parsedMintDetailsAvailable ? "available" : "not_parsed",
       creator: { status: "unverified", address: null, reason: "Mint and freeze authorities do not reliably identify the original token creator. Historical launch transaction and provenance indexing are required." },
       mintOrigin: origin,
       creatorHoldingTime: { status: "not_available", reason: "Verified creator attribution and token sale ledger are not yet connected." },
