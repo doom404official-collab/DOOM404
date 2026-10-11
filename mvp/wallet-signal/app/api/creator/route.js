@@ -105,8 +105,9 @@ export async function GET(request) {
     let origin;
     // Optional archival RPC: configure HELIUS_RPC_URL server-side only.
     // No provider key is sent to the browser or included in API output.
-    const archivalUrl = process.env.HELIUS_RPC_URL;
-    const archivalConfigured = Boolean(archivalUrl && /^https:\/\//i.test(archivalUrl));
+    const archivalUrl = (process.env.HELIUS_RPC_URL || "").trim();
+    const archivalConfigured = /^https:\/\//i.test(archivalUrl);
+    const providerDiagnostic = !archivalUrl ? "missing_env" : !archivalConfigured ? "invalid_url_format" : "configured_not_verified";
     const originConnection = archivalConfigured
       ? createReliableConnection({ primary: archivalUrl, fallbacks: "", timeoutMs: 10000, retries: 1 })
       : connection;
@@ -125,7 +126,7 @@ export async function GET(request) {
       authorityDetailsStatus: parsedMintDetailsAvailable ? "available" : "not_parsed",
       creator: { status: "unverified", address: null, reason: "Mint and freeze authorities do not reliably identify the original token creator. Historical launch transaction and provenance indexing are required." },
       mintOrigin: origin,
-      historicalProvider: { mode: archivalConfigured ? "configured_archival_rpc" : "standard_rpc", archivalCompletenessVerified: false },
+      historicalProvider: { mode: archivalConfigured ? "configured_archival_rpc" : "standard_rpc", diagnostic: providerDiagnostic, archivalCompletenessVerified: false },
       creatorHoldingTime: { status: "not_available", reason: "Verified creator attribution and token sale ledger are not yet connected." },
       dataCoverage: { source: "Solana RPC parsed/raw mint account and bounded mint history", historicalLaunchesChecked: 0, transactionHistoryDecoded: origin.signature ? 1 : 0 },
       interpretation: "This is a token mint inspection, not a scam verdict or creator-behavior assessment."
