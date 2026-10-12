@@ -17,6 +17,8 @@ if (!permitted) {
     const rpc = createSolanaRpcAdapter({ rpcUrl: process.env.HELIUS_RPC_URL, pageLimit: 100 });
     const history = await rpc.lookupSignatures(mint, { maxPages: 2 });
     const signatures = history.signatures.slice(-10).reverse();
+    const rpcHistoryExhausted = history.rpcHistoryExhausted;
+    const totalSignaturesDiscovered = history.signatures.length;
     const sampledSignatures = signatures;
     const verified = [];
     let retrieved = 0, failed = 0, unavailable = 0, unsuccessful = 0;
@@ -42,7 +44,7 @@ if (!permitted) {
     console.log("CREATOR_VALIDATION:", JSON.stringify({
       status: verified.length ? "CANDIDATE_VERIFIED_NEEDS_INDEPENDENT_REVIEW" : "UNRESOLVED",
       mint, sampled: signatures.length, retrieved, failed, unavailable, unsuccessful, failureReasons,
-      historyComplete: false, sampledSignatures, unsupportedVersionSignatures, verified,
+      historyComplete: false, rpcHistoryExhausted, totalSignaturesDiscovered, sampledSignatures, unsupportedVersionSignatures, verified,
     }));
   } catch {
     console.log("CREATOR_VALIDATION: RPC_DISCOVERY_FAILED");
