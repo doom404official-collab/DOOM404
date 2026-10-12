@@ -331,11 +331,13 @@ function CreatorLookup() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [historyCursor, setHistoryCursor] = useState(null);
+  const [concentration, setConcentration] = useState(null);
+  const [concentrationError, setConcentrationError] = useState("");
   const [historyBatches, setHistoryBatches] = useState(0);
   const MAX_HISTORY_BATCHES = 5;
   async function inspect(event, cursor = null) {
     event.preventDefault();
-    setBusy(true); setError(""); if (!cursor) { setResult(null); setHistoryCursor(null); setHistoryBatches(0); }
+    setBusy(true); setError(""); if (!cursor) { setResult(null); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); }
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 45000);
@@ -345,6 +347,14 @@ function CreatorLookup() {
       const data = await response.json();
       if (!response.ok) throw new Error([data.error, data.detail].filter(Boolean).join(" " ) || "Token lookup failed");
       setResult(data);
+      if (!cursor) {
+        try {
+          const concentrationResponse = await fetch("/api/token-concentration?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
+          const accountData = await concentrationResponse.json();
+          if (!concentrationResponse.ok) throw new Error(accountData.error || "Token-account balances unavailable");
+          setConcentration(accountData);
+        } catch (concentrationFailure) { setConcentrationError(concentrationFailure.message); }
+      }
       setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
       setHistoryBatches(n => cursor ? n + 1 : 1);
     } catch (failure) { setError(failure.name === "AbortError" ? "Historical scan timed out after 45 seconds. Retry the same batch or use an archival data provider." : failure.message); }
@@ -364,6 +374,20 @@ function CreatorLookup() {
       <p><strong>Mint:</strong> {result.mint}</p>
       <p><strong>Token program:</strong> {result.tokenProgram}</p>
       <p><strong>Supply:</strong> {result.supply ?? "Unavailable"}</p>
+      <div style={{ background: "#191919", border: "1px solid #444", padding: 16, borderRadius: 10, marginTop: 14 }}>
+        <h3 style={{ marginTop: 0 }}>TOKEN ACCOUNT CONCENTRATION // Evidence</h3>
+        {concentrationError && <p style={{ color: "#ffb86b" }}>Account concentration unavailable: {concentrationError}. No conclusion inferred.</p>}
+        {!concentration && !concentrationError && <p style={{ color: "#aaa" }}>Retrieving largest token accounts...</p>}
+        {concentration && <>
+          <p><strong>Largest account:</strong> {concentration.largestAccountSharePct ?? "Unavailable"}% of supply</p>
+          <p><strong>Top 5 token accounts:</strong> {concentration.top5TokenAccountSharePct ?? "Unavailable"}% · <strong>Top 10:</strong> {concentration.top10TokenAccountSharePct ?? "Unavailable"}%</p>
+          <p style={{ color: "#ffbf86", fontSize: 13 }}>{concentration.coverage?.warning}</p>
+          <details><summary style={{ cursor: "pointer", color: "#ddd" }}>View largest token accounts ({concentration.returnedAccounts})</summary>
+            {(concentration.accounts || []).map(account => <p key={account.tokenAccount} style={{ fontSize: 12 }}>#{account.rank} · {account.sharePct}% · <a href={"https://solscan.io/account/" + encodeURIComponent(account.tokenAccount)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff", overflowWrap: "anywhere" }}>{account.tokenAccount}</a></p>)}
+          </details>
+          <p style={{ color: "#aaa", fontSize: 12 }}>Source: {concentration.coverage?.source}. Unique owners, pool balances and exchange custody are not resolved. No risk verdict.</p>
+        </>}
+      </div>
       <p><strong>Mint authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.mintAuthority || "None")}</p>
       <p><strong>Freeze authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.freezeAuthority || "None")}</p>
       <p style={{ color: "#ffbf86" }}><strong>Creator attribution:</strong> {result.creator?.status === "provider_attributed" ? "Solscan-associated creator (ownership unverified)" : "Unverified — authorities do not prove creator ownership."}</p>
