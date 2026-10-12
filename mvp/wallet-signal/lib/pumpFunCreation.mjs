@@ -27,20 +27,36 @@ export function decodePumpFunCreate({ instruction, transaction, mint, programId 
   const keys = transaction?.transaction?.message?.accountKeys?.map(keyString) || [];
   if (!Array.isArray(instruction.accounts)) return null;
   const accounts = instruction.accounts.map((entry) => Number.isInteger(entry) ? keys[entry] : keyString(entry));
-  if (accounts.length < 8 || accounts[0] !== mint || !accounts.every(Boolean)) return null;
+  if (accounts[0] !== mint || !accounts.every(Boolean)) return null;
   let bytes;
   try { bytes = decode58(instruction.data); } catch { return null; }
   const kind = ["create", "create_v2"].find((name) => bytes.length >= 8 && bytes.subarray(0, 8).equals(createHash("sha256").update("global:" + name).digest().subarray(0, 8)));
   if (!kind) return null;
+  const SYSTEM = "11111111111111111111111111111111";
+  const TOKEN = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+  const TOKEN22 = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
+  const ATA = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
+  if (kind === "create") {
+    if (accounts.length !== 14 || accounts[8] !== SYSTEM || accounts[9] !== TOKEN ||
+        accounts[10] !== ATA || accounts[13] !== PUMP_PROGRAM_ID) return null;
+  } else {
+    if (![16, 19].includes(accounts.length) || accounts[6] !== SYSTEM ||
+        accounts[7] !== TOKEN22 || accounts[8] !== ATA || accounts[15] !== PUMP_PROGRAM_ID) return null;
+  }
   try {
     let offset = 8;
-    for (const max of [128, 52, 800]) offset = readString(bytes, offset, max);
+    for (const max of [32, 13, 200]) offset = readString(bytes, offset, max);
     if (offset + 32 > bytes.length) return null;
     const creator = encode58(bytes.subarray(offset, offset + 32));
     if (creator === "11111111111111111111111111111111") return null;
     offset += 32;
     if (kind === "create" && offset !== bytes.length) return null;
-    if (kind === "create_v2" && (offset >= bytes.length || ![0, 1].includes(bytes[offset]))) return null;
+    if (kind === "create_v2") {
+      if (offset >= bytes.length || ![0, 1].includes(bytes[offset])) return null;
+      offset++;
+      if (bytes.length - offset > 4) return null;
+      for (const flag of bytes.subarray(offset)) if (![0, 1].includes(flag)) return null;
+    }
     const user = accounts[kind === "create" ? 7 : 5];
     if (!user) return null;
     return { verified: true, mint, role: "launchpad_creator", creator, user, decoderVersion: "pump-fun-" + kind + "-prefix-v1", creationInstructionVerified: true };
