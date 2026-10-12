@@ -20,3 +20,14 @@ test("rejects wrong mint, unsupported program and invalid option",()=>{
  assert.equal(inspectMintInitialization([{...ix,data:b58(bytes),accounts:["wrong"]}],mint).length,0);
  assert.equal(inspectMintInitialization([{...ix,data:b58(bytes),programId:"unknown"}],mint).length,0);
 });
+
+test("handles binary, numeric arrays and tagged base64",()=>{
+ const bytes=new Uint8Array(38);
+ bytes[0]=20;
+ bytes[1]=6;
+ const base={programId:program,accounts:[mint]};
+ assert.equal(inspectMintInitialization([{...base,data:bytes}],mint).length,1);
+ assert.equal(inspectMintInitialization([{...base,data:Array.from(bytes)}],mint).length,1);
+ const encoded=Buffer.from(bytes).toString("base64");
+ assert.equal(inspectMintInitialization([{...base,data:[encoded,"base64"]}],mint).length,1);
+});
