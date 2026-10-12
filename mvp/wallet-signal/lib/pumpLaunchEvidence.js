@@ -25,6 +25,8 @@ export function detectPumpLaunch({ mint, transaction, signature } = {}) {
     signature: signature || null, signers: [...new Set(signers)],
     launchCreator: null, launchCreatorVerified: false,
     blockTime: transaction.blockTime ?? null,
+    decodingCoverage: { programInteractionObserved: true, mintReferenced, creationInstructionDecoded: false, creatorAccountPositionVerified: false },
+    investigation: { instructionCount: pumpInstructions.length, requiresVerifiedProgramIdl: true, requiresCreationInstructionDiscriminator: true },
     reason: mintReferenced
       ? "Pump.fun program interaction and mint reference observed. Launch instruction and creator account have not been independently decoded."
       : "Pump.fun instruction observed, but this mint was not independently linked to the instruction."
