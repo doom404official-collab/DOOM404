@@ -30,13 +30,13 @@ export function normalizeOriginTransaction(tx) {
   return { status: "normalized", signature: tx.transaction.signatures?.[0] || null,
     slot: tx.slot ?? null, blockTime: tx.blockTime ?? null, keys, instructions };
 }
-export function resolveCreatorRole({ mint, transaction, registry = AUDITED_CREATOR_SCHEMAS } = {}) {
+export function resolveCreatorRole({ mint, transaction } = {}) {
   const normalized = normalizeOriginTransaction(transaction);
   if (normalized.status !== "normalized" || !BASE58.test(mint || "")) return { status: "unresolved", reason: "invalid_mint_or_transaction", evidence: null };
   const candidates = [];
   for (const instruction of normalized.instructions) {
     if (!instruction.accounts.includes(mint)) continue;
-    const schemas = registry.filter(s => s?.internallyAudited === true && s.programId === instruction.programId && s.version && s.discriminator);
+    const schemas = AUDITED_CREATOR_SCHEMAS.filter(s => s?.internallyAudited === true && s.programId === instruction.programId && s.version && s.discriminator);
     // Never trust a supplied reviewed flag or guess account positions.
     for (const schema of schemas) {
       if (typeof schema.decode !== "function") continue;
