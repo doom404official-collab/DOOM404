@@ -54,9 +54,9 @@ async function inspectIndexedOrigin(endpoint, mint, connection) {
       body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getTransactionsForAddress",
         params: [mint.toBase58(), { sortOrder: "asc", transactionDetails: "signatures", limit: 30, filters: { status: "succeeded" } }] })
     });
-    if (!response.ok) return { status: "unavailable", reason: "Indexed history HTTP request failed." };
+    if (!response.ok) return { status: "unavailable", reason: response.status === 401 || response.status === 403 ? "Indexed history access denied. Verify provider key and plan permissions." : response.status === 429 ? "Indexed history rate limit reached. Retry later." : response.status === 404 ? "Indexed history method unavailable at this endpoint." : "Indexed history HTTP request failed.", diagnostic: { code: "INDEXED_HTTP_" + response.status, httpStatus: response.status } };
     const payload = await response.json();
-    if (payload.error) return { status: "unavailable", reason: "Indexed history unavailable for this provider or plan." };
+    if (payload.error) { const code = payload.error.code; const message = String(payload.error.message || "").slice(0, 180); return { status: "unavailable", reason: code === -32601 ? "Indexed history RPC method is not supported by this endpoint or plan." : "Indexed history RPC returned an error; using bounded RPC fallback.", diagnostic: { code: "INDEXED_RPC_ERROR", rpcCode: code ?? null, providerMessage: message.replace(/https?:\/\/\S+/g, "[redacted endpoint]") } }; }
     // Helius indexed history may return signatures, transaction objects, or a
     // provider-specific wrapper. Never mistake an unrecognized response for
     // verified absence of historical transactions.
@@ -70,8 +70,8 @@ async function inspectIndexedOrigin(endpoint, mint, connection) {
       .filter(x => typeof x === "string");
     const coverage = { provider: "helius_indexed", sortOrder: "asc",
       signaturesReturned: signatures.length, archivalCompletenessVerified: false };
-    if (!rows) return { status: "unavailable", reason: "Indexed provider returned an unrecognized response; using RPC fallback.", coverage };
-    if (!signatures.length) return { status: "unavailable", reason: "Indexed provider returned no usable signatures; using RPC fallback.", coverage };
+    if (!rows) return { status: "unavailable", reason: "Indexed provider returned an unrecognized response; using RPC fallback.", diagnostic: { code: "INDEXED_UNRECOGNIZED_RESPONSE" }, coverage };
+    if (!signatures.length) return { status: "unavailable", reason: "Indexed provider returned no usable signatures; using RPC fallback.", diagnostic: { code: "INDEXED_NO_SIGNATURES", rowsReturned: rows.length }, coverage };
     let checked = 0;
     for (const signature of signatures.slice(0, 15)) {
       let tx;
@@ -86,7 +86,7 @@ async function inspectIndexedOrigin(endpoint, mint, connection) {
         coverage: { ...coverage, initializationCandidatesChecked: checked } };
     }
     return { status: "unavailable", reason: "No mint initialization verified in indexed response; continue with bounded RPC history.", coverage: { ...coverage, initializationCandidatesChecked: checked } };
-  } catch { return { status: "unavailable", reason: "Indexed history request failed or timed out." }; }
+  } catch (error) { return { status: "unavailable", reason: error?.name === "AbortError" ? "Indexed history timed out after 12 seconds; using bounded RPC fallback." : "Indexed history request failed; using bounded RPC fallback.", diagnostic: { code: error?.name === "AbortError" ? "INDEXED_TIMEOUT" : "INDEXED_NETWORK_FAILURE" } }; }
   finally { clearTimeout(timer); }
 }
 
@@ -199,7 +199,7 @@ export async function GET(request) {
       authoritiesAreCreatorIdentity: false,
       authorityDetailsStatus: parsedMintDetailsAvailable ? "available" : "not_parsed",
       creator: { status: "unverified", address: null, reason: "Mint and freeze authorities do not reliably identify the original token creator. Historical launch transaction and provenance indexing are required." },
-      mintOrigin: origin,
+      mintOrigin: origin,\n      indexedHistoryDiagnostic: indexedOrigin ? { status: indexedOrigin.status, reason: indexedOrigin.reason || null, diagnostic: indexedOrigin.diagnostic || null, coverage: indexedOrigin.coverage || null } : { status: archivalConfigured ? (before ? "skipped_pagination" : "skipped_connectivity") : "not_configured" },
       historicalProvider: { mode: archivalConfigured ? "configured_archival_rpc" : "standard_rpc", diagnostic: archivalConfigured && providerConnectivity === "confirmed" ? "connection_confirmed" : archivalConfigured && providerConnectivity === "failed" ? "connection_failed" : providerDiagnostic, connectivity: providerConnectivity, archivalCompletenessVerified: false },
       creatorHoldingTime: { status: "not_available", reason: "Verified creator attribution and token sale ledger are not yet connected." },
       dataCoverage: { source: "Solana RPC mint account, Helius oldest-first indexed history when available, or bounded RPC history", historicalLaunchesChecked: 0, transactionHistoryDecoded: origin.signature ? 1 : 0 },
