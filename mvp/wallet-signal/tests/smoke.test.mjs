@@ -1,9 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = resolve(import.meta.dirname, "..");
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const page = readFileSync(resolve(root, "app/page.js"), "utf8");
 const liquidity = readFileSync(resolve(root, "app/api/token-liquidity/route.js"), "utf8");
 const extensions = readFileSync(resolve(root, "app/api/token-extensions/route.js"), "utf8");
@@ -28,7 +29,7 @@ test("fee inspection never treats unparsed fields as verified zero", () => {
   assert.match(extensions, /newerFee: normalizeFee/);
   assert.match(extensions, /configAuthorityReported/);
   assert.match(extensions, /withdrawalAuthorityReported/);
-  assert.match(extensions, /!\/\^\[0-9\]\+\$\//);
+  assert.match(extensions, /maximumFee === undefined/);
 });
 test("token accounts are not claimed as unique holders", () => {
   assert.match(concentration, /uniqueOwnersResolved: false/);
