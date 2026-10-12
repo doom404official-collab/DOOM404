@@ -2,11 +2,14 @@ import { createSolanaRpcAdapter } from "../lib/creatorOriginRpc.mjs";
 import { verifyLaunchpadCreation } from "../lib/launchpadCreationVerifier.mjs";
 import { pumpFunDecoders } from "../lib/pumpFunCreation.mjs";
 
-const mint = "6STAMY3TQZ1okW3roz7K2mkHLyDXiATYkc6JiWzWpump";
+const mint = process.env.CREATOR_VALIDATION_MINT || "";
+const validMint = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(mint);
 const permitted = process.env.VERCEL_ENV === "preview" &&
   process.env.VERCEL_GIT_COMMIT_REF === "feature/creator-origin-cb02e";
 if (!permitted) {
   console.log("CREATOR_VALIDATION: SKIPPED_NON_TARGET_ENV");
+} else if (!validMint) {
+  console.log("CREATOR_VALIDATION: SKIPPED_NO_VALID_TEST_MINT");
 } else if (!process.env.HELIUS_RPC_URL) {
   console.log("CREATOR_VALIDATION: HELIUS_RPC_URL_NOT_CONFIGURED");
 } else {
