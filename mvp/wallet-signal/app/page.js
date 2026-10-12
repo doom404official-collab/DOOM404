@@ -333,11 +333,13 @@ function CreatorLookup() {
   const [historyCursor, setHistoryCursor] = useState(null);
   const [concentration, setConcentration] = useState(null);
   const [concentrationError, setConcentrationError] = useState("");
+  const [extensions, setExtensions] = useState(null);
+  const [extensionsError, setExtensionsError] = useState("");
   const [historyBatches, setHistoryBatches] = useState(0);
   const MAX_HISTORY_BATCHES = 5;
   async function inspect(event, cursor = null) {
     event.preventDefault();
-    setBusy(true); setError(""); if (!cursor) { setResult(null); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); }
+    setBusy(true); setError(""); if (!cursor) { setResult(null); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); }
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 45000);
@@ -354,6 +356,14 @@ function CreatorLookup() {
           if (!concentrationResponse.ok) throw new Error(accountData.error || "Token-account balances unavailable");
           setConcentration(accountData);
         } catch (concentrationFailure) { setConcentrationError(concentrationFailure.message); }
+      }
+      if (!cursor && data.tokenProgram === "spl-token-2022") {
+        try {
+          const extensionResponse = await fetch("/api/token-extensions?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
+          const extensionData = await extensionResponse.json();
+          if (!extensionResponse.ok) throw new Error(extensionData.error || "Extension data unavailable");
+          setExtensions(extensionData);
+        } catch (extensionFailure) { setExtensionsError(extensionFailure.message); }
       }
       setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
       setHistoryBatches(n => cursor ? n + 1 : 1);
@@ -388,6 +398,17 @@ function CreatorLookup() {
           <p style={{ color: "#aaa", fontSize: 12 }}>Source: {concentration.coverage?.source}. Unique owners, pool balances and exchange custody are not resolved. No risk verdict.</p>
         </>}
       </div>
+      {result.tokenProgram === "spl-token-2022" && <div style={{ background: "#191919", border: "1px solid #444", padding: 16, borderRadius: 10, marginTop: 14 }}>
+        <h3 style={{ marginTop: 0 }}>TOKEN-2022 EXTENSIONS // Evidence</h3>
+        {extensionsError && <p style={{ color: "#ffbf86" }}>Inspection unavailable: {extensionsError}. No safety conclusion inferred.</p>}
+        {!extensions && !extensionsError && <p style={{ color: "#aaa" }}>Inspecting mint extensions...</p>}
+        {extensions && <>
+          <p><strong>Status:</strong> {extensions.status === "parsed_extensions_observed" ? "Parsed mint extensions retrieved" : "Not verified"}</p>
+          {extensions.status === "parsed_extensions_observed" && <p><strong>Observed extensions:</strong> {extensions.extensionCount}</p>}
+          {(extensions.extensions || []).map((extension, i) => <p key={extension.type + i} style={{ color: "#ddd" }}>• {extension.label} <span style={{ color: "#aaa" }}>({extension.type})</span></p>)}
+          <p style={{ color: "#aaa", fontSize: 12 }}>{extensions.coverage?.limitations || extensions.reason || extensions.interpretation}</p>
+        </>}
+      </div>}
       <p><strong>Mint authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.mintAuthority || "None")}</p>
       <p><strong>Freeze authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.freezeAuthority || "None")}</p>
       <p style={{ color: "#ffbf86" }}><strong>Creator attribution:</strong> {result.creator?.status === "provider_attributed" ? "Solscan-associated creator (ownership unverified)" : "Unverified — authorities do not prove creator ownership."}</p>
