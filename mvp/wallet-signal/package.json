@@ -5,12 +5,13 @@
   "description": "DOOM404 Wallet Signal - Solana wallet analytics MVP",
   "scripts": {
     "dev": "next dev",
-    "build": "npm run test:smoke && npm run validate:creator:preview && next build",
+    "build": "npm run test:smoke && npm run validate:creator:preview && npm run validate:creator:indexed && next build",
     "start": "next start",
     "test:smoke": "node --test tests/*.test.mjs",
     "check": "npm run build",
     "test:creator": "node --test tests/*creator*.test.mjs tests/pump-fun-creation.test.mjs tests/launchpad-creation-verifier.test.mjs",
-    "validate:creator:preview": "node scripts/preview-creator-validation.mjs"
+    "validate:creator:preview": "node scripts/preview-creator-validation.mjs",
+    "validate:creator:indexed": "node scripts/preview-indexed-creator-validation.mjs"
   },
   "dependencies": {
     "@solana/web3.js": "^1.98.0",
