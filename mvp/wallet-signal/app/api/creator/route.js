@@ -93,6 +93,46 @@ async function inspectIndexedOrigin(endpoint, mint, connection) {
   finally { clearTimeout(timer); }
 }
 
+
+async function inspectSolscanCreator(mint, connection) {
+  const key = (process.env.SOLSCAN_API_KEY || "").trim();
+  if (!key) return { status: "not_configured" };
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 9000);
+  try {
+    const response = await fetch("https://pro-api.solscan.io/v2.0/token/meta?address=" + encodeURIComponent(mint.toBase58()), {
+      headers: { accept: "application/json", token: key }, signal: controller.signal, cache: "no-store"
+    });
+    if (!response.ok) return { status: "unavailable", diagnostic: response.status === 401 ? "authentication_failed" : response.status === 429 ? "rate_limited" : "http_" + response.status };
+    const payload = await response.json();
+    const data = payload?.success === true ? payload.data : null;
+    if (!data || data.address !== mint.toBase58()) return { status: "unavailable", diagnostic: "invalid_or_mismatched_response" };
+    const creator = typeof data.creator === "string" ? data.creator : null;
+    const creationSignature = typeof data.create_tx === "string" ? data.create_tx : null;
+    const firstMintSignature = typeof data.first_mint_tx === "string" ? data.first_mint_tx : null;
+    let validCreator = null;
+    try { if (creator) validCreator = new PublicKey(creator).toBase58(); } catch {}
+    let verifiedInitialization = false;
+    let originSigners = [];
+    if (creationSignature) {
+      try {
+        const tx = await connection.getParsedTransaction(creationSignature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
+        if (tx && !tx.meta?.err) {
+          const instructions = [...(tx.transaction?.message?.instructions || []), ...(tx.meta?.innerInstructions || []).flatMap(x => x.instructions || [])];
+          verifiedInitialization = instructions.some(x => ["initializeMint", "initializeMint2"].includes(x.parsed?.type) && x.parsed?.info?.mint === mint.toBase58() && ["spl-token", "spl-token-2022"].includes(x.program));
+          if (verifiedInitialization) originSigners = tx.transaction.message.accountKeys.filter(x => x.signer && x.pubkey).map(x => x.pubkey.toBase58());
+        }
+      } catch {}
+    }
+    return { status: validCreator ? "provider_attributed" : "no_creator", creator: validCreator, creationSignature, firstMintSignature,
+      createdTime: Number.isInteger(data.created_time) ? data.created_time : null,
+      initializationVerified: verifiedInitialization, initializationSigners: originSigners,
+      creatorIsInitializationSigner: validCreator ? originSigners.includes(validCreator) : false,
+      source: "solscan_pro_token_meta" };
+  } catch (error) { return { status: "unavailable", diagnostic: error?.name === "AbortError" ? "timeout" : "request_failed" }; }
+  finally { clearTimeout(timer); }
+}
+
 /**
  * CB-01: Mint provenance, not a creator-identity assertion.
  * Mint authority is a permission and may not identify the original deployer.
@@ -177,12 +217,16 @@ export async function GET(request) {
       try { await originConnection.getVersion(); providerConnectivity = "confirmed"; }
       catch { providerConnectivity = "failed"; }
     }
+    // CB-02E: prefer indexed Solscan attribution; keep creator status distinct from ownership proof.
+    const solscan = !before ? await inspectSolscanCreator(mint, originConnection) : { status: "skipped_pagination" };
     // CB-02B: oldest-first indexed lookup, with existing bounded RPC fallback.
     let indexedOrigin = null;
-    if (archivalConfigured && providerConnectivity === "confirmed" && !before) {
+    if (archivalConfigured && providerConnectivity === "confirmed" && !before && solscan.status !== "provider_attributed") {
       indexedOrigin = await inspectIndexedOrigin(archivalUrl, mint, originConnection);
     }
-    if (indexedOrigin && indexedOrigin.status === "initialization_signer_observed") {
+    if (solscan.status === "provider_attributed") {
+      origin = { status: solscan.initializationVerified ? "initialization_signer_observed" : "provider_attributed", address: solscan.creator, signature: solscan.creationSignature, blockTime: solscan.createdTime, reason: solscan.initializationVerified ? "Solscan creator attribution; mint initialization independently confirmed on-chain. Creator ownership is not proven." : "Solscan indexes this address as creator. Mint initialization could not be independently confirmed; ownership remains unverified.", coverage: { provider: "solscan_pro", archivalCompletenessVerified: false, initializationVerified: solscan.initializationVerified } };
+    } else if (indexedOrigin && indexedOrigin.status === "initialization_signer_observed") {
       origin = indexedOrigin;
     } else if (archivalConfigured && providerConnectivity === "failed") {
       origin = { status: "unverified", reason: "Configured archival RPC did not respond successfully. Verify provider credentials and endpoint.", coverage: { archivalCompletenessVerified: false } };
@@ -201,7 +245,8 @@ export async function GET(request) {
       freezeAuthority: info.freezeAuthority ?? null,
       authoritiesAreCreatorIdentity: false,
       authorityDetailsStatus: parsedMintDetailsAvailable ? "available" : "not_parsed",
-      creator: { status: "unverified", address: null, reason: "Mint and freeze authorities do not reliably identify the original token creator. Historical launch transaction and provenance indexing are required." },
+      creator: solscan.status === "provider_attributed" ? { status: "provider_attributed", address: solscan.creator, source: "solscan_pro", creationSignature: solscan.creationSignature, firstMintSignature: solscan.firstMintSignature, createdTime: solscan.createdTime, initializationVerified: solscan.initializationVerified, creatorIsInitializationSigner: solscan.creatorIsInitializationSigner, reason: "Solscan labels this address as creator. This is provider attribution, not proof of wallet control or beneficial ownership." } : { status: "unverified", address: null, reason: "Mint and freeze authorities do not reliably identify the original token creator. Historical launch transaction and provenance indexing are required." },
+      solscanDiagnostic: { status: solscan.status, diagnostic: solscan.diagnostic || null, source: "solscan_pro" },
       mintOrigin: origin,
       indexedHistoryDiagnostic: indexedOrigin ? { status: indexedOrigin.status, reason: indexedOrigin.reason || null, diagnostic: indexedOrigin.diagnostic || null, coverage: indexedOrigin.coverage || null } : { status: archivalConfigured ? (before ? "skipped_pagination" : "skipped_connectivity") : "not_configured" },
       historicalProvider: { mode: archivalConfigured ? "configured_archival_rpc" : "standard_rpc", diagnostic: archivalConfigured && providerConnectivity === "confirmed" ? "connection_confirmed" : archivalConfigured && providerConnectivity === "failed" ? "connection_failed" : providerDiagnostic, connectivity: providerConnectivity, archivalCompletenessVerified: false },
