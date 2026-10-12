@@ -3,7 +3,7 @@
 export function selectTokenInsights({ result, extensions, concentration, liquidity, now = Date.now() }) {
   const candidates = [];
   const push = (priority, title, detail, confidence, source, category) =>
-    candidates.push({ priority, title, detail, confidence, source, category });
+    candidates.push({ priority, title, detail, confidence, source, category, evidenceClass: category === "liquidity" ? "provider_reported" : category === "coverage" ? "unverified" : "onchain_observed" });
   const fee = extensions?.transferFee;
   if (fee?.status === "observed") {
     const oldFee = fee.olderFee, newFee = fee.newerFee;
