@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic";
 
 const HISTORY_PAGE_SIZE = 1000;
 const HISTORY_PAGE_CAP = 3;
+const INDEXED_CANDIDATE_CAP = 30;
 
 async function inspectMintOrigin(connection, mint, cursor = null) {
   let before = cursor || undefined;
@@ -52,7 +53,7 @@ async function inspectIndexedOrigin(endpoint, mint, connection) {
     const response = await fetch(endpoint, {
       method: "POST", headers: { "Content-Type": "application/json" }, cache: "no-store", signal: controller.signal,
       body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getTransactionsForAddress",
-        params: [mint.toBase58(), { sortOrder: "asc", transactionDetails: "signatures", limit: 30, filters: { status: "succeeded" } }] })
+        params: [mint.toBase58(), { sortOrder: "asc", transactionDetails: "signatures", limit: INDEXED_CANDIDATE_CAP }] })
     });
     if (!response.ok) return { status: "unavailable", reason: response.status === 401 || response.status === 403 ? "Indexed history access denied. Verify provider key and plan permissions." : response.status === 429 ? "Indexed history rate limit reached. Retry later." : response.status === 404 ? "Indexed history method unavailable at this endpoint." : "Indexed history HTTP request failed.", diagnostic: { code: "INDEXED_HTTP_" + response.status, httpStatus: response.status } };
     const payload = await response.json();
@@ -64,16 +65,18 @@ async function inspectIndexedOrigin(endpoint, mint, connection) {
     const rows = Array.isArray(result) ? result :
       Array.isArray(result?.transactions) ? result.transactions :
       Array.isArray(result?.data) ? result.data :
-      Array.isArray(result?.signatures) ? result.signatures : null;
+      Array.isArray(result?.signatures) ? result.signatures :
+      Array.isArray(result?.items) ? result.items : null;
     const signatures = (rows || []).map(x => typeof x === "string" ? x :
-      x?.signature || x?.transaction?.signatures?.[0] || x?.transaction?.signature || null)
+      x?.signature || x?.signatures?.[0] || x?.transaction?.signatures?.[0] || x?.transaction?.signature || null)
       .filter(x => typeof x === "string");
     const coverage = { provider: "helius_indexed", sortOrder: "asc",
-      signaturesReturned: signatures.length, archivalCompletenessVerified: false };
+      signaturesReturned: signatures.length, responseShape: Array.isArray(result) ? "array" : Object.keys(result || {}).slice(0, 8), archivalCompletenessVerified: false };
     if (!rows) return { status: "unavailable", reason: "Indexed provider returned an unrecognized response; using RPC fallback.", diagnostic: { code: "INDEXED_UNRECOGNIZED_RESPONSE" }, coverage };
     if (!signatures.length) return { status: "unavailable", reason: "Indexed provider returned no usable signatures; using RPC fallback.", diagnostic: { code: "INDEXED_NO_SIGNATURES", rowsReturned: rows.length }, coverage };
+    // Oldest-first is requested from the indexer, but this is not proof of full archival coverage.
     let checked = 0;
-    for (const signature of signatures.slice(0, 15)) {
+    for (const signature of signatures.slice(0, INDEXED_CANDIDATE_CAP)) {
       let tx;
       try { tx = await connection.getParsedTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 }); } catch { continue; }
       checked++;
