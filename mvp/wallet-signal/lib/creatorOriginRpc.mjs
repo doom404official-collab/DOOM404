@@ -19,6 +19,13 @@ export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 
     return payload.result;
   }
   return {
+    async lookupSignaturePage(mint, { before } = {}) {
+      const config = { limit: pageLimit, commitment: "finalized" };
+      if (before) config.before = before;
+      const batch = await rpc("getSignaturesForAddress", [mint, config]);
+      if (!Array.isArray(batch)) throw new Error("INVALID_SIGNATURE_RESPONSE");
+      return { entries: batch, nextCursor: batch.at(-1)?.signature || null, exhausted: batch.length < pageLimit };
+    },
     async lookupSignatures(mint, { maxPages = 3 } = {}) {
       if (!Number.isInteger(maxPages) || maxPages < 1 || maxPages > 100) throw new RangeError("invalid maxPages");
       const signatures = [];
