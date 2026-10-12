@@ -10,9 +10,9 @@ function observedRaydiumPrograms(transaction, mint) {
   const keys = (message?.accountKeys || []).map(x => String(x?.pubkey?.toBase58?.() || x?.pubkey || x));
   const results = [];
   for (const instruction of instructions) {
-    const programId = String(instruction?.programId?.toBase58?.() || instruction?.programId || "");
+    const programId = String(instruction?.programId?.toBase58?.() || instruction?.programId || (Number.isInteger(instruction?.programIdIndex) ? keys[instruction.programIdIndex] : "") || "");
     if (![RAYDIUM_LAUNCHLAB_PROGRAM, RAYDIUM_CLMM_PROGRAM].includes(programId)) continue;
-    const accounts = (instruction?.accounts || []).map(x => typeof x === "number" ? keys[x] : String(x?.toBase58?.() || x));
+    const accounts = (instruction?.accounts || []).map(x => typeof x === "number" ? keys[x] : String(x?.pubkey?.toBase58?.() || x?.pubkey || x?.toBase58?.() || x));
     if (!accounts.includes(mint)) continue;
     results.push({ programId, accounts, program: programId === RAYDIUM_LAUNCHLAB_PROGRAM ? "raydium_launchlab" : "raydium_clmm" });
   }
