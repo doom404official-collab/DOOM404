@@ -18,20 +18,27 @@ if (!permitted) {
     const history = await rpc.lookupSignatures(mint, { maxPages: 2 });
     const signatures = history.signatures.slice(-10).reverse();
     const verified = [];
-    let retrieved = 0, failed = 0;
+    let retrieved = 0, failed = 0, unavailable = 0, unsuccessful = 0;
+    const failureReasons = {};
     for (const signature of signatures) {
       try {
         const tx = await rpc.fetchTransaction(signature);
-        if (!tx || tx.meta?.err != null) continue;
+        if (!tx) { unavailable++; continue; }
+        if (tx.meta?.err != null) { unsuccessful++; continue; }
         retrieved++;
         const result = verifyLaunchpadCreation({ mint, signature, transaction: tx, decoders: pumpFunDecoders });
         if (result.status === "VERIFIED") verified.push({ signature, creator: result.decodedRoles[0].address });
-      } catch { failed++; }
+      } catch (error) {
+        failed++;
+        const allowed = ["RPC_RATE_LIMITED","RPC_AUTH_FAILED","RPC_HTTP_ERROR","RPC_UNSUPPORTED_VERSION","RPC_RESPONSE_ERROR"];
+        const reason = allowed.includes(error?.message) ? error.message : "TRANSACTION_FETCH_EXCEPTION";
+        failureReasons[reason] = (failureReasons[reason] || 0) + 1;
+      }
     }
     // No RPC URLs, keys, request headers, or raw provider errors in logs.
     console.log("CREATOR_VALIDATION:", JSON.stringify({
       status: verified.length ? "CANDIDATE_VERIFIED_NEEDS_INDEPENDENT_REVIEW" : "UNRESOLVED",
-      mint, sampled: signatures.length, retrieved, failed,
+      mint, sampled: signatures.length, retrieved, failed, unavailable, unsuccessful, failureReasons,
       historyComplete: false, verified,
     }));
   } catch {
