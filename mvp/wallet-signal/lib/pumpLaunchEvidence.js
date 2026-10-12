@@ -1,6 +1,6 @@
 // Pump.fun launch evidence: conservative parser for independently fetched parsed transactions.
 // This is not a full Anchor instruction decoder; unknown instruction layouts stay unverified.
-export const PUMP_FUN_PROGRAM = "6EF8rrecthR5Dkzon8Nwu78NQwX9YhMqZ9u4hHtpump";
+export const PUMP_FUN_PROGRAM = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
 export function detectPumpLaunch({ mint, transaction, signature } = {}) {
   const message = transaction?.transaction?.message;
   if (!mint || !message || transaction?.meta?.err) return { status: "unverified", reason: "Missing or failed launch transaction" };
