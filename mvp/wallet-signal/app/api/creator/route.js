@@ -5,6 +5,7 @@ import { summarizeCreatorEvidence } from "../../../lib/creatorEvidence.js";
 import { detectLaunchpadEvidence } from "../../../lib/launchpadEvidence.js";
 import { lookupStonkFun } from "../../../lib/stonkFunEvidence.js";
 import { fetchArchivedTransaction } from "../../../lib/archiveTransaction.js";
+import { normalizeOriginTransaction, resolveCreatorRole } from "../../../lib/creatorOriginResolver.js";
 
 export const dynamic = "force-dynamic";
 
@@ -89,9 +90,13 @@ async function inspectIndexedOrigin(endpoint, mint, connection, archiveEndpoint 
       }
       checked++;
       if (!tx || tx.meta?.err) continue;
-      const instructions = [...(tx.transaction?.message?.instructions || []), ...(tx.meta?.innerInstructions || []).flatMap(x => x.instructions || [])];
-      if (!instructions.some(x => ["initializeMint", "initializeMint2"].includes(x.parsed?.type) && x.parsed?.info?.mint === mint.toBase58() && ["spl-token", "spl-token-2022"].includes(x.program))) continue;
-      const signers = tx.transaction.message.accountKeys.filter(x => x.signer && x.pubkey).map(x => x.pubkey.toBase58());
+      const normalized = normalizeOriginTransaction(tx);
+      const auditedRole = resolveCreatorRole({ mint: mint.toBase58(), transaction: tx });
+      const instructions = normalized.instructions;
+      const mintInitialization = instructions.some(x => ["initializeMint", "initializeMint2"].includes(x.parsed?.type) && x.parsed?.info?.mint === mint.toBase58() && ["spl-token", "spl-token-2022"].includes(x.parsed?.program || x.program));
+      if (!mintInitialization && auditedRole.status !== "verified_role") continue;
+      if (auditedRole.status === "verified_role") return { status: "verified_role", creator: auditedRole.creator, signature, blockTime: tx.blockTime ?? null, evidence: auditedRole.evidence, coverage: { ...coverage, initializationCandidatesChecked: checked } };
+      const signers = (tx.transaction.message.accountKeys || []).filter(x => x.signer && x.pubkey).map(x => x.pubkey.toBase58?.() || String(x.pubkey));
       return { status: "initialization_signer_observed", address: signers[0] || null, signers, signature, blockTime: tx.blockTime ?? null,
         reason: "Verified on-chain mint initialization found in oldest-first indexed history. Signers are origin candidates, NOT verified creators or beneficial owners.",
         coverage: { ...coverage, initializationCandidatesChecked: checked }, candidateSignatures: signatures.slice(0, 8) };
