@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
+import { summarizeCreatorEvidence } from "../../../lib/creatorEvidence.js";
 
 export const dynamic = "force-dynamic";
 
@@ -253,8 +254,13 @@ export async function GET(request) {
       try { origin = await inspectMintOrigin(originConnection, mint, before); }
       catch { origin = { status: "unverified", reason: "Mint origin lookup unavailable.", coverage: { archivalCompletenessVerified: false } }; }
     }
+    const creatorClaim = solscan.status === "provider_attributed"
+      ? { status: "provider_attributed", address: solscan.creator, source: "solscan_pro", creationSignature: solscan.creationSignature }
+      : { status: "unverified" };
+    const creatorEvidence = summarizeCreatorEvidence({ creator: creatorClaim, mintOrigin: origin });
     return NextResponse.json({
       mint: mint.toBase58(),
+      creatorEvidence,
       tokenProgram,
       parsedMintDetailsAvailable,
       decimals,
