@@ -25,11 +25,14 @@ export async function scanCreatorOrigin({
     pagesFetched++;
     rawSignaturesSeen += batch.entries.length;
     failedSignaturesSkipped += batch.entries.filter(e => e?.err != null).length;
-    // Scan oldest entries in each page, not just oldest in the final bounded window.
-    const eligible = batch.entries.filter(e => e && !e.err && typeof e.signature === "string").reverse();
-    for (const entry of eligible) {
-      if (candidates.length >= maxTransactions || Date.now() - started >= maxDurationMs) break;
-      if (seen.has(entry.signature)) continue;
+    // RPC returns newest to oldest. Process in that order so a mid-page checkpoint cannot skip entries.
+    let consumedEntirePage = true;
+    for (const entry of batch.entries) {
+      if (candidates.length >= maxTransactions || Date.now() - started >= maxDurationMs) { consumedEntirePage = false; break; }
+      if (!entry || typeof entry.signature !== "string") { consumedEntirePage = false; break; }
+      if (seen.has(entry.signature)) { consumedEntirePage = false; break; }
+      cursor = entry.signature;
+      if (entry.err != null) continue;
       seen.add(entry.signature);
       candidates.push(entry.signature);
       try {
@@ -47,11 +50,11 @@ export async function scanCreatorOrigin({
         failureReasons[reason] = (failureReasons[reason] || 0) + 1;
       }
     }
+    if (!consumedEntirePage) break;
     const next = batch.nextCursor;
-    if (batch.exhausted === true) { exhausted = true; cursor = next; break; }
-    if (!next || next === cursor || seen.has("cursor:" + next)) throw Error("PAGINATION_STALLED");
+    if (batch.exhausted === true) { exhausted = true; break; }
+    if (!next || next !== cursor || seen.has("cursor:" + next)) throw Error("PAGINATION_STALLED");
     seen.add("cursor:" + next);
-    cursor = next;
     if (verified.length || candidates.length >= maxTransactions) break;
   }
   const creators = [...new Set(verified.map(p => p.creator))];
