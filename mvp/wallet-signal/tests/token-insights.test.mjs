@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { selectTokenInsights } from "../lib/tokenInsights.js";
+import { readFileSync } from "node:fs";
+const source = readFileSync(new URL("../lib/tokenInsights.js", import.meta.url), "utf8");
+const { selectTokenInsights } = await import("data:text/javascript," + encodeURIComponent(source));
 
 test("higher priority permanent delegate displaces routine liquidity observation", () => {
  const rows = selectTokenInsights({
