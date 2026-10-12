@@ -13,9 +13,9 @@ export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 
       body: JSON.stringify({ jsonrpc: "2.0", id: ++requestId, method, params }),
       cache: "no-store",
     });
-    if (!response.ok) throw new Error("RPC_HTTP_ERROR");
+    if (!response.ok) throw new Error(response.status === 429 ? "RPC_RATE_LIMITED" : [401,403].includes(response.status) ? "RPC_AUTH_FAILED" : "RPC_HTTP_ERROR");
     const payload = await response.json();
-    if (payload.error) throw new Error("RPC_RESPONSE_ERROR");
+    if (payload.error) throw new Error(payload.error.code === -32015 ? "RPC_UNSUPPORTED_VERSION" : "RPC_RESPONSE_ERROR");
     return payload.result;
   }
   return {
