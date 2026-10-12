@@ -94,6 +94,21 @@ async function inspectIndexedOrigin(endpoint, mint, connection) {
 }
 
 
+async function verifyOriginTransaction(connection, mint, signature) {
+  // Explicit evidence lookup: never infer creator ownership from transaction signers.
+  try {
+    const tx = await connection.getParsedTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
+    if (!tx || tx.meta?.err) return { status: "unverified", reason: "Supplied transaction is unavailable or failed; mint origin not established.", coverage: { method: "targeted_transaction", initializationVerified: false, archivalCompletenessVerified: false } };
+    const instructions = [...(tx.transaction?.message?.instructions || []), ...(tx.meta?.innerInstructions || []).flatMap(x => x.instructions || [])];
+    const matches = instructions.some(x => ["initializeMint", "initializeMint2"].includes(x.parsed?.type) && x.parsed?.info?.mint === mint.toBase58() && ["spl-token", "spl-token-2022"].includes(x.program));
+    if (!matches) return { status: "unverified", reason: "Supplied transaction does not contain a verified initialization instruction for this mint.", coverage: { method: "targeted_transaction", initializationVerified: false, archivalCompletenessVerified: false } };
+    const signers = tx.transaction.message.accountKeys.filter(x => x.signer && x.pubkey).map(x => x.pubkey.toBase58());
+    return { status: "initialization_signer_observed", address: signers[0] || null, signers, signature, blockTime: tx.blockTime ?? null, reason: "Mint initialization independently verified in the supplied on-chain transaction. Signers are not proof of creator ownership.", coverage: { method: "targeted_transaction", initializationVerified: true, archivalCompletenessVerified: false } };
+  } catch {
+    return { status: "unverified", reason: "Targeted transaction verification could not be completed.", coverage: { method: "targeted_transaction", initializationVerified: false, archivalCompletenessVerified: false } };
+  }
+}
+
 async function inspectSolscanCreator(mint, connection) {
   const key = (process.env.SOLSCAN_API_KEY || "").trim();
   if (!key) return { status: "not_configured" };
@@ -142,6 +157,8 @@ export async function GET(request) {
   const url = new URL(request.url);
   const address = url.searchParams.get("mint") || "";
   const before = url.searchParams.get("before");
+  const originTx = url.searchParams.get("originTx");
+  if (originTx && !/^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(originTx)) return NextResponse.json({ error: "Invalid origin transaction signature" }, { status: 400 });
   if (before && !/^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(before)) {
     return NextResponse.json({ error: "Invalid historical scan cursor" }, { status: 400 });
   }
@@ -218,13 +235,15 @@ export async function GET(request) {
       catch { providerConnectivity = "failed"; }
     }
     // CB-02E: prefer indexed Solscan attribution; keep creator status distinct from ownership proof.
-    const solscan = !before ? await inspectSolscanCreator(mint, originConnection) : { status: "skipped_pagination" };
+    const solscan = !before && !originTx ? await inspectSolscanCreator(mint, originConnection) : { status: "skipped_targeted_or_pagination" };
     // CB-02B: oldest-first indexed lookup, with existing bounded RPC fallback.
     let indexedOrigin = null;
-    if (archivalConfigured && providerConnectivity === "confirmed" && !before && solscan.status !== "provider_attributed") {
+    if (archivalConfigured && providerConnectivity === "confirmed" && !before && !originTx && solscan.status !== "provider_attributed") {
       indexedOrigin = await inspectIndexedOrigin(archivalUrl, mint, originConnection);
     }
-    if (solscan.status === "provider_attributed") {
+    if (originTx) {
+      origin = await verifyOriginTransaction(originConnection, mint, originTx);
+    } else if (solscan.status === "provider_attributed") {
       origin = { status: solscan.initializationVerified ? "initialization_signer_observed" : "provider_attributed", address: solscan.creator, signature: solscan.creationSignature, blockTime: solscan.createdTime, reason: solscan.initializationVerified ? "Solscan creator attribution; mint initialization independently confirmed on-chain. Creator ownership is not proven." : "Solscan indexes this address as creator. Mint initialization could not be independently confirmed; ownership remains unverified.", coverage: { provider: "solscan_pro", archivalCompletenessVerified: false, initializationVerified: solscan.initializationVerified } };
     } else if (indexedOrigin && indexedOrigin.status === "initialization_signer_observed") {
       origin = indexedOrigin;
