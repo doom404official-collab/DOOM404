@@ -385,7 +385,12 @@ function CreatorLookup() {
         <p style={{ color: "#ff8585", letterSpacing: 2, fontSize: 12, fontWeight: 700, marginTop: 0 }}>GLITCH // TOKEN SECURITY OVERVIEW</p>
         <h3 style={{ margin: "0 0 8px" }}>Observed signals, not a safety rating</h3>
         <p style={{ color: "#aaa", fontSize: 13 }}>Evidence coverage: {concentration ? "account concentration available" : "account concentration pending or unavailable"} · {extensions?.verified ? "Token-2022 mint extensions parsed" : result.tokenProgram === "spl-token-2022" ? "Token-2022 extensions pending or unavailable" : "Token-2022 extensions not applicable"}</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(145px,1fr))", gap: 10 }}>
+        <style>{`
+          .doom-token-signal-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+          @media (min-width: 780px) { .doom-token-signal-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+          .doom-token-signal-grid > div { min-width:0; }
+        `}</style>
+        <div className="doom-token-signal-grid">
           {[
             { label: "Transfer fee schedules", value: extensions?.transferFee?.olderFee && extensions?.transferFee?.newerFee ? extensions.transferFee.olderFee.percentage + "% / " + extensions.transferFee.newerFee.percentage + "%" : extensions?.transferFee?.status === "observed" ? "Present · rate unknown" : extensions?.verified ? "Not observed" : "Not assessed" },
             { label: "Fee configuration authority", value: extensions?.transferFee?.configAuthorityReported ? (extensions.transferFee.configAuthority ? "Present" : "Revoked") : "Not verified" },
