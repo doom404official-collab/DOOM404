@@ -24,7 +24,7 @@ export function inspectMintInitialization(instructions,mint) {
       if(ix.parsed?.info?.mint===mint) matches.push({programId:ix.programId,kind:parsedType,method:"parsed"});
       continue;
     }
-    const bytes=decodeBase58(ix.data);
+    const bytes=ix.data instanceof Uint8Array ? ix.data : Array.isArray(ix.data) && ix.data.every(n=>Number.isInteger(n)&&n>=0&&n<=255) ? Uint8Array.from(ix.data) : Array.isArray(ix.data) && ix.data[1]==="base64" && typeof ix.data[0]==="string" ? Uint8Array.from(Buffer.from(ix.data[0],"base64")) : decodeBase58(ix.data);
     if(!bytes || bytes.length<35 || (bytes[0]!==0 && bytes[0]!==20)) continue;
     const kind=bytes[0]===0?"initializeMint":"initializeMint2";
     // Layout: opcode(1), decimals(1), mintAuthority(32), COption<Pubkey> freezeAuthority(4 + optional 32).
