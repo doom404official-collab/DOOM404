@@ -337,8 +337,27 @@ function CreatorLookup() {
   const [extensionsError, setExtensionsError] = useState("");
   const [liquidity, setLiquidity] = useState(null);
   const [liquidityError, setLiquidityError] = useState("");
+  const [liquidityRefreshing, setLiquidityRefreshing] = useState(false);
   const [historyBatches, setHistoryBatches] = useState(0);
   const MAX_HISTORY_BATCHES = 5;
+  async function refreshLiquidity(address = mint.trim()) {
+    if (!address || liquidityRefreshing) return;
+    setLiquidityRefreshing(true);
+    setLiquidityError("");
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000);
+      let response;
+      try {
+        response = await fetch("/api/token-liquidity?mint=" + encodeURIComponent(address), { cache: "no-store", signal: controller.signal });
+      } finally { clearTimeout(timeout); }
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.reason || "Liquidity data unavailable");
+      if (address === mint.trim()) setLiquidity(data);
+    } catch (failure) {
+      setLiquidityError(failure.name === "AbortError" ? "Liquidity refresh timed out" : failure.message);
+    } finally { setLiquidityRefreshing(false); }
+  }
   async function inspect(event, cursor = null) {
     event.preventDefault();
     setBusy(true); setError(""); if (!cursor) { setResult(null); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); }
@@ -367,14 +386,7 @@ function CreatorLookup() {
           setExtensions(extensionData);
         } catch (extensionFailure) { setExtensionsError(extensionFailure.message); }
       }
-      if (!cursor) {
-        try {
-          const marketResponse = await fetch("/api/token-liquidity?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
-          const marketData = await marketResponse.json();
-          if (!marketResponse.ok) throw new Error(marketData.reason || "Liquidity data unavailable");
-          setLiquidity(marketData);
-        } catch (marketFailure) { setLiquidityError(marketFailure.message); }
-      }
+      if (!cursor) await refreshLiquidity(mint.trim());
       setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
       setHistoryBatches(n => cursor ? n + 1 : 1);
     } catch (failure) { setError(failure.name === "AbortError" ? "Historical scan timed out after 45 seconds. Retry the same batch or use an archival data provider." : failure.message); }
@@ -417,6 +429,8 @@ function CreatorLookup() {
       </div>
       <div style={{ background: "#191919", border: "1px solid #444", borderRadius: 10, padding: 16, marginBottom: 18 }}>
         <h3 style={{ marginTop: 0 }}>LIQUIDITY INTELLIGENCE // Pool Discovery</h3>
+        <button type="button" onClick={() => refreshLiquidity()} disabled={liquidityRefreshing || busy} style={{ padding: "8px 12px", background: "#a52222", color: "white", border: 0, borderRadius: 8, cursor: "pointer" }}>{liquidityRefreshing ? "REFRESHING..." : "REFRESH LIQUIDITY"}</button>
+        {liquidity?.observedAt && <p style={{ fontSize: 12, color: "#aaa" }}>Last retrieved: {new Date(liquidity.observedAt).toLocaleString()} (your local time). Provider estimates may lag blockchain state.</p>
         {liquidityError && <p style={{ color: "#ffbf86" }}>Provider unavailable: {liquidityError}. Liquidity is not assessed.</p>}
         {!liquidity && !liquidityError && <p style={{ color: "#aaa" }}>Retrieving reported trading pools...</p>}
         {liquidity && <>
