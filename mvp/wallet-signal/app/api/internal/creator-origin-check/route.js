@@ -20,7 +20,12 @@ export async function GET(request) {
   const expected = process.env.CREATOR_ORIGIN_TEST_TOKEN;
   const supplied = request.headers.get("x-creator-origin-test-token");
   if (!equalSecret(expected, supplied)) {
-    // A generic 401 reveals neither whether the token exists nor its expected value.
+    // Server-side diagnostic only. Never log token values, lengths, hashes, headers, or URL.
+    // These coarse reason codes are visible only to authorized Vercel log readers.
+    const reason = !expected ? "TEST_TOKEN_NOT_CONFIGURED"
+      : !supplied ? "TEST_TOKEN_HEADER_MISSING"
+      : "TEST_TOKEN_MISMATCH";
+    console.warn("creator-origin-auth-rejected", { reason, preview: true });
     return privateJson({ error: "Unauthorized" }, 401);
   }
   const mint = new URL(request.url).searchParams.get("mint") || "";
