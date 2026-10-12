@@ -57,10 +57,21 @@ async function inspectIndexedOrigin(endpoint, mint, connection) {
     if (!response.ok) return { status: "unavailable", reason: "Indexed history HTTP request failed." };
     const payload = await response.json();
     if (payload.error) return { status: "unavailable", reason: "Indexed history unavailable for this provider or plan." };
-    const rows = Array.isArray(payload.result) ? payload.result : Array.isArray(payload.result?.transactions) ? payload.result.transactions : Array.isArray(payload.result?.data) ? payload.result.data : [];
-    const signatures = (Array.isArray(rows) ? rows : []).map(x => typeof x === "string" ? x : x.signature).filter(x => typeof x === "string");
-    const coverage = { provider: "helius_indexed", sortOrder: "asc", signaturesReturned: signatures.length, archivalCompletenessVerified: false };
-    if (!signatures.length) return { status: "unavailable", reason: "Indexed oldest-first query returned no usable signatures; falling back to bounded RPC history.", coverage };
+    // Helius indexed history may return signatures, transaction objects, or a
+    // provider-specific wrapper. Never mistake an unrecognized response for
+    // verified absence of historical transactions.
+    const result = payload.result;
+    const rows = Array.isArray(result) ? result :
+      Array.isArray(result?.transactions) ? result.transactions :
+      Array.isArray(result?.data) ? result.data :
+      Array.isArray(result?.signatures) ? result.signatures : null;
+    const signatures = (rows || []).map(x => typeof x === "string" ? x :
+      x?.signature || x?.transaction?.signatures?.[0] || x?.transaction?.signature || null)
+      .filter(x => typeof x === "string");
+    const coverage = { provider: "helius_indexed", sortOrder: "asc",
+      signaturesReturned: signatures.length, archivalCompletenessVerified: false };
+    if (!rows) return { status: "unavailable", reason: "Indexed provider returned an unrecognized response; using RPC fallback.", coverage };
+    if (!signatures.length) return { status: "unavailable", reason: "Indexed provider returned no usable signatures; using RPC fallback.", coverage };
     let checked = 0;
     for (const signature of signatures.slice(0, 15)) {
       let tx;
@@ -168,7 +179,7 @@ export async function GET(request) {
     if (archivalConfigured && providerConnectivity === "confirmed" && !before) {
       indexedOrigin = await inspectIndexedOrigin(archivalUrl, mint, originConnection);
     }
-    if (indexedOrigin && indexedOrigin.status !== "unavailable") {
+    if (indexedOrigin && indexedOrigin.status === "initialization_signer_observed") {
       origin = indexedOrigin;
     } else if (archivalConfigured && providerConnectivity === "failed") {
       origin = { status: "unverified", reason: "Configured archival RPC did not respond successfully. Verify provider credentials and endpoint.", coverage: { archivalCompletenessVerified: false } };
