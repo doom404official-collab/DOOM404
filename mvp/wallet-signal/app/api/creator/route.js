@@ -255,15 +255,37 @@ export async function GET(request) {
       try { origin = await inspectMintOrigin(originConnection, mint, before); }
       catch { origin = { status: "unverified", reason: "Mint origin lookup unavailable.", coverage: { archivalCompletenessVerified: false } }; }
     }
-    let pumpLaunchEvidence = { status: "not_assessed", reason: "No verified origin transaction available for Pump.fun inspection." };
-    if (origin?.signature) {
+    // Investigate independent transaction candidates rather than assuming
+    // mint initialization and launchpad creation happened in the same tx.
+    const candidateSignatures = [...new Set([
+      solscan.creationSignature,
+      solscan.firstMintSignature,
+      origin?.signature
+    ].filter(x => typeof x === "string" && /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(x)))].slice(0, 3);
+    const launchAttempts = [];
+    for (const signature of candidateSignatures) {
       try {
-        const launchTx = await originConnection.getParsedTransaction(origin.signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
-        pumpLaunchEvidence = detectLaunchpadEvidence({ mint: mint.toBase58(), transaction: launchTx, signature: origin.signature });
+        const launchTx = await originConnection.getParsedTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
+        const evidence = detectLaunchpadEvidence({ mint: mint.toBase58(), transaction: launchTx, signature });
+        launchAttempts.push({ signature, status: evidence.status, evidence });
+        if (evidence.status === "program_interaction_observed") break;
       } catch {
-        pumpLaunchEvidence = { status: "unavailable", reason: "Pump.fun program interaction lookup could not be completed." };
+        launchAttempts.push({ signature, status: "rpc_unavailable" });
       }
     }
+    const pumpLaunchEvidence = launchAttempts.find(x => x.status === "program_interaction_observed")?.evidence
+      || { status: candidateSignatures.length ? "unverified" : "not_assessed",
+        reason: candidateSignatures.length
+          ? "Inspected available independent transaction candidates; no supported launch creation was established."
+          : "No usable historical launch transaction candidates were found." };
+    const launchInvestigation = {
+      candidateCount: candidateSignatures.length,
+      inspectedCount: launchAttempts.length,
+      sources: ["solscan_create_tx", "solscan_first_mint_tx", "mint_origin_rpc"],
+      attempts: launchAttempts.map(({ signature, status }) => ({ signature, status })),
+      creatorVerified: false,
+      coverage: "bounded_candidates_not_full_history"
+    };
     const creatorClaim = solscan.status === "provider_attributed"
       ? { status: "provider_attributed", address: solscan.creator, source: "solscan_pro", creationSignature: solscan.creationSignature }
       : { status: "unverified" };
@@ -273,6 +295,7 @@ export async function GET(request) {
       creatorEvidence,
       pumpLaunchEvidence,
       launchpadEvidence: pumpLaunchEvidence,
+      launchInvestigation,
       tokenProgram,
       parsedMintDetailsAvailable,
       decimals,
