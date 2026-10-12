@@ -20,6 +20,7 @@ if (!permitted) {
     const sampledSignatures = signatures;
     const verified = [];
     let retrieved = 0, failed = 0, unavailable = 0, unsuccessful = 0;
+    const unsupportedVersionSignatures = [];
     const failureReasons = {};
     for (const signature of signatures) {
       try {
@@ -34,13 +35,14 @@ if (!permitted) {
         const allowed = ["RPC_RATE_LIMITED","RPC_AUTH_FAILED","RPC_HTTP_ERROR","RPC_UNSUPPORTED_VERSION","RPC_RESPONSE_ERROR"];
         const reason = allowed.includes(error?.message) ? error.message : "TRANSACTION_FETCH_EXCEPTION";
         failureReasons[reason] = (failureReasons[reason] || 0) + 1;
+        if (reason === "RPC_UNSUPPORTED_VERSION") unsupportedVersionSignatures.push(signature);
       }
     }
     // No RPC URLs, keys, request headers, or raw provider errors in logs.
     console.log("CREATOR_VALIDATION:", JSON.stringify({
       status: verified.length ? "CANDIDATE_VERIFIED_NEEDS_INDEPENDENT_REVIEW" : "UNRESOLVED",
       mint, sampled: signatures.length, retrieved, failed, unavailable, unsuccessful, failureReasons,
-      historyComplete: false, sampledSignatures, verified,
+      historyComplete: false, sampledSignatures, unsupportedVersionSignatures, verified,
     }));
   } catch {
     console.log("CREATOR_VALIDATION: RPC_DISCOVERY_FAILED");
