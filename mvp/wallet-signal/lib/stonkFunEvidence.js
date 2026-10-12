@@ -1,6 +1,6 @@
 // StonkFun public token index: provider attribution only, never on-chain creator verification.
 // Public index documented at https://stonkfun.xyz/api/public/total-assets
-const INDEX_URL = "https://stonkfun.xyz/api/public/total-assets";
+const INDEX_URL = "https://www.stonkfun.xyz/api/public/v1/tokens";
 const PUBKEY = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const SIG = /^[1-9A-HJ-NP-Za-km-z]{80,90}$/;
 const keys = ["mint", "mintAddress", "tokenMint", "address", "baseMint"];
@@ -16,24 +16,38 @@ function findToken(value, mint, depth = 0, budget = {remaining: 12000}) {
   }
   return null;
 }
-export function parseStonkFunIndex(payload, mint) {
+export function parseStonkFunIndex(payload, mint, source = INDEX_URL) {
   if (!PUBKEY.test(mint || "")) return { status: "invalid_mint" };
   const token = findToken(payload, mint);
-  if (!token) return { status: "not_found", source: INDEX_URL, diagnostic: "Index returned successfully but no exact mint match was found in the bounded response." };
+  if (!token) return { status: "not_found", source, diagnostic: "Index returned successfully but no exact mint match was found in the bounded response." };
   const creator = creatorKeys.map(k => token[k]).find(x => typeof x === "string" && PUBKEY.test(x)) || null;
   const signature = sigKeys.map(k => token[k]).find(x => typeof x === "string" && SIG.test(x)) || null;
   return {
     status: "provider_record_observed", platform: "StonkFun", platformVerifiedAsLauncher: false,
     creatorCandidate: creator, launchCreatorVerified: false, signature,
-    source: INDEX_URL, evidenceClass: "provider_reported",
+    source, evidenceClass: "provider_reported",
     reason: "Public token-index match; creator role and launch instruction require independent on-chain verification."
   };
 }
 export async function lookupStonkFun(mint, { fetchImpl = fetch, timeoutMs = 4500 } = {}) {
   if (!PUBKEY.test(mint || "")) return { status: "invalid_mint" };
-  try {
-    const response = await fetchImpl(INDEX_URL, { headers: { accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs), cache: "no-store" });
-    if (!response.ok) return { status: "provider_unavailable", httpStatus: response.status, diagnostic: "Provider returned a non-success HTTP response." };
-    return parseStonkFunIndex(await response.json(), mint);
-  } catch (error) { return { status: "provider_unavailable", diagnostic: error?.name === "TimeoutError" ? "Provider request timed out." : "Provider request or response parsing failed." }; }
+  const urls = [INDEX_URL + "/" + encodeURIComponent(mint), INDEX_URL + "?q=" + encodeURIComponent(mint) + "&pageSize=25"];
+  const attempts = [];
+  for (const url of urls) {
+    try {
+      const response = await fetchImpl(url, { headers: { accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs), cache: "no-store" });
+      if (!response.ok) {
+        attempts.push({ endpoint: url.includes("?") ? "mint_search" : "mint_detail", status: "http_error", httpStatus: response.status });
+        continue;
+      }
+      const parsed = parseStonkFunIndex(await response.json(), mint, url);
+      attempts.push({ endpoint: url.includes("?") ? "mint_search" : "mint_detail", status: parsed.status });
+      if (parsed.status === "provider_record_observed") return { ...parsed, attempts };
+    } catch (error) {
+      attempts.push({ endpoint: url.includes("?") ? "mint_search" : "mint_detail", status: error?.name === "TimeoutError" ? "timeout" : "request_or_parse_error" });
+    }
+  }
+  return { status: attempts.every(x => x.status === "not_found") ? "not_found" : "provider_unavailable",
+    diagnostic: "Mint-specific detail and search endpoints checked; no exact matching record established.",
+    attempts, source: INDEX_URL };
 }
