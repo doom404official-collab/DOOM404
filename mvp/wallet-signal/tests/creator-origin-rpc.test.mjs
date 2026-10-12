@@ -13,14 +13,14 @@ test("RPC discovery never claims archival completeness", async () => {
   assert.equal(result.rpcHistoryExhausted, true);
   assert.equal(calls[0].method, "getSignaturesForAddress");
 });
-test("transaction fetch requests finalized versioned parsed transaction", async () => {
+test("transaction fetch requests finalized v1-compatible parsed transaction", async () => {
   let params;
   const adapter = createSolanaRpcAdapter({ rpcUrl: "https://example.test", fetchImpl: async (_url, opts) => {
     const body = JSON.parse(opts.body); params = body.params;
     return { ok: true, json: async () => ({ result: { meta: { err: null } } }) };
   } });
   await adapter.fetchTransaction("sig");
-  assert.equal(params[1].maxSupportedTransactionVersion, 0);
+  assert.equal(params[1].maxSupportedTransactionVersion, 1);
 });
 test("provider RPC errors propagate rather than becoming attribution", async () => {
   const adapter = createSolanaRpcAdapter({ rpcUrl: "https://example.test", fetchImpl: async () => ({ ok: true, json: async () => ({ error: { code: -32000 } }) }) });
