@@ -19,7 +19,7 @@ function findToken(value, mint, depth = 0, budget = {remaining: 12000}) {
 export function parseStonkFunIndex(payload, mint) {
   if (!PUBKEY.test(mint || "")) return { status: "invalid_mint" };
   const token = findToken(payload, mint);
-  if (!token) return { status: "not_found", source: INDEX_URL };
+  if (!token) return { status: "not_found", source: INDEX_URL, diagnostic: "Index returned successfully but no exact mint match was found in the bounded response." };
   const creator = creatorKeys.map(k => token[k]).find(x => typeof x === "string" && PUBKEY.test(x)) || null;
   const signature = sigKeys.map(k => token[k]).find(x => typeof x === "string" && SIG.test(x)) || null;
   return {
@@ -33,7 +33,7 @@ export async function lookupStonkFun(mint, { fetchImpl = fetch, timeoutMs = 4500
   if (!PUBKEY.test(mint || "")) return { status: "invalid_mint" };
   try {
     const response = await fetchImpl(INDEX_URL, { headers: { accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs), cache: "no-store" });
-    if (!response.ok) return { status: "provider_unavailable", httpStatus: response.status };
+    if (!response.ok) return { status: "provider_unavailable", httpStatus: response.status, diagnostic: "Provider returned a non-success HTTP response." };
     return parseStonkFunIndex(await response.json(), mint);
-  } catch { return { status: "provider_unavailable" }; }
+  } catch (error) { return { status: "provider_unavailable", diagnostic: error?.name === "TimeoutError" ? "Provider request timed out." : "Provider request or response parsing failed." }; }
 }
