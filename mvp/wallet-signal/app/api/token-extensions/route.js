@@ -46,15 +46,15 @@ export async function GET(request) {
       };
     };
     const transferFeeEntry = info.extensions.find(item => (item?.extension || item?.type) === "transferFeeConfig");
-    const config = transferFeeEntry?.state || transferFeeEntry?.transferFeeConfig || transferFeeEntry;
+    const config = transferFeeEntry?.state || transferFeeEntry?.transferFeeConfig || transferFeeEntry?.data || transferFeeEntry;
     const transferFee = transferFeeEntry ? {
       status: "observed",
-      olderFee: normalizeFee(config?.olderTransferFee),
-      newerFee: normalizeFee(config?.newerTransferFee),
-      configAuthority: addressOrNull(config?.transferFeeConfigAuthority),
-      withdrawalAuthority: addressOrNull(config?.withdrawWithheldAuthority),
-      authorityFieldsReported: Object.prototype.hasOwnProperty.call(config || {}, "transferFeeConfigAuthority") &&
-        Object.prototype.hasOwnProperty.call(config || {}, "withdrawWithheldAuthority"),
+      olderFee: normalizeFee(config?.olderTransferFee ?? config?.older_transfer_fee),
+      newerFee: normalizeFee(config?.newerTransferFee ?? config?.newer_transfer_fee),
+      configAuthority: addressOrNull(config?.transferFeeConfigAuthority ?? config?.transfer_fee_config_authority),
+      withdrawalAuthority: addressOrNull(config?.withdrawWithheldAuthority ?? config?.withdraw_withheld_authority),
+      configAuthorityReported: ["transferFeeConfigAuthority", "transfer_fee_config_authority"].some(key => Object.prototype.hasOwnProperty.call(config || {}, key)),
+      withdrawalAuthorityReported: ["withdrawWithheldAuthority", "withdraw_withheld_authority"].some(key => Object.prototype.hasOwnProperty.call(config || {}, key)),
       note: "Two fee schedules may coexist around an epoch transition. Displayed schedules are not a guarantee of the fee applicable to a particular transaction. A null authority means revoked only if the RPC explicitly returned that field."
     } : { status: "not_observed", note: "No transferFeeConfig extension was reported by the parsed mint account." };
     const extensions = info.extensions.map(item => {
