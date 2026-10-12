@@ -8,7 +8,9 @@
     "build": "npm run test:smoke && next build",
     "start": "next start",
     "test:smoke": "node --test tests/*.test.mjs",
-    "check": "npm run build"
+    "check": "npm run build",
+    "test:creator": "node --test tests/*creator*.test.mjs tests/pump-fun-creation.test.mjs tests/launchpad-creation-verifier.test.mjs",
+    "validate:creator:preview": "node scripts/preview-creator-validation.mjs"
   },
   "dependencies": {
     "@solana/web3.js": "^1.98.0",
