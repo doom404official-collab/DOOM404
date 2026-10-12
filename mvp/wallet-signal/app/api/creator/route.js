@@ -103,7 +103,7 @@ async function inspectSolscanCreator(mint, connection) {
     const response = await fetch("https://pro-api.solscan.io/v2.0/token/meta?address=" + encodeURIComponent(mint.toBase58()), {
       headers: { accept: "application/json", token: key }, signal: controller.signal, cache: "no-store"
     });
-    if (!response.ok) return { status: "unavailable", diagnostic: response.status === 401 ? "authentication_failed" : response.status === 429 ? "rate_limited" : "http_" + response.status };
+    if (!response.ok) return { status: "unavailable", diagnostic: response.status === 401 ? "authentication_failed" : response.status === 403 ? "access_forbidden" : response.status === 429 ? "rate_limited" : response.status >= 500 ? "provider_server_error" : "http_" + response.status, httpStatus: response.status };
     const payload = await response.json();
     const data = payload?.success === true ? payload.data : null;
     if (!data || data.address !== mint.toBase58()) return { status: "unavailable", diagnostic: "invalid_or_mismatched_response" };
@@ -246,7 +246,7 @@ export async function GET(request) {
       authoritiesAreCreatorIdentity: false,
       authorityDetailsStatus: parsedMintDetailsAvailable ? "available" : "not_parsed",
       creator: solscan.status === "provider_attributed" ? { status: "provider_attributed", address: solscan.creator, source: "solscan_pro", creationSignature: solscan.creationSignature, firstMintSignature: solscan.firstMintSignature, createdTime: solscan.createdTime, initializationVerified: solscan.initializationVerified, creatorIsInitializationSigner: solscan.creatorIsInitializationSigner, reason: "Solscan labels this address as creator. This is provider attribution, not proof of wallet control or beneficial ownership." } : { status: "unverified", address: null, reason: "Mint and freeze authorities do not reliably identify the original token creator. Historical launch transaction and provenance indexing are required." },
-      solscanDiagnostic: { status: solscan.status, diagnostic: solscan.diagnostic || null, source: "solscan_pro" },
+      solscanDiagnostic: { status: solscan.status, diagnostic: solscan.diagnostic || null, httpStatus: solscan.httpStatus || null, source: "solscan_pro", fallback: solscan.status === "provider_attributed" ? "not_needed" : "helius_or_bounded_rpc", guidance: solscan.diagnostic === "authentication_failed" ? "Solscan rejected the server-side credential (HTTP 401). Verify the V2 API key and its endpoint entitlement; Helius/RPC investigation remains available." : solscan.diagnostic === "access_forbidden" ? "Solscan denied endpoint access (HTTP 403). Check API plan permissions; Helius/RPC investigation remains available." : null },
       mintOrigin: origin,
       indexedHistoryDiagnostic: indexedOrigin ? { status: indexedOrigin.status, reason: indexedOrigin.reason || null, diagnostic: indexedOrigin.diagnostic || null, coverage: indexedOrigin.coverage || null } : { status: archivalConfigured ? (before ? "skipped_pagination" : "skipped_connectivity") : "not_configured" },
       historicalProvider: { mode: archivalConfigured ? "configured_archival_rpc" : "standard_rpc", diagnostic: archivalConfigured && providerConnectivity === "confirmed" ? "connection_confirmed" : archivalConfigured && providerConnectivity === "failed" ? "connection_failed" : providerDiagnostic, connectivity: providerConnectivity, archivalCompletenessVerified: false },
