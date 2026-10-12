@@ -25,3 +25,17 @@ test("provider failure does not become a negative token finding",async()=>{
  const result=await lookupStonkFun(mint,{fetchImpl:async()=>({ok:false,status:429})});
  assert.equal(result.status,"provider_unavailable");
 });
+
+test("mint-specific lookup searches both endpoints before returning unknown", async()=>{
+ const calls=[];
+ const result=await lookupStonkFun(mint,{fetchImpl:async url=>{calls.push(url);return {ok:true,json:async()=>({data:[]})};}});
+ assert.equal(calls.length,2);
+ assert.equal(result.status,"not_found");
+ assert.equal(result.attempts.length,2);
+});
+test("mint-specific detail returns matching creator lead",async()=>{
+ const result=await lookupStonkFun(mint,{fetchImpl:async()=>({ok:true,json:async()=>({data:{mint,creator}})})});
+ assert.equal(result.status,"provider_record_observed");
+ assert.equal(result.creatorCandidate,creator);
+ assert.equal(result.launchCreatorVerified,false);
+});
