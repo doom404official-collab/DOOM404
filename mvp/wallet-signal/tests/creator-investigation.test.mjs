@@ -20,3 +20,9 @@ test("oldest-first indexed candidates are considered for launch investigation",(
  assert.match(route,/helius_indexed_oldest_first/);
  assert.match(route,/candidateSignatures: signatures\.slice\(0, 8\)/);
 });
+
+test("oldest RPC-visible history contributes independent launch candidates",()=>{
+ assert.match(route,/candidateSignatures: oldestPage\.slice\(-10\)\.reverse\(\)/);
+ assert.match(route,/origin\?\.coverage\?\.candidateSignatures/);
+ assert.match(route,/rpc_oldest_visible_window/);
+});
