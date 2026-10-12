@@ -430,7 +430,7 @@ function CreatorLookup() {
       <div style={{ background: "#191919", border: "1px solid #444", borderRadius: 10, padding: 16, marginBottom: 18 }}>
         <h3 style={{ marginTop: 0 }}>LIQUIDITY INTELLIGENCE // Pool Discovery</h3>
         <button type="button" onClick={() => refreshLiquidity()} disabled={liquidityRefreshing || busy} style={{ padding: "8px 12px", background: "#a52222", color: "white", border: 0, borderRadius: 8, cursor: "pointer" }}>{liquidityRefreshing ? "REFRESHING..." : "REFRESH LIQUIDITY"}</button>
-        {liquidity?.observedAt && <p style={{ fontSize: 12, color: "#aaa" }}>Last retrieved: {new Date(liquidity.observedAt).toLocaleString()} (your local time). Provider estimates may lag blockchain state.</p>
+        {liquidity?.observedAt && <p style={{ fontSize: 12, color: "#aaa" }}>Last retrieved: {new Date(liquidity.observedAt).toLocaleString()} (your local time). Provider estimates may lag blockchain state.</p>}
         {liquidityError && <p style={{ color: "#ffbf86" }}>Provider unavailable: {liquidityError}. Liquidity is not assessed.</p>}
         {!liquidity && !liquidityError && <p style={{ color: "#aaa" }}>Retrieving reported trading pools...</p>}
         {liquidity && <>
