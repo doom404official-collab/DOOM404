@@ -427,7 +427,26 @@ function CreatorLookup() {
         </div>
         <p style={{ color: "#ffbf86", fontSize: 13, marginBottom: 0 }}>Liquidity: {liquidity?.reportedLiquidityUsd != null ? "Provider estimate $" + formatNumber(liquidity.reportedLiquidityUsd, 0) + " across reported pools" : "Not assessed"} · Overall security verdict: Not issued. Expand evidence sections below before making decisions.</p>
       </Section>
-      <Section title="LIQUIDITY INTELLIGENCE // Pool Discovery">
+      <Section title="TOP 3 INSIGHTS" defaultOpen={true}>
+        <p style={{ color: "#aaa", fontSize: 13 }}>Evidence-based observations only. Confidence describes source coverage, not investment safety.</p>
+        {[
+          extensions?.transferFee?.olderFee && extensions?.transferFee?.newerFee
+            ? { title: "Transfer fees and control", detail: "Reported fee schedules: " + extensions.transferFee.olderFee.percentage + "% / " + extensions.transferFee.newerFee.percentage + "%. Fee configuration authority: " + (extensions.transferFee.configAuthorityReported ? (extensions.transferFee.configAuthority ? "present" : "revoked") : "unknown") + ". Schedule activation is not independently verified.", confidence: "Parsed on-chain RPC", source: "Token-2022 mint" }
+            : { title: "Transfer fee evidence", detail: extensions?.transferFee?.status === "observed" ? "Transfer-fee extension observed, but fee schedules are not fully parsed." : "No verified transfer-fee schedule is available for this inspection.", confidence: "Incomplete evidence", source: "Token-2022 inspection" },
+          concentration?.largestAccountSharePct != null
+            ? { title: "Largest token-account balance", detail: "Largest observed token account: " + concentration.largestAccountSharePct + "% of supply. Token accounts do not represent unique beneficial owners.", confidence: "On-chain account data; ownership unresolved", source: "Solana RPC" }
+            : { title: "Holder concentration", detail: "Token-account concentration is unavailable. No holder concentration conclusion can be drawn.", confidence: "Unavailable", source: "Solana RPC" },
+          liquidity?.reportedLiquidityUsd != null
+            ? { title: "Reported liquidity", detail: "$" + formatNumber(liquidity.reportedLiquidityUsd, 0) + " estimated across " + liquidity.poolCountReturned + " reported pools. LP locks and withdrawal rights remain unverified.", confidence: "Third-party estimate", source: "DexScreener · " + new Date(liquidity.observedAt).toLocaleString() }
+            : { title: "Liquidity coverage", detail: "Liquidity estimates are unavailable; no zero-liquidity or safety conclusion is implied.", confidence: "Unavailable", source: "DexScreener" }
+        ].map((insight, index) => <div key={index} style={{ borderTop: "1px solid #393939", padding: "12px 0" }}>
+          <strong style={{ display: "block" }}>{index + 1}. {insight.title}</strong>
+          <p style={{ margin: "5px 0", color: "#ddd", fontSize: 14 }}>{insight.detail}</p>
+          <p style={{ margin: 0, color: "#ffbf86", fontSize: 12 }}>Evidence: {insight.confidence} · Source: {insight.source}</p>
+        </div>)}
+        <p style={{ color: "#aaa", fontSize: 12 }}>Creator origin remains unverified unless separately supported by transaction evidence. No overall risk verdict is issued.</p>
+      </Section>
+      <Section title="LIQUIDITY INTELLIGENCE">
         <h3 style={{ marginTop: 0 }}>LIQUIDITY INTELLIGENCE // Pool Discovery</h3>
         <button type="button" onClick={() => refreshLiquidity()} disabled={liquidityRefreshing || busy} style={{ padding: "8px 12px", background: "#a52222", color: "white", border: 0, borderRadius: 8, cursor: "pointer" }}>{liquidityRefreshing ? "REFRESHING..." : "REFRESH LIQUIDITY"}</button>
         {liquidity?.observedAt && <p style={{ fontSize: 12, color: "#aaa" }}>Last retrieved: {new Date(liquidity.observedAt).toLocaleString()} (your local time). Provider estimates may lag blockchain state.</p>}
@@ -448,12 +467,12 @@ function CreatorLookup() {
           <p style={{ color: "#aaa", fontSize: 12 }}>Source: {liquidity.provider}, observed {liquidity.observedAt}. {liquidity.coverage?.warning}</p>
         </>}
       </Section>
-      <Section title="TOKEN MINT DETAILS">
+      <Section title="TOKEN DETAILS">
       <p><strong>Mint:</strong> {result.mint}</p>
       <p><strong>Token program:</strong> {result.tokenProgram}</p>
       <p><strong>Supply:</strong> {result.supply ?? "Unavailable"}</p>
       </Section>
-      <Section title="TOKEN ACCOUNT CONCENTRATION // Evidence">
+      <Section title="HOLDER CONCENTRATION">
         <h3 style={{ marginTop: 0 }}>TOKEN ACCOUNT CONCENTRATION // Evidence</h3>
         {concentrationError && <p style={{ color: "#ffb86b" }}>Account concentration unavailable: {concentrationError}. No conclusion inferred.</p>}
         {!concentration && !concentrationError && <p style={{ color: "#aaa" }}>Retrieving largest token accounts...</p>}
@@ -467,7 +486,7 @@ function CreatorLookup() {
           <p style={{ color: "#aaa", fontSize: 12 }}>Source: {concentration.coverage?.source}. Unique owners, pool balances and exchange custody are not resolved. No risk verdict.</p>
         </>}
       </Section>
-      {result.tokenProgram === "spl-token-2022" && <Section title="TOKEN-2022 EXTENSIONS // Evidence">
+      {result.tokenProgram === "spl-token-2022" && <Section title="TOKEN SECURITY">
         <h3 style={{ marginTop: 0 }}>TOKEN-2022 EXTENSIONS // Evidence</h3>
         {extensionsError && <p style={{ color: "#ffbf86" }}>Inspection unavailable: {extensionsError}. No safety conclusion inferred.</p>}
         {!extensions && !extensionsError && <p style={{ color: "#aaa" }}>Inspecting mint extensions...</p>}
@@ -492,7 +511,7 @@ function CreatorLookup() {
           <p style={{ color: "#aaa", fontSize: 12 }}>{extensions.coverage?.limitations || extensions.reason || extensions.interpretation}</p>
         </>}
       </Section>}
-      <Section title="CREATOR ORIGIN & PROVIDER DIAGNOSTICS">
+      <Section title="CREATOR INTELLIGENCE">
       <p><strong>Mint authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.mintAuthority || "None")}</p>
       <p><strong>Freeze authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.freezeAuthority || "None")}</p>
       <p style={{ color: "#ffbf86" }}><strong>Creator attribution:</strong> {result.creator?.status === "provider_attributed" ? "Solscan-associated creator (ownership unverified)" : "Unverified — authorities do not prove creator ownership."}</p>
