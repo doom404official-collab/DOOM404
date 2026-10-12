@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
 import { summarizeCreatorEvidence } from "../../../lib/creatorEvidence.js";
-import { detectPumpLaunch } from "../../../lib/pumpLaunchEvidence.js";
+import { detectLaunchpadEvidence } from "../../../lib/launchpadEvidence.js";
 
 export const dynamic = "force-dynamic";
 
@@ -259,7 +259,7 @@ export async function GET(request) {
     if (origin?.signature) {
       try {
         const launchTx = await originConnection.getParsedTransaction(origin.signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
-        pumpLaunchEvidence = detectPumpLaunch({ mint: mint.toBase58(), transaction: launchTx, signature: origin.signature });
+        pumpLaunchEvidence = detectLaunchpadEvidence({ mint: mint.toBase58(), transaction: launchTx, signature: origin.signature });
       } catch {
         pumpLaunchEvidence = { status: "unavailable", reason: "Pump.fun program interaction lookup could not be completed." };
       }
@@ -272,6 +272,7 @@ export async function GET(request) {
       mint: mint.toBase58(),
       creatorEvidence,
       pumpLaunchEvidence,
+      launchpadEvidence: pumpLaunchEvidence,
       tokenProgram,
       parsedMintDetailsAvailable,
       decimals,
