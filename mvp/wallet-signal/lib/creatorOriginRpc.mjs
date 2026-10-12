@@ -24,11 +24,17 @@ export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 
       const signatures = [];
       let before;
       let exhausted = false;
+      let pagesFetched = 0;
+      let rawSignaturesSeen = 0;
+      let failedSignaturesSkipped = 0;
       for (let page = 0; page < maxPages; page++) {
         const config = { limit: pageLimit, commitment: "finalized" };
         if (before) config.before = before;
         const batch = await rpc("getSignaturesForAddress", [mint, config]);
         if (!Array.isArray(batch)) throw new Error("INVALID_SIGNATURE_RESPONSE");
+        pagesFetched++;
+        rawSignaturesSeen += batch.length;
+        failedSignaturesSkipped += batch.filter((item) => item?.err != null).length;
         signatures.push(...batch.filter((s) => s && !s.err && typeof s.signature === "string").map((s) => s.signature));
         if (batch.length < pageLimit) { exhausted = true; break; }
         const last = batch.at(-1)?.signature;
@@ -36,7 +42,7 @@ export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 
         before = last;
       }
       // Even an exhausted RPC history may be pruned; never assert archive completeness.
-      return { signatures, complete: false, rpcHistoryExhausted: exhausted };
+      return { signatures, complete: false, rpcHistoryExhausted: exhausted, pagesFetched, rawSignaturesSeen, failedSignaturesSkipped, paginationLimitReached: !exhausted };
     },
     fetchTransaction(signature) {
       return rpc("getTransaction", [signature, { encoding: "jsonParsed", commitment: "finalized", maxSupportedTransactionVersion: 1 }]);
