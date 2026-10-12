@@ -1,5 +1,5 @@
 /**
- * Helius indexed enhanced-history discovery. This returns creation-signature
+ * Helius enhanced-history discovery. This returns transaction-signature
  * candidates, NOT a verified token-to-creator database record.
  * Uses existing server-side HELIUS_RPC_URL solely to extract its API key.
  */
@@ -16,7 +16,7 @@ export function createHeliusCreationCandidates({ rpcUrl, fetchImpl = fetch } = {
       const url = new URL("https://api-mainnet.helius-rpc.com/v0/addresses/" + mint + "/transactions");
       url.searchParams.set("api-key", key);
       url.searchParams.set("limit", "25");
-      url.searchParams.set("sort-order", "asc");
+      // This endpoint is not assumed to support oldest-first ordering.
       let response;
       try {
         response = await fetchImpl(url.toString(), { headers: { accept: "application/json" },
