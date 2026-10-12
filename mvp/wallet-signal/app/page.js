@@ -413,8 +413,8 @@ function CreatorLookup() {
                 ? extensions.transferFee[key].percentage + "% (" + extensions.transferFee[key].basisPoints + " bps), max " + extensions.transferFee[key].maximumFeeRaw + " raw units, epoch " + (extensions.transferFee[key].epoch ?? "unknown")
                 : "Not parsed"}
             </p>)}
-            <p style={{ fontSize: 13 }}>Fee configuration authority: {extensions.transferFee.authorityFieldsReported ? (extensions.transferFee.configAuthority || "None (revoked)") : "Unknown (not returned)"}</p>
-            <p style={{ fontSize: 13 }}>Withheld-fee withdrawal authority: {extensions.transferFee.authorityFieldsReported ? (extensions.transferFee.withdrawalAuthority || "None (revoked)") : "Unknown (not returned)"}</p>
+            <p style={{ fontSize: 13 }}>Fee configuration authority: {extensions.transferFee.configAuthorityReported ? (extensions.transferFee.configAuthority || "None (revoked)") : "Unknown (not returned)"}</p>
+            <p style={{ fontSize: 13 }}>Withheld-fee withdrawal authority: {extensions.transferFee.withdrawalAuthorityReported ? (extensions.transferFee.withdrawalAuthority || "None (revoked)") : "Unknown (not returned)"}</p>
             <p style={{ fontSize: 12, color: "#aaa" }}>{extensions.transferFee.note}</p>
           </div>}
           <p style={{ color: "#aaa", fontSize: 12 }}>{extensions.coverage?.limitations || extensions.reason || extensions.interpretation}</p>
