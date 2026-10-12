@@ -59,8 +59,8 @@ function Metric({ label, value, note }) {
   );
 }
 
-function Section({ title, children }) {
-  const [expanded, setExpanded] = useState(title.startsWith("01 //"));
+function Section({ title, children, defaultOpen }) {
+  const [expanded, setExpanded] = useState(defaultOpen ?? title.startsWith("01 //"));
   return (
     <details className="doom-result-section" open={expanded} onToggle={(event) => setExpanded(event.currentTarget.open)}>
       <summary className="doom-result-heading">
@@ -403,7 +403,7 @@ function CreatorLookup() {
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
     {busy && <p role="status" style={{ color: "#ddd" }}>Querying Solana history. Each batch checks up to 3,000 signatures; this may take up to 45 seconds.</p>}
     {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
-      <div style={{ border: "1px solid #693333", borderRadius: 12, padding: 18, background: "linear-gradient(135deg,#241414,#141414)", marginBottom: 20 }}>
+      <Section title="TOKEN SECURITY OVERVIEW" defaultOpen={true}>
         <p style={{ color: "#ff8585", letterSpacing: 2, fontSize: 12, fontWeight: 700, marginTop: 0 }}>GLITCH // TOKEN SECURITY OVERVIEW</p>
         <h3 style={{ margin: "0 0 8px" }}>Observed signals, not a safety rating</h3>
         <p style={{ color: "#aaa", fontSize: 13 }}>Evidence coverage: {concentration ? "account concentration available" : "account concentration pending or unavailable"} · {extensions?.verified ? "Token-2022 mint extensions parsed" : result.tokenProgram === "spl-token-2022" ? "Token-2022 extensions pending or unavailable" : "Token-2022 extensions not applicable"}</p>
@@ -426,8 +426,8 @@ function CreatorLookup() {
           </div>)}
         </div>
         <p style={{ color: "#ffbf86", fontSize: 13, marginBottom: 0 }}>Liquidity: {liquidity?.reportedLiquidityUsd != null ? "Provider estimate $" + formatNumber(liquidity.reportedLiquidityUsd, 0) + " across reported pools" : "Not assessed"} · Overall security verdict: Not issued. Expand evidence sections below before making decisions.</p>
-      </div>
-      <div style={{ background: "#191919", border: "1px solid #444", borderRadius: 10, padding: 16, marginBottom: 18 }}>
+      </Section>
+      <Section title="LIQUIDITY INTELLIGENCE // Pool Discovery">
         <h3 style={{ marginTop: 0 }}>LIQUIDITY INTELLIGENCE // Pool Discovery</h3>
         <button type="button" onClick={() => refreshLiquidity()} disabled={liquidityRefreshing || busy} style={{ padding: "8px 12px", background: "#a52222", color: "white", border: 0, borderRadius: 8, cursor: "pointer" }}>{liquidityRefreshing ? "REFRESHING..." : "REFRESH LIQUIDITY"}</button>
         {liquidity?.observedAt && <p style={{ fontSize: 12, color: "#aaa" }}>Last retrieved: {new Date(liquidity.observedAt).toLocaleString()} (your local time). Provider estimates may lag blockchain state.</p>}
@@ -447,11 +447,13 @@ function CreatorLookup() {
           </details>
           <p style={{ color: "#aaa", fontSize: 12 }}>Source: {liquidity.provider}, observed {liquidity.observedAt}. {liquidity.coverage?.warning}</p>
         </>}
-      </div>
+      </Section>
+      <Section title="TOKEN MINT DETAILS">
       <p><strong>Mint:</strong> {result.mint}</p>
       <p><strong>Token program:</strong> {result.tokenProgram}</p>
       <p><strong>Supply:</strong> {result.supply ?? "Unavailable"}</p>
-      <div style={{ background: "#191919", border: "1px solid #444", padding: 16, borderRadius: 10, marginTop: 14 }}>
+      </Section>
+      <Section title="TOKEN ACCOUNT CONCENTRATION // Evidence">
         <h3 style={{ marginTop: 0 }}>TOKEN ACCOUNT CONCENTRATION // Evidence</h3>
         {concentrationError && <p style={{ color: "#ffb86b" }}>Account concentration unavailable: {concentrationError}. No conclusion inferred.</p>}
         {!concentration && !concentrationError && <p style={{ color: "#aaa" }}>Retrieving largest token accounts...</p>}
@@ -464,8 +466,8 @@ function CreatorLookup() {
           </details>
           <p style={{ color: "#aaa", fontSize: 12 }}>Source: {concentration.coverage?.source}. Unique owners, pool balances and exchange custody are not resolved. No risk verdict.</p>
         </>}
-      </div>
-      {result.tokenProgram === "spl-token-2022" && <div style={{ background: "#191919", border: "1px solid #444", padding: 16, borderRadius: 10, marginTop: 14 }}>
+      </Section>
+      {result.tokenProgram === "spl-token-2022" && <Section title="TOKEN-2022 EXTENSIONS // Evidence">
         <h3 style={{ marginTop: 0 }}>TOKEN-2022 EXTENSIONS // Evidence</h3>
         {extensionsError && <p style={{ color: "#ffbf86" }}>Inspection unavailable: {extensionsError}. No safety conclusion inferred.</p>}
         {!extensions && !extensionsError && <p style={{ color: "#aaa" }}>Inspecting mint extensions...</p>}
@@ -489,7 +491,8 @@ function CreatorLookup() {
           </div>}
           <p style={{ color: "#aaa", fontSize: 12 }}>{extensions.coverage?.limitations || extensions.reason || extensions.interpretation}</p>
         </>}
-      </div>}
+      </Section>}
+      <Section title="CREATOR ORIGIN & PROVIDER DIAGNOSTICS">
       <p><strong>Mint authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.mintAuthority || "None")}</p>
       <p><strong>Freeze authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.freezeAuthority || "None")}</p>
       <p style={{ color: "#ffbf86" }}><strong>Creator attribution:</strong> {result.creator?.status === "provider_attributed" ? "Solscan-associated creator (ownership unverified)" : "Unverified — authorities do not prove creator ownership."}</p>
@@ -508,6 +511,7 @@ function CreatorLookup() {
       <p style={{ color: "#aaa", fontSize: 12 }}>RPC history exhausted within scan: {result.mintOrigin?.coverage?.historyExhaustedWithinRpc ? "Yes (archival completeness unverified)" : "No / unknown"}</p>
       <p style={{ color: "#aaa" }}>Holding time and prior launches: Not yet assessed. No risk verdict issued.</p>
       <a href={"https://solscan.io/token/" + encodeURIComponent(result.mint)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>Verify mint on Solscan ↗</a>
+      </Section>
     </div>}
   </section>;
 }
