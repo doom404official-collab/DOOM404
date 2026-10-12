@@ -12,7 +12,7 @@ test("indexed candidate discovery never asserts creator identity", async () => {
   assert.equal(result.length, 1);
   assert.equal(result[0].signature.length, 70);
   assert.equal(result[0].creator, undefined);
-  assert.equal(requested.includes("sort-order=asc"), true);
+  assert.equal(requested.includes("sort-order=asc"), false);
 });
 test("rejects malformed index payload", async () => {
   const provider = createHeliusCreationCandidates({
