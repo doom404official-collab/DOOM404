@@ -21,7 +21,7 @@ export function normalizeOriginTransaction(tx) {
   const keys = [...staticKeys, ...(lookup.writable || []).map(keyString), ...(lookup.readonly || []).map(keyString)];
   const normalize = (ix, outerIndex, inner) => {
     const programId = String(ix?.programId?.toBase58?.() || ix?.programId || (Number.isInteger(ix?.programIdIndex) ? keys[ix.programIdIndex] : "") || "");
-    const accounts = (ix?.accounts || []).map(a => typeof a === "number" ? keys[a] || null : keyString(a));
+    const accounts = (ix?.accounts || ix?.accountKeyIndexes || []).map(a => typeof a === "number" ? keys[a] || null : keyString(a));
     return { programId, accounts, data: ix?.data || null, parsed: ix?.parsed || null, outerIndex, inner };
   };
   const instructions = (message.instructions || message.compiledInstructions || []).map((ix,i) => normalize(ix,i,false));
