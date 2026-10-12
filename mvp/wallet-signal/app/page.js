@@ -339,12 +339,16 @@ function CreatorLookup() {
   const [liquidity, setLiquidity] = useState(null);
   const [liquidityError, setLiquidityError] = useState("");
   const [liquidityRefreshing, setLiquidityRefreshing] = useState(false);
+  const [poolEvidence, setPoolEvidence] = useState(null);
+  const [poolEvidenceError, setPoolEvidenceError] = useState("");
+  const [poolEvidenceBusy, setPoolEvidenceBusy] = useState(false);
   const [historyBatches, setHistoryBatches] = useState(0);
   const MAX_HISTORY_BATCHES = 5;
   async function refreshLiquidity(address = mint.trim()) {
     if (!address || liquidityRefreshing) return;
     setLiquidityRefreshing(true);
     setLiquidityError("");
+    setPoolEvidence(null); setPoolEvidenceError("");
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 12000);
@@ -359,9 +363,31 @@ function CreatorLookup() {
       setLiquidityError(failure.name === "AbortError" ? "Liquidity refresh timed out" : failure.message);
     } finally { setLiquidityRefreshing(false); }
   }
+  async function verifyPoolAccounts() {
+    const addresses = (liquidity?.pools || []).slice(0, 5).map(pool => pool.pairAddress).filter(Boolean);
+    if (!addresses.length || poolEvidenceBusy) return;
+    setPoolEvidenceBusy(true); setPoolEvidenceError(""); setPoolEvidence(null);
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 20000);
+      let response;
+      try {
+        response = await fetch("/api/pool-account-evidence", {
+          method: "POST", cache: "no-store", signal: controller.signal,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mint: result?.mint, poolAddresses: addresses })
+        });
+      } finally { clearTimeout(timeout); }
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.reason || data.error || "On-chain pool account lookup unavailable");
+      if (result?.mint === mint.trim()) setPoolEvidence(data);
+    } catch (failure) {
+      setPoolEvidenceError(failure.name === "AbortError" ? "Pool account verification timed out" : failure.message);
+    } finally { setPoolEvidenceBusy(false); }
+  }
   async function inspect(event, cursor = null) {
     event.preventDefault();
-    setBusy(true); setError(""); if (!cursor) { setResult(null); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); }
+    setBusy(true); setError(""); if (!cursor) { setResult(null); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 45000);
@@ -453,6 +479,19 @@ function CreatorLookup() {
           <p><strong>Reported liquidity estimate:</strong> {liquidity.reportedLiquidityUsd == null ? "Unavailable" : "$" + formatNumber(liquidity.reportedLiquidityUsd, 0)}</p>
           <p><strong>Largest reported pool share:</strong> {liquidity.largestReportedPoolSharePct == null ? "Unavailable" : formatNumber(liquidity.largestReportedPoolSharePct, 2) + "%"}</p>
           <p style={{ color: "#ffbf86", fontSize: 13 }}>LP locks / burns / withdrawal permissions: Not verified</p>
+          <button type="button" disabled={poolEvidenceBusy || busy || !(liquidity.pools || []).length} onClick={verifyPoolAccounts} style={{ padding: "8px 12px", background: "#a52222", color: "white", border: 0, borderRadius: 8, cursor: "pointer" }}>
+            {poolEvidenceBusy ? "CHECKING ON-CHAIN ACCOUNTS..." : "VERIFY FIRST 5 POOL ACCOUNTS"}
+          </button>
+          <p style={{ color: "#aaa", fontSize: 12 }}>Checks account existence and owner program only, not authentic pool status, reserves, LP locks or withdrawal rights.</p>
+          {poolEvidenceError && <p role="alert" style={{ color: "#ffbf86" }}>On-chain account check unavailable: {poolEvidenceError}</p>}
+          {poolEvidence && <details><summary style={{ cursor: "pointer" }}>On-chain account evidence ({poolEvidence.pools?.length || 0} checked)</summary>
+            <p style={{ color: "#aaa", fontSize: 12 }}>Source: {poolEvidence.source}; observed {poolEvidence.observedAt}. Not a pool security verdict.</p>
+            {(poolEvidence.pools || []).map(pool => <div key={pool.pairAddress} style={{ borderTop: "1px solid #333", padding: "10px 0", overflowWrap: "anywhere", fontSize: 13 }}>
+              <strong>Account: {pool.pairAddress}</strong>
+              <p>Exists: {pool.accountExists ? "Yes" : "No"} · Owner program: {pool.accountOwnerProgram || "Unavailable"}</p>
+              <p style={{ color: "#ffbf86" }}>Pool protocol, reserves, LP locks and withdrawal permissions: Unverified</p>
+            </div>)}
+          </details>}
           <details><summary style={{ cursor: "pointer" }}>View reported trading pools ({liquidity.pools?.length || 0})</summary>
             {(liquidity.pools || []).map((pool, index) => <div key={pool.pairAddress + index} style={{ borderTop: "1px solid #333", padding: "10px 0", fontSize: 13 }}>
               <strong>{pool.dexId || "Unknown DEX"} · {pool.baseSymbol || "?"}/{pool.quoteSymbol || "?"}</strong>
