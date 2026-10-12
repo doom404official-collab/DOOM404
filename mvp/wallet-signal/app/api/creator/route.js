@@ -4,6 +4,7 @@ import { createReliableConnection } from "../../../lib/reliableConnection.js";
 import { summarizeCreatorEvidence } from "../../../lib/creatorEvidence.js";
 import { detectLaunchpadEvidence } from "../../../lib/launchpadEvidence.js";
 import { lookupStonkFun } from "../../../lib/stonkFunEvidence.js";
+import { fetchArchivedTransaction } from "../../../lib/archiveTransaction.js";
 
 export const dynamic = "force-dynamic";
 
@@ -48,7 +49,7 @@ async function inspectMintOrigin(connection, mint, cursor = null) {
 }
 
 
-async function inspectIndexedOrigin(endpoint, mint, connection) {
+async function inspectIndexedOrigin(endpoint, mint, connection, archiveEndpoint = "") {
   // Helius oldest-first indexed history; independently verify on-chain initialization.
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 12000);
@@ -81,7 +82,11 @@ async function inspectIndexedOrigin(endpoint, mint, connection) {
     let checked = 0;
     for (const signature of signatures.slice(0, INDEXED_CANDIDATE_CAP)) {
       let tx;
-      try { tx = await connection.getParsedTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 }); } catch { continue; }
+      try { tx = await connection.getParsedTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 }); } catch {}
+      if (!tx && archiveEndpoint) {
+        const archived = await fetchArchivedTransaction(signature, { endpoint: archiveEndpoint });
+        if (archived.status === "transaction_retrieved") tx = archived.transaction;
+      }
       checked++;
       if (!tx || tx.meta?.err) continue;
       const instructions = [...(tx.transaction?.message?.instructions || []), ...(tx.meta?.innerInstructions || []).flatMap(x => x.instructions || [])];
@@ -227,6 +232,7 @@ export async function GET(request) {
     // Optional archival RPC: configure HELIUS_RPC_URL server-side only.
     // No provider key is sent to the browser or included in API output.
     const archivalUrl = (process.env.HELIUS_RPC_URL || "").trim();
+    const archiveTransactionUrl = (process.env.CREATOR_ARCHIVE_RPC_URL || archivalUrl).trim();
     const archivalConfigured = /^https:\/\//i.test(archivalUrl);
     const providerDiagnostic = !archivalUrl ? "missing_env" : !archivalConfigured ? "invalid_url_format" : "configured_not_verified";
     const originConnection = archivalConfigured
@@ -242,7 +248,7 @@ export async function GET(request) {
     // CB-02B: oldest-first indexed lookup, with existing bounded RPC fallback.
     let indexedOrigin = null;
     if (archivalConfigured && providerConnectivity === "confirmed" && !before && !originTx && solscan.status !== "provider_attributed") {
-      indexedOrigin = await inspectIndexedOrigin(archivalUrl, mint, originConnection);
+      indexedOrigin = await inspectIndexedOrigin(archivalUrl, mint, originConnection, archiveTransactionUrl);
     }
     if (originTx) {
       origin = await verifyOriginTransaction(originConnection, mint, originTx);
