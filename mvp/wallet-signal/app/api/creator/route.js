@@ -24,7 +24,7 @@ async function inspectMintOrigin(connection, mint, cursor = null) {
     before = earliest.signature;
   }
   const coverage = { pagesScanned: pages, historyExhaustedWithinRpc: exhausted, oldestObservedSignature: earliest?.signature || null, nextCursor: exhausted ? null : earliest?.signature || null, archivalCompletenessVerified: false };
-  if (!earliest || !exhausted) return { status: "unverified", reason: exhausted ? "No additional mint history returned by this RPC; archival completeness remains unverified." : "Earliest mint history not established within bounded RPC scan. Continue searching older signatures.", coverage };
+  if (!earliest) return { status: "unverified", reason: "No mint transaction signatures were available from this RPC; origin remains unverified.", coverage };
   // Inspect a small window of the oldest RPC-visible transactions, not just one.
   // Some token launches have multiple setup instructions/transactions.
   const candidates = oldestPage.slice(-12).reverse().filter(row => !row.err);
@@ -38,10 +38,10 @@ async function inspectMintOrigin(connection, mint, cursor = null) {
     const instructions = [...(tx.transaction?.message?.instructions || []), ...(tx.meta?.innerInstructions || []).flatMap(x => x.instructions || [])];
     const initialized = instructions.some(x => ["initializeMint", "initializeMint2"].includes(x.parsed?.type) && x.parsed?.info?.mint === mint.toBase58() && ["spl-token", "spl-token-2022"].includes(x.program));
     if (!initialized) continue;
-    const signer = tx.transaction.message.accountKeys.find(x => x.signer && x.pubkey);
-    return { status: "initialization_signer_observed", address: signer?.pubkey?.toBase58() || null, signature: row.signature, blockTime: row.blockTime ?? null, reason: "Verified mint initialization instruction found. Transaction signer is an origin candidate, not a verified creator or beneficial owner.", coverage: { ...coverage, initializationCandidatesChecked: checked } };
+    const signers = tx.transaction.message.accountKeys.filter(x => x.signer && x.pubkey).map(x => x.pubkey.toBase58());
+    return { status: "initialization_signer_observed", address: signers[0] || null, signers, signature: row.signature, blockTime: tx.blockTime ?? row.blockTime ?? null, reason: "Verified mint initialization instruction found within bounded RPC history. All observed transaction signers are origin candidates, not verified creators or beneficial owners.", coverage: { ...coverage, initializationCandidatesChecked: checked, initializationVerified: true } };
   }
-  return { status: "unverified", reason: "No mint initialization instruction found among the oldest available transactions. Origin and creator remain unverified.", coverage: { ...coverage, initializationCandidatesChecked: checked } };
+  return { status: "unverified", reason: exhausted ? "No mint initialization instruction found in the oldest RPC-visible candidates; archive completeness is unverified." : "No mint initialization instruction found in the oldest scanned candidates. Older history remains unscanned; origin is unverified.", coverage: { ...coverage, initializationCandidatesChecked: checked } };
 }
 
 
