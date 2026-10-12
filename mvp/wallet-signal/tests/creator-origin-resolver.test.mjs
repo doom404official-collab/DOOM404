@@ -25,3 +25,12 @@ test("failed transactions are rejected",()=>{
 });
 
 test("caller cannot inject a verified creator via a supplied schema registry",()=>{ const result=resolveCreatorRole({mint,transaction:tx,registry:[{internallyAudited:true,programId:program,version:"fake",discriminator:"x",decode:()=>({mint,creator:candidate,role:"launchpad_designated_creator"})}]}); assert.equal(result.status,"unresolved"); });
+
+test("normalizes compiledInstructions accountKeyIndexes and loaded addresses",()=>{
+ const v0={slot:456,meta:{err:null,loadedAddresses:{writable:[mint],readonly:[program]}},transaction:{signatures:["example"],message:{staticAccountKeys:[candidate],compiledInstructions:[{programIdIndex:2,accountKeyIndexes:[1,0],data:""}]}}};
+ const out=normalizeOriginTransaction(v0);
+ assert.equal(out.status,"normalized");
+ assert.equal(out.instructions[0].programId,program);
+ assert.deepEqual(out.instructions[0].accounts,[mint,candidate]);
+ assert.equal(resolveCreatorRole({mint,transaction:v0}).status,"unresolved");
+});
