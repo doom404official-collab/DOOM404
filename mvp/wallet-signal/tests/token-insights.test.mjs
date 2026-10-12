@@ -25,3 +25,14 @@ test("old market-data retrieval is marked stale", () => {
  const rows=selectTokenInsights({result:{},liquidity:{reportedLiquidityUsd:1,poolCountReturned:1,observedAt:"2026-10-10T00:00:00Z"},now:Date.parse("2026-10-12T00:00:00Z")});
  assert.match(rows[0].confidence,/stale/);
 });
+
+test("evidence classes distinguish direct observations from market estimates", () => {
+ const rows = selectTokenInsights({
+  result:{}, concentration:{largestAccountSharePct:4},
+  liquidity:{reportedLiquidityUsd:1000,poolCountReturned:1,observedAt:"2026-10-12T07:00:00Z"},
+  now:Date.parse("2026-10-12T07:01:00Z")
+ });
+ assert.equal(rows.find(x=>x.category==="concentration").evidenceClass,"onchain_observed");
+ assert.equal(rows.find(x=>x.category==="liquidity").evidenceClass,"provider_reported");
+ assert.equal(selectTokenInsights({result:{}})[0].evidenceClass,"unverified");
+});
