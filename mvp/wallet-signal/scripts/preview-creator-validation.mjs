@@ -10,11 +10,21 @@ else if (!process.env.HELIUS_RPC_URL) console.log("CREATOR_VALIDATION: HELIUS_RP
 else {
   try {
     const rpc = createSolanaRpcAdapter({ rpcUrl: process.env.HELIUS_RPC_URL, pageLimit: 100 });
-    const result = await scanCreatorOrigin({
-      mint, lookupSignaturePage: rpc.lookupSignaturePage,
-      fetchTransaction: rpc.fetchTransaction, maxPages: 5, maxTransactions: 25, maxDurationMs: 20000,
-    });
-    console.log("CREATOR_VALIDATION:", JSON.stringify(result));
+    const opts = { mint, lookupSignaturePage: rpc.lookupSignaturePage,
+      fetchTransaction: rpc.fetchTransaction, maxPages: 2, maxTransactions: 15, maxDurationMs: 20000 };
+    const first = await scanCreatorOrigin(opts);
+    const second = first.resumeRequired && first.nextCursor
+      ? await scanCreatorOrigin({ ...opts, before: first.nextCursor }) : null;
+    const a = new Set(first.sampledSignatures);
+    const overlap = second ? second.sampledSignatures.filter(s => a.has(s)) : [];
+    console.log("CREATOR_VALIDATION:", JSON.stringify({
+      mint, status: first.verified.length || second?.verified.length ? "CANDIDATE_VERIFIED_NEEDS_INDEPENDENT_REVIEW" : "UNRESOLVED",
+      first: { sampled: first.sampled, retrieved: first.retrieved, nextCursor: first.nextCursor, failureReasons: first.failureReasons, verified: first.verified },
+      second: second ? { sampled: second.sampled, retrieved: second.retrieved, nextCursor: second.nextCursor, failureReasons: second.failureReasons, verified: second.verified } : null,
+      overlapCount: overlap.length, overlapSignatures: overlap,
+      resumeRequired: second?.resumeRequired ?? first.resumeRequired,
+      historyComplete: false,
+    }));
   } catch {
     console.log("CREATOR_VALIDATION: RPC_DISCOVERY_OR_SCAN_FAILED");
   }
