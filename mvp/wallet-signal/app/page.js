@@ -433,7 +433,12 @@ function CreatorLookup() {
         {selectTokenInsights({ result, extensions, concentration, liquidity }).map((insight, index) => <div key={index} style={{ borderTop: "1px solid #393939", padding: "12px 0" }}>
           <strong style={{ display: "block" }}>{index + 1}. {insight.title}</strong>
           <p style={{ margin: "5px 0", color: "#ddd", fontSize: 14 }}>{insight.detail}</p>
-          <p style={{ margin: 0, color: "#ffbf86", fontSize: 12 }}>Evidence: {insight.confidence} · Source: {insight.source}</p>
+          <span style={{ display: "inline-block", border: "1px solid #555", borderRadius: 6, padding: "3px 8px", fontSize: 12, color: insight.evidenceClass === "onchain_observed" ? "#9ddab6" : insight.evidenceClass === "provider_reported" ? "#9acfff" : "#ffbf86" }}>
+            {insight.evidenceClass === "onchain_observed" ? "On-chain observed" : insight.evidenceClass === "provider_reported" ? "Provider reported" : "Unverified / incomplete"}
+          </span>
+          <details style={{ marginTop: 8 }}><summary style={{ cursor: "pointer", color: "#bbb", fontSize: 12 }}>Evidence source & limitations</summary>
+            <p style={{ margin: "6px 0", color: "#aaa", fontSize: 12 }}>{insight.confidence} · Source: {insight.source}</p>
+          </details>
         </div>)}
         <p style={{ color: "#aaa", fontSize: 12 }}>Creator origin remains unverified unless separately supported by transaction evidence. No overall risk verdict is issued.</p>
       </Section>
