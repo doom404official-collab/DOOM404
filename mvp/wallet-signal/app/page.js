@@ -551,6 +551,22 @@ function CreatorLookup() {
       <p><strong>Freeze authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.freezeAuthority || "None")}</p>
       <p style={{ color: "#ffbf86" }}><strong>Creator attribution:</strong> {result.creator?.status === "provider_attributed" ? "Solscan-associated creator (ownership unverified)" : "Unverified — authorities do not prove creator ownership."}</p>
       {result.creator?.status === "provider_attributed" && <p><strong>Solscan creator address:</strong> <a href={"https://solscan.io/account/" + encodeURIComponent(result.creator.address)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff", overflowWrap: "anywhere" }}>{result.creator.address}</a></p>}
+      <div style={{ border: "1px solid #453535", borderRadius: 9, padding: 12, margin: "12px 0" }}>
+        <strong>LAUNCHPAD & CREATOR EVIDENCE</strong>
+        <p><strong>Launchpad:</strong> {result.launchpadEvidence?.status === "program_interaction_observed" ? result.launchpadEvidence.platform + " — program interaction observed; launch unverified" : "Unknown / not verified"}</p>
+        <p><strong>Launch creator wallet:</strong> {result.launchpadEvidence?.launchCreatorVerified && result.launchpadEvidence?.launchCreator ? result.launchpadEvidence.launchCreator : "Not verified"}</p>
+        <p><strong>Observed transaction:</strong> {result.launchpadEvidence?.signature ? <a href={"https://solscan.io/tx/" + encodeURIComponent(result.launchpadEvidence.signature)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>View on Solscan ↗</a> : "Not available"}</p>
+        <p><strong>Transaction timestamp:</strong> {result.launchpadEvidence?.blockTime ? new Date(result.launchpadEvidence.blockTime * 1000).toLocaleString() : "Unknown"}</p>
+        <p style={{ color: "#ffbf86", fontSize: 12 }}>{result.launchpadEvidence?.reason || "No launchpad evidence available."} A trading pool or mint signer alone does not establish launch creator identity.</p>
+        <details><summary style={{ cursor: "pointer" }}>View attribution candidates ({result.creatorEvidence?.claims?.length || 0})</summary>
+          {(result.creatorEvidence?.claims || []).map((claim, index) => <div key={claim.kind + claim.address + index} style={{ borderTop: "1px solid #333", padding: "8px 0", fontSize: 12, overflowWrap: "anywhere" }}>
+            <strong>{claim.label}</strong>
+            <p>{claim.address} · {claim.verification} · Source: {claim.source}</p>
+            {claim.signature && <a href={"https://solscan.io/tx/" + encodeURIComponent(claim.signature)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>Inspect transaction ↗</a>}
+            <p style={{ color: "#aaa" }}>{claim.limitation}</p>
+          </div>)}
+        </details>
+      </div>
       <p style={{ color: "#aaa", fontSize: 12 }}>Solscan API: {result.solscanDiagnostic?.status === "provider_attributed" ? "Creator attribution returned" : result.solscanDiagnostic?.status === "not_configured" ? "SOLSCAN_API_KEY missing in Preview" : result.solscanDiagnostic?.status === "unavailable" ? "Unavailable (" + (result.solscanDiagnostic?.diagnostic || "unknown") + ")" : result.solscanDiagnostic?.status || "Not reported"}</p>
       <p><strong>Mint origin investigation:</strong> {result.mintOrigin?.status === "initialization_signer_observed" ? "Initialization signer observed" : "Origin not verified"}</p>
       {result.mintOrigin?.address && <p><strong>Initialization signer (not verified creator):</strong> {result.mintOrigin.address}</p>}
