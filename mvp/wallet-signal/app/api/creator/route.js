@@ -88,9 +88,9 @@ async function inspectIndexedOrigin(endpoint, mint, connection) {
       const signers = tx.transaction.message.accountKeys.filter(x => x.signer && x.pubkey).map(x => x.pubkey.toBase58());
       return { status: "initialization_signer_observed", address: signers[0] || null, signers, signature, blockTime: tx.blockTime ?? null,
         reason: "Verified on-chain mint initialization found in oldest-first indexed history. Signers are origin candidates, NOT verified creators or beneficial owners.",
-        coverage: { ...coverage, initializationCandidatesChecked: checked } };
+        coverage: { ...coverage, initializationCandidatesChecked: checked }, candidateSignatures: signatures.slice(0, 8) };
     }
-    return { status: "unavailable", reason: "No mint initialization verified in indexed response; continue with bounded RPC history.", coverage: { ...coverage, initializationCandidatesChecked: checked } };
+    return { status: "unavailable", reason: "No mint initialization verified in indexed response; continue with bounded RPC history.", coverage: { ...coverage, initializationCandidatesChecked: checked }, candidateSignatures: signatures.slice(0, 8) };
   } catch (error) { return { status: "unavailable", reason: error?.name === "AbortError" ? "Indexed history timed out after 12 seconds; using bounded RPC fallback." : "Indexed history request failed; using bounded RPC fallback.", diagnostic: { code: error?.name === "AbortError" ? "INDEXED_TIMEOUT" : "INDEXED_NETWORK_FAILURE" } }; }
   finally { clearTimeout(timer); }
 }
@@ -260,8 +260,9 @@ export async function GET(request) {
     const candidateSignatures = [...new Set([
       solscan.creationSignature,
       solscan.firstMintSignature,
-      origin?.signature
-    ].filter(x => typeof x === "string" && /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(x)))].slice(0, 3);
+      origin?.signature,
+      ...(indexedOrigin?.candidateSignatures || [])
+    ].filter(x => typeof x === "string" && /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(x)))].slice(0, 10);
     const launchAttempts = [];
     for (const signature of candidateSignatures) {
       try {
@@ -281,7 +282,7 @@ export async function GET(request) {
     const launchInvestigation = {
       candidateCount: candidateSignatures.length,
       inspectedCount: launchAttempts.length,
-      sources: ["solscan_create_tx", "solscan_first_mint_tx", "mint_origin_rpc"],
+      sources: ["solscan_create_tx", "solscan_first_mint_tx", "mint_origin_rpc", "helius_indexed_oldest_first"],
       attempts: launchAttempts.map(({ signature, status }) => ({ signature, status })),
       creatorVerified: false,
       coverage: "bounded_candidates_not_full_history"
