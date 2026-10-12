@@ -406,6 +406,17 @@ function CreatorLookup() {
           <p><strong>Status:</strong> {extensions.status === "parsed_extensions_observed" ? "Parsed mint extensions retrieved" : "Not verified"}</p>
           {extensions.status === "parsed_extensions_observed" && <p><strong>Observed extensions:</strong> {extensions.extensionCount}</p>}
           {(extensions.extensions || []).map((extension, i) => <p key={extension.type + i} style={{ color: "#ddd" }}>• {extension.label} <span style={{ color: "#aaa" }}>({extension.type})</span></p>)}
+          {extensions.transferFee?.status === "observed" && <div style={{ padding: 12, border: "1px solid #654a32", borderRadius: 8, marginTop: 12 }}>
+            <strong>TRANSFER FEE CONFIGURATION</strong>
+            {["olderFee", "newerFee"].map(key => <p key={key} style={{ fontSize: 13 }}>
+              {key === "olderFee" ? "Older fee schedule" : "Newer fee schedule"}: {extensions.transferFee[key]
+                ? extensions.transferFee[key].percentage + "% (" + extensions.transferFee[key].basisPoints + " bps), max " + extensions.transferFee[key].maximumFeeRaw + " raw units, epoch " + (extensions.transferFee[key].epoch ?? "unknown")
+                : "Not parsed"}
+            </p>)}
+            <p style={{ fontSize: 13 }}>Fee configuration authority: {extensions.transferFee.authorityFieldsReported ? (extensions.transferFee.configAuthority || "None (revoked)") : "Unknown (not returned)"}</p>
+            <p style={{ fontSize: 13 }}>Withheld-fee withdrawal authority: {extensions.transferFee.authorityFieldsReported ? (extensions.transferFee.withdrawalAuthority || "None (revoked)") : "Unknown (not returned)"}</p>
+            <p style={{ fontSize: 12, color: "#aaa" }}>{extensions.transferFee.note}</p>
+          </div>}
           <p style={{ color: "#aaa", fontSize: 12 }}>{extensions.coverage?.limitations || extensions.reason || extensions.interpretation}</p>
         </>}
       </div>}
