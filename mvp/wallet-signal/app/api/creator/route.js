@@ -3,6 +3,7 @@ import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
 import { summarizeCreatorEvidence } from "../../../lib/creatorEvidence.js";
 import { detectLaunchpadEvidence } from "../../../lib/launchpadEvidence.js";
+import { lookupStonkFun } from "../../../lib/stonkFunEvidence.js";
 
 export const dynamic = "force-dynamic";
 
@@ -280,6 +281,8 @@ export async function GET(request) {
         reason: candidateSignatures.length
           ? "Inspected available independent transaction candidates; no supported launch creation was established."
           : "No usable historical launch transaction candidates were found." };
+    const stonkFunEvidence = await lookupStonkFun(mint.toBase58());
+    // An index listing is a lead, not a verified launchpad or creator.
     const launchInvestigation = {
       candidateCount: candidateSignatures.length,
       inspectedCount: launchAttempts.length,
@@ -298,6 +301,7 @@ export async function GET(request) {
       pumpLaunchEvidence,
       launchpadEvidence: pumpLaunchEvidence,
       launchInvestigation,
+      stonkFunEvidence,
       tokenProgram,
       parsedMintDetailsAvailable,
       decimals,
