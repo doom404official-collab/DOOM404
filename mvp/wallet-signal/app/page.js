@@ -335,11 +335,13 @@ function CreatorLookup() {
   const [concentrationError, setConcentrationError] = useState("");
   const [extensions, setExtensions] = useState(null);
   const [extensionsError, setExtensionsError] = useState("");
+  const [liquidity, setLiquidity] = useState(null);
+  const [liquidityError, setLiquidityError] = useState("");
   const [historyBatches, setHistoryBatches] = useState(0);
   const MAX_HISTORY_BATCHES = 5;
   async function inspect(event, cursor = null) {
     event.preventDefault();
-    setBusy(true); setError(""); if (!cursor) { setResult(null); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); }
+    setBusy(true); setError(""); if (!cursor) { setResult(null); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); }
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 45000);
@@ -364,6 +366,14 @@ function CreatorLookup() {
           if (!extensionResponse.ok) throw new Error(extensionData.error || "Extension data unavailable");
           setExtensions(extensionData);
         } catch (extensionFailure) { setExtensionsError(extensionFailure.message); }
+      }
+      if (!cursor) {
+        try {
+          const marketResponse = await fetch("/api/token-liquidity?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
+          const marketData = await marketResponse.json();
+          if (!marketResponse.ok) throw new Error(marketData.reason || "Liquidity data unavailable");
+          setLiquidity(marketData);
+        } catch (marketFailure) { setLiquidityError(marketFailure.message); }
       }
       setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
       setHistoryBatches(n => cursor ? n + 1 : 1);
@@ -403,7 +413,26 @@ function CreatorLookup() {
             <strong style={{ display: "block", marginTop: 8, overflowWrap: "anywhere", fontSize: 17 }}>{item.value}</strong>
           </div>)}
         </div>
-        <p style={{ color: "#ffbf86", fontSize: 13, marginBottom: 0 }}>Liquidity: Not assessed · Overall security verdict: Not issued. Expand evidence sections below before making decisions.</p>
+        <p style={{ color: "#ffbf86", fontSize: 13, marginBottom: 0 }}>Liquidity: {liquidity?.reportedLiquidityUsd != null ? "Provider estimate $" + formatNumber(liquidity.reportedLiquidityUsd, 0) + " across reported pools" : "Not assessed"} · Overall security verdict: Not issued. Expand evidence sections below before making decisions.</p>
+      </div>
+      <div style={{ background: "#191919", border: "1px solid #444", borderRadius: 10, padding: 16, marginBottom: 18 }}>
+        <h3 style={{ marginTop: 0 }}>LIQUIDITY INTELLIGENCE // Pool Discovery</h3>
+        {liquidityError && <p style={{ color: "#ffbf86" }}>Provider unavailable: {liquidityError}. Liquidity is not assessed.</p>}
+        {!liquidity && !liquidityError && <p style={{ color: "#aaa" }}>Retrieving reported trading pools...</p>}
+        {liquidity && <>
+          <p><strong>Reported pools:</strong> {liquidity.poolCountReturned}</p>
+          <p><strong>Reported liquidity estimate:</strong> {liquidity.reportedLiquidityUsd == null ? "Unavailable" : "$" + formatNumber(liquidity.reportedLiquidityUsd, 0)}</p>
+          <p><strong>Largest reported pool share:</strong> {liquidity.largestReportedPoolSharePct == null ? "Unavailable" : formatNumber(liquidity.largestReportedPoolSharePct, 2) + "%"}</p>
+          <p style={{ color: "#ffbf86", fontSize: 13 }}>LP locks / burns / withdrawal permissions: Not verified</p>
+          <details><summary style={{ cursor: "pointer" }}>View reported trading pools ({liquidity.pools?.length || 0})</summary>
+            {(liquidity.pools || []).map((pool, index) => <div key={pool.pairAddress + index} style={{ borderTop: "1px solid #333", padding: "10px 0", fontSize: 13 }}>
+              <strong>{pool.dexId || "Unknown DEX"} · {pool.baseSymbol || "?"}/{pool.quoteSymbol || "?"}</strong>
+              <p>Liquidity: {pool.liquidityUsd == null ? "Unknown" : "$" + formatNumber(pool.liquidityUsd, 0)} · 24h volume: {pool.volume24hUsd == null ? "Unknown" : "$" + formatNumber(pool.volume24hUsd, 0)}</p>
+              {pool.url && <a href={pool.url} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>View pool data ↗</a>}
+            </div>)}
+          </details>
+          <p style={{ color: "#aaa", fontSize: 12 }}>Source: {liquidity.provider}, observed {liquidity.observedAt}. {liquidity.coverage?.warning}</p>
+        </>}
       </div>
       <p><strong>Mint:</strong> {result.mint}</p>
       <p><strong>Token program:</strong> {result.tokenProgram}</p>
