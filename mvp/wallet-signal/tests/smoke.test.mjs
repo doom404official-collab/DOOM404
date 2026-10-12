@@ -42,3 +42,10 @@ test("security overview does not issue unsupported verdict", () => {
   assert.match(page, /Overall security verdict: Not issued/);
   assert.match(page, /Observed signals, not a safety rating/);
 });
+
+test("pool-account evidence is opt-in and never presented as LP-lock verification", () => {
+  assert.match(page, /VERIFY FIRST 5 POOL ACCOUNTS/);
+  assert.match(page, /\/api\/pool-account-evidence/);
+  assert.match(page, /Pool protocol, reserves, LP locks and withdrawal permissions: Unverified/);
+  assert.match(page, /setPoolEvidence\(null\)/);
+});
