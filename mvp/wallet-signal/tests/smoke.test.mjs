@@ -49,3 +49,10 @@ test("pool-account evidence is opt-in and never presented as LP-lock verificatio
   assert.match(page, /Pool protocol, reserves, LP locks and withdrawal permissions: Unverified/);
   assert.match(page, /setPoolEvidence\(null\)/);
 });
+
+test("creator launchpad panel distinguishes observation from verified creator", () => {
+  assert.match(page, /LAUNCHPAD & CREATOR EVIDENCE/);
+  assert.match(page, /program interaction observed; launch unverified/);
+  assert.match(page, /launchCreatorVerified/);
+  assert.match(page, /View attribution candidates/);
+});
