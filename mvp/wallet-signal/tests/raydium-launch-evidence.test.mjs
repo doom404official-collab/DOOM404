@@ -8,3 +8,11 @@ test("Raydium mint linkage is required and creator remains unverified",()=>{
  assert.match(source,/if \(!accounts\.includes\(mint\)\) continue/);
  assert.match(source,/launchCreator: null, launchCreatorVerified: false, platformVerifiedAsLauncher: false/);
 });
+
+test("compiled Raydium instruction program IDs resolve through account keys",()=>{
+ assert.match(source,/instruction\.programIdIndex/);
+ assert.match(source,/keys\[instruction\.programIdIndex\]/);
+});
+test("parsed account objects are normalized to pubkeys",()=>{
+ assert.match(source,/x\?\.pubkey/);
+});
