@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
+import { normalizeReportedPools } from "../../../lib/poolEvidence.js";
 
 export const dynamic = "force-dynamic";
-const finite = value => typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
-const shortText = value => typeof value === "string" ? value.slice(0, 120) : null;
 
 export async function GET(request) {
   const value = new URL(request.url).searchParams.get("mint") || "";
@@ -19,14 +18,7 @@ export async function GET(request) {
     if (!response.ok) return NextResponse.json({ status: "unavailable", reason: "Market-data provider unavailable", httpStatus: response.status }, { status: 503 });
     const payload = await response.json();
     if (!Array.isArray(payload)) return NextResponse.json({ status: "unavailable", reason: "Unrecognized market-data response" }, { status: 503 });
-    const rows = payload.filter(x => x?.chainId === "solana" && (x?.baseToken?.address === mint || x?.quoteToken?.address === mint))
-      .map(x => ({
-        pairAddress: shortText(x.pairAddress), dexId: shortText(x.dexId),
-        baseSymbol: shortText(x.baseToken?.symbol), quoteSymbol: shortText(x.quoteToken?.symbol),
-        liquidityUsd: finite(x.liquidity?.usd), volume24hUsd: finite(x.volume?.h24),
-        pairCreatedAt: Number.isFinite(x.pairCreatedAt) ? x.pairCreatedAt : null,
-        url: typeof x.url === "string" && /^https:\/\/dexscreener\.com\/solana\//.test(x.url) ? x.url : null
-      })).filter(x => x.pairAddress).sort((a,b) => (b.liquidityUsd ?? -1) - (a.liquidityUsd ?? -1));
+    const rows = normalizeReportedPools(payload, mint);
     const reported = rows.filter(x => x.liquidityUsd !== null);
     const sum = reported.reduce((total, row) => total + row.liquidityUsd, 0);
     const largestShare = sum > 0 ? reported[0].liquidityUsd / sum * 100 : null;
@@ -37,7 +29,8 @@ export async function GET(request) {
       reportedLiquidityUsd: reported.length ? sum : null,
       largestReportedPoolSharePct: largestShare,
       coverage: {
-        scope: "Pools returned by DexScreener for this mint; not an exhaustive on-chain pool inventory",
+        scope: "Deduplicated, syntactically valid Solana pool addresses returned by DexScreener; not an exhaustive on-chain pool inventory",
+        poolAccountExistence: "not_checked", poolProgramOwnership: "not_checked", reservesVerified: false,
         liquidity: "Provider-reported USD estimates, not independently verified reserve balances",
         concentration: "Share among returned pools with numeric liquidity, not all pools",
         lpLocksVerified: false, lpBurnsVerified: false, withdrawalRightsVerified: false,
