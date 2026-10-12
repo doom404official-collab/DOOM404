@@ -25,7 +25,7 @@ async function inspectMintOrigin(connection, mint, cursor = null) {
     if (rows.length < HISTORY_PAGE_SIZE) { exhausted = true; break; }
     before = earliest.signature;
   }
-  const coverage = { pagesScanned: pages, historyExhaustedWithinRpc: exhausted, oldestObservedSignature: earliest?.signature || null, nextCursor: exhausted ? null : earliest?.signature || null, archivalCompletenessVerified: false };
+  const coverage = { pagesScanned: pages, historyExhaustedWithinRpc: exhausted, oldestObservedSignature: earliest?.signature || null, nextCursor: exhausted ? null : earliest?.signature || null, archivalCompletenessVerified: false, candidateSignatures: oldestPage.slice(-10).reverse().filter(row => !row.err).map(row => row.signature) };
   if (!earliest) return { status: "unverified", reason: "No mint transaction signatures were available from this RPC; origin remains unverified.", coverage };
   // Inspect a small window of the oldest RPC-visible transactions, not just one.
   // Some token launches have multiple setup instructions/transactions.
@@ -261,7 +261,8 @@ export async function GET(request) {
       solscan.creationSignature,
       solscan.firstMintSignature,
       origin?.signature,
-      ...(indexedOrigin?.candidateSignatures || [])
+      ...(indexedOrigin?.candidateSignatures || []),
+      ...(origin?.coverage?.candidateSignatures || [])
     ].filter(x => typeof x === "string" && /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(x)))].slice(0, 10);
     const launchAttempts = [];
     for (const signature of candidateSignatures) {
@@ -282,7 +283,7 @@ export async function GET(request) {
     const launchInvestigation = {
       candidateCount: candidateSignatures.length,
       inspectedCount: launchAttempts.length,
-      sources: ["solscan_create_tx", "solscan_first_mint_tx", "mint_origin_rpc", "helius_indexed_oldest_first"],
+      sources: ["solscan_create_tx", "solscan_first_mint_tx", "mint_origin_rpc", "helius_indexed_oldest_first", "rpc_oldest_visible_window"],
       attempts: launchAttempts.map(({ signature, status }) => ({ signature, status })),
       creatorVerified: false,
       coverage: "bounded_candidates_not_full_history"
