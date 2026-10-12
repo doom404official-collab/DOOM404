@@ -415,6 +415,9 @@ function CreatorLookup() {
             </p>)}
             <p style={{ fontSize: 13 }}>Fee configuration authority: {extensions.transferFee.configAuthorityReported ? (extensions.transferFee.configAuthority || "None (revoked)") : "Unknown (not returned)"}</p>
             <p style={{ fontSize: 13 }}>Withheld-fee withdrawal authority: {extensions.transferFee.withdrawalAuthorityReported ? (extensions.transferFee.withdrawalAuthority || "None (revoked)") : "Unknown (not returned)"}</p>
+            <details style={{ marginTop: 8 }}><summary style={{ cursor: "pointer", color: "#ccc" }}>Inspect authority addresses</summary>
+              {["configAuthority", "withdrawalAuthority"].map(key => extensions.transferFee[key] && <p key={key} style={{ overflowWrap: "anywhere", fontSize: 12 }}>{key}: <a href={"https://solscan.io/account/" + encodeURIComponent(extensions.transferFee[key])} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>{extensions.transferFee[key]}</a></p>)}
+            </details>
             <p style={{ fontSize: 12, color: "#aaa" }}>{extensions.transferFee.note}</p>
           </div>}
           <p style={{ color: "#aaa", fontSize: 12 }}>{extensions.coverage?.limitations || extensions.reason || extensions.interpretation}</p>
