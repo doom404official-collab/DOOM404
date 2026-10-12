@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
 import { selectTokenInsights } from "../lib/tokenInsights.js";
+import { assessTokenEvidence } from "../lib/tokenAssessment.js";
 
 function formatCoverage(status) {
   const labels = {
@@ -454,6 +455,37 @@ function CreatorLookup() {
         </div>
         <p style={{ color: "#ffbf86", fontSize: 13, marginBottom: 0 }}>Liquidity: {liquidity?.reportedLiquidityUsd != null ? "Provider estimate $" + formatNumber(liquidity.reportedLiquidityUsd, 0) + " across reported pools" : "Not assessed"} · Overall security verdict: Not issued. Expand evidence sections below before making decisions.</p>
       </Section>
+      <Section title="GLITCH ATTRIBUTE ASSESSMENT" defaultOpen={true}>
+        {(() => {
+          const assessment = assessTokenEvidence({ result, extensions, concentration, liquidity });
+          return <>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
+              <div style={{ flex: "1 1 180px", background: "#1b1a1a", border: "1px solid #493535", borderRadius: 10, padding: 14 }}>
+                <div style={{ color: "#aaa", fontSize: 12 }}>Consolidated assessment</div>
+                <strong style={{ fontSize: 22, color: "#ffbf86" }}>{assessment.consolidatedScore == null ? "Not yet established" : assessment.consolidatedScore + "/100"}</strong>
+              </div>
+              <div style={{ flex: "1 1 180px", background: "#1b1a1a", border: "1px solid #493535", borderRadius: 10, padding: 14 }}>
+                <div style={{ color: "#aaa", fontSize: 12 }}>Evidence availability</div>
+                <strong style={{ fontSize: 22 }}>{assessment.assessedAttributes}/{assessment.totalAttributes} attributes</strong>
+                <p style={{ fontSize: 12, color: "#bbb", marginBottom: 0 }}>Available does not mean independently verified.</p>
+              </div>
+            </div>
+            <p style={{ color: "#bbb", fontSize: 13 }}>Evidence-backed interpretations. Provisional attribute scores are not investment safety ratings.</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
+              {assessment.attributes.map(item => <div key={item.id} style={{ background: "#191919", border: "1px solid #484040", borderRadius: 9, padding: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "start" }}>
+                  <strong style={{ fontSize: 14 }}>{item.label}</strong>
+                  <span style={{ color: item.score == null ? "#ffbf86" : item.score >= 70 ? "#9ddab6" : "#ffbf86", whiteSpace: "nowrap", fontWeight: 700 }}>{item.score == null ? "Pending" : item.score + "/100*"}</span>
+                </div>
+                <p style={{ fontWeight: 600, color: "#ffcf9b", marginBottom: 4 }}>{item.assessment}</p>
+                <p style={{ color: "#ccc", fontSize: 12, lineHeight: 1.6 }}>{item.explanation}</p>
+                <small style={{ color: "#999" }}>Evidence: {item.coverage} · {item.source}</small>
+              </div>)}
+            </div>
+            <p style={{ fontSize: 12, color: "#aaa" }}>*Provisional control score only. Overall score requires validated methodology and sufficient evidence.</p>
+          </>;
+        })()}
+      </Section>
       <Section title={`${selectTokenInsights({ result, extensions, concentration, liquidity }).length} AVAILABLE ${selectTokenInsights({ result, extensions, concentration, liquidity }).length === 1 ? "INSIGHT" : "INSIGHTS"}`} defaultOpen={true}>
         <p style={{ color: "#aaa", fontSize: 13 }}>Prioritized observations from available evidence. Confidence describes data coverage and verification limits, not investment safety.</p>
         {selectTokenInsights({ result, extensions, concentration, liquidity }).map((insight, index) => <div key={index} style={{ borderTop: "1px solid #393939", padding: "12px 0" }}>
@@ -554,6 +586,14 @@ function CreatorLookup() {
       <div style={{ border: "1px solid #453535", borderRadius: 9, padding: 12, margin: "12px 0" }}>
         <strong>LAUNCHPAD & CREATOR EVIDENCE</strong>
         <p><strong>Launchpad:</strong> {result.launchpadEvidence?.status === "program_interaction_observed" ? result.launchpadEvidence.platform + " — program interaction observed; launch unverified" : "Unknown / not verified"}</p>
+        {result.stonkFunEvidence && <div style={{ border: "1px solid #4c4440", borderRadius: 8, padding: 10, margin: "10px 0", background: "#1c1919" }}>
+          <strong>StonkFun public index investigation</strong>
+          <p><strong>Record status:</strong> {result.stonkFunEvidence.status === "provider_record_observed" ? "Exact mint matched (provider-reported)" : result.stonkFunEvidence.status === "not_found" ? "No matching record in retrieved index" : result.stonkFunEvidence.status === "provider_unavailable" ? "Provider retrieval unavailable" : result.stonkFunEvidence.status}</p>
+          {result.stonkFunEvidence.creatorCandidate && <p><strong>Reported creator candidate (unverified):</strong> {result.stonkFunEvidence.creatorCandidate}</p>}
+          {result.stonkFunEvidence.signature && <p><a href={"https://solscan.io/tx/" + encodeURIComponent(result.stonkFunEvidence.signature)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>Inspect provider-reported transaction ↗</a></p>}
+          {result.stonkFunEvidence.diagnostic && <p style={{ color: "#bbb", fontSize: 12 }}>{result.stonkFunEvidence.diagnostic}</p>}
+          <small style={{ color: "#aaa" }}>A provider listing does not establish the creator or original launch transaction.</small>
+        </div>}
         <p><strong>Launch creator wallet:</strong> {result.launchpadEvidence?.launchCreatorVerified && result.launchpadEvidence?.launchCreator ? result.launchpadEvidence.launchCreator : "Not verified"}</p>
         <p><strong>Observed transaction:</strong> {result.launchpadEvidence?.signature ? <a href={"https://solscan.io/tx/" + encodeURIComponent(result.launchpadEvidence.signature)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>View on Solscan ↗</a> : "Not available"}</p>
         <p><strong>Transaction timestamp:</strong> {result.launchpadEvidence?.blockTime ? new Date(result.launchpadEvidence.blockTime * 1000).toLocaleString() : "Unknown"}</p>
