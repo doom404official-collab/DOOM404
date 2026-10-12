@@ -6,6 +6,7 @@ import { detectLaunchpadEvidence } from "../../../lib/launchpadEvidence.js";
 import { lookupStonkFun } from "../../../lib/stonkFunEvidence.js";
 import { fetchArchivedTransaction } from "../../../lib/archiveTransaction.js";
 import { normalizeOriginTransaction, resolveCreatorRole } from "../../../lib/creatorOriginResolver.js";
+import { inspectMintInitialization } from "../../../lib/mintInitializationEvidence.js";
 
 export const dynamic = "force-dynamic";
 
@@ -93,7 +94,7 @@ async function inspectIndexedOrigin(endpoint, mint, connection, archiveEndpoint 
       const normalized = normalizeOriginTransaction(tx);
       const auditedRole = resolveCreatorRole({ mint: mint.toBase58(), transaction: tx });
       const instructions = normalized.instructions;
-      const mintInitialization = instructions.some(x => ["initializeMint", "initializeMint2"].includes(x.parsed?.type) && x.parsed?.info?.mint === mint.toBase58() && ["spl-token", "spl-token-2022"].includes(x.parsed?.program || x.program));
+      const mintInitialization = inspectMintInitialization(instructions, mint.toBase58()).length > 0;
       if (!mintInitialization && auditedRole.status !== "verified_role") continue;
       if (auditedRole.status === "verified_role") return { status: "verified_role", creator: auditedRole.creator, signature, blockTime: tx.blockTime ?? null, evidence: auditedRole.evidence, coverage: { ...coverage, initializationCandidatesChecked: checked } };
       const signers = (tx.transaction.message.accountKeys || []).filter(x => x.signer && x.pubkey).map(x => x.pubkey.toBase58?.() || String(x.pubkey));
