@@ -428,7 +428,7 @@ function CreatorLookup() {
         </div>
         <p style={{ color: "#ffbf86", fontSize: 13, marginBottom: 0 }}>Liquidity: {liquidity?.reportedLiquidityUsd != null ? "Provider estimate $" + formatNumber(liquidity.reportedLiquidityUsd, 0) + " across reported pools" : "Not assessed"} · Overall security verdict: Not issued. Expand evidence sections below before making decisions.</p>
       </Section>
-      <Section title="TOP 3 INSIGHTS" defaultOpen={true}>
+      <Section title={`${selectTokenInsights({ result, extensions, concentration, liquidity }).length} AVAILABLE ${selectTokenInsights({ result, extensions, concentration, liquidity }).length === 1 ? "INSIGHT" : "INSIGHTS"}`} defaultOpen={true}>
         <p style={{ color: "#aaa", fontSize: 13 }}>Prioritized observations from available evidence. Confidence describes data coverage and verification limits, not investment safety.</p>
         {selectTokenInsights({ result, extensions, concentration, liquidity }).map((insight, index) => <div key={index} style={{ borderTop: "1px solid #393939", padding: "12px 0" }}>
           <strong style={{ display: "block" }}>{index + 1}. {insight.title}</strong>
