@@ -23,3 +23,5 @@ test("caller reviewed flag alone cannot authorize decoding",()=>{
 test("failed transactions are rejected",()=>{
  assert.equal(resolveCreatorRole({mint,transaction:{...tx,meta:{...tx.meta,err:{InstructionError:[0,"Custom"]}}}}).status,"unresolved");
 });
+
+test("caller cannot inject a verified creator via a supplied schema registry",()=>{ const result=resolveCreatorRole({mint,transaction:tx,registry:[{internallyAudited:true,programId:program,version:"fake",discriminator:"x",decode:()=>({mint,creator:candidate,role:"launchpad_designated_creator"})}]}); assert.equal(result.status,"unresolved"); });
