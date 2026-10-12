@@ -381,6 +381,25 @@ function CreatorLookup() {
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
     {busy && <p role="status" style={{ color: "#ddd" }}>Querying Solana history. Each batch checks up to 3,000 signatures; this may take up to 45 seconds.</p>}
     {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
+      <div style={{ border: "1px solid #693333", borderRadius: 12, padding: 18, background: "linear-gradient(135deg,#241414,#141414)", marginBottom: 20 }}>
+        <p style={{ color: "#ff8585", letterSpacing: 2, fontSize: 12, fontWeight: 700, marginTop: 0 }}>GLITCH // TOKEN SECURITY OVERVIEW</p>
+        <h3 style={{ margin: "0 0 8px" }}>Observed signals, not a safety rating</h3>
+        <p style={{ color: "#aaa", fontSize: 13 }}>Evidence coverage: {concentration ? "account concentration available" : "account concentration pending or unavailable"} · {extensions?.verified ? "Token-2022 mint extensions parsed" : result.tokenProgram === "spl-token-2022" ? "Token-2022 extensions pending or unavailable" : "Token-2022 extensions not applicable"}</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(145px,1fr))", gap: 10 }}>
+          {[
+            { label: "Transfer fee schedules", value: extensions?.transferFee?.olderFee && extensions?.transferFee?.newerFee ? extensions.transferFee.olderFee.percentage + "% / " + extensions.transferFee.newerFee.percentage + "%" : extensions?.transferFee?.status === "observed" ? "Present · rate unknown" : extensions?.verified ? "Not observed" : "Not assessed" },
+            { label: "Fee configuration authority", value: extensions?.transferFee?.configAuthorityReported ? (extensions.transferFee.configAuthority ? "Present" : "Revoked") : "Not verified" },
+            { label: "Mint authority", value: result.authorityDetailsStatus === "not_parsed" ? "Not verified" : result.mintAuthority ? "Present" : "None" },
+            { label: "Freeze authority", value: result.authorityDetailsStatus === "not_parsed" ? "Not verified" : result.freezeAuthority ? "Present" : "None" },
+            { label: "Largest token account", value: concentration?.largestAccountSharePct != null ? concentration.largestAccountSharePct + "% of supply" : "Not assessed" },
+            { label: "Creator origin", value: result.mintOrigin?.status === "initialization_signer_observed" ? "Initialization observed" : "Unverified" }
+          ].map(item => <div key={item.label} style={{ border: "1px solid #453535", borderRadius: 9, background: "#1a1919", padding: 12, minWidth: 0 }}>
+            <div style={{ color: "#aaa", fontSize: 12 }}>{item.label}</div>
+            <strong style={{ display: "block", marginTop: 8, overflowWrap: "anywhere", fontSize: 17 }}>{item.value}</strong>
+          </div>)}
+        </div>
+        <p style={{ color: "#ffbf86", fontSize: 13, marginBottom: 0 }}>Liquidity: Not assessed · Overall security verdict: Not issued. Expand evidence sections below before making decisions.</p>
+      </div>
       <p><strong>Mint:</strong> {result.mint}</p>
       <p><strong>Token program:</strong> {result.tokenProgram}</p>
       <p><strong>Supply:</strong> {result.supply ?? "Unavailable"}</p>
