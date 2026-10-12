@@ -10,7 +10,13 @@ test("creator investigation checks independent launch transaction candidates",()
  assert.match(route,/launchInvestigation/);
 });
 test("creator investigation remains bounded and reports actual coverage",()=>{
- assert.match(route,/\.slice\(0, 3\)/);
+ assert.match(route,/\.slice\(0, 10\)/);
  assert.match(route,/bounded_candidates_not_full_history/);
  assert.match(route,/creatorVerified: false/);
+});
+
+test("oldest-first indexed candidates are considered for launch investigation",()=>{
+ assert.match(route,/indexedOrigin\?\.candidateSignatures/);
+ assert.match(route,/helius_indexed_oldest_first/);
+ assert.match(route,/candidateSignatures: signatures\.slice\(0, 8\)/);
 });
