@@ -37,8 +37,9 @@ export async function resolveIndexedCreator({ mint, providers = [], fetchTransac
           failures.push({ provider: provider.name, reason: "TRANSACTION_VERIFICATION_FAILED" });
         }
       }
-    } catch {
-      failures.push({ provider: provider.name, reason: "INDEX_LOOKUP_FAILED" });
+    } catch (error) {
+      const allowed = new Set(["SOLSCAN_AUTH_FAILED", "SOLSCAN_RATE_LIMITED", "SOLSCAN_HTTP_ERROR", "SOLSCAN_INVALID_RESPONSE", "SOLSCAN_API_REJECTED", "SOLSCAN_RESPONSE_NOT_JSON", "SOLSCAN_NETWORK_ERROR"]);
+      failures.push({ provider: provider.name, reason: allowed.has(error?.message) ? error.message : "INDEX_LOOKUP_FAILED" });
     }
   }
   const creators = [...new Set(evidence.map(e => e.creator))];
