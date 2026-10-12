@@ -44,6 +44,41 @@ async function inspectMintOrigin(connection, mint, cursor = null) {
 }
 
 
+async function inspectIndexedOrigin(endpoint, mint, connection) {
+  // Helius oldest-first indexed history; independently verify on-chain initialization.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 12000);
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST", headers: { "Content-Type": "application/json" }, cache: "no-store", signal: controller.signal,
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getTransactionsForAddress",
+        params: [mint.toBase58(), { sortOrder: "asc", transactionDetails: "signatures", limit: 30, filters: { status: "succeeded" } }] })
+    });
+    if (!response.ok) return { status: "unavailable", reason: "Indexed history HTTP request failed." };
+    const payload = await response.json();
+    if (payload.error) return { status: "unavailable", reason: "Indexed history unavailable for this provider or plan." };
+    const rows = Array.isArray(payload.result) ? payload.result : payload.result?.transactions;
+    const signatures = (Array.isArray(rows) ? rows : []).map(x => typeof x === "string" ? x : x.signature).filter(x => typeof x === "string");
+    const coverage = { provider: "helius_indexed", sortOrder: "asc", signaturesReturned: signatures.length, archivalCompletenessVerified: false };
+    if (!signatures.length) return { status: "unverified", reason: "No oldest-first signatures returned; origin cannot be verified.", coverage };
+    let checked = 0;
+    for (const signature of signatures.slice(0, 15)) {
+      let tx;
+      try { tx = await connection.getParsedTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 }); } catch { continue; }
+      checked++;
+      if (!tx || tx.meta?.err) continue;
+      const instructions = [...(tx.transaction?.message?.instructions || []), ...(tx.meta?.innerInstructions || []).flatMap(x => x.instructions || [])];
+      if (!instructions.some(x => ["initializeMint", "initializeMint2"].includes(x.parsed?.type) && x.parsed?.info?.mint === mint.toBase58() && ["spl-token", "spl-token-2022"].includes(x.program))) continue;
+      const signers = tx.transaction.message.accountKeys.filter(x => x.signer && x.pubkey).map(x => x.pubkey.toBase58());
+      return { status: "initialization_signer_observed", address: signers[0] || null, signers, signature, blockTime: tx.blockTime ?? null,
+        reason: "Verified on-chain mint initialization found in oldest-first indexed history. Signers are origin candidates, NOT verified creators or beneficial owners.",
+        coverage: { ...coverage, initializationCandidatesChecked: checked } };
+    }
+    return { status: "unverified", reason: "Oldest-first indexed transactions retrieved, but no mint initialization instruction verified.", coverage: { ...coverage, initializationCandidatesChecked: checked } };
+  } catch { return { status: "unavailable", reason: "Indexed history request failed or timed out." }; }
+  finally { clearTimeout(timer); }
+}
+
 /**
  * CB-01: Mint provenance, not a creator-identity assertion.
  * Mint authority is a permission and may not identify the original deployer.
@@ -128,7 +163,14 @@ export async function GET(request) {
       try { await originConnection.getVersion(); providerConnectivity = "confirmed"; }
       catch { providerConnectivity = "failed"; }
     }
-    if (archivalConfigured && providerConnectivity === "failed") {
+    // CB-02B: oldest-first indexed lookup, with existing bounded RPC fallback.
+    let indexedOrigin = null;
+    if (archivalConfigured && providerConnectivity === "confirmed" && !before) {
+      indexedOrigin = await inspectIndexedOrigin(archivalUrl, mint, originConnection);
+    }
+    if (indexedOrigin && indexedOrigin.status !== "unavailable") {
+      origin = indexedOrigin;
+    } else if (archivalConfigured && providerConnectivity === "failed") {
       origin = { status: "unverified", reason: "Configured archival RPC did not respond successfully. Verify provider credentials and endpoint.", coverage: { archivalCompletenessVerified: false } };
     } else {
       try { origin = await inspectMintOrigin(originConnection, mint, before); }
@@ -149,7 +191,7 @@ export async function GET(request) {
       mintOrigin: origin,
       historicalProvider: { mode: archivalConfigured ? "configured_archival_rpc" : "standard_rpc", diagnostic: archivalConfigured && providerConnectivity === "confirmed" ? "connection_confirmed" : archivalConfigured && providerConnectivity === "failed" ? "connection_failed" : providerDiagnostic, connectivity: providerConnectivity, archivalCompletenessVerified: false },
       creatorHoldingTime: { status: "not_available", reason: "Verified creator attribution and token sale ledger are not yet connected." },
-      dataCoverage: { source: "Solana RPC parsed/raw mint account and bounded mint history", historicalLaunchesChecked: 0, transactionHistoryDecoded: origin.signature ? 1 : 0 },
+      dataCoverage: { source: "Solana RPC mint account, Helius oldest-first indexed history when available, or bounded RPC history", historicalLaunchesChecked: 0, transactionHistoryDecoded: origin.signature ? 1 : 0 },
       interpretation: "This is a token mint inspection, not a scam verdict or creator-behavior assessment."
     }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
