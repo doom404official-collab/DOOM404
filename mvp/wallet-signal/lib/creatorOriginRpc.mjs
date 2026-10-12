@@ -39,7 +39,7 @@ export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 
       return { signatures, complete: false, rpcHistoryExhausted: exhausted };
     },
     fetchTransaction(signature) {
-      return rpc("getTransaction", [signature, { encoding: "jsonParsed", commitment: "finalized", maxSupportedTransactionVersion: 0 }]);
+      return rpc("getTransaction", [signature, { encoding: "jsonParsed", commitment: "finalized", maxSupportedTransactionVersion: 1 }]);
     },
   };
 }
