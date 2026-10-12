@@ -37,7 +37,7 @@ export async function GET(request) {
       const basisPoints = fee.transferFeeBasisPoints ?? fee.transfer_fee_basis_points;
       const maximumFee = fee.maximumFee ?? fee.maximum_fee;
       if (!Number.isInteger(Number(basisPoints)) || Number(basisPoints) < 0 || Number(basisPoints) > 10000 ||
-          maximumFee === undefined || !/^\\d+$/.test(String(maximumFee))) return null;
+          maximumFee === undefined || !/^[0-9]+$/.test(String(maximumFee))) return null;
       return {
         basisPoints: Number(basisPoints),
         percentage: Number(basisPoints) / 100,
