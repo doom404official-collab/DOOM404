@@ -63,7 +63,7 @@ export async function scanCreatorOrigin({
     reason: creators.length > 1 ? "CONFLICTING_CREATOR_EVIDENCE" : creators.length === 0 ? "NO_VERIFIED_CREATION_IN_SAMPLE" : null,
     creator: creators.length === 1 ? creators[0] : null,
     verified: creators.length === 1 ? verified : [],
-    pagesFetched, rawSignaturesSeen, failedSignaturesSkipped, sampled: candidates.length,
+    pagesFetched, rawSignaturesSeen, failedSignaturesSkipped, sampled: candidates.length, sampledSignatures: candidates,
     retrieved, unavailable, fetchErrors, failureReasons, rpcHistoryExhausted: exhausted,
     historyComplete: false, nextCursor: cursor, resumeRequired: !exhausted && creators.length === 0,
   };
