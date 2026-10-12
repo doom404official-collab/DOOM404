@@ -17,13 +17,14 @@ export function normalizeOriginTransaction(tx) {
   const message = tx.transaction.message;
   const staticKeys = (message.accountKeys || message.staticAccountKeys || []).map(k => String(k?.pubkey?.toBase58?.() || k?.pubkey || k?.toBase58?.() || k));
   const lookup = tx.meta?.loadedAddresses || {};
-  const keys = [...staticKeys, ...(lookup.writable || []).map(String), ...(lookup.readonly || []).map(String)];
+  const keyString = k => String(k?.pubkey?.toBase58?.() || k?.pubkey || k?.toBase58?.() || k);
+  const keys = [...staticKeys, ...(lookup.writable || []).map(keyString), ...(lookup.readonly || []).map(keyString)];
   const normalize = (ix, outerIndex, inner) => {
     const programId = String(ix?.programId?.toBase58?.() || ix?.programId || (Number.isInteger(ix?.programIdIndex) ? keys[ix.programIdIndex] : "") || "");
-    const accounts = (ix?.accounts || []).map(a => typeof a === "number" ? keys[a] || null : String(a?.pubkey?.toBase58?.() || a?.pubkey || a?.toBase58?.() || a));
+    const accounts = (ix?.accounts || []).map(a => typeof a === "number" ? keys[a] || null : keyString(a));
     return { programId, accounts, data: ix?.data || null, parsed: ix?.parsed || null, outerIndex, inner };
   };
-  const instructions = (message.instructions || []).map((ix,i) => normalize(ix,i,false));
+  const instructions = (message.instructions || message.compiledInstructions || []).map((ix,i) => normalize(ix,i,false));
   for (const group of tx.meta?.innerInstructions || []) {
     for (const ix of group.instructions || []) instructions.push(normalize(ix,group.index,true));
   }
