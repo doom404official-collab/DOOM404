@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const page = readFileSync(resolve(root, "app/page.js"), "utf8");
 const liquidity = readFileSync(resolve(root, "app/api/token-liquidity/route.js"), "utf8");
+const poolEvidence = readFileSync(resolve(root, "lib/poolEvidence.js"), "utf8");
 const extensions = readFileSync(resolve(root, "app/api/token-extensions/route.js"), "utf8");
 const concentration = readFileSync(resolve(root, "app/api/token-concentration/route.js"), "utf8");
 
@@ -22,7 +23,9 @@ test("market-data claims remain explicitly limited", () => {
   assert.match(liquidity, /withdrawalRightsVerified: false/);
   assert.match(liquidity, /provider: "DexScreener"/);
   assert.match(liquidity, /cache: "no-store"/);
-  assert.match(liquidity, /pairAddress/);
+  assert.match(liquidity, /normalizeReportedPools\(payload, mint\)/);
+  assert.match(poolEvidence, /pairAddress/);
+  assert.match(poolEvidence, /lpLocksVerified: false/);
 });
 test("fee inspection never treats unparsed fields as verified zero", () => {
   assert.match(extensions, /olderFee: normalizeFee/);
