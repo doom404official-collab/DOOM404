@@ -57,10 +57,10 @@ async function inspectIndexedOrigin(endpoint, mint, connection) {
     if (!response.ok) return { status: "unavailable", reason: "Indexed history HTTP request failed." };
     const payload = await response.json();
     if (payload.error) return { status: "unavailable", reason: "Indexed history unavailable for this provider or plan." };
-    const rows = Array.isArray(payload.result) ? payload.result : payload.result?.transactions;
+    const rows = Array.isArray(payload.result) ? payload.result : Array.isArray(payload.result?.transactions) ? payload.result.transactions : Array.isArray(payload.result?.data) ? payload.result.data : [];
     const signatures = (Array.isArray(rows) ? rows : []).map(x => typeof x === "string" ? x : x.signature).filter(x => typeof x === "string");
     const coverage = { provider: "helius_indexed", sortOrder: "asc", signaturesReturned: signatures.length, archivalCompletenessVerified: false };
-    if (!signatures.length) return { status: "unverified", reason: "No oldest-first signatures returned; origin cannot be verified.", coverage };
+    if (!signatures.length) return { status: "unavailable", reason: "Indexed oldest-first query returned no usable signatures; falling back to bounded RPC history.", coverage };
     let checked = 0;
     for (const signature of signatures.slice(0, 15)) {
       let tx;
@@ -74,7 +74,7 @@ async function inspectIndexedOrigin(endpoint, mint, connection) {
         reason: "Verified on-chain mint initialization found in oldest-first indexed history. Signers are origin candidates, NOT verified creators or beneficial owners.",
         coverage: { ...coverage, initializationCandidatesChecked: checked } };
     }
-    return { status: "unverified", reason: "Oldest-first indexed transactions retrieved, but no mint initialization instruction verified.", coverage: { ...coverage, initializationCandidatesChecked: checked } };
+    return { status: "unavailable", reason: "No mint initialization verified in indexed response; continue with bounded RPC history.", coverage: { ...coverage, initializationCandidatesChecked: checked } };
   } catch { return { status: "unavailable", reason: "Indexed history request failed or timed out." }; }
   finally { clearTimeout(timer); }
 }
