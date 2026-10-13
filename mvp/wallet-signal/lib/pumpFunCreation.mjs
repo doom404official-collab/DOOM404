@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { PublicKey } from "@solana/web3.js";
 export const PUMP_PROGRAM_ID = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
 const alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 function decode58(value) {
@@ -40,8 +41,18 @@ export function decodePumpFunCreate({ instruction, transaction, mint, programId 
     if (accounts.length !== 14 || accounts[8] !== SYSTEM || accounts[9] !== TOKEN ||
         accounts[10] !== ATA || accounts[13] !== PUMP_PROGRAM_ID) return null;
   } else {
-    if (![16, 19].includes(accounts.length) || accounts[6] !== SYSTEM ||
+    if (![16, 19, 20].includes(accounts.length) || accounts[6] !== SYSTEM ||
         accounts[7] !== TOKEN22 || accounts[8] !== ATA || accounts[15] !== PUMP_PROGRAM_ID) return null;
+    if (accounts.length === 20) {
+      const QUOTE_CONTROL = "6z6GDdfb2AjR9ZhJmAUQ5cipJCVxQvLJhB2H8mCwTFBP";
+      if (accounts[19] !== QUOTE_CONTROL || ![TOKEN, TOKEN22].includes(accounts[18])) return null;
+      try {
+        const [quoteAta] = PublicKey.findProgramAddressSync(
+          [new PublicKey(accounts[2]).toBuffer(), new PublicKey(accounts[18]).toBuffer(), new PublicKey(accounts[16]).toBuffer()],
+          new PublicKey(ATA));
+        if (quoteAta.toBase58() !== accounts[17]) return null;
+      } catch { return null; }
+    }
   }
   try {
     let offset = 8;
@@ -76,7 +87,9 @@ export function decodePumpFunCreate({ instruction, transaction, mint, programId 
     }
     const user = accounts[kind === "create" ? 7 : 5];
     if (!user) return null;
-    return { verified: true, mint, role: "launchpad_creator", creator, user, decoderVersion: "pump-fun-" + kind + "-prefix-v1", creationInstructionVerified: true };
+    return { verified: true, mint, role: "launchpad_creator", creator, user,
+      decoderVersion: kind === "create_v2" && accounts.length === 20 ? "pump-fun-create_v2-quote-control-v1" : "pump-fun-" + kind + "-prefix-v1",
+      creationInstructionVerified: true };
   } catch { return null; }
 }
 export const pumpFunDecoders = Object.freeze({ [PUMP_PROGRAM_ID]: decodePumpFunCreate });
