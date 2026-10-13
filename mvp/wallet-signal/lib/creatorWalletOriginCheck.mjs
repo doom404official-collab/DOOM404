@@ -19,19 +19,23 @@ export async function verifyIndexedCreatorViaWallet({
   const minTime = epoch - windowSeconds, maxTime = epoch + windowSeconds;
   let cursor = null, pagesFetched = 0, inspected = 0, retrieved = 0, errors = 0;
   let withinWindow = 0, reachedOlderHistory = false, stoppedAtLimit = false;
+  let newerThanWindow = 0, olderThanWindow = 0, missingBlockTime = 0, failedSignature = 0, rawSignaturesSeen = 0, historyExhausted = false;
   const evidence = [], seen = new Set(), candidates = [];
   outer: for (let page = 0; page < maxPages; page++) {
     const batch = await lookupSignaturePage(creator, { before: cursor });
     if (!batch || !Array.isArray(batch.entries)) throw Error("INVALID_SIGNATURE_PAGE");
     pagesFetched++;
+    rawSignaturesSeen += batch.entries.length;
     for (const entry of batch.entries) {
       if (!entry?.signature || seen.has(entry.signature)) continue;
       seen.add(entry.signature);
       cursor = entry.signature;
       if (Number.isFinite(entry.blockTime) && entry.blockTime < minTime) {
-        reachedOlderHistory = true; break outer;
+        olderThanWindow++; reachedOlderHistory = true; break outer;
       }
-      if (entry.err != null || !Number.isFinite(entry.blockTime) || entry.blockTime > maxTime) continue;
+      if (entry.err != null) { failedSignature++; continue; }
+      if (!Number.isFinite(entry.blockTime)) { missingBlockTime++; continue; }
+      if (entry.blockTime > maxTime) { newerThanWindow++; continue; }
       if (inspected >= maxTransactions) { stoppedAtLimit = true; break outer; }
       withinWindow++;
       inspected++;
@@ -48,14 +52,15 @@ export async function verifyIndexedCreatorViaWallet({
       } catch { errors++; }
       if (evidence.length) break outer;
     }
-    if (batch.exhausted) { reachedOlderHistory = true; break; }
+    if (batch.exhausted) { historyExhausted = true; break; }
     if (!batch.nextCursor || batch.nextCursor !== cursor) break;
     if (page === maxPages - 1) stoppedAtLimit = true;
   }
   return {
     mint, indexedCreator: creator, status: evidence.length ? "ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW" : "INDEXED_UNVERIFIED",
     evidence, pagesFetched, inspected, retrieved, errors, withinWindow,
-    reachedOlderHistory, stoppedAtLimit, nextCursor: cursor,
+    reachedOlderHistory, historyExhausted, stoppedAtLimit, rawSignaturesSeen,
+    newerThanWindow, olderThanWindow, missingBlockTime, failedSignature, nextCursor: cursor,
     creationSignature: evidence[0]?.signature || null,
     candidatesInspected: candidates,
   };
