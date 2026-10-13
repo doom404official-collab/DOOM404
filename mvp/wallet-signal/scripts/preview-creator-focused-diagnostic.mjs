@@ -29,7 +29,9 @@ else {
     const batch = await timed.lookup({ address: mint, createdTimestamp: record.createdTimestamp,
       limit: 10, windowSeconds: 7200 });
     let inspected = 0, matched = null, decodedNonmatch = 0;
-    for (const signature of batch.signatures.slice(0, 5)) {
+    // First five were already checked in the preceding APP diagnostic.
+    // Inspect the next five without re-fetching the first five.
+    for (const signature of batch.signatures.slice(5, 10)) {
       try {
         const tx = await rpc.fetchTransaction(signature);
         inspected++;
@@ -53,7 +55,7 @@ else {
       mint, indexedCreator: record.creator,
       status: matched ? "ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW" : "INDEXED_UNVERIFIED",
       match: matched, signaturesFound: batch.signatures.length, hasMore: Boolean(batch.paginationToken),
-      inspected, decodedNonmatch, failures, independentReview: false
+      inspected, candidateOffset: 5, decodedNonmatch, failures, independentReview: false
     }));
   } catch(e) {
     console.log("CREATOR_FOCUSED_DIAGNOSTIC:",JSON.stringify({
