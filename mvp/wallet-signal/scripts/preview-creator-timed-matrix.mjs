@@ -14,7 +14,7 @@ else if (mints.length !== 5 || new Set(mints).size !== 5 || !mints.every(x => va
 else {
   const provider = createPumpFunIndexedCreatorProvider();
   const timed = createHeliusTimedHistory({ rpcUrl: process.env.HELIUS_RPC_URL });
-  const rpc = createSolanaRpcAdapter({ rpcUrl: process.env.HELIUS_RPC_URL });
+  const rpc = createSolanaRpcAdapter({ rpcUrl: process.env.HELIUS_RPC_URL, maxRequests: 60 });
   const results = [];
   for (const mint of mints) {
     try {
@@ -25,6 +25,7 @@ else {
       let inspected = 0, errors = 0, matched = null, pagesFetched = 0, signaturesFound = 0;
       let token = null, hasMore = false;
       const candidates = [], failureReasons = {}, seenTokens = new Set(), seenSignatures = new Set();
+      let haltedForRateLimit = false;
       for (let page = 0; page < 3; page++) {
         const discovery = await timed.lookup({
           address: mint, createdTimestamp: indexed.createdTimestamp,
@@ -51,12 +52,14 @@ else {
               candidates.push({ signature, reason: "CREATOR_MISMATCH" });
           } catch (error) {
             errors++;
-            const known = ["RPC_UNSUPPORTED_VERSION","RPC_RATE_LIMITED","RPC_AUTH_FAILED","RPC_RESPONSE_ERROR","RPC_HTTP_ERROR"];
+            if (error?.message === "RPC_RATE_LIMITED" || error?.message === "RPC_REQUEST_BUDGET_EXHAUSTED") haltedForRateLimit = true;
+            const known = ["RPC_UNSUPPORTED_VERSION","RPC_RATE_LIMITED","RPC_AUTH_FAILED","RPC_RESPONSE_ERROR","RPC_HTTP_ERROR","RPC_REQUEST_BUDGET_EXHAUSTED"];
             const reason = known.includes(error?.message) ? error.message : "FETCH_EXCEPTION";
             failureReasons[reason] = (failureReasons[reason] || 0) + 1;
+            if (haltedForRateLimit) break;
           }
         }
-        if (matched || !discovery.paginationToken || inspected >= 45 || seenTokens.has(discovery.paginationToken)) break;
+        if (haltedForRateLimit || matched || !discovery.paginationToken || inspected >= 45 || seenTokens.has(discovery.paginationToken)) break;
         seenTokens.add(discovery.paginationToken);
         token = discovery.paginationToken;
       }
@@ -65,7 +68,7 @@ else {
         status: matched ? "ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW" : "INDEXED_UNVERIFIED",
         creationSignature: matched?.signature || null, evidence: matched ? [matched] : [],
         signaturesFound, hasMore, pagesFetched,
-        inspected, errors, failureReasons, candidateDiscrepancies: candidates,
+        inspected, errors, failureReasons, haltedForRateLimit, candidateDiscrepancies: candidates,
       });
     } catch {
       results.push({ mint, status: "UNRESOLVED", reason: "PROVIDER_OR_TIMED_LOOKUP_ERROR" });
