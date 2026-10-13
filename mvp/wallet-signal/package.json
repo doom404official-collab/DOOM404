@@ -5,7 +5,7 @@
   "description": "DOOM404 Wallet Signal - Solana wallet analytics MVP",
   "scripts": {
     "dev": "next dev",
-    "build": "npm run test:smoke && npm run validate:creator:pnut-historical && next build",
+    "build": "npm run test:smoke && npm run validate:creator:goon && next build",
     "start": "next start",
     "test:smoke": "node --test tests/*.test.mjs",
     "check": "npm run build",
@@ -38,7 +38,8 @@
     "validate:creator:pnut-reject": "node scripts/preview-pnut-rejected-audit.mjs",
     "validate:creator:pnut-layout": "node scripts/preview-pnut-layout-audit.mjs",
     "validate:creator:pnut-args": "node scripts/preview-pnut-argument-audit.mjs",
-    "validate:creator:pnut-historical": "node scripts/preview-pnut-historical-audit.mjs"
+    "validate:creator:pnut-historical": "node scripts/preview-pnut-historical-audit.mjs",
+    "validate:creator:goon": "node scripts/preview-goon-validation.mjs"
   },
   "dependencies": {
     "@solana/web3.js": "^1.98.0",
