@@ -17,6 +17,8 @@ else {
       .lookup({ address: mint, createdTimestamp: metadata.created_timestamp, limit: 30 });
     console.log("HELIUS_TIMED_VALIDATION:", JSON.stringify({
       mint, status: "SIGNATURE_CANDIDATES_ONLY", count: result.signatures.length,
+      recordsSeen: result.recordsSeen, hasMore: Boolean(result.paginationToken),
+      knownCreationSignatureFound: result.signatures.includes("KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs"),
       signatures: result.signatures.slice(0, 5), historyComplete: false,
     }));
   } catch (error) {
