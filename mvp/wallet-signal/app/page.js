@@ -583,10 +583,18 @@ function CreatorLookup() {
           <p><strong>Largest account:</strong> {concentration.largestAccountSharePct ?? "Unavailable"}% of supply</p>
           <p><strong>Top 5 token accounts:</strong> {concentration.top5TokenAccountSharePct ?? "Unavailable"}% · <strong>Top 10:</strong> {concentration.top10TokenAccountSharePct ?? "Unavailable"}%</p>
           <p style={{ color: "#ffbf86", fontSize: 13 }}>{concentration.coverage?.warning}</p>
+          {concentration.ownership && <div style={{ padding: 12, border: "1px solid #39483f", borderRadius: 8, marginBottom: 12 }}>
+            <strong>OBSERVED TOKEN-ACCOUNT OWNERS</strong>
+            <p style={{ color: "#bbb", fontSize: 13 }}>Owner addresses resolved for {concentration.ownership.resolvedAccountCount}/{concentration.returnedAccounts} sampled accounts. These are SPL token-account owners, not verified beneficial owners.</p>
+            {(concentration.ownership.observedOwnerGroups || []).slice(0,5).map((group,index)=><p key={group.ownerWallet} style={{ fontSize: 13, overflowWrap: "anywhere" }}>
+              {index+1}. <AddressLink address={group.ownerWallet} /> · {group.tokenAccountCount} account(s) · {group.sharePct.toFixed(2)}% observed supply
+            </p>)}
+            <small style={{ color: "#aaa" }}>Pool, exchange and custody classifications remain unverified. The sample covers only the largest returned accounts.</small>
+          </div>}
           <details><summary style={{ cursor: "pointer", color: "#ddd" }}>View largest token accounts ({concentration.returnedAccounts})</summary>
             {(concentration.accounts || []).map(account => <p key={account.tokenAccount} style={{ fontSize: 12 }}>#{account.rank} · {account.sharePct}% · <a href={"https://solscan.io/account/" + encodeURIComponent(account.tokenAccount)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff", overflowWrap: "anywhere" }}>{account.tokenAccount}</a></p>)}
           </details>
-          <p style={{ color: "#aaa", fontSize: 12 }}>Source: {concentration.coverage?.source}. Unique owners, pool balances and exchange custody are not resolved. No risk verdict.</p>
+          <p style={{ color: "#aaa", fontSize: 12 }}>Source: {concentration.coverage?.source}. Token-account owners are grouped where available; beneficial ownership, pool balances and exchange custody remain unresolved. No risk verdict.</p>
         </>}
       </Section>
       {result.tokenProgram === "spl-token-2022" && <Section title="TOKEN SECURITY">
