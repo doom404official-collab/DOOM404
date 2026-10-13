@@ -30,7 +30,12 @@ export function createHeliusTimedHistory({ rpcUrl, fetchImpl = fetch } = {}) {
       try { body = await response.json(); } catch { throw Error("HELIUS_TIMED_INVALID_JSON"); }
       if (body?.error) throw Error(body.error.code === -32601 ? "HELIUS_TIMED_METHOD_UNAVAILABLE" : "HELIUS_TIMED_RPC_ERROR");
       const result = body?.result;
-      if (!result || !Array.isArray(result.transactions)) throw Error("HELIUS_TIMED_INVALID_RESPONSE");
+      if (!result || !Array.isArray(result.transactions)) {
+        // Only a fixed, non-sensitive schema diagnostic; never print provider payloads.
+        const shape = Array.isArray(result) ? "RESULT_ARRAY" : result === null ? "RESULT_NULL" :
+          typeof result === "object" ? "RESULT_OBJECT_WITHOUT_TRANSACTIONS" : "RESULT_MISSING_OR_SCALAR";
+        throw Error("HELIUS_TIMED_" + shape);
+      }
       const signatures = result.transactions.map(t => typeof t === "string" ? t : t?.signature)
         .filter(s => typeof s === "string" && /^[1-9A-HJ-NP-Za-km-z]{64,88}$/.test(s));
       return { signatures, paginationToken: typeof result.paginationToken === "string" ? result.paginationToken : null,
