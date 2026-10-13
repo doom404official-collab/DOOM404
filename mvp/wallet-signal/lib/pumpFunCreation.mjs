@@ -52,10 +52,27 @@ export function decodePumpFunCreate({ instruction, transaction, mint, programId 
     offset += 32;
     if (kind === "create" && offset !== bytes.length) return null;
     if (kind === "create_v2") {
+      // Official create_v2 IDL: is_mayhem_mode: bool, then EOF-tolerant
+      // is_cashback_enabled: OptionBool, creator_fee_bps: OptionU64,
+      // is_holder_reward: OptionBool. Reject truncated fields.
       if (offset >= bytes.length || ![0, 1].includes(bytes[offset])) return null;
       offset++;
-      if (bytes.length - offset > 4) return null;
-      for (const flag of bytes.subarray(offset)) if (![0, 1].includes(flag)) return null;
+      if (offset < bytes.length) {
+        // Deprecated cashback must be false for successful new creations.
+        if (bytes[offset] !== 0) return null;
+        offset++;
+      }
+      if (offset < bytes.length) {
+        if (bytes.length - offset < 8) return null;
+        // Read all eight bytes; fee amount does not establish creator identity.
+        bytes.readBigUInt64LE(offset);
+        offset += 8;
+      }
+      if (offset < bytes.length) {
+        if (![0, 1].includes(bytes[offset])) return null;
+        offset++;
+      }
+      if (offset !== bytes.length) return null;
     }
     const user = accounts[kind === "create" ? 7 : 5];
     if (!user) return null;
