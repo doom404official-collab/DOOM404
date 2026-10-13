@@ -35,7 +35,7 @@ test("quote-control create_v2 rejects wrong mint and account roles",()=>{
   x=>{x.instruction.accounts[17]=x.creator;},
   x=>{x.instruction.accounts[18]=x.creator;},
   x=>{x.instruction.accounts.push(x.creator);},
-  x=>{x.instruction.accounts.pop();}
+  x=>{x.instruction.accounts.pop();x.instruction.accounts[17]=x.creator;}
  ];
  for(const change of changes){const x=fixture();change(x);assert.equal(decodePumpFunCreate(x),null);}
 });
