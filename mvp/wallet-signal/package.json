@@ -15,7 +15,8 @@
     "validate:creator:helius-index": "node scripts/preview-helius-index-validation.mjs",
     "validate:creator:pumpfun": "node scripts/preview-pumpfun-creator-validation.mjs",
     "validate:creator:wallet": "node scripts/preview-creator-wallet-validation.mjs",
-    "validate:creator:evidence": "node scripts/preview-creation-evidence-audit.mjs"
+    "validate:creator:evidence": "node scripts/preview-creation-evidence-audit.mjs",
+    "validate:creator:matrix": "node scripts/preview-creator-matrix.mjs"
   },
   "dependencies": {
     "@solana/web3.js": "^1.98.0",
