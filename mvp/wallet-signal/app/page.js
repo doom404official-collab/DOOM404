@@ -345,6 +345,10 @@ function CreatorLookup() {
   const [poolEvidenceError, setPoolEvidenceError] = useState("");
   const [poolEvidenceBusy, setPoolEvidenceBusy] = useState(false);
   const [historyBatches, setHistoryBatches] = useState(0);
+  const storedCreatorMatch = creatorEvidence?.creator &&
+    ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(creatorEvidence.status);
+  const storedCreatorLabel = creatorEvidence?.status === "VERIFIED" ? "On-chain confirmed · independently reviewed" :
+    "On-chain confirmed · review pending";
   const MAX_HISTORY_BATCHES = 5;
   async function refreshLiquidity(address = mint.trim()) {
     if (!address || liquidityRefreshing) return;
@@ -463,7 +467,7 @@ function CreatorLookup() {
             { label: "Mint authority", value: result.authorityDetailsStatus === "not_parsed" ? "Not verified" : result.mintAuthority ? "Present" : "None" },
             { label: "Freeze authority", value: result.authorityDetailsStatus === "not_parsed" ? "Not verified" : result.freezeAuthority ? "Present" : "None" },
             { label: "Largest token account", value: concentration?.largestAccountSharePct != null ? concentration.largestAccountSharePct + "% of supply" : "Not assessed" },
-            { label: "Creator origin", value: result.mintOrigin?.status === "initialization_signer_observed" ? "Initialization observed" : "Unverified" }
+            { label: "Creator origin", value: storedCreatorMatch ? storedCreatorLabel : result.mintOrigin?.status === "initialization_signer_observed" ? "Initialization observed" : "Not established" }
           ].map(item => <div key={item.label} style={{ border: "1px solid #453535", borderRadius: 9, background: "#1a1919", padding: 12, minWidth: 0 }}>
             <div style={{ color: "#aaa", fontSize: 12 }}>{item.label}</div>
             <strong style={{ display: "block", marginTop: 8, overflowWrap: "anywhere", fontSize: 17 }}>{item.value}</strong>
@@ -597,7 +601,7 @@ function CreatorLookup() {
       <Section title="CREATOR INTELLIGENCE">
       <p><strong>Mint authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.mintAuthority || "None")}</p>
       <p><strong>Freeze authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.freezeAuthority || "None")}</p>
-      <p style={{ color: "#ffbf86" }}><strong>Creator attribution:</strong> {result.creator?.status === "provider_attributed" ? "Solscan-associated creator (ownership unverified)" : "Unverified — authorities do not prove creator ownership."}</p>
+      <p style={{ color: "#ffbf86" }}><strong>Creator attribution:</strong> {storedCreatorMatch ? storedCreatorLabel : result.creator?.status === "provider_attributed" ? "Provider-identified creator; on-chain confirmation pending" : "Creator not yet identified by available evidence."}</p>
       {result.creator?.status === "provider_attributed" && <p><strong>Solscan creator address:</strong> <a href={"https://solscan.io/account/" + encodeURIComponent(result.creator.address)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff", overflowWrap: "anywhere" }}>{result.creator.address}</a></p>}
       <div style={{ border: "1px solid #453535", borderRadius: 9, padding: 12, margin: "12px 0" }}>
         <strong>LAUNCHPAD & CREATOR EVIDENCE</strong>
@@ -610,8 +614,8 @@ function CreatorLookup() {
           {result.stonkFunEvidence.diagnostic && <p style={{ color: "#bbb", fontSize: 12 }}>{result.stonkFunEvidence.diagnostic}</p>}
           <small style={{ color: "#aaa" }}>A provider listing does not establish the creator or original launch transaction.</small>
         </div>}
-        <p><strong>Launch creator wallet:</strong> {result.launchpadEvidence?.launchCreatorVerified && result.launchpadEvidence?.launchCreator ? result.launchpadEvidence.launchCreator : "Not verified"}</p>
-        <p><strong>Observed transaction:</strong> {result.launchpadEvidence?.signature ? <a href={"https://solscan.io/tx/" + encodeURIComponent(result.launchpadEvidence.signature)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>View on Solscan ↗</a> : "Not available"}</p>
+        <p><strong>Launch creator wallet:</strong> {storedCreatorMatch ? <AddressLink address={creatorEvidence.creator} /> : result.launchpadEvidence?.launchCreatorVerified && result.launchpadEvidence?.launchCreator ? result.launchpadEvidence.launchCreator : "Not identified"}</p>
+        <p><strong>Observed transaction:</strong> {(storedCreatorMatch ? creatorEvidence.evidence?.[0]?.signature : result.launchpadEvidence?.signature) ? <a href={"https://solscan.io/tx/" + encodeURIComponent(storedCreatorMatch ? creatorEvidence.evidence[0].signature : result.launchpadEvidence.signature)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff" }}>View on Solscan ↗</a> : "Not available"}</p>
         <p><strong>Transaction timestamp:</strong> {result.launchpadEvidence?.blockTime ? new Date(result.launchpadEvidence.blockTime * 1000).toLocaleString() : "Unknown"}</p>
         <p style={{ color: "#ffbf86", fontSize: 12 }}>{result.launchpadEvidence?.reason || "No launchpad evidence available."} A trading pool or mint signer alone does not establish launch creator identity.</p>
         <details><summary style={{ cursor: "pointer" }}>View attribution candidates ({result.creatorEvidence?.claims?.length || 0})</summary>
