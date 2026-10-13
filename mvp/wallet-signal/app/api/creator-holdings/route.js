@@ -19,17 +19,12 @@ export async function GET(request){
    return NextResponse.json({status:"CREATOR_NOT_CONFIRMED",holdings:null});
   const connection=createReliableConnection();
   const creator=new PublicKey(evidence.creator);
-  const programs=[
-   new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
-   new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb")
-  ];
-  const [classic,token22,supply]=await Promise.all([
-   connection.getParsedTokenAccountsByOwner(creator,{mint,programId:programs[0]},"confirmed"),
-   connection.getParsedTokenAccountsByOwner(creator,{mint,programId:programs[1]},"confirmed"),
+  const [accounts,supply]=await Promise.all([
+   connection.getParsedTokenAccountsByOwner(creator,{mint},"confirmed"),
    connection.getTokenSupply(mint,"confirmed")
   ]);
   const summary=summarizeCreatorHoldings({mint:mint.toBase58(),creator:evidence.creator,
-   tokenAccounts:[...classic.value,...token22.value],supply:supply.value});
+   tokenAccounts:accounts.value,supply:supply.value});
   return NextResponse.json({...summary,creatorEvidenceStatus:evidence.status},
    {headers:{"Cache-Control":"no-store"}});
  }catch{
