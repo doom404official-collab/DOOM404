@@ -32,7 +32,11 @@ else {
       });
       results.push({ mint, indexedCreator: record.creator, status: check.status,
         creationSignature: check.creationSignature, evidence: check.evidence,
-        inspected: check.inspected, errors: check.errors, reachedOlderHistory: check.reachedOlderHistory });
+        inspected: check.inspected, errors: check.errors, reachedOlderHistory: check.reachedOlderHistory,
+        pagesFetched: check.pagesFetched, rawSignaturesSeen: check.rawSignaturesSeen,
+        newerThanWindow: check.newerThanWindow, olderThanWindow: check.olderThanWindow,
+        missingBlockTime: check.missingBlockTime, failedSignature: check.failedSignature,
+        historyExhausted: check.historyExhausted, stoppedAtLimit: check.stoppedAtLimit });
     } catch {
       results.push({ mint, status: "UNRESOLVED", reason: "PROVIDER_OR_DECODER_ERROR" });
     }
