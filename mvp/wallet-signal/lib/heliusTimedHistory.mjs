@@ -7,20 +7,22 @@ export function createHeliusTimedHistory({ rpcUrl, fetchImpl = fetch } = {}) {
   if (!rpcUrl || !/^https:\/\//.test(rpcUrl)) throw Error("HTTPS_RPC_URL_REQUIRED");
   const valid = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
   return {
-    async lookup({ address, createdTimestamp, windowSeconds = 7200, limit = 30 } = {}) {
+    async lookup({ address, createdTimestamp, windowSeconds = 7200, limit = 30, paginationToken = null } = {}) {
       if (!valid.test(address || "")) throw Error("INVALID_ADDRESS");
       if (!Number.isFinite(createdTimestamp) || createdTimestamp <= 0) throw Error("INVALID_TIMESTAMP");
       if (!Number.isInteger(limit) || limit < 1 || limit > 100 ||
           !Number.isInteger(windowSeconds) || windowSeconds < 60 || windowSeconds > 86400) throw Error("INVALID_LIMIT");
       const epoch = createdTimestamp > 1e12 ? Math.floor(createdTimestamp / 1000) : Math.floor(createdTimestamp);
+      if (paginationToken !== null && (typeof paginationToken !== "string" || paginationToken.length > 2048)) throw Error("INVALID_PAGINATION_TOKEN");
       let response;
       try {
+        const config = { transactionDetails: "signatures", sortOrder: "asc", limit,
+          filters: { blockTime: { gte: epoch-windowSeconds, lte: epoch+windowSeconds }, status: "succeeded" } };
+        if (paginationToken) config.paginationToken = paginationToken;
         response = await fetchImpl(rpcUrl, {
           method: "POST", cache: "no-store", headers: { "content-type": "application/json" },
           body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getTransactionsForAddress",
-            params: [address, { transactionDetails: "signatures", sortOrder: "asc", limit,
-              filters: { blockTime: { gte: epoch-windowSeconds, lte: epoch+windowSeconds },
-                status: "succeeded" } }] }),
+            params: [address, config] }),
           signal: AbortSignal.timeout(12000),
         });
       } catch { throw Error("HELIUS_TIMED_NETWORK_ERROR"); }
