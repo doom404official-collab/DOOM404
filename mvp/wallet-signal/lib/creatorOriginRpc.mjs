@@ -24,7 +24,7 @@ export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 
       if (response.status === 429) {
         if (attempt === maxRetries) throw new Error("RPC_RATE_LIMITED");
         const raw = response.headers?.get?.("retry-after");
-        const seconds = raw && /^\\d+(?:\\.\\d+)?$/.test(raw) ? Number(raw) : NaN;
+        const seconds = raw && /^\d+(?:\.\d+)?$/.test(raw) ? Number(raw) : NaN;
         const date = raw && !Number.isFinite(seconds) ? Date.parse(raw) : NaN;
         const retryMs = Number.isFinite(seconds) ? seconds * 1000 :
           Number.isFinite(date) ? Math.max(0, date - Date.now()) : 500 * 2 ** attempt;
