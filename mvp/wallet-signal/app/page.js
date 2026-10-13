@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
 import { selectTokenInsights } from "../lib/tokenInsights.js";
 import { assessTokenEvidence } from "../lib/tokenAssessment.js";
+import { buildDecisionSummary } from "../lib/decisionSummary.js";
 
 function formatCoverage(status) {
   const labels = {
@@ -451,6 +452,21 @@ function CreatorLookup() {
           <p style={{ color: "#999", fontSize: 12 }}>A wallet attribution is not proof of beneficial ownership or project legitimacy.</p>
         </div>
       )}
+      {(() => {
+        const summary = buildDecisionSummary({result,extensions,concentration,liquidity,creatorEvidence});
+        return <div style={{ ...cardStyle, borderColor:"#59433b", marginBottom:16 }}>
+          <p style={{fontSize:12,letterSpacing:2,color:"#ff8585",fontWeight:700}}>GLITCH // DECISION INTELLIGENCE</p>
+          <h2 style={{margin:"8px 0"}}>{summary.title}</h2>
+          <p style={{color:"#ddd",lineHeight:1.6}}>{summary.explanation}</p>
+          <p style={{color:"#aaa",fontSize:12}}>Evidence coverage: {summary.coverageCount}/{summary.coverageTotal} dimensions · Not an investment recommendation</p>
+          <h3>Top findings</h3>
+          {summary.findings.map((item,index)=><div key={index} style={{padding:"12px 0",borderTop:"1px solid #333"}}>
+            <strong>{index+1}. {item.title}</strong>
+            <p style={{color:"#ccc",margin:"6px 0"}}>{item.detail}</p>
+            <small style={{color:"#999"}}>Evidence: {item.source}</small>
+          </div>)}
+        </div>;
+      })()}
       <Section title="TOKEN SECURITY OVERVIEW" defaultOpen={true}>
         <p style={{ color: "#ff8585", letterSpacing: 2, fontSize: 12, fontWeight: 700, marginTop: 0 }}>GLITCH // TOKEN SECURITY OVERVIEW</p>
         <h3 style={{ margin: "0 0 8px" }}>Observed signals, not a safety rating</h3>
