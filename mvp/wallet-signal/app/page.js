@@ -589,6 +589,13 @@ function CreatorLookup() {
             {(concentration.ownership.observedOwnerGroups || []).slice(0,5).map((group,index)=><p key={group.ownerWallet} style={{ fontSize: 13, overflowWrap: "anywhere" }}>
               {index+1}. <AddressLink address={group.ownerWallet} /> · {group.tokenAccountCount} account(s) · {group.sharePct.toFixed(2)}% observed supply
             </p>)}
+            {storedCreatorMatch && <p style={{ color: "#ddd", fontSize: 13 }}>
+              <strong>Creator wallet comparison:</strong> {(() => {
+                const matching=(concentration.ownership.observedOwnerGroups||[]).find(group=>group.ownerWallet===creatorEvidence.creator);
+                return matching ? "Creator wallet controls "+matching.tokenAccountCount+" sampled token account(s), holding "+matching.sharePct.toFixed(2)+"% of supply in this sample." :
+                  "Creator wallet does not directly own any of the 20 sampled largest token accounts. This does not prove zero holdings or exclude linked wallets.";
+              })()}
+            </p>}
             <small style={{ color: "#aaa" }}>Pool, exchange and custody classifications remain unverified. The sample covers only the largest returned accounts.</small>
           </div>}
           <details><summary style={{ cursor: "pointer", color: "#ddd" }}>View largest token accounts ({concentration.returnedAccounts})</summary>
