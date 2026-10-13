@@ -30,3 +30,12 @@ A documentation commit date is NOT a protocol deployment date. Historical layout
 3. Identify 20-account successful creation examples from same time range.
 4. Add strict versioned decoder only after evidence; test wrong mint/creator/quote account.
 5. Never infer a real-world human identity from a wallet.
+
+## On-chain creation transaction metadata (confirmed 2026-10-13)
+- Slot: 453364536
+- Block time: 1791145878 (2026-10-04T20:31:18.000Z)
+- Transaction succeeded.
+- The official public documentation for Pump-coin quotes was committed on 2026-10-08 (commit 8cda1fa30ea658b20909d8aedf002047119388d2).
+- This transaction predates that documentation by roughly three days; documentation date is NOT program activation date.
+- Historical program semantics at slot 453364536 remain unverified.
+- Do not mark creator formally VERIFIED until supported historical instruction layout is established.
