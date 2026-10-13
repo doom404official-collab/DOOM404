@@ -43,9 +43,9 @@ export function decodePumpFunCreate({ instruction, transaction, mint, programId 
   } else {
     if (![16, 19, 20].includes(accounts.length) || accounts[6] !== SYSTEM ||
         accounts[7] !== TOKEN22 || accounts[8] !== ATA || accounts[15] !== PUMP_PROGRAM_ID) return null;
-    if (accounts.length === 20) {
+    if (accounts.length === 19 || accounts.length === 20) {
       const QUOTE_CONTROL = "6z6GDdfb2AjR9ZhJmAUQ5cipJCVxQvLJhB2H8mCwTFBP";
-      if (accounts[19] !== QUOTE_CONTROL || ![TOKEN, TOKEN22].includes(accounts[18])) return null;
+      if ((accounts.length === 20 && accounts[19] !== QUOTE_CONTROL) || ![TOKEN, TOKEN22].includes(accounts[18])) return null;
       try {
         const [quoteAta] = PublicKey.findProgramAddressSync(
           [new PublicKey(accounts[2]).toBuffer(), new PublicKey(accounts[18]).toBuffer(), new PublicKey(accounts[16]).toBuffer()],
