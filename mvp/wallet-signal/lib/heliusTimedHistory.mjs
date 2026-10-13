@@ -34,6 +34,10 @@ export function createHeliusTimedHistory({ rpcUrl, fetchImpl = fetch } = {}) {
         // Only a fixed, non-sensitive schema diagnostic; never print provider payloads.
         const shape = Array.isArray(result) ? "RESULT_ARRAY" : result === null ? "RESULT_NULL" :
           typeof result === "object" ? "RESULT_OBJECT_WITHOUT_TRANSACTIONS" : "RESULT_MISSING_OR_SCALAR";
+        // Log only fixed allowlisted structural booleans, never field values or URLs.
+        const known = ["data", "items", "results", "transactions", "paginationToken", "nextCursor", "cursor", "totalCount"];
+        const present = result && typeof result === "object" ? known.filter(k => Object.hasOwn(result,k)) : [];
+        throw Error("HELIUS_TIMED_" + shape + (present.length ? "_FIELDS_" + present.join("_") : "_NO_KNOWN_FIELDS"));
         throw Error("HELIUS_TIMED_" + shape);
       }
       const signatures = result.transactions.map(t => typeof t === "string" ? t : t?.signature)
