@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
+import { summarizeResolvedTokenAccounts } from "../../../lib/tokenAccountOwnership.js";
 
 export const dynamic = "force-dynamic";
 
@@ -22,13 +23,20 @@ export async function GET(request) {
       amount: row.amount, uiAmount: row.uiAmountString,
       sharePct: total > 0n ? Number(BigInt(row.amount) * 1000000n / total) / 10000 : null
     }));
+    const parsedResults = await Promise.allSettled(accounts.map(row =>
+      connection.getParsedAccountInfo(new PublicKey(row.tokenAccount), "confirmed")));
+    const ownership = summarizeResolvedTokenAccounts(accounts,parsedResults.map(r=>r.status==="fulfilled"?r.value:null));
     const sum = (n) => accounts.slice(0, n).reduce((a, x) => a + BigInt(x.amount), 0n);
     const percent = n => total > 0n ? Number(sum(n) * 1000000n / total) / 10000 : null;
     return NextResponse.json({
       status: "observed_token_accounts", mint: mint.toBase58(), decimals: supply.value.decimals,
       totalRawSupply: supply.value.amount, returnedAccounts: accounts.length,
       largestAccountSharePct: percent(1), top5TokenAccountSharePct: percent(5),
-      top10TokenAccountSharePct: percent(10), accounts,
+      top10TokenAccountSharePct: percent(10), accounts: ownership.accounts,
+      ownership: { observedOwnerGroups: ownership.observedOwnerGroups,
+        resolvedAccountCount: ownership.resolvedAccountCount,
+        ownerCoverageComplete: false, beneficialOwnersVerified: false,
+        warning: ownership.warning },
       coverage: { source: "Solana getTokenLargestAccounts + getTokenSupply", maxAccounts: 20,
         isCompleteHolderList: false, uniqueOwnersResolved: false, exchangePoolEscrowExcluded: false,
         warning: "Token accounts are not unique wallets or beneficial owners. Pools, exchanges, escrow and multiple accounts per owner can distort concentration. These are observed account balances, not a scam score." },
