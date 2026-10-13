@@ -22,33 +22,50 @@ else {
       if (!indexed?.creator || !indexed?.createdTimestamp) {
         results.push({ mint, status: "UNRESOLVED", reason: "NO_INDEXED_CREATOR" }); continue;
       }
-      const discovery = await timed.lookup({
-        address: mint, createdTimestamp: indexed.createdTimestamp, windowSeconds: 7200, limit: 30,
-      });
-      let inspected = 0, errors = 0, matched = null;
-      const candidates = [];
-      for (const signature of discovery.signatures.slice(0, 15)) {
-        inspected++;
-        try {
-          const tx = await rpc.fetchTransaction(signature);
-          if (!tx || tx.meta?.err != null) continue;
-          const proof = verifyLaunchpadCreation({ mint, signature, transaction: tx, decoders: pumpFunDecoders });
-          const creator = proof.decodedRoles?.[0]?.address;
-          if (proof.status === "VERIFIED" && creator === indexed.creator) {
-            matched = { signature, creator, programId: proof.decodedRoles[0].programId,
-              decoderVersion: proof.decodedRoles[0].decoderVersion };
-            break;
+      let inspected = 0, errors = 0, matched = null, pagesFetched = 0, signaturesFound = 0;
+      let token = null, hasMore = false;
+      const candidates = [], failureReasons = {}, seenTokens = new Set(), seenSignatures = new Set();
+      for (let page = 0; page < 3; page++) {
+        const discovery = await timed.lookup({
+          address: mint, createdTimestamp: indexed.createdTimestamp,
+          windowSeconds: 7200, limit: 30, paginationToken: token,
+        });
+        pagesFetched++;
+        signaturesFound += discovery.signatures.length;
+        hasMore = Boolean(discovery.paginationToken);
+        for (const signature of discovery.signatures) {
+          if (seenSignatures.has(signature) || inspected >= 45) continue;
+          seenSignatures.add(signature);
+          inspected++;
+          try {
+            const tx = await rpc.fetchTransaction(signature);
+            if (!tx || tx.meta?.err != null) continue;
+            const proof = verifyLaunchpadCreation({ mint, signature, transaction: tx, decoders: pumpFunDecoders });
+            const creator = proof.decodedRoles?.[0]?.address;
+            if (proof.status === "VERIFIED" && creator === indexed.creator) {
+              matched = { signature, creator, programId: proof.decodedRoles[0].programId,
+                decoderVersion: proof.decodedRoles[0].decoderVersion };
+              break;
+            }
+            if (proof.status === "VERIFIED" && creator !== indexed.creator)
+              candidates.push({ signature, reason: "CREATOR_MISMATCH" });
+          } catch (error) {
+            errors++;
+            const known = ["RPC_UNSUPPORTED_VERSION","RPC_RATE_LIMITED","RPC_AUTH_FAILED","RPC_RESPONSE_ERROR","RPC_HTTP_ERROR"];
+            const reason = known.includes(error?.message) ? error.message : "FETCH_EXCEPTION";
+            failureReasons[reason] = (failureReasons[reason] || 0) + 1;
           }
-          if (proof.status === "VERIFIED" && creator !== indexed.creator)
-            candidates.push({ signature, reason: "CREATOR_MISMATCH" });
-        } catch { errors++; }
+        }
+        if (matched || !discovery.paginationToken || inspected >= 45 || seenTokens.has(discovery.paginationToken)) break;
+        seenTokens.add(discovery.paginationToken);
+        token = discovery.paginationToken;
       }
       results.push({
         mint, indexedCreator: indexed.creator,
         status: matched ? "ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW" : "INDEXED_UNVERIFIED",
         creationSignature: matched?.signature || null, evidence: matched ? [matched] : [],
-        signaturesFound: discovery.signatures.length, hasMore: Boolean(discovery.paginationToken),
-        inspected, errors, candidateDiscrepancies: candidates,
+        signaturesFound, hasMore, pagesFetched,
+        inspected, errors, failureReasons, candidateDiscrepancies: candidates,
       });
     } catch {
       results.push({ mint, status: "UNRESOLVED", reason: "PROVIDER_OR_TIMED_LOOKUP_ERROR" });
