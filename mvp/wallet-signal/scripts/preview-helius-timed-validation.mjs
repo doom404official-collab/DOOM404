@@ -27,7 +27,7 @@ else {
       "HELIUS_TIMED_RESULT_OBJECT_WITHOUT_TRANSACTIONS","HELIUS_TIMED_RESULT_MISSING_OR_SCALAR",
       "PUMPFUN_LOOKUP_FAILED","INVALID_PUMPFUN_METADATA"]);
     console.log("HELIUS_TIMED_VALIDATION:", JSON.stringify({
-      mint, status: "UNRESOLVED", reason: safe.has(error?.message) ? error.message : "PROBE_FAILED",
+      mint, status: "UNRESOLVED", reason: safe.has(error?.message) || /^HELIUS_TIMED_RESULT_(ARRAY|NULL|OBJECT_WITHOUT_TRANSACTIONS|MISSING_OR_SCALAR)_(FIELDS_[A-Za-z_]+|NO_KNOWN_FIELDS)$/.test(error?.message || "") ? error.message : "PROBE_FAILED",
     }));
   }
 }
