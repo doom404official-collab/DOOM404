@@ -1,6 +1,7 @@
 import { createIntelligenceVault } from "../lib/intelligenceVault.mjs";
 import { createSolanaRpcAdapter } from "../lib/creatorOriginRpc.mjs";
 import { summarizeRejectedCreation } from "../lib/rejectedCreationSummary.mjs";
+import { inspectPumpCreationLayout } from "../lib/pumpCreationLayoutAudit.mjs";
 import { validateCreatorCheckpoint } from "../lib/creatorInvestigationCheckpoint.mjs";
 
 /** Opt-in, read-only review of up to eight previously inspected signatures.
@@ -30,7 +31,7 @@ else {
       const transaction=await rpc.fetchTransaction(signature);
       fetched++;
       const finding=summarizeRejectedCreation({mint,signature,transaction});
-      if(finding) findings.push(finding);
+      if(finding) findings.push({ ...finding, layoutAudit: inspectPumpCreationLayout({mint,transaction}) });
     }
     console.log("CREATOR_REJECT_REVIEW:",JSON.stringify({
       status:"DIAGNOSTIC_ONLY",mint,fetched,findings,
