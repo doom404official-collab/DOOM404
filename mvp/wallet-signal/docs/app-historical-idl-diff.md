@@ -28,3 +28,18 @@ Before accepting APP's 20-account create_v2:
 3. Ensure the transaction succeeded and the historical program format supports exactly this remaining-account layout.
 4. Add regression cases rejecting wrong mint, wrong quote-control, wrong quote ATA and malformed data.
 5. Keep status INDEXED_UNVERIFIED until the historical layout is independently substantiated.
+
+## October 7 preserved SDK source: four-account quote-control branch
+
+A third-party preserved SDK source snapshot includes `createV2QuoteRemainingAccounts`:
+https://github.com/mthwtsng/crypto-research/blob/acc4104d67c96f60f49ea15cbfb629557383c5b7/research/wallet_curve_entry_discovery_20261007/official/package_src_sdk.ts
+
+The builder appends four accounts for a non-legacy quote mint:
+1. quoteMint
+2. quote ATA derived from the new mint bonding curve
+3. quoteTokenProgram
+4. QUOTE_CONTROL_PDA
+
+It appends the fifth quote bonding curve only when `pumpQuote` is provided. The accompanying comment says the program ignores the fourth account for Global-whitelisted mints and requires it for a quote-control-admitted mint. Thus APP's 20 accounts may be a valid quote-control-listed mint variant, NOT an incomplete pump-coin quote.
+
+This is stronger than the earlier IDL error-code inference but is not independently verified on-chain program source at APP's slot. Before promotion, require exact 20-account match, quote-control PDA, quote ATA derivation, supported quote-mint admission at launch, complete instruction arguments, and negative tests. No blind count expansion.
