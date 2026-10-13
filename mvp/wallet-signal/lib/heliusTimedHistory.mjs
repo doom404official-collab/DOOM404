@@ -30,19 +30,13 @@ export function createHeliusTimedHistory({ rpcUrl, fetchImpl = fetch } = {}) {
       try { body = await response.json(); } catch { throw Error("HELIUS_TIMED_INVALID_JSON"); }
       if (body?.error) throw Error(body.error.code === -32601 ? "HELIUS_TIMED_METHOD_UNAVAILABLE" : "HELIUS_TIMED_RPC_ERROR");
       const result = body?.result;
-      if (!result || !Array.isArray(result.transactions)) {
-        // Only a fixed, non-sensitive schema diagnostic; never print provider payloads.
-        const shape = Array.isArray(result) ? "RESULT_ARRAY" : result === null ? "RESULT_NULL" :
-          typeof result === "object" ? "RESULT_OBJECT_WITHOUT_TRANSACTIONS" : "RESULT_MISSING_OR_SCALAR";
-        // Log only fixed allowlisted structural booleans, never field values or URLs.
-        const known = ["data", "items", "results", "transactions", "paginationToken", "nextCursor", "cursor", "totalCount"];
-        const present = result && typeof result === "object" ? known.filter(k => Object.hasOwn(result,k)) : [];
-        throw Error("HELIUS_TIMED_" + shape + (present.length ? "_FIELDS_" + present.join("_") : "_NO_KNOWN_FIELDS"));
-        throw Error("HELIUS_TIMED_" + shape);
-      }
-      const signatures = result.transactions.map(t => typeof t === "string" ? t : t?.signature)
+      // Helius returns { data, paginationToken }. Reject unexpected shapes.
+      if (!result || !Array.isArray(result.data)) throw Error("HELIUS_TIMED_INVALID_RESPONSE");
+      const signatures = result.data.map(t => typeof t === "string" ? t :
+        t?.signature ?? t?.transaction?.signatures?.[0] ?? null)
         .filter(s => typeof s === "string" && /^[1-9A-HJ-NP-Za-km-z]{64,88}$/.test(s));
-      return { signatures, paginationToken: typeof result.paginationToken === "string" ? result.paginationToken : null,
+      return { signatures, recordsSeen: result.data.length,
+        paginationToken: typeof result.paginationToken === "string" ? result.paginationToken : null,
         historyComplete: false };
     },
   };
