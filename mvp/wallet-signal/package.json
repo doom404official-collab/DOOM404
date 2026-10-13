@@ -5,7 +5,7 @@
   "description": "DOOM404 Wallet Signal - Solana wallet analytics MVP",
   "scripts": {
     "dev": "next dev",
-    "build": "npm run test:smoke && npm run validate:creator:preview && npm run validate:creator:indexed && npm run validate:creator:helius-index && npm run validate:creator:pumpfun && npm run validate:creator:wallet && npm run validate:creator:evidence && next build",
+    "build": "npm run test:smoke && npm run validate:creator:preview && npm run validate:creator:indexed && npm run validate:creator:helius-index && npm run validate:creator:pumpfun && npm run validate:creator:wallet && npm run validate:creator:evidence && npm run validate:creator:matrix && next build",
     "start": "next start",
     "test:smoke": "node --test tests/*.test.mjs",
     "check": "npm run build",
