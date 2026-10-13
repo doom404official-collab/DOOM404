@@ -330,6 +330,7 @@ function HistoryExplorer({ address }) {
 function CreatorLookup() {
   const [mint, setMint] = useState("");
   const [result, setResult] = useState(null);
+  const [creatorEvidence, setCreatorEvidence] = useState(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [historyCursor, setHistoryCursor] = useState(null);
@@ -388,7 +389,7 @@ function CreatorLookup() {
   }
   async function inspect(event, cursor = null) {
     event.preventDefault();
-    setBusy(true); setError(""); if (!cursor) { setResult(null); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
+    setBusy(true); setError(""); if (!cursor) { setResult(null); setCreatorEvidence(null); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 45000);
@@ -398,6 +399,12 @@ function CreatorLookup() {
       const data = await response.json();
       if (!response.ok) throw new Error([data.error, data.detail].filter(Boolean).join(" " ) || "Token lookup failed");
       setResult(data);
+      if (!cursor) {
+        try {
+          const evidenceResponse = await fetch("/api/creator-evidence?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
+          if (evidenceResponse.ok) setCreatorEvidence(await evidenceResponse.json());
+        } catch { /* creator evidence is optional; keep token analysis available */ }
+      }
       if (!cursor) {
         try {
           const concentrationResponse = await fetch("/api/token-concentration?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
@@ -431,6 +438,15 @@ function CreatorLookup() {
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
     {busy && <p role="status" style={{ color: "#ddd" }}>Querying Solana history. Each batch checks up to 3,000 signatures; this may take up to 45 seconds.</p>}
     {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
+      {creatorEvidence && ["VERIFIED", "ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(creatorEvidence.status) && creatorEvidence.creator && (
+        <div style={{ ...cardStyle, borderColor: "#365c45" }}>
+          <h3>Creator attribution evidence</h3>
+          <p><strong>Wallet:</strong> <AddressLink address={creatorEvidence.creator} /></p>
+          <p><strong>Status:</strong> {creatorEvidence.status === "VERIFIED" ? "Independently reviewed" : "On-chain match — independent review pending"}</p>
+          {creatorEvidence.evidence?.[0]?.signature && <p><a href={"https://solscan.io/tx/" + encodeURIComponent(creatorEvidence.evidence[0].signature)} target="_blank" rel="noopener noreferrer">View creation transaction</a></p>}
+          <p style={{ color: "#999", fontSize: 12 }}>A wallet attribution is not proof of beneficial ownership or project legitimacy.</p>
+        </div>
+      )}
       <Section title="TOKEN SECURITY OVERVIEW" defaultOpen={true}>
         <p style={{ color: "#ff8585", letterSpacing: 2, fontSize: 12, fontWeight: 700, marginTop: 0 }}>GLITCH // TOKEN SECURITY OVERVIEW</p>
         <h3 style={{ margin: "0 0 8px" }}>Observed signals, not a safety rating</h3>
