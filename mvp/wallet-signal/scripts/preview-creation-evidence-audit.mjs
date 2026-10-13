@@ -1,7 +1,8 @@
 import { createPumpFunIndexedCreatorProvider } from "../lib/pumpFunIndexedCreatorProvider.mjs";
 import { createSolanaRpcAdapter } from "../lib/creatorOriginRpc.mjs";
 import { verifyLaunchpadCreation } from "../lib/launchpadCreationVerifier.mjs";
-import { pumpFunDecoders } from "../lib/pumpFunCreation.mjs";
+import { pumpFunDecoders, PUMP_PROGRAM_ID } from "../lib/pumpFunCreation.mjs";
+import { createHash } from "node:crypto";
 
 /** Independent re-fetch of the known creation signature; no inferred wallet roles. */
 const mint = process.env.CREATOR_VALIDATION_MINT || "";
@@ -22,6 +23,16 @@ else {
     const signers = normalized.filter(k => k.signer === true).map(k => k.address);
     const proof = verifyLaunchpadCreation({ mint, signature, transaction: tx, decoders: pumpFunDecoders });
     const decodedCreator = proof.status === "VERIFIED" ? proof.decodedRoles[0]?.address : null;
+    const instructions = [...(tx?.transaction?.message?.instructions || []),
+      ...(tx?.meta?.innerInstructions || []).flatMap(group => group.instructions || [])];
+    const pumpInstructions = instructions.filter(ix => ix?.programId === PUMP_PROGRAM_ID);
+    const instructionEvidence = pumpInstructions.map(ix => ({
+      accountCount: Array.isArray(ix.accounts) ? ix.accounts.length : null,
+      accountKeys: Array.isArray(ix.accounts) ? ix.accounts.map(k => typeof k === "string" ? k : normalized[k]?.address || k?.pubkey || null) : [],
+      dataHash: typeof ix.data === "string" ? createHash("sha256").update(ix.data).digest("hex") : null,
+      dataLengthBase58: typeof ix.data === "string" ? ix.data.length : null,
+    }));
+    const wrongMintProof = verifyLaunchpadCreation({ mint: "11111111111111111111111111111112", signature, transaction: tx, decoders: pumpFunDecoders });
     console.log("CREATION_EVIDENCE_AUDIT:", JSON.stringify({
       mint, signature, indexedCreator: candidate?.creator || null,
       transactionFound: Boolean(tx), transactionSucceeded: tx?.meta?.err == null && Boolean(tx),
@@ -33,6 +44,8 @@ else {
       proofStatus: proof.status,
       // Separate decoding from an independent review of the official program IDL.
       independentlyReviewed: false,
+      wrongMintRejected: wrongMintProof.status !== "VERIFIED",
+      instructionEvidence,
     }));
   } catch {
     console.log("CREATION_EVIDENCE_AUDIT: UNRESOLVED_PROVIDER_OR_DECODER_ERROR");
