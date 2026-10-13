@@ -5,7 +5,7 @@
   "description": "DOOM404 Wallet Signal - Solana wallet analytics MVP",
   "scripts": {
     "dev": "next dev",
-    "build": "npm run test:smoke && npm run validate:creator:preview && npm run validate:creator:indexed && npm run validate:creator:helius-index && npm run validate:creator:pumpfun && npm run validate:creator:wallet && npm run validate:creator:evidence && npm run validate:creator:matrix && next build",
+    "build": "npm run test:smoke && npm run validate:creator:preview && npm run validate:creator:indexed && npm run validate:creator:helius-index && npm run validate:creator:pumpfun && npm run validate:creator:wallet && npm run validate:creator:evidence && npm run validate:creator:matrix && npm run validate:creator:mint-matrix && next build",
     "start": "next start",
     "test:smoke": "node --test tests/*.test.mjs",
     "check": "npm run build",
@@ -16,7 +16,8 @@
     "validate:creator:pumpfun": "node scripts/preview-pumpfun-creator-validation.mjs",
     "validate:creator:wallet": "node scripts/preview-creator-wallet-validation.mjs",
     "validate:creator:evidence": "node scripts/preview-creation-evidence-audit.mjs",
-    "validate:creator:matrix": "node scripts/preview-creator-matrix.mjs"
+    "validate:creator:matrix": "node scripts/preview-creator-matrix.mjs",
+    "validate:creator:mint-matrix": "node scripts/preview-creator-mint-matrix.mjs"
   },
   "dependencies": {
     "@solana/web3.js": "^1.98.0",
