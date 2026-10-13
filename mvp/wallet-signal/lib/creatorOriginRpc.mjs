@@ -2,11 +2,13 @@
  * Read-only Solana RPC adapter. Supply a server-side RPC URL from environment.
  * Standard RPC pagination is NOT proof of complete archival coverage.
  */
-export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 1000 } = {}) {
+export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 1000, maxRequests = 100 } = {}) {
   if (!rpcUrl || !/^https:\/\//.test(rpcUrl)) throw new TypeError("HTTPS rpcUrl required");
   if (!Number.isInteger(pageLimit) || pageLimit < 1 || pageLimit > 1000) throw new RangeError("invalid pageLimit");
+  if (!Number.isInteger(maxRequests) || maxRequests < 1 || maxRequests > 1000) throw new RangeError("invalid maxRequests");
   let requestId = 0;
   async function rpc(method, params) {
+    if (requestId >= maxRequests) throw new Error("RPC_REQUEST_BUDGET_EXHAUSTED");
     const response = await fetchImpl(rpcUrl, {
       method: "POST",
       headers: { "content-type": "application/json" },
