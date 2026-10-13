@@ -458,7 +458,7 @@ function CreatorLookup() {
           <p style={{fontSize:12,letterSpacing:2,color:"#ff8585",fontWeight:700}}>GLITCH // DECISION INTELLIGENCE</p>
           <h2 style={{margin:"8px 0"}}>{summary.title}</h2>
           <p style={{color:"#ddd",lineHeight:1.6}}>{summary.explanation}</p>
-          <p style={{color:"#aaa",fontSize:12}}>Evidence coverage: {summary.coverageCount}/{summary.coverageTotal} dimensions · Not an investment recommendation</p>
+          <p style={{color:"#aaa",fontSize:12}}>Data available in {summary.coverageCount}/{summary.coverageTotal} categories · Several checks may remain incomplete · Not an investment recommendation</p>
           <h3>Top findings</h3>
           {summary.findings.map((item,index)=><div key={index} style={{padding:"12px 0",borderTop:"1px solid #333"}}>
             <strong>{index+1}. {item.title}</strong>
