@@ -44,7 +44,7 @@ try{
  const transfers=[];
  let inspected=0,failures=0;
  for(const wallet of wallets){
-  const sigs=await rpc("getSignaturesForAddress",[wallet,{limit:20,commitment:"confirmed"}]);
+  const sigs=await rpc("getSignaturesForAddress",[wallet,{limit:3,commitment:"confirmed"}]);
   for(const entry of sigs||[]){
    if(entry.err||!entry.signature)continue;
    try{
