@@ -28,15 +28,27 @@ jobs:
         run: |
           mkdir -p artifacts
           python3 - <<'PY'
-          import json,os,urllib.request,zipfile,io
+          import json,os,urllib.request,urllib.error,zipfile,io
           repo=os.environ["GH_REPO"]
           token=os.environ["GH_TOKEN"]
           current=int(os.environ["GH_RUN_ID"])
           base=f"https://api.github.com/repos/{repo}"
           headers={"Authorization":f"Bearer {token}","Accept":"application/vnd.github+json","User-Agent":"glitch-readonly-resume"}
+          class SafeRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,req,fp,code,msg,hdrs,newurl):
+                  redirected=super().redirect_request(req,fp,code,msg,hdrs,newurl)
+                  if redirected and not newurl.startswith("https://api.github.com/"):
+                      redirected.remove_header("Authorization")
+                      redirected.headers.pop("Authorization",None)
+                      redirected.unredirected_hdrs.pop("Authorization",None)
+                  return redirected
+          opener=urllib.request.build_opener(SafeRedirect)
           def get(url):
               req=urllib.request.Request(url,headers=headers)
-              with urllib.request.urlopen(req,timeout=20) as response:return response.read()
+              try:
+                  with opener.open(req,timeout=20) as response:return response.read()
+              except urllib.error.HTTPError as exc:
+                  raise RuntimeError(f"GitHub checkpoint retrieval HTTP {exc.code} at "+("API" if url.startswith(base) else "artifact")) from None
           runs=json.loads(get(base+"/actions/workflows/glitch-holder-history-checkpoint.yml/runs?branch=feature%2Fglitch-assessment-sprint1&per_page=30"))["workflow_runs"]
           for run in runs:
               if run["id"]>=current or run.get("status")!="completed":continue
