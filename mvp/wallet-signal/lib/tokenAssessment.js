@@ -10,8 +10,8 @@ export function assessTokenEvidence({ result, extensions, concentration, liquidi
       "Largest account: " + share.toFixed(2) + "% of supply. Account balances do not establish unique beneficial owners; pools and custody are not classified.",
       "partial", "Solana RPC");
   } else add("concentration","Token-account concentration",null,"Not assessed","Largest-account evidence unavailable.","missing","Solana RPC");
-  if (result?.authorityDetailsStatus === "not_parsed" || !result) {
-    add("permissions","Mint and freeze permissions",null,"Not assessed","Authority fields were not reliably parsed.","missing","Solana RPC");
+  if (!result || result.authorityDetailsStatus === "not_parsed" || !Object.hasOwn(result, "mintAuthority") || !Object.hasOwn(result, "freezeAuthority")) {
+    add("permissions","Mint and freeze permissions",null,"Not assessed","Both mint and freeze authority fields must be explicitly present and reliably parsed.","missing","Solana RPC");
   } else {
     const present = [result.mintAuthority ? "mint" : null,result.freezeAuthority ? "freeze" : null].filter(Boolean);
     add("permissions","Mint and freeze permissions",present.length ? 35 : 85,present.length ? "Permissions remain active" : "Mint and freeze authorities not present",
