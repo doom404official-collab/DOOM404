@@ -20,7 +20,7 @@ async function rpc(method,params){
    body:JSON.stringify({jsonrpc:"2.0",id:++requests,method,params}),signal:AbortSignal.timeout(12000)});
   if(response.status===429){retries++;if(n===2)throw Error("RPC_RATE_LIMITED");await delay(1000*2**n);continue;}
   if(!response.ok)throw Error("RPC_HTTP_"+response.status);
-  const payload=await response.json();if(payload.error)throw Error("RPC_RESPONSE_ERROR");
+  const payload=await response.json();if(payload.error){const code=Number.isInteger(payload.error.code)?payload.error.code:"UNKNOWN";throw Error("RPC_"+method+"_ERROR_"+code); }
   return payload.result;
  }
 }
@@ -35,10 +35,8 @@ try{
    throw Error("INVALID_RESUME_HOLDERS");
   cp=loaded;
  }else{
-  const [largest,supply]=await Promise.all([
-   rpc("getTokenLargestAccounts",[mint,{commitment:"confirmed"}]),
-   rpc("getTokenSupply",[mint,{commitment:"confirmed"}])
-  ]);
+  const largest=await rpc("getTokenLargestAccounts",[mint,{commitment:"confirmed"}]);
+  const supply=await rpc("getTokenSupply",[mint,{commitment:"confirmed"}]);
   const total=BigInt(supply?.value?.amount||"0");
   if(total<=0n||(largest?.value||[]).length!==20)throw Error("INVALID_TOP20");
   const holders=[];
