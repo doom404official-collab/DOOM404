@@ -19,7 +19,9 @@ export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,page
   for(const [signature,state] of Object.entries(checkpoint.signatures)){
    if(state!=="pending")continue;
    const tx=await limitedRpc("getTransaction",[signature,{encoding:"jsonParsed",commitment:"confirmed",maxSupportedTransactionVersion:1}]);
-   if(!tx){recordDecodedTransaction(checkpoint,{signature,error:"TRANSACTION_UNAVAILABLE"});continue;}
+   // A temporarily unavailable transaction is retryable. Do not permanently
+   // classify it as checked or failed; preserve the pending checkpoint state.
+   if(!tx)continue;
    const transfers=extractDirectHolderTransfers({transaction:tx,signature,
     holderWallets:Object.keys(checkpoint.wallets),tokenAccounts:checkpoint.holders});
    recordDecodedTransaction(checkpoint,{signature,transfers});
