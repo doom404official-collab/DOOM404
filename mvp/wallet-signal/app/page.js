@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import HolderBubbleMap from "./HolderBubbleMap";
+import {scoreHolderConcentration} from "../lib/holderConcentrationScore.mjs";
 import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
 import { selectTokenInsights } from "../lib/tokenInsights.js";
 import { assessTokenEvidence } from "../lib/tokenAssessment.js";
@@ -618,6 +619,31 @@ function CreatorLookup() {
         <h3 style={{ marginTop: 0 }}>TOKEN ACCOUNT CONCENTRATION // Evidence</h3>
         {concentrationError && <p style={{ color: "#ffb86b" }}>Account concentration unavailable: {concentrationError}. No conclusion inferred.</p>}
         {!concentration && !concentrationError && <p style={{ color: "#aaa" }}>Retrieving largest token accounts...</p>}
+        {concentration && (() => {
+          const assessment=scoreHolderConcentration({
+            top20SharePct:holderConnections?.top20SharePct??concentration.top20TokenAccountSharePct,
+            largestAccountSharePct:Number(concentration.largestAccountSharePct),
+            holders:holderConnections?.holders||[],
+            connectedGroups:holderConnections?.connectedGroups||[],
+            directPairs:holderConnections?.directPairs||0,
+            connectedWallets:holderConnections?.connectedWallets||0,
+            walletHistoriesReached:holderConnections?.walletHistoriesReached||0,
+            ownerWalletsResolved:concentration.ownership?.resolvedAccountCount||0,
+            historyComplete:holderConnections?.historyComplete||false
+          });
+          return <div style={{background:"#151c2a",border:"1px solid #334154",borderRadius:18,padding:22,marginBottom:16}}>
+            <div style={{fontSize:12,letterSpacing:1,color:"#aab9cc"}}>GLITCH HOLDER STRUCTURE SCORE</div>
+            <div style={{fontSize:38,fontWeight:800,color:"#f3c66b"}}>{assessment.score===null?"—":assessment.score}<span style={{fontSize:18,color:"#9ca8b9"}}> / 100</span></div>
+            <p style={{fontSize:13,color:"#bac4d3"}}>{assessment.score===null?"Observed components scored below; remaining evidence is being collected.":"Numerical holder-structure assessment based on observed data."}</p>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(175px,1fr))",gap:10}}>
+              {assessment.components.map(item=><div key={item.id} style={{background:"#20293a",borderRadius:12,padding:13}}>
+                <div style={{fontSize:13,color:"#c3ccda"}}>{item.label}</div>
+                <strong style={{fontSize:22,color:"#f3c66b"}}>{item.score===null?"—":item.score}</strong><span style={{color:"#9ca8b9"}}> / {item.max}</span>
+              </div>)}
+            </div>
+            <p style={{fontSize:12,color:"#9ca8b9"}}>Assessed: {assessment.possible}/100 points. Historical links may increase as scanning progresses. Connections do not establish common ownership.</p>
+          </div>;
+        })()}
         {concentration && <>
           <div style={{background:"#171c1a",border:"1px solid #355247",borderRadius:10,padding:14,marginBottom:12}}>
             <strong>LIVE HOLDER CONNECTIONS</strong>
