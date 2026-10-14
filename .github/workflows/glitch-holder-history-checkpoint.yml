@@ -70,11 +70,22 @@ jobs:
         env:
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
         run: |
-          if [ -f artifacts/resume.json ]; then
-            HOLDER_CHECKPOINT_PATH=artifacts/resume.json node scripts/scan-holder-history-resumable.mjs
-          else
-            node scripts/scan-holder-history-resumable.mjs
-          fi
+          set -euo pipefail
+          # At most two batches of 65 RPC attempts each per manual workflow run.
+          # Resume from the just-written checkpoint; never discard a partial batch.
+          for batch in 1 2; do
+            if [ -f artifacts/resume.json ]; then
+              HOLDER_CHECKPOINT_PATH=artifacts/resume.json node scripts/scan-holder-history-resumable.mjs
+            else
+              node scripts/scan-holder-history-resumable.mjs
+            fi
+            cp artifacts/holder-history-checkpoint.json artifacts/resume.json
+            echo "Completed bounded scan batch $batch of 2"
+            if node -e 'const c=require("./artifacts/resume.json"); const wallets=Object.values(c.wallets||{}); const states=Object.values(c.signatures||{}); process.exit(wallets.length===20 && wallets.every(w=>w.exhausted) && states.every(s=>s==="checked") ? 0:1)'; then
+              echo "Provider-observed history exhausted and all discovered transactions checked"
+              break
+            fi
+          done
       - name: Upload diagnostic checkpoint
         if: always()
         uses: actions/upload-artifact@v4
