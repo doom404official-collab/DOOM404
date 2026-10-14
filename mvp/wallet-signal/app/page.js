@@ -339,6 +339,9 @@ function CreatorLookup() {
   const [historyCursor, setHistoryCursor] = useState(null);
   const [concentration, setConcentration] = useState(null);
   const [concentrationError, setConcentrationError] = useState("");
+  const [holderConnections, setHolderConnections] = useState(null);
+  const [holderConnectionsBusy, setHolderConnectionsBusy] = useState(false);
+  const [holderConnectionsError, setHolderConnectionsError] = useState("");
   const [extensions, setExtensions] = useState(null);
   const [extensionsError, setExtensionsError] = useState("");
   const [liquidity, setLiquidity] = useState(null);
@@ -424,6 +427,14 @@ function CreatorLookup() {
           const accountData = await concentrationResponse.json();
           if (!concentrationResponse.ok) throw new Error(accountData.error || "Token-account balances unavailable");
           setConcentration(accountData);
+          setHolderConnections(null);
+          setHolderConnectionsError("");
+          setHolderConnectionsBusy(true);
+          fetch("/api/live-holder-connections?mint="+encodeURIComponent(mint.trim()),{cache:"no-store"})
+            .then(async response=>{const payload=await response.json();if(!response.ok)throw Error(payload.error||"Live connection scan unavailable");return payload;})
+            .then(payload=>setHolderConnections(payload))
+            .catch(e=>setHolderConnectionsError(e.message))
+            .finally(()=>setHolderConnectionsBusy(false));
         } catch (concentrationFailure) { setConcentrationError(concentrationFailure.message); }
       }
       if (!cursor && data.tokenProgram === "spl-token-2022") {
@@ -605,6 +616,20 @@ function CreatorLookup() {
         {concentrationError && <p style={{ color: "#ffb86b" }}>Account concentration unavailable: {concentrationError}. No conclusion inferred.</p>}
         {!concentration && !concentrationError && <p style={{ color: "#aaa" }}>Retrieving largest token accounts...</p>}
         {concentration && <>
+          <div style={{background:"#171c1a",border:"1px solid #355247",borderRadius:10,padding:14,marginBottom:12}}>
+            <strong>LIVE HOLDER CONNECTIONS</strong>
+            {holderConnectionsBusy && <p role="status">Checking recent holder transactions…</p>}
+            {holderConnectionsError && <p style={{color:"#ffbf86"}}>{holderConnectionsError}</p>}
+            {holderConnections && <>
+              <p><strong>Top-20 supply:</strong> {holderConnections.top20SharePct.toFixed(2)}% · <strong>Connected wallets:</strong> {holderConnections.connectedWallets}/{holderConnections.ownerWalletsResolved} · <strong>Direct pairs:</strong> {holderConnections.directPairs}</p>
+              <p>Transactions checked: {holderConnections.transactionsChecked} · Older history not yet examined</p>
+              {holderConnections.connectedGroups.map((group,index)=><details key={index}><summary>Connected group {index+1}: {group.members.length} wallets · {group.combinedObservedSharePct.toFixed(2)}% of supply</summary>
+                {group.members.map(wallet=><p key={wallet}><AddressLink address={wallet}/></p>)}
+                {group.directEdges.flatMap(edge=>edge.signatures).slice(0,10).map(sig=><p key={sig}><a href={"https://solscan.io/tx/"+encodeURIComponent(sig)} target="_blank" rel="noopener noreferrer">Transaction {sig.slice(0,12)}… ↗</a></p>)}
+              </details>)}
+              <small style={{color:"#aaa"}}>Live snapshot {holderConnections.observedAt}. Connections indicate transfers, not shared ownership. Results may grow with deeper history.</small>
+            </>}
+          </div>
           <p><strong>Largest account:</strong> {concentration.largestAccountSharePct ?? "Unavailable"}% of supply</p>
           <p><strong>Top 5 token accounts:</strong> {concentration.top5TokenAccountSharePct ?? "Unavailable"}% · <strong>Top 10:</strong> {concentration.top10TokenAccountSharePct ?? "Unavailable"}%</p>
           <p style={{ color: "#ffbf86", fontSize: 13 }}>{concentration.coverage?.warning}</p>
