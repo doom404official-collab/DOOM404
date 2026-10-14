@@ -2,6 +2,7 @@ import {readFile,writeFile,mkdir} from "node:fs/promises";
 import {createHolderHistoryCheckpoint,recordHistoryPage,recordDecodedTransaction,summarizeHistoryCheckpoint} from "../lib/holderHistoryCheckpoint.mjs";
 import {collectWalletSignaturePage} from "../lib/holderHistoryPagination.mjs";
 import {extractDirectHolderTransfers} from "../lib/directHolderTransfers.mjs";
+import {nextHolderScanOrder,advanceHolderScanCursor,holderScanCoverage} from "../lib/holderRoundRobin.mjs";
 
 // Read-only RPC scan. Local JSON artifact is not a Supabase write.
 // Resume only from an explicitly supplied, validated checkpoint file.
@@ -61,8 +62,8 @@ try{
   }
  }
  await decodePending();
- for(const wallet of Object.keys(cp.wallets)){
-  if(cp.wallets[wallet].exhausted)continue;
+ for(const wallet of nextHolderScanOrder(cp)){
+  advanceHolderScanCursor(cp,wallet);
   const page=await collectWalletSignaturePage({wallet,cursor:cp.wallets[wallet].cursor,limit:10,
    fetchPage:(address,opts)=>rpc("getSignaturesForAddress",[address,{limit:opts.limit,
     ...(opts.before?{before:opts.before}:{}),commitment:"confirmed"}])});
@@ -76,5 +77,6 @@ if(cp){
 }
 console.log(JSON.stringify({status:reason?"PARTIAL_OR_FAILED":"CHECKPOINT_SAVED",
  reason,checkpointSaved:Boolean(cp),requestCount:requests,rateLimitRetries:retries,
- ...(cp?summarizeHistoryCheckpoint(cp):{}),writeAttempted:false}));
+ ...(cp?summarizeHistoryCheckpoint(cp):{}),
+ ...(cp?{scanCoverage:holderScanCoverage(cp)}:{}),writeAttempted:false}));
 if(!cp)process.exitCode=2;
