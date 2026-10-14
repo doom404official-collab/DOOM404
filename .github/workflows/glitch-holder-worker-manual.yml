@@ -15,6 +15,7 @@ jobs:
         env:
           GLITCH_PREVIEW_URL: ${{ secrets.GLITCH_PREVIEW_URL }}
           GLITCH_HOLDER_WORKER_TOKEN: ${{ secrets.GLITCH_HOLDER_WORKER_TOKEN }}
+          GLITCH_HOLDER_SCAN_INTERNAL_TOKEN: ${{ secrets.GLITCH_HOLDER_SCAN_INTERNAL_TOKEN }}
         run: |
           python3 - <<'PY'
           import json,os,urllib.request,urllib.error
@@ -30,11 +31,28 @@ jobs:
               try:
                   with urllib.request.urlopen(req,timeout=70) as response:return json.load(response)
               except urllib.error.HTTPError as exc:raise RuntimeError(f"Worker endpoint HTTP {exc.code}") from None
-          candidate=post("/api/holder-scan-scheduler",{})
-          if candidate.get("status")=="idle":
-              print("No pending jobs");raise SystemExit(0)
-          if candidate.get("status")!="candidate" or not candidate.get("jobId"):
-              raise SystemExit("Scheduler did not return a valid candidate")
-          result=post("/api/holder-scan-worker",{"jobId":candidate["jobId"]})
-          print(json.dumps({"status":result.get("status"),"requestCount":result.get("requestCount")}))
+          mint="98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump"
+          start_token=os.environ.get("GLITCH_HOLDER_SCAN_INTERNAL_TOKEN","")
+          if not start_token:raise SystemExit("Scan-start secret missing")
+          def start_scan():
+              req=urllib.request.Request(base+"/api/holder-scan-start",
+                  data=json.dumps({"mint":mint}).encode(),method="POST",
+                  headers={"Content-Type":"application/json","x-glitch-internal-token":start_token})
+              try:
+                  with urllib.request.urlopen(req,timeout=70) as response:return json.load(response)
+              except urllib.error.HTTPError as exc:raise RuntimeError(f"Scan-start HTTP {exc.code}") from None
+          started=start_scan()
+          print(json.dumps({"step":"start","status":started.get("status")}))
+          for batch in range(2):
+              result=post("/api/holder-scan-tick",{})
+              print(json.dumps({"step":"tick","batch":batch+1,"status":result.get("status"),"requestCount":result.get("requestCount")}))
+              if result.get("status")=="idle":break
+          with urllib.request.urlopen(base+"/api/holder-scan-status?mint="+mint,timeout=30) as response:
+              state=json.load(response)
+          scan=state.get("scan") or {}
+          print(json.dumps({"step":"verify","status":state.get("status"),
+              "transactionsChecked":scan.get("transactionsChecked"),
+              "walletHistoriesReached":scan.get("walletHistoriesReached"),
+              "directPairs":scan.get("directPairs")}))
+          if state.get("status")=="not_started":raise SystemExit("Checkpoint not persisted")
           PY
