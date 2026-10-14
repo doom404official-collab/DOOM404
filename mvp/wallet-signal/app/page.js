@@ -506,6 +506,15 @@ function CreatorLookup() {
                 <p style={{ fontSize: 12, color: "#bbb", marginBottom: 0 }}>Verified coverage: {assessment.verifiedCoveragePct}% · Available evidence: {assessment.evidenceCoveragePct}%</p>
               </div>
             </div>
+            <div style={{ background: "#171c1a", border: "1px solid #355247", borderRadius: 10, padding: 14, marginBottom: 14 }}>
+              <strong style={{ display: "block", marginBottom: 8 }}>Top findings from available evidence</strong>
+              {assessment.actionableFindings.length === 0 ? <p style={{ color: "#bbb" }}>Not enough evidence to issue findings yet.</p> : assessment.actionableFindings.map(item => <div key={item.id} style={{ padding: "10px 0", borderTop: "1px solid #34443e" }}>
+                <strong style={{ color: item.severity === "caution" ? "#ffbf86" : "#b5dfc8" }}>{item.severity === "caution" ? "Review needed: " : "Observed: "}{item.title}</strong>
+                <p style={{ color: "#ddd", fontSize: 13, margin: "6px 0" }}>{item.evidence}</p>
+                <p style={{ color: "#c3d5ca", fontSize: 13, margin: "6px 0" }}>Next check: {item.nextStep}</p>
+                <small style={{ color: "#aaa" }}>Evidence: {item.coverage} · {item.source}</small>
+              </div>)}
+            </div>
             <p style={{ color: "#bbb", fontSize: 13 }}>Evidence-backed interpretations. Provisional attribute scores are not investment safety ratings.</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
               {assessment.attributes.map(item => <div key={item.id} style={{ background: "#191919", border: "1px solid #484040", borderRadius: 9, padding: 12 }}>
