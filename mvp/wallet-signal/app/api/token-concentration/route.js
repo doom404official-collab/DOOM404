@@ -32,7 +32,7 @@ export async function GET(request) {
       status: "observed_token_accounts", mint: mint.toBase58(), decimals: supply.value.decimals,
       totalRawSupply: supply.value.amount, returnedAccounts: accounts.length,
       largestAccountSharePct: percent(1), top5TokenAccountSharePct: percent(5),
-      top10TokenAccountSharePct: percent(10), accounts: ownership.accounts,
+      top10TokenAccountSharePct: percent(10), top20TokenAccountSharePct: percent(20), accounts: ownership.accounts,
       ownership: { observedOwnerGroups: ownership.observedOwnerGroups,
         resolvedAccountCount: ownership.resolvedAccountCount,
         ownerCoverageComplete: false, beneficialOwnersVerified: false,
