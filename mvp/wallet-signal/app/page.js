@@ -530,12 +530,12 @@ function CreatorLookup() {
                 <small style={{ color: "#aaa" }}>Evidence: {item.coverage} · {item.source}</small>
               </div>)}
             </div>
-            <p style={{ color: "#bbb", fontSize: 13 }}>Evidence-backed interpretations. Provisional attribute scores are not investment safety ratings.</p>
+            <p style={{ color: "#bbb", fontSize: 13 }}>Evidence-backed interpretations. Numerical attribute ratings are withheld pending calibration.</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
               {assessment.attributes.map(item => <div key={item.id} style={{ background: "#191919", border: "1px solid #484040", borderRadius: 9, padding: 12 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "start" }}>
                   <strong style={{ fontSize: 14 }}>{item.label}</strong>
-                  <span style={{ color: item.score == null ? "#ffbf86" : item.score >= 70 ? "#9ddab6" : "#ffbf86", whiteSpace: "nowrap", fontWeight: 700 }}>{item.score == null ? "Pending" : item.score + "/100*"}</span>
+                  <span style={{ color: item.coverage === "missing" ? "#ffbf86" : "#9ddab6", fontWeight: 700 }}>{item.coverage === "missing" ? "Not assessed" : item.coverage === "verified" ? "Verified evidence" : "Partial evidence"}</span>
                 </div>
                 <p style={{ fontWeight: 700, color: item.verdict === "caution" ? "#ffbf86" : item.verdict === "no_concern_in_checked_scope" ? "#9ddab6" : "#ddd", marginBottom: 4 }}>{item.verdictLabel}</p>
                 <p style={{ fontWeight: 600, color: "#ffcf9b", marginBottom: 4 }}>{item.assessment}</p>
