@@ -1,8 +1,8 @@
 import {NextResponse} from "next/server";
 import {timingSafeEqual} from "node:crypto";
-import {POST as startScan} from "../holder-scan-start/route.js";
-import {POST as runTick} from "../holder-scan-tick/route.js";
-import {createHolderJobStore} from "../../../lib/holderJobStore.mjs";
+import {POST as startScan} from "../../holder-scan-start/route.js";
+import {POST as runTick} from "../../holder-scan-tick/route.js";
+import {createHolderJobStore} from "../../../../lib/holderJobStore.mjs";
 export const dynamic="force-dynamic";
 export const maxDuration=60;
 const TEST_MINT="98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump";
