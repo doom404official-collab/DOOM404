@@ -86,11 +86,15 @@ jobs:
               break
             fi
           done
+      - name: Summarize holder connection groups
+        run: node scripts/report-holder-connections.mjs
       - name: Upload diagnostic checkpoint
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: holder-history-checkpoint
-          path: mvp/wallet-signal/artifacts/holder-history-checkpoint.json
+          path: |
+            mvp/wallet-signal/artifacts/holder-history-checkpoint.json
+            mvp/wallet-signal/artifacts/holder-connection-report.json
           if-no-files-found: warn
           retention-days: 7
