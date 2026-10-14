@@ -33,4 +33,4 @@ jobs:
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
           CREATOR_DIAGNOSTIC_MINT: 98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump
           CREATOR_EXPECTED_INDEXED_WALLET: 6RKsroTt2NgJvyUyhUcKqANrphWDw6eE52X9TMBsQ7WC
-        run: node scripts/diagnose-test-mint-origin.mjs
+        run: node scripts/diagnose-indexed-creator-origin.mjs
