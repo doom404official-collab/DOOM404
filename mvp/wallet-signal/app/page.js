@@ -357,6 +357,24 @@ function CreatorLookup() {
     ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(creatorEvidence.status);
   const storedCreatorLabel = creatorEvidence?.status === "VERIFIED" ? "On-chain confirmed · independently reviewed" :
     "On-chain confirmed · review pending";
+  useEffect(() => {
+    const address=result?.mint;
+    if(!address)return;
+    let stopped=false;
+    let timer;
+    async function refresh(){
+      try{
+        const response=await fetch("/api/holder-scan-status?mint="+encodeURIComponent(address),{cache:"no-store"});
+        if(!response.ok)return;
+        const data=await response.json();
+        if(stopped)return;
+        if(data.scan?.mint===address)setHolderConnections({...data.scan,observedAt:data.scan.updatedAt});
+        if(["queued","running","partial"].includes(data.status))timer=setTimeout(refresh,12000);
+      }catch{/* Retain last verified result rather than replacing it with an error. */}
+    }
+    refresh();
+    return ()=>{stopped=true;clearTimeout(timer);};
+  },[result?.mint]);
   const MAX_HISTORY_BATCHES = 5;
   async function refreshLiquidity(address = mint.trim()) {
     if (!address || liquidityRefreshing) return;
