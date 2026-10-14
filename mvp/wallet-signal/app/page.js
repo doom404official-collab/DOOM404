@@ -621,7 +621,7 @@ function CreatorLookup() {
         {!concentration && !concentrationError && <p style={{ color: "#aaa" }}>Retrieving largest token accounts...</p>}
         {concentration && (() => {
           const assessment=scoreHolderConcentration({
-            top20SharePct:holderConnections?.top20SharePct??concentration.top20TokenAccountSharePct,
+            top20SharePct:concentration.top20TokenAccountSharePct,
             largestAccountSharePct:Number(concentration.largestAccountSharePct),
             holders:holderConnections?.holders||[],
             connectedGroups:holderConnections?.connectedGroups||[],
