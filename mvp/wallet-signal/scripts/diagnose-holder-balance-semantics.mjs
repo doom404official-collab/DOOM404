@@ -20,6 +20,22 @@ try{
   rpc("getTokenSupply",[mint,{commitment:"confirmed"}])
  ]);
  const rows=das?.token_accounts||[],rpcRows=largest?.value||[];
+ // Probe beyond the apparent total=100: it may be a page-size cap, not global supply.
+ const pageProbes=[{page:1,count:rows.length,total:das?.total??null}];
+ const subsequentRows=[];
+ for(const page of [2,3]){
+  try{
+   const next=await rpc("getTokenAccounts",{mint,page,limit:100});
+   const items=Array.isArray(next?.token_accounts)?next.token_accounts:[];
+   pageProbes.push({page,count:items.length,total:next?.total??null,
+    overlapsFirstPage:items.filter(a=>rows.some(b=>String(a.address)===String(b.address))).length});
+   subsequentRows.push(...items);
+   if(items.length===0)break;
+  }catch(e){pageProbes.push({page,error:String(e.message||"PROBE_FAILED")});break;}
+ }
+ const allObserved=[...rows,...subsequentRows];
+ const observedAddresses=new Set(allObserved.map(a=>String(a.address)));
+ const rpcTop20SeenAcrossPages=rpcRows.slice(0,20).filter(a=>observedAddresses.has(String(a.address))).length;
  const byAddress=new Map(rows.map(a=>[String(a.address),a]));
  const topRpc=rpcRows.slice(0,20);
  const comparisons=topRpc.map(a=>{
@@ -47,6 +63,7 @@ try{
   comparisons:comparisons.slice(0,5),
   dasSampleFields:rows[0]?Object.keys(rows[0]).sort():[],
   globalRankingVerified:false,
+  paginationProbe:{pages:pageProbes,uniqueAccountsAcrossPages:observedAddresses.size,rpcTop20SeenAcrossPages,globalEnumerationEstablished:false},
   investigation:{
    dasReturnedMintMatches:rows.filter(a=>String(a.mint)===mint).length,
    dasUniqueTokenAccounts:new Set(rows.map(a=>String(a.address))).size,
