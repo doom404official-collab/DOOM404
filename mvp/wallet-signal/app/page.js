@@ -507,7 +507,7 @@ function CreatorLookup() {
             <div style={{ background:"#191b1e", border:"1px solid #4a4a55", borderRadius:10, padding:14, marginBottom:14 }}>
               <strong>Token controls — creator-independent assessment</strong>
               <p style={{ color:"#ddd", margin:"8px 0" }}>{controls.label}. {controls.coveragePct}% of eligible weighted checks scored; unclassified ownership and liquidity are excluded.</p>
-              <p style={{ color:"#ffbf86", margin:"8px 0" }}>Permission-control indicator: {controls.score == null ? "Not established" : controls.score + "/100 (checked controls only)"}. This is not a token safety or investment-quality score.</p>
+              <p style={{ color:"#ffbf86", margin:"8px 0" }}>Permission-control rating: Withheld pending calibration. Observed permission findings remain available regardless of creator attribution.</p>
               {controls.checks.map(check => <p key={check.id} style={{fontSize:13,margin:"6px 0",color:"#bbb"}}>{check.id.replaceAll("_"," ")}: {check.status.replaceAll("_"," ")} · {check.source}</p>)}
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
