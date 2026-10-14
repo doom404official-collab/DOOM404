@@ -25,11 +25,13 @@ export function assessTokenControls({result,extensions,concentration}={}){
  const assessed=eligible.filter(x=>x.points!==null);
  const totalWeight=eligible.reduce((sum,x)=>sum+x.weight,0);
  const scoredWeight=assessed.reduce((sum,x)=>sum+x.weight,0);
+ const observedWeight=eligible.filter(x=>x.status!=="unknown").reduce((sum,x)=>sum+x.weight,0);
  // Only mint/freeze and applicable fee authority are scored; never convert
  // concentration without owner classification into a safety number.
  const provisionalScore=assessed.length>=1&&scoredWeight>=2?
   Math.round(100*assessed.reduce((sum,x)=>sum+x.points,0)/scoredWeight):null;
  return {version:"token_controls_v1",score:null,provisionalScore,label:provisionalScore===null?"Not enough evidence":"Observed permission controls only — numerical rating withheld pending calibration",
   scoredWeight,eligibleWeight:totalWeight,coveragePct:totalWeight?Math.round(100*scoredWeight/totalWeight):0,
+  observedEvidencePct:totalWeight?Math.round(100*observedWeight/totalWeight):0,
   checks,creatorIndependent:true,notSafetyScore:true};
 }
