@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import HolderBubbleMap from "./HolderBubbleMap";
+import {reconcileHolderSnapshot} from "../lib/reconcileHolderSnapshot.mjs";
 import {scoreHolderConcentration} from "../lib/holderConcentrationScore.mjs";
 import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
 import { selectTokenInsights } from "../lib/tokenInsights.js";
@@ -344,6 +345,17 @@ function CreatorLookup() {
   const [holderConnections, setHolderConnections] = useState(null);
   const [holderConnectionsBusy, setHolderConnectionsBusy] = useState(false);
   const [holderConnectionsError, setHolderConnectionsError] = useState("");
+  const holderReconciliation=concentration&&holderConnections
+    ?reconcileHolderSnapshot(concentration.accounts||[],holderConnections.holders||[])
+    :null;
+  const currentHolderConnections=holderReconciliation?.compatible
+    ?{...holderConnections,holders:holderReconciliation.holders,
+       connectedGroups:(holderConnections.connectedGroups||[]).map(group=>({
+         ...group,combinedObservedSharePct:group.members.reduce((sum,wallet)=>sum+
+           holderReconciliation.holders.filter(h=>h.ownerWallet===wallet)
+             .reduce((n,h)=>n+Number(h.sharePct||0),0),0)
+       }))}
+    :null;
   const [extensions, setExtensions] = useState(null);
   const [extensionsError, setExtensionsError] = useState("");
   const [liquidity, setLiquidity] = useState(null);
@@ -641,13 +653,13 @@ function CreatorLookup() {
           const assessment=scoreHolderConcentration({
             top20SharePct:concentration.top20TokenAccountSharePct,
             largestAccountSharePct:Number(concentration.largestAccountSharePct),
-            holders:holderConnections?.holders||[],
-            connectedGroups:holderConnections?.connectedGroups||[],
-            directPairs:holderConnections?.directPairs||0,
-            connectedWallets:holderConnections?.connectedWallets||0,
-            walletHistoriesReached:holderConnections?.walletHistoriesReached||0,
+            holders:currentHolderConnections?.holders||[],
+            connectedGroups:currentHolderConnections?.connectedGroups||[],
+            directPairs:currentHolderConnections?.directPairs||0,
+            connectedWallets:currentHolderConnections?.connectedWallets||0,
+            walletHistoriesReached:currentHolderConnections?.walletHistoriesReached||0,
             ownerWalletsResolved:concentration.ownership?.resolvedAccountCount||0,
-            historyComplete:holderConnections?.historyComplete||false
+            historyComplete:currentHolderConnections?.historyComplete||false
           });
           return <div style={{background:"#151c2a",border:"1px solid #334154",borderRadius:18,padding:22,marginBottom:16}}>
             <div style={{fontSize:12,letterSpacing:1,color:"#aab9cc"}}>GLITCH HOLDER STRUCTURE SCORE</div>
@@ -665,17 +677,18 @@ function CreatorLookup() {
         {concentration && <>
           <div style={{background:"#171c1a",border:"1px solid #355247",borderRadius:10,padding:14,marginBottom:12}}>
             <strong>LIVE HOLDER CONNECTIONS</strong>
+            {holderConnections && !currentHolderConnections && <p style={{color:"#ffbf86"}}>Historical holder set differs from current live accounts. Connections are excluded from the current score until refreshed.</p>}
             {holderConnectionsBusy && <p role="status">Retrieving saved holder intelligence…</p>}
             {holderConnectionsError && <p style={{color:"#ffbf86"}}>{holderConnectionsError}</p>}
-            {holderConnections && <>
-              <p><strong>Top-20 supply:</strong> {holderConnections.top20SharePct.toFixed(2)}% · <strong>Connected wallets:</strong> {holderConnections.connectedWallets}/{holderConnections.ownerWalletsResolved} · <strong>Direct pairs:</strong> {holderConnections.directPairs}</p>
-              <p>Transactions checked: {holderConnections.transactionsChecked} · Wallet histories reached: {holderConnections.walletHistoriesReached}/20 · Older history may remain</p>
-              <HolderBubbleMap holders={holderConnections.holders||[]} groups={holderConnections.connectedGroups||[]}/>
-              {holderConnections.connectedGroups.map((group,index)=><details key={index}><summary>Connected group {index+1}: {group.members.length} wallets · {group.combinedObservedSharePct.toFixed(2)}% of supply</summary>
+            {currentHolderConnections && <>
+              <p><strong>Top-20 supply:</strong> {currentHolderConnections.top20SharePct.toFixed(2)}% · <strong>Connected wallets:</strong> {currentHolderConnections.connectedWallets}/{currentHolderConnections.ownerWalletsResolved} · <strong>Direct pairs:</strong> {currentHolderConnections.directPairs}</p>
+              <p>Transactions checked: {currentHolderConnections.transactionsChecked} · Wallet histories reached: {currentHolderConnections.walletHistoriesReached}/20 · Older history may remain</p>
+              <HolderBubbleMap holders={currentHolderConnections.holders||[]} groups={currentHolderConnections.connectedGroups||[]}/>
+              {currentHolderConnections.connectedGroups.map((group,index)=><details key={index}><summary>Connected group {index+1}: {group.members.length} wallets · {group.combinedObservedSharePct.toFixed(2)}% of supply</summary>
                 {group.members.map(wallet=><p key={wallet}><AddressLink address={wallet}/></p>)}
                 {group.directEdges.flatMap(edge=>edge.signatures).slice(0,10).map(sig=><p key={sig}><a href={"https://solscan.io/tx/"+encodeURIComponent(sig)} target="_blank" rel="noopener noreferrer">Transaction {sig.slice(0,12)}… ↗</a></p>)}
               </details>)}
-              <small style={{color:"#aaa"}}>Stored investigation updated {holderConnections.observedAt||"time unavailable"}. Live balances appear in the account concentration figures below. Connections indicate transfers, not shared ownership.</small>
+              <small style={{color:"#aaa"}}>Stored investigation updated {currentHolderConnections.observedAt||"time unavailable"}. Live balances appear in the account concentration figures below. Connections indicate transfers, not shared ownership.</small>
             </>}
           </div>
           <p><strong>Largest account:</strong> {concentration.largestAccountSharePct ?? "Unavailable"}% of supply</p>
