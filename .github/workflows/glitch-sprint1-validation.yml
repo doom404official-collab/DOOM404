@@ -1,0 +1,33 @@
+name: GLITCH Sprint 1 validation
+on:
+  push:
+    branches:
+      - feature/glitch-assessment-sprint1
+  pull_request:
+    paths:
+      - 'mvp/wallet-signal/**'
+      - '.github/workflows/glitch-sprint1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run smoke tests
+        run: npm run test:smoke
+      - name: Build application
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
