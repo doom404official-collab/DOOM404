@@ -9,8 +9,8 @@ export function buildDecisionSummary({result,extensions,concentration,liquidity,
  const share=Number(concentration?.largestAccountSharePct);
  if(concentration?.largestAccountSharePct!=null&&Number.isFinite(share)&&share>=0&&share<=100)
   add(share>=20?95:60,"Token-account concentration","Largest account holds "+share.toFixed(2)+"% of supply. Pools, custody and beneficial ownership have not been classified.","Solana RPC");
- if(result?.authorityDetailsStatus!=="not_parsed"&&result){
-  if(result.mintAuthority||result.freezeAuthority)add(98,"Active token authorities","Mint or freeze authority remains present; authority powers and usage require review.","Solana RPC");
+ if(result&&result.authorityDetailsStatus!=="not_parsed"&&Object.hasOwn(result,"mintAuthority")&&Object.hasOwn(result,"freezeAuthority")){
+  if(result.mintAuthority||result.freezeAuthority)add(98,"Active token authorities","Mint or freeze authority remains present. This is centralized control exposure, not evidence of misuse; review issuer powers, governance and actual usage.","Solana RPC");
   else add(45,"Mint and freeze controls","Neither mint nor freeze authority was reported in the verified mint state. This does not rule out other controls.","Solana RPC");
  }
  if(result?.tokenProgram==="spl-token")
@@ -23,17 +23,17 @@ export function buildDecisionSummary({result,extensions,concentration,liquidity,
  const coverage=[
   onchain,
   concentration?.largestAccountSharePct!=null,
-  result?.authorityDetailsStatus!=="not_parsed"&&Boolean(result),
+  Boolean(result&&result.authorityDetailsStatus!=="not_parsed"&&Object.hasOwn(result,"mintAuthority")&&Object.hasOwn(result,"freezeAuthority")),
   result?.tokenProgram==="spl-token"||extensions?.verified===true,
   liquidity?.reportedLiquidityUsd!=null
  ].filter(Boolean).length;
- const highConcern=Boolean(result?.mintAuthority||result?.freezeAuthority)||
-  (concentration?.largestAccountSharePct!=null&&share>=20);
+ const concentrationFlag=concentration?.largestAccountSharePct!=null&&Number.isFinite(share)&&share>=20;
+ const centralizedControls=Boolean(result?.mintAuthority||result?.freezeAuthority);
  return {
-  status:highConcern?"ELEVATED_OBSERVED_CONCERN":coverage>=3?"CAUTION_PARTIAL_EVIDENCE":"INSUFFICIENT_EVIDENCE",
-  title:highConcern?"Elevated concern in observed controls":coverage>=3?"Caution — further checks needed":"Insufficient evidence for a reliable conclusion",
+  status:concentrationFlag?"CONCENTRATION_REVIEW":centralizedControls?"CENTRALIZED_CONTROLS_OBSERVED":coverage>=3?"CAUTION_PARTIAL_EVIDENCE":"INSUFFICIENT_EVIDENCE",
+  title:concentrationFlag?"Concentration signal requires investigation":centralizedControls?"Centralized token controls detected":coverage>=3?"Caution — further checks needed":"Insufficient evidence for a reliable conclusion",
   coverageCount:coverage,coverageTotal:5,
-  explanation:highConcern?"One or more observed controls or concentration indicators warrant investigation. This is not proof of misuse.":
+  explanation:concentrationFlag?"A large token account was observed, but its beneficial owner and role are not established. Active issuer permissions, if present, are a separate centralization exposure.":centralizedControls?"Mint or freeze permissions are active. These capabilities may be intentional issuer controls and do not by themselves demonstrate malicious behavior.":
    coverage>=3?"Some technical controls can be assessed, but liquidity resilience, ownership and creator behaviour remain incompletely verified.":
    "Available observations are too limited for a meaningful consolidated risk conclusion.",
   findings:findings.slice(0,3),isInvestmentAdvice:false
