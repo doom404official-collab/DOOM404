@@ -1,8 +1,6 @@
 import {readFile,writeFile,mkdir} from "node:fs/promises";
 import {createHolderHistoryCheckpoint,recordHistoryPage,recordDecodedTransaction,summarizeHistoryCheckpoint} from "../lib/holderHistoryCheckpoint.mjs";
-import {collectWalletSignaturePage} from "../lib/holderHistoryPagination.mjs";
-import {extractDirectHolderTransfers} from "../lib/directHolderTransfers.mjs";
-import {nextHolderScanOrder,advanceHolderScanCursor,holderScanCoverage} from "../lib/holderRoundRobin.mjs";
+import {scanHolderHistoryBatch} from "../lib/holderHistoryEngine.mjs";
 
 // Read-only RPC scan. Local JSON artifact is not a Supabase write.
 // Resume only from an explicitly supplied, validated checkpoint file.
@@ -26,6 +24,7 @@ async function rpc(method,params){
  }
 }
 let cp=null,reason=null;
+const batchCoverage=cp=>({walletsTotal:Object.keys(cp.wallets).length,walletsWithPages:Object.values(cp.wallets).filter(w=>w.pages>0).length,perWallet:Object.entries(cp.wallets).map(([wallet,w])=>({wallet,pages:w.pages,signaturesSeen:w.signaturesSeen,providerExhausted:w.exhausted})),nextWalletIndex:cp.nextWalletIndex??0});
 try{
  if(process.env.HOLDER_CHECKPOINT_PATH){
   const loaded=JSON.parse(await readFile(process.env.HOLDER_CHECKPOINT_PATH,"utf8"));
@@ -50,26 +49,10 @@ try{
   }
   cp=createHolderHistoryCheckpoint({mint,holders});
  }
- // First decode outstanding signatures, then paginate. Never skip failed signatures as complete.
- async function decodePending(){
-  for(const [sig,state] of Object.entries(cp.signatures)){
-   if(state!=="pending")continue;
-   const tx=await rpc("getTransaction",[sig,{encoding:"jsonParsed",commitment:"confirmed",maxSupportedTransactionVersion:1}]);
-   if(!tx){recordDecodedTransaction(cp,{signature:sig,error:"TRANSACTION_UNAVAILABLE"});continue;}
-   const transfers=extractDirectHolderTransfers({transaction:tx,signature:sig,
-    holderWallets:Object.keys(cp.wallets),tokenAccounts:cp.holders});
-   recordDecodedTransaction(cp,{signature:sig,transfers});
-  }
- }
- await decodePending();
- for(const wallet of nextHolderScanOrder(cp)){
-  advanceHolderScanCursor(cp,wallet);
-  const page=await collectWalletSignaturePage({wallet,cursor:cp.wallets[wallet].cursor,limit:10,
-   fetchPage:(address,opts)=>rpc("getSignaturesForAddress",[address,{limit:opts.limit,
-    ...(opts.before?{before:opts.before}:{}),commitment:"confirmed"}])});
-  recordHistoryPage(cp,{wallet,page});
-  await decodePending();
- }
+ const batch=await scanHolderHistoryBatch({checkpoint:cp,rpc,maxRequests:65-requests,pageLimit:10});
+ cp=batch.checkpoint;
+ reason=batch.summary.reason;
+
 }catch(e){reason=String(e.message||"UNKNOWN_ERROR");}
 if(cp){
  await mkdir("artifacts",{recursive:true});
@@ -78,5 +61,5 @@ if(cp){
 console.log(JSON.stringify({status:reason?"PARTIAL_OR_FAILED":"CHECKPOINT_SAVED",
  reason,checkpointSaved:Boolean(cp),requestCount:requests,rateLimitRetries:retries,
  ...(cp?summarizeHistoryCheckpoint(cp):{}),
- ...(cp?{scanCoverage:holderScanCoverage(cp)}:{}),writeAttempted:false}));
+ ...(cp?{scanCoverage:batchCoverage(cp)}:{}),writeAttempted:false}));
 if(!cp)process.exitCode=2;
