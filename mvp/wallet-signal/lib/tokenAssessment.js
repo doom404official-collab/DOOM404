@@ -1,6 +1,6 @@
 // Conservative assessment prototype: no overall safety verdict with incomplete coverage.
 // Attribute signals are descriptive, not probabilistic scam-risk estimates.
-export function assessTokenEvidence({ result, extensions, concentration, liquidity } = {}) {
+export function assessTokenEvidence({ result, extensions, concentration, liquidity, creatorEvidence } = {}) {
   const attributes = [];
   const add = (id, label, score, assessment, explanation, coverage, source) =>
     attributes.push({ id, label, score, assessment, explanation, coverage, source });
@@ -30,13 +30,31 @@ export function assessTokenEvidence({ result, extensions, concentration, liquidi
       "Third-party reported liquidity: $"+Math.round(liquidity.reportedLiquidityUsd).toLocaleString("en-US")+". Reserve custody, LP locks and market-cap context remain unverified.",
       "partial","DexScreener");
   } else add("liquidity","Liquidity resilience",null,"Not assessed","No verified liquidity-resilience evidence.","missing","DexScreener");
-  add("creator","Creator launch history",null,"Not assessed","Verified launch-creator history and prior launches are not available.","missing","Creator Intelligence");
-  const weighted = attributes.filter(a=>a.score !== null);
+  const creatorWallet = creatorEvidence?.creator;
+  const creatorStatus = creatorEvidence?.status;
+  if (creatorWallet && creatorStatus === "VERIFIED") {
+    add("creator","Creator attribution",null,"Launch creator independently verified",
+      "Attributed wallet: " + creatorWallet + ". Attribution alone does not establish beneficial ownership or previous launch behavior.",
+      "verified","Creator Intelligence");
+  } else if (creatorWallet && creatorStatus === "ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW") {
+    add("creator","Creator attribution",null,"On-chain creator match; review pending",
+      "Candidate wallet: " + creatorWallet + ". Independent review remains pending; previous launches are not assessed.",
+      "partial","Creator Intelligence");
+  } else {
+    add("creator","Creator attribution",null,"Creator not established",
+      "No independently verified launch-creator attribution is available for this scan.",
+      "missing","Creator Intelligence");
+  }
+  const verifiedCount = attributes.filter(a=>a.coverage === "verified").length;
+  const partialCount = attributes.filter(a=>a.coverage === "partial").length;
+  const missingCount = attributes.filter(a=>a.coverage === "missing").length;
   // Scores from partially assessed permissions must not imply a complete token score.
   const coverageCount = attributes.filter(a=>a.coverage !== "missing").length;
   return {
     version:"prototype_v1", attributes,
     assessedAttributes: coverageCount, totalAttributes: attributes.length,
+    verifiedAttributes: verifiedCount, partialAttributes: partialCount, missingAttributes: missingCount,
+    verifiedCoveragePct: Math.round(verifiedCount/attributes.length*100),
     evidenceCoveragePct: Math.round(coverageCount/attributes.length*100),
     consolidatedScore: null, consolidatedStatus: "withheld_incomplete_evidence",
     message: "Overall score withheld until ownership, liquidity controls, token extensions and creator evidence meet validated coverage requirements. Individual permission scores are provisional, not token safety ratings."
