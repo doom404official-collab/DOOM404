@@ -25,7 +25,11 @@ jobs:
               raise SystemExit("Preview URL or worker token not configured")
           if urllib.parse.urlparse(base).hostname != "doom404-wallet-signal-git-feature-glitch-assess-3d8131-doom-404.vercel.app":
               raise SystemExit("Only explicit Vercel preview hosts are allowed")
-          class NoRedirect(urllib.request.HTTPRedirectHandler):\n              def redirect_request(self,req,fp,code,msg,hdrs,newurl):\n                  raise RuntimeError("Redirect refused for authenticated worker request")\n          opener=urllib.request.build_opener(NoRedirect)\n          def post(path,payload):
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,req,fp,code,msg,hdrs,newurl):
+                  raise RuntimeError("Redirect refused for authenticated worker request")
+          opener=urllib.request.build_opener(NoRedirect)
+          def post(path,payload):
               req=urllib.request.Request(base+path,data=json.dumps(payload).encode(),
                   headers={"Content-Type":"application/json","x-glitch-worker-token":token},method="POST")
               try:

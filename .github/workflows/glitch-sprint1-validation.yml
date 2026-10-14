@@ -7,6 +7,7 @@ on:
     paths:
       - 'mvp/wallet-signal/**'
       - '.github/workflows/glitch-sprint1-validation.yml'
+      - '.github/workflows/glitch-holder-worker-manual.yml'
   workflow_dispatch:
 
 permissions:
@@ -23,6 +24,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Check manual holder workflow Python syntax
+        run: python3 tests/holder-worker-workflow-syntax.test.py
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Run smoke tests
