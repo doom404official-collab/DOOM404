@@ -10,9 +10,10 @@ const address = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 if (!address.test(mint) || !address.test(expected)) throw Error("INVALID_INPUT");
 if (!rpcUrl) {
  console.log(JSON.stringify({status:"NOT_RUN",reason:"HELIUS_RPC_URL_NOT_CONFIGURED",writeAttempted:false}));
- process.exit(0);
+ process.exit(2);
 }
-const rpc = createSolanaRpcAdapter({rpcUrl,maxRequests:14,maxRetries:1,minIntervalMs:400});
+// Five pages plus five transactions per page: 30 calls, with one retry each.
+const rpc = createSolanaRpcAdapter({rpcUrl,maxRequests:60,maxRetries:1,minIntervalMs:400});
 const seen = new Set();
 let cursor;
 let pages=0;
@@ -44,3 +45,8 @@ try {
  outcome={status:"UNRESOLVED",reason:["RPC_RATE_LIMITED","RPC_AUTH_FAILED","RPC_REQUEST_BUDGET_EXHAUSTED"].includes(error.message)?error.message:"HISTORY_LOOKUP_FAILED",writeAttempted:false};
 }
 console.log(JSON.stringify({...outcome,pagesFetched:pages,transactionsChecked:checked,archiveCompletenessVerified:false}));
+
+// A completed lookup is not necessarily a successful attribution.
+// A matching on-chain decode still requires independent review.
+process.exitCode = outcome.status === "ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW" ? 0 :
+ outcome.status === "CREATOR_CONFLICT" ? 1 : 2;
