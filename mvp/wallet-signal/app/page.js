@@ -411,7 +411,7 @@ function CreatorLookup() {
           if (evidenceResponse.ok) {
             const record = await evidenceResponse.json();
             setCreatorEvidence(record);
-            setCreatorEvidenceDiagnostic(record?.creator && ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(record.status) ? "record_available" : "record_not_established");
+            setCreatorEvidenceDiagnostic(record?.creator && ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(record.status) ? "record_available" : record?.status === "INDEXED_UNVERIFIED" ? "indexed_candidate" : record?.status === "CACHE_MISS" ? "cache_miss" : record?.status === "EVIDENCE_INCOMPLETE" ? "evidence_incomplete" : record?.status === "CONFLICT" ? "evidence_conflict" : "record_not_established");
           } else {
             setCreatorEvidenceDiagnostic(evidenceResponse.status === 503 ? "vault_unavailable" : "lookup_failed");
           }
@@ -653,10 +653,15 @@ function CreatorLookup() {
         not_requested: "Not requested",
         record_available: "Stored creator evidence returned",
         record_not_established: "No verified creator record returned",
+        indexed_candidate: "Indexed creator candidate available; on-chain proof pending",
+        cache_miss: "No creator attribution record stored for this mint",
+        evidence_incomplete: "Stored creator evidence incomplete or mismatched",
+        evidence_conflict: "Conflicting creator evidence requires investigation",
         vault_unavailable: "Intelligence Vault unavailable or not configured for this preview",
         lookup_failed: "Creator evidence service returned an error",
         network_failure: "Creator evidence request could not complete"
       })[creatorEvidenceDiagnostic] || "Status unavailable"}</p>
+      {creatorEvidence?.status === "INDEXED_UNVERIFIED" && creatorEvidence.creator && <p style={{ color: "#ffcf9b", fontSize: 13, overflowWrap: "anywhere" }}><strong>Indexed creator candidate (not verified):</strong> <AddressLink address={creatorEvidence.creator} /> · Creation instruction proof not yet established. Do not infer beneficial ownership or creator behavior.</p>}
       <p style={{ color: "#ffbf86" }}><strong>Creator attribution:</strong> {storedCreatorMatch ? storedCreatorLabel : result.creator?.status === "provider_attributed" ? "Provider-identified creator; on-chain confirmation pending" : "Creator not yet identified by available evidence."}</p>
       {result.creator?.status === "provider_attributed" && <p><strong>Solscan creator address:</strong> <a href={"https://solscan.io/account/" + encodeURIComponent(result.creator.address)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff", overflowWrap: "anywhere" }}>{result.creator.address}</a></p>}
       <div style={{ border: "1px solid #453535", borderRadius: 9, padding: 12, margin: "12px 0" }}>
