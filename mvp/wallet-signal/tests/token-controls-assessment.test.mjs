@@ -27,3 +27,26 @@ test("unknown Token-2022 fee authority is not zero risk",()=>{
  assert.equal(x.checks[1].points,null);
  assert.equal(x.checks[1].status,"unknown");
 });
+
+test("creator absence does not suppress observed concentration",()=>{
+ const a=assessTokenControls({result:{tokenProgram:"spl-token",mintAuthority:null,freezeAuthority:null},concentration:{largestAccountSharePct:41}});
+ assert.equal(a.checks.find(x=>x.id==="account_concentration").status,"observed_unclassified");
+ assert.equal(a.checks.find(x=>x.id==="account_concentration").observedSharePct,41);
+ assert.equal(a.score,null);
+ assert.equal(a.creatorIndependent,true);
+});
+test("partial authority payload remains unknown despite null mint authority",()=>{
+ const a=assessTokenControls({result:{tokenProgram:"spl-token",mintAuthority:null}});
+ assert.equal(a.checks.find(x=>x.id==="mint_freeze").status,"unknown");
+ assert.equal(a.provisionalScore,null);
+});
+test("explicitly unparsed authorities are not scored",()=>{
+ const a=assessTokenControls({result:{tokenProgram:"spl-token",mintAuthority:null,freezeAuthority:null,authorityDetailsStatus:"not_parsed"}});
+ assert.equal(a.checks.find(x=>x.id==="mint_freeze").points,null);
+});
+test("verified fee authority can be assessed without creator",()=>{
+ const a=assessTokenControls({result:{tokenProgram:"token-2022",mintAuthority:null,freezeAuthority:null},
+ extensions:{verified:true,transferFee:{status:"observed",configAuthorityReported:true,configAuthority:"authority"}}});
+ assert.equal(a.checks.find(x=>x.id==="token2022_fee").status,"fee_authority_active");
+ assert.equal(a.score,null);
+});
