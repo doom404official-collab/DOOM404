@@ -47,6 +47,15 @@ try{
   comparisons:comparisons.slice(0,5),
   dasSampleFields:rows[0]?Object.keys(rows[0]).sort():[],
   globalRankingVerified:false,
+  investigation:{
+   dasReturnedMintMatches:rows.filter(a=>String(a.mint)===mint).length,
+   dasUniqueTokenAccounts:new Set(rows.map(a=>String(a.address))).size,
+   dasUniqueOwnerWallets:new Set(rows.map(a=>String(a.owner))).size,
+   dasFirstAccountIsRpcTop20:topRpc.some(a=>String(a.address)===String(rows[0]?.address)),
+   providerTotalIsVerifiedGlobalCount:false,
+   rpcTop20MissingFromDas:comparisons.filter(a=>!a.foundInDas).length,
+   nextAction:"Check DAS pagination semantics, endpoint completeness and mint filtering before selecting ranked holders"
+  },
   note:"A DAS total/page count is not proof of global top-holder ranking. Investigate amount units and inclusion of RPC top accounts."});
 }catch(e){report.reason=String(e.message||"UNKNOWN_ERROR").replace(/https?:\/\/\S+/g,"[redacted]");}
 console.log(JSON.stringify(report));
