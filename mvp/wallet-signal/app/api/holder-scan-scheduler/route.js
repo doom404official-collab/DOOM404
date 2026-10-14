@@ -14,10 +14,8 @@ export async function POST(request){
  if(!authorized(request))return NextResponse.json({error:"Unauthorized"},{status:401});
  try{
   const store=createHolderJobStore();
-  const mint=(await request.json())?.mint;
-  if(typeof mint!=="string")return NextResponse.json({error:"Invalid mint"},{status:400});
-  const row=await store.getLatest(mint);
-  if(!row)return NextResponse.json({status:"not_started"},{status:404});
-  return NextResponse.json({status:row.status,jobId:row.id},{headers:{"Cache-Control":"no-store"}});
+  const row=await store.getNextRunnable();
+  if(!row)return NextResponse.json({status:"idle"},{headers:{"Cache-Control":"no-store"}});
+  return NextResponse.json({status:"candidate",jobId:row.id},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({error:"Scheduler lookup unavailable"},{status:503});}
 }
