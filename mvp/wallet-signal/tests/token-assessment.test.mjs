@@ -27,3 +27,33 @@ test("provider liquidity is not scored as verified resilience",()=>{
  assert.equal(a.attributes.find(x=>x.id==="liquidity").score,null);
  assert.equal(a.consolidatedStatus,"withheld_incomplete_evidence");
 });
+
+test("verified creator attribution increases verified coverage but does not score safety",()=>{
+ const a=assessTokenEvidence({creatorEvidence:{creator:"CreatorWallet123",status:"VERIFIED"}});
+ const row=a.attributes.find(x=>x.id==="creator");
+ assert.equal(row.coverage,"verified");
+ assert.match(row.assessment,/independently verified/);
+ assert.equal(a.verifiedAttributes,1);
+ assert.equal(a.partialAttributes,0);
+ assert.equal(a.missingAttributes,4);
+ assert.equal(a.verifiedCoveragePct,20);
+ assert.equal(a.consolidatedScore,null);
+});
+test("pending creator review remains partial, not verified",()=>{
+ const a=assessTokenEvidence({creatorEvidence:{creator:"CreatorWallet123",status:"ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"}});
+ assert.equal(a.attributes.find(x=>x.id==="creator").coverage,"partial");
+ assert.equal(a.verifiedCoveragePct,0);
+});
+test("unknown creator remains missing, even with a wallet label",()=>{
+ const a=assessTokenEvidence({creatorEvidence:{creator:"CreatorWallet123",status:"UNVERIFIED"}});
+ assert.equal(a.attributes.find(x=>x.id==="creator").coverage,"missing");
+ assert.equal(a.evidenceCoveragePct,0);
+});
+test("mixed coverage is counted without treating partial as verified",()=>{
+ const a=assessTokenEvidence({creatorEvidence:{creator:"CreatorWallet123",status:"VERIFIED"},concentration:{largestAccountSharePct:30},liquidity:{reportedLiquidityUsd:5000}});
+ assert.equal(a.verifiedAttributes,1);
+ assert.equal(a.partialAttributes,2);
+ assert.equal(a.missingAttributes,2);
+ assert.equal(a.evidenceCoveragePct,60);
+ assert.equal(a.verifiedCoveragePct,20);
+});
