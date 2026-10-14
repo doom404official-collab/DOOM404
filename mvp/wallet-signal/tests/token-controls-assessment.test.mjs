@@ -50,3 +50,22 @@ test("verified fee authority can be assessed without creator",()=>{
  assert.equal(a.checks.find(x=>x.id==="token2022_fee").status,"fee_authority_active");
  assert.equal(a.score,null);
 });
+
+test("observed concentration contributes evidence coverage but not numeric score",()=>{
+ const x=assessTokenControls({result:{tokenProgram:"spl-token"},concentration:{largestAccountSharePct:42}});
+ assert.equal(x.score,null);
+ assert.equal(x.provisionalScore,null);
+ assert.equal(x.coveragePct,0);
+ assert.equal(x.observedEvidencePct,33);
+});
+test("verified standard SPL controls exclude nonapplicable fee extension",()=>{
+ const x=assessTokenControls({result:{tokenProgram:"spl-token",mintAuthority:null,freezeAuthority:null}});
+ assert.equal(x.coveragePct,67);
+ assert.equal(x.observedEvidencePct,67);
+ assert.equal(x.checks.find(c=>c.id==="token2022_fee").status,"not_applicable");
+});
+test("invalid concentration cannot inflate evidence coverage",()=>{
+ const x=assessTokenControls({result:{tokenProgram:"spl-token"},concentration:{largestAccountSharePct:130}});
+ assert.equal(x.observedEvidencePct,0);
+ assert.equal(x.checks.find(c=>c.id==="account_concentration").status,"unknown");
+});
