@@ -62,6 +62,23 @@ try{
  report.uniqueOwners=new Set(holders.map(x=>x.ownerWallet)).size;
  report.top30SharePct=Number(ranked.reduce((s,x)=>s+x.amount,0n)*1000000n/total)/10000;
  report.concentrationValidation="UNVERIFIED_AMOUNT_UNITS_AND_SUPPLY";
+ // Cross-check indexed account amounts against standard Solana RPC raw amounts.
+ // This can validate unit interpretation for overlapping accounts, but not
+ // whether the provider returned the true global top 30.
+ try{
+  const largest=await rpc("getTokenLargestAccounts",[mint,{commitment:"confirmed"}]);
+  const dasByAccount=new Map(accounts.map(a=>[a.address,String(a.amount)]));
+  const comparisons=(largest?.value||[]).map(a=>({
+   account:a.address,match:dasByAccount.has(a.address.toString())&&dasByAccount.get(a.address.toString())===String(a.amount)
+  }));
+  report.rawAmountCrosscheck={rpcAccounts:comparisons.length,matching:comparisons.filter(x=>x.match).length,
+   missingOrMismatched:comparisons.filter(x=>!x.match).length};
+  if(comparisons.length>0&&comparisons.every(x=>x.match))
+   report.concentrationValidation="RAW_AMOUNTS_MATCH_RPC_SAMPLE_GLOBAL_RANKING_UNVERIFIED";
+  else report.concentrationValidation="RAW_AMOUNT_OR_ACCOUNT_MISMATCH";
+ }catch(e){report.rawAmountCrosscheck={status:"UNAVAILABLE",reason:String(e.message||"RPC_ERROR")};}
+ report.globalTop30Verified=false;
+ report.top30SharePctStatus="PROVISIONAL_GLOBAL_RANKING_UNVERIFIED";
  report.supplyRaw=total.toString();
  report.top30RawAmount=ranked.reduce((s,x)=>s+x.amount,0n).toString();
  const wallets=[...new Set(holders.map(x=>x.ownerWallet))];
