@@ -38,3 +38,8 @@ jobs:
         env:
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
         run: node scripts/diagnose-top30-holder-links.mjs
+
+      - name: Cross-check DAS and RPC holder balances (read-only)
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: node scripts/diagnose-holder-balance-semantics.mjs
