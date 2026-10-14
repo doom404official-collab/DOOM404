@@ -18,3 +18,12 @@ test('matching labels and parsed transaction do not become independent decoding'
  assert.equal(r.comparison.comparisonStatus,'PROVIDER_AGREEMENT');assert.equal(r.independent.independentlyDecoded,false);
  assert.equal(r.transactionDetailSignatureMatches,true);assert.equal(r.writeAttempted,false);
 });
+test('diagnostic uses documented transaction actions endpoint',async()=>{
+ const paths=[];
+ await diagnose({apiKey:'test',rpcUrl:null,fetchImpl:async(url)=>{paths.push(new URL(url).pathname);return {ok:false,status:401,json:async()=>({errors:{code:401,message:'API token is invalid'}})};}});
+ assert.deepEqual(paths,['/v2.0/monitor/usage','/v2.0/token/meta','/v2.0/transaction/detail','/v2.0/transaction/actions']);
+});
+test('sanitized plan restriction stays distinct from invalid credential',async()=>{
+ const r=await probe('/token/meta',{address:mint},{apiKey:'test',fetchImpl:async()=>({ok:false,status:401,json:async()=>({errors:{code:401,message:'Upgrade your subscription plan'}})})});
+ assert.equal(r.summary.errorClass,'PLAN_OR_PERMISSION_RESTRICTION');
+});

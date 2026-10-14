@@ -15,15 +15,18 @@ export async function probe(path,params,{apiKey,fetchImpl=fetch}={}) {
  try {
   const response=await fetchImpl(url.toString(),{headers:{token:apiKey,accept:'application/json'},redirect:'error',signal:AbortSignal.timeout(10000)});
   let payload;try{payload=await response.json();}catch{}
+  const message=typeof payload?.errors?.message==='string'?payload.errors.message.toLowerCase():'';
+  const errorClass=/plan|upgrade|subscription|permission|level|entitle/.test(message)?'PLAN_OR_PERMISSION_RESTRICTION':/invalid|expired|unauthorized|api key|token/.test(message)?'CREDENTIAL_REJECTED':message?'UNCLASSIFIED_API_ERROR':null;
   const status=response.ok&&payload?.success===true?'ACCESSIBLE':response.status===429?'RATE_LIMITED':response.status===401?'AUTH_REJECTED':response.status===403?'ACCESS_DENIED':response.ok?'API_REJECTED':'HTTP_ERROR';
-  return {summary:{endpoint:path,status,httpStatus:response.status,latencyMs:Math.round(performance.now()-start),retryAfter: /^\d{1,6}$/.test(response.headers?.get('retry-after')||'')?Number(response.headers.get('retry-after')):null},payload};
+  return {summary:{endpoint:path,status,httpStatus:response.status,errorClass,errorCode:Number.isSafeInteger(payload?.errors?.code)?payload.errors.code:null,latencyMs:Math.round(performance.now()-start),retryAfter: /^\d{1,6}$/.test(response.headers?.get('retry-after')||'')?Number(response.headers.get('retry-after')):null},payload};
  }catch{return {summary:{endpoint:path,status:'NETWORK_OR_TIMEOUT',latencyMs:Math.round(performance.now()-start)}};}
 }
 export async function diagnose({apiKey=process.env.SOLSCAN_API_KEY,rpcUrl=process.env.HELIUS_RPC_URL,fetchImpl=fetch}={}){
+ const control=await probe('/monitor/usage',{}, {apiKey,fetchImpl});
  const meta=await probe('/token/meta',{address:mint},{apiKey,fetchImpl});
- // Three sequential calls, no retries, comfortably below the displayed 60 RPM.
+ // Four sequential calls, no retries, comfortably below the displayed 60 RPM.
  const detail=await probe('/transaction/detail',{tx:signature},{apiKey,fetchImpl});
- const decoded=await probe('/transaction/decoded',{tx:signature},{apiKey,fetchImpl});
+ const decoded=await probe('/transaction/actions',{tx:signature},{apiKey,fetchImpl});
  const comparison=await corroborateCreatorAcrossProviders({mint,heliusCreator:creator,heliusSignature:signature,solscanApiKey:apiKey,
  solscanFetch:async()=>({ok:meta.summary.status==='ACCESSIBLE',status:meta.summary.httpStatus,json:async()=>meta.payload})});
  let helius={status:'NOT_CONFIGURED'};
@@ -41,7 +44,7 @@ export async function diagnose({apiKey=process.env.SOLSCAN_API_KEY,rpcUrl=proces
   const address=r.decodedRoles?.[0]?.address;
   independent={status:r.status==='VERIFIED'?'SOLSCAN_TRANSACTION_INSTRUCTION_DECODED':r.reason,independentlyDecoded:r.status==='VERIFIED',creator:address||null,creatorMatches:address===creator};
  }
- return {mint,signature,endpoints:[meta.summary,detail.summary,decoded.summary],comparison,helius,independent,
+ return {mint,signature,endpoints:[control.summary,meta.summary,detail.summary,decoded.summary],comparison,helius,independent,
  transactionDetailSignatureMatches:typeof tx?.tx_hash==='string'?tx.tx_hash===signature:null,
  transactionDetailFields:detail.summary.status==='ACCESSIBLE'?Object.keys(tx||{}).filter(k=>/^[a-z_]{1,40}$/.test(k)):[],
  writeAttempted:false,independentlyReviewed:false,evidenceStatus:'ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW'};
