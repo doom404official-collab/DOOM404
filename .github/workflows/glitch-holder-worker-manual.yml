@@ -1,0 +1,40 @@
+# GLITCH Holder Worker — controlled scheduler
+# Manual only. No cron, deployment or live execution until explicitly enabled.
+name: GLITCH holder worker manual
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  run:
+    if: github.ref == 'refs/heads/feature/glitch-assessment-sprint1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Check scheduler and process one candidate
+        env:
+          GLITCH_PREVIEW_URL: ${{ secrets.GLITCH_PREVIEW_URL }}
+          GLITCH_HOLDER_WORKER_TOKEN: ${{ secrets.GLITCH_HOLDER_WORKER_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json,os,urllib.request,urllib.error
+          base=os.environ.get("GLITCH_PREVIEW_URL","").rstrip("/")
+          token=os.environ.get("GLITCH_HOLDER_WORKER_TOKEN","")
+          if not base.startswith("https://") or not token:
+              raise SystemExit("Preview URL or worker token not configured")
+          if not base.endswith(".vercel.app"):
+              raise SystemExit("Only explicit Vercel preview hosts are allowed")
+          def post(path,payload):
+              req=urllib.request.Request(base+path,data=json.dumps(payload).encode(),
+                  headers={"Content-Type":"application/json","x-glitch-worker-token":token},method="POST")
+              try:
+                  with urllib.request.urlopen(req,timeout=70) as response:return json.load(response)
+              except urllib.error.HTTPError as exc:raise RuntimeError(f"Worker endpoint HTTP {exc.code}") from None
+          candidate=post("/api/holder-scan-scheduler",{})
+          if candidate.get("status")=="idle":
+              print("No pending jobs");raise SystemExit(0)
+          if candidate.get("status")!="candidate" or not candidate.get("jobId"):
+              raise SystemExit("Scheduler did not return a valid candidate")
+          result=post("/api/holder-scan-worker",{"jobId":candidate["jobId"]})
+          print(json.dumps({"status":result.get("status"),"requestCount":result.get("requestCount")}))
+          PY
