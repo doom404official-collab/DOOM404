@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
 import { selectTokenInsights } from "../lib/tokenInsights.js";
 import { assessTokenEvidence } from "../lib/tokenAssessment.js";
+import { assessTokenControls } from "../lib/tokenControlsAssessment.mjs";
 import { buildDecisionSummary } from "../lib/decisionSummary.js";
 
 function formatCoverage(status) {
@@ -501,7 +502,14 @@ function CreatorLookup() {
       <Section title="GLITCH ATTRIBUTE ASSESSMENT" defaultOpen={true}>
         {(() => {
           const assessment = assessTokenEvidence({ result, extensions, concentration, liquidity, creatorEvidence });
+          const controls = assessTokenControls({ result, extensions, concentration });
           return <>
+            <div style={{ background:"#191b1e", border:"1px solid #4a4a55", borderRadius:10, padding:14, marginBottom:14 }}>
+              <strong>Token controls — creator-independent assessment</strong>
+              <p style={{ color:"#ddd", margin:"8px 0" }}>{controls.label}. {controls.coveragePct}% of eligible weighted checks scored; unclassified ownership and liquidity are excluded.</p>
+              <p style={{ color:"#ffbf86", margin:"8px 0" }}>Permission-control indicator: {controls.score == null ? "Not established" : controls.score + "/100 (checked controls only)"}. This is not a token safety or investment-quality score.</p>
+              {controls.checks.map(check => <p key={check.id} style={{fontSize:13,margin:"6px 0",color:"#bbb"}}>{check.id.replaceAll("_"," ")}: {check.status.replaceAll("_"," ")} · {check.source}</p>)}
+            </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
               <div style={{ flex: "1 1 180px", background: "#1b1a1a", border: "1px solid #493535", borderRadius: 10, padding: 14 }}>
                 <div style={{ color: "#aaa", fontSize: 12 }}>Consolidated assessment</div>
