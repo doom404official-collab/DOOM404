@@ -31,7 +31,10 @@ try{
   const proof=verifyLaunchpadCreation({mint,signature,transaction,decoders:pumpFunDecoders});
   const role=proof.decodedRoles?.find(x=>x.role==="launchpad_creator");
   if(proof.status==="VERIFIED"&&role){
-   result={status:role.address===expected?"ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW":"CREATOR_CONFLICT",
+   const exactMatch = role.address === expected;
+   const firstDifference = [...role.address].findIndex((char,index)=>char!==expected[index]);
+   result={status:exactMatch?"ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW":"CREATOR_CONFLICT",
+    comparison:{exactMatch,decodedLength:role.address.length,expectedLength:expected.length,firstDifferenceIndex:exactMatch?null:firstDifference===-1?Math.min(role.address.length,expected.length):firstDifference},
     mint,signature,decodedCreator:role.address,expectedCreator:expected,
     programId:role.programId,decoderVersion:role.decoderVersion,writeAttempted:false};
    break;
