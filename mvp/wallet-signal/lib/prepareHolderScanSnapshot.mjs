@@ -19,7 +19,7 @@ export async function prepareHolderScanSnapshot({mint,connection}){
   return {tokenAccount:row.address.toBase58(),ownerWallet:owner,
    sharePct:Number(BigInt(row.amount)*1000000n/total)/10000};
  });
- const identity=JSON.stringify({mint:key.toBase58(),accounts:rows.map(row=>[row.address.toBase58(),String(row.amount)])});
+ const identity=JSON.stringify({mint:key.toBase58(),accounts:holders.map(row=>[row.tokenAccount,row.ownerWallet])});
  const holderSetHash=createHash("sha256").update(identity).digest("hex");
  return {mint:key.toBase58(),holderSetHash,checkpoint:createHolderHistoryCheckpoint({mint:key.toBase58(),holders})};
 }
