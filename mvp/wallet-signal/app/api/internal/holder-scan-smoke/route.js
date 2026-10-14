@@ -1,8 +1,8 @@
 import {NextResponse} from "next/server";
 import {timingSafeEqual} from "node:crypto";
-import {POST as startScan} from "../../holder-scan-start/route.js";
-import {POST as runTick} from "../../holder-scan-tick/route.js";
-import {createHolderJobStore} from "../../../../lib/holderJobStore.mjs";
+
+
+
 export const dynamic="force-dynamic";
 export const maxDuration=60;
 const TEST_MINT="98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump";
@@ -12,10 +12,6 @@ function authorized(request){
  if(!secret||!supplied)return false;
  const a=Buffer.from(secret),b=Buffer.from(supplied);
  return a.length===b.length&&timingSafeEqual(a,b);
-}
-function internalRequest(path,body,header,token){
- return new Request("https://internal.invalid"+path,{method:"POST",
-  headers:{"Content-Type":"application/json",[header]:token},body:JSON.stringify(body)});
 }
 /** Manual-only, authenticated preview smoke test. No production or public access. */
 export async function POST(request){
@@ -41,4 +37,11 @@ export async function POST(request){
    directPairs:row?.summary?.directEdges??0,
    version:row?.version??null},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({error:"Preview smoke test unavailable"},{status:503});}
-}
+} try{
+  // Smoke route is deliberately read-only until authenticated invocation is available.
+  return NextResponse.json({status:"ready",mint:TEST_MINT,
+   startConfigured:Boolean(process.env.GLITCH_HOLDER_SCAN_INTERNAL_TOKEN),
+   workerConfigured:Boolean(process.env.GLITCH_HOLDER_WORKER_TOKEN),
+   nextStep:"Invoke authenticated start and worker endpoints using a trusted runner"},
+   {headers:{"Cache-Control":"no-store"}});
+
