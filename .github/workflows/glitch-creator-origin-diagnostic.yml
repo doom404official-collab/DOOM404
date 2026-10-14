@@ -34,3 +34,7 @@ jobs:
           CREATOR_DIAGNOSTIC_MINT: 98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump
           CREATOR_EXPECTED_INDEXED_WALLET: 6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC
         run: node scripts/crosscheck-pump-creator.mjs
+      - name: Analyze sampled top-30 holder links (read-only)
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: node scripts/diagnose-top30-holder-links.mjs
