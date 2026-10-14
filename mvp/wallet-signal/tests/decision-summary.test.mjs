@@ -22,3 +22,9 @@ test("active mint authority identifies centralized controls without scam claim",
  assert.equal(x.status,"CENTRALIZED_CONTROLS_OBSERVED");
  assert.match(x.explanation,/do not by themselves demonstrate malicious behavior/);
 });
+
+test("non-applicable SPL transfer-fee extension is not a top finding",()=>{
+ const x=buildDecisionSummary({result:{tokenProgram:"spl-token",mintAuthority:null,freezeAuthority:null}});
+ assert.ok(!x.findings.some(f=>f.title==="Transfer-fee extension not applicable"));
+ assert.equal(x.coverageCount,2);
+});
