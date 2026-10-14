@@ -493,7 +493,7 @@ function CreatorLookup() {
       </Section>
       <Section title="GLITCH ATTRIBUTE ASSESSMENT" defaultOpen={true}>
         {(() => {
-          const assessment = assessTokenEvidence({ result, extensions, concentration, liquidity });
+          const assessment = assessTokenEvidence({ result, extensions, concentration, liquidity, creatorEvidence });
           return <>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
               <div style={{ flex: "1 1 180px", background: "#1b1a1a", border: "1px solid #493535", borderRadius: 10, padding: 14 }}>
@@ -502,8 +502,8 @@ function CreatorLookup() {
               </div>
               <div style={{ flex: "1 1 180px", background: "#1b1a1a", border: "1px solid #493535", borderRadius: 10, padding: 14 }}>
                 <div style={{ color: "#aaa", fontSize: 12 }}>Evidence availability</div>
-                <strong style={{ fontSize: 22 }}>{assessment.assessedAttributes}/{assessment.totalAttributes} attributes</strong>
-                <p style={{ fontSize: 12, color: "#bbb", marginBottom: 0 }}>Available does not mean independently verified.</p>
+                <strong style={{ fontSize: 22 }}>{assessment.verifiedAttributes} verified · {assessment.partialAttributes} partial · {assessment.missingAttributes} missing</strong>
+                <p style={{ fontSize: 12, color: "#bbb", marginBottom: 0 }}>Verified coverage: {assessment.verifiedCoveragePct}% · Available evidence: {assessment.evidenceCoveragePct}%</p>
               </div>
             </div>
             <p style={{ color: "#bbb", fontSize: 13 }}>Evidence-backed interpretations. Provisional attribute scores are not investment safety ratings.</p>
