@@ -4,7 +4,7 @@ import { pumpFunDecoders } from "../lib/pumpFunCreation.mjs";
 
 // Read-only oldest-first indexed discovery. No Supabase access or writes.
 const mint=process.env.CREATOR_DIAGNOSTIC_MINT || "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump";
-const expected=process.env.CREATOR_EXPECTED_INDEXED_WALLET || "6RKsroTt2NgJvyUyhUcKqANrphWDw6eE52X9TMBsQ7WC";
+const expected=process.env.CREATOR_EXPECTED_INDEXED_WALLET || "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC";
 const endpoint=process.env.HELIUS_RPC_URL;
 const valid=/^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 if(!valid.test(mint)||!valid.test(expected)||!endpoint)throw Error("INVALID_CONFIGURATION");
