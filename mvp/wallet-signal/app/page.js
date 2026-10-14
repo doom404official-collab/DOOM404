@@ -369,7 +369,7 @@ function CreatorLookup() {
         const data=await response.json();
         if(stopped)return;
         if(data.scan?.mint===address)setHolderConnections({...data.scan,observedAt:data.scan.updatedAt});
-        if(["queued","running","partial"].includes(data.status))timer=setTimeout(refresh,12000);
+        if(["not_started","queued","running","partial"].includes(data.status))timer=setTimeout(refresh,12000);
       }catch{/* Retain last verified result rather than replacing it with an error. */}
     }
     refresh();
