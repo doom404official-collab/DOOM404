@@ -431,9 +431,11 @@ function CreatorLookup() {
           setHolderConnections(null);
           setHolderConnectionsError("");
           setHolderConnectionsBusy(true);
-          fetch("/api/live-holder-connections?mint="+encodeURIComponent(mint.trim()),{cache:"no-store"})
-            .then(async response=>{const payload=await response.json();if(!response.ok)throw Error(payload.error||"Live connection scan unavailable");return payload;})
-            .then(payload=>setHolderConnections(payload))
+          // Read existing persisted intelligence; never launch an expensive
+          // synchronous two-transaction scan as a substitute for deep history.
+          fetch("/api/holder-scan-status?mint="+encodeURIComponent(mint.trim()),{cache:"no-store"})
+            .then(async response=>{const payload=await response.json();if(!response.ok)throw Error(payload.error||"Saved holder intelligence unavailable");return payload;})
+            .then(payload=>{if(payload.scan)setHolderConnections({...payload.scan,observedAt:payload.scan.updatedAt});})
             .catch(e=>setHolderConnectionsError(e.message))
             .finally(()=>setHolderConnectionsBusy(false));
         } catch (concentrationFailure) { setConcentrationError(concentrationFailure.message); }
@@ -619,17 +621,17 @@ function CreatorLookup() {
         {concentration && <>
           <div style={{background:"#171c1a",border:"1px solid #355247",borderRadius:10,padding:14,marginBottom:12}}>
             <strong>LIVE HOLDER CONNECTIONS</strong>
-            {holderConnectionsBusy && <p role="status">Checking recent holder transactions…</p>}
+            {holderConnectionsBusy && <p role="status">Retrieving saved holder intelligence…</p>}
             {holderConnectionsError && <p style={{color:"#ffbf86"}}>{holderConnectionsError}</p>}
             {holderConnections && <>
               <p><strong>Top-20 supply:</strong> {holderConnections.top20SharePct.toFixed(2)}% · <strong>Connected wallets:</strong> {holderConnections.connectedWallets}/{holderConnections.ownerWalletsResolved} · <strong>Direct pairs:</strong> {holderConnections.directPairs}</p>
-              <p>Transactions checked: {holderConnections.transactionsChecked} · Older history not yet examined</p>
+              <p>Transactions checked: {holderConnections.transactionsChecked} · Wallet histories reached: {holderConnections.walletHistoriesReached}/20 · Older history may remain</p>
               <HolderBubbleMap holders={holderConnections.holders||[]} groups={holderConnections.connectedGroups||[]}/>
               {holderConnections.connectedGroups.map((group,index)=><details key={index}><summary>Connected group {index+1}: {group.members.length} wallets · {group.combinedObservedSharePct.toFixed(2)}% of supply</summary>
                 {group.members.map(wallet=><p key={wallet}><AddressLink address={wallet}/></p>)}
                 {group.directEdges.flatMap(edge=>edge.signatures).slice(0,10).map(sig=><p key={sig}><a href={"https://solscan.io/tx/"+encodeURIComponent(sig)} target="_blank" rel="noopener noreferrer">Transaction {sig.slice(0,12)}… ↗</a></p>)}
               </details>)}
-              <small style={{color:"#aaa"}}>Live snapshot {holderConnections.observedAt}. Connections indicate transfers, not shared ownership. Results may grow with deeper history.</small>
+              <small style={{color:"#aaa"}}>Stored investigation updated {holderConnections.observedAt||"time unavailable"}. Live balances appear in the account concentration figures below. Connections indicate transfers, not shared ownership.</small>
             </>}
           </div>
           <p><strong>Largest account:</strong> {concentration.largestAccountSharePct ?? "Unavailable"}% of supply</p>
