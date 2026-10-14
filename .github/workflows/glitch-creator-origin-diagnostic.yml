@@ -1,0 +1,36 @@
+name: GLITCH creator origin diagnostic
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/feature/glitch-assessment-sprint1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Verify RPC configuration exists
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: |
+          if [ -z "$HELIUS_RPC_URL" ]; then
+            echo "HELIUS_RPC_URL GitHub Actions secret is not configured"
+            exit 1
+          fi
+      - name: Investigate test mint (read-only)
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          CREATOR_DIAGNOSTIC_MINT: 98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump
+          CREATOR_EXPECTED_INDEXED_WALLET: 6RKsroTt2NgJvyUyhUcKqANrphWDw6eE52X9TMBsQ7WC
+        run: node scripts/diagnose-test-mint-origin.mjs
