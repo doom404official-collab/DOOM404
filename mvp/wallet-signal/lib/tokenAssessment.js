@@ -45,6 +45,32 @@ export function assessTokenEvidence({ result, extensions, concentration, liquidi
       "No independently verified launch-creator attribution is available for this scan.",
       "missing","Creator Intelligence");
   }
+  // Verdicts describe observed controls, not fraud probability or investment safety.
+  for (const attribute of attributes) {
+    let verdict = "insufficient_evidence";
+    if (attribute.coverage !== "missing") {
+      if (attribute.id === "permissions") {
+        verdict = result?.mintAuthority || result?.freezeAuthority ? "caution" : "no_concern_in_checked_scope";
+      } else if (attribute.id === "concentration") {
+        verdict = share >= 20 ? "caution" : "review_required";
+      } else if (attribute.id === "transfer_fee") {
+        verdict = extensions?.transferFee?.configAuthorityReported && extensions?.transferFee?.configAuthority
+          ? "caution" : "review_required";
+      } else if (attribute.id === "creator") {
+        verdict = attribute.coverage === "verified" ? "verified_fact" : "review_required";
+      } else {
+        verdict = "review_required";
+      }
+    }
+    attribute.verdict = verdict;
+    attribute.verdictLabel = ({
+      caution: "Caution",
+      no_concern_in_checked_scope: "No concern detected in checked scope",
+      review_required: "Further review required",
+      verified_fact: "Attribution verified (not a safety rating)",
+      insufficient_evidence: "Insufficient evidence"
+    })[verdict];
+  }
   const verifiedCount = attributes.filter(a=>a.coverage === "verified").length;
   const partialCount = attributes.filter(a=>a.coverage === "partial").length;
   const missingCount = attributes.filter(a=>a.coverage === "missing").length;
@@ -57,10 +83,9 @@ export function assessTokenEvidence({ result, extensions, concentration, liquidi
       evidence: a.explanation,
       source: a.source,
       coverage: a.coverage,
-      severity: a.id === "permissions" && (result?.mintAuthority || result?.freezeAuthority) ? "caution"
-        : a.id === "concentration" && Number.isFinite(share) && share >= 20 ? "caution"
-        : a.id === "transfer_fee" && extensions?.transferFee?.configAuthorityReported && extensions?.transferFee?.configAuthority ? "caution"
-        : "information",
+      severity: a.verdict === "caution" ? "caution" : "information",
+      verdict: a.verdict,
+      verdictLabel: a.verdictLabel,
       nextStep: ({
         permissions: "Review mint/freeze authority holders and any applicable Token-2022 controls.",
         concentration: "Classify pools, custodians and related accounts before inferring ownership concentration.",
