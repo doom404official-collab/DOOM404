@@ -506,7 +506,7 @@ function CreatorLookup() {
           return <>
             <div style={{ background:"#191b1e", border:"1px solid #4a4a55", borderRadius:10, padding:14, marginBottom:14 }}>
               <strong>Token controls — creator-independent assessment</strong>
-              <p style={{ color:"#ddd", margin:"8px 0" }}>{controls.label}. {controls.coveragePct}% of eligible weighted checks scored; unclassified ownership and liquidity are excluded.</p>
+              <p style={{ color:"#ddd", margin:"8px 0" }}>{controls.label}. {controls.observedEvidencePct}% of applicable weighted controls have observations; {controls.coveragePct}% have provisional numeric coverage. Unclassified ownership and liquidity are excluded from the numeric indicator.</p>
               <p style={{ color:"#ffbf86", margin:"8px 0" }}>Permission-control rating: Withheld pending calibration. Observed permission findings remain available regardless of creator attribution.</p>
               {controls.checks.map(check => <p key={check.id} style={{fontSize:13,margin:"6px 0",color:"#bbb"}}>{check.id.replaceAll("_"," ")}: {check.status.replaceAll("_"," ")} · {check.source}</p>)}
             </div>
