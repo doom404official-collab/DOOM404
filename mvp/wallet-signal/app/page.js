@@ -522,6 +522,7 @@ function CreatorLookup() {
                   <strong style={{ fontSize: 14 }}>{item.label}</strong>
                   <span style={{ color: item.score == null ? "#ffbf86" : item.score >= 70 ? "#9ddab6" : "#ffbf86", whiteSpace: "nowrap", fontWeight: 700 }}>{item.score == null ? "Pending" : item.score + "/100*"}</span>
                 </div>
+                <p style={{ fontWeight: 700, color: item.verdict === "caution" ? "#ffbf86" : item.verdict === "no_concern_in_checked_scope" ? "#9ddab6" : "#ddd", marginBottom: 4 }}>{item.verdictLabel}</p>
                 <p style={{ fontWeight: 600, color: "#ffcf9b", marginBottom: 4 }}>{item.assessment}</p>
                 <p style={{ color: "#ccc", fontSize: 12, lineHeight: 1.6 }}>{item.explanation}</p>
                 <small style={{ color: "#999" }}>Evidence: {item.coverage} · {item.source}</small>
