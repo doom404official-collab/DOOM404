@@ -57,3 +57,17 @@ test("mixed coverage is counted without treating partial as verified",()=>{
  assert.equal(a.evidenceCoveragePct,60);
  assert.equal(a.verifiedCoveragePct,20);
 });
+
+test("top findings prioritize observed cautions and provide next steps",()=>{
+ const a=assessTokenEvidence({result:{mintAuthority:"active",freezeAuthority:null},concentration:{largestAccountSharePct:25},liquidity:{reportedLiquidityUsd:10000}});
+ assert.equal(a.actionableFindings.length,3);
+ assert.equal(a.actionableFindings[0].id,"permissions");
+ assert.equal(a.actionableFindings[0].severity,"caution");
+ assert.equal(a.actionableFindings[1].id,"concentration");
+ assert.ok(a.actionableFindings.every(x=>x.nextStep && x.evidence && x.source));
+ assert.equal(a.consolidatedScore,null);
+});
+test("no evidence yields no invented top findings",()=>{
+ const a=assessTokenEvidence({});
+ assert.deepEqual(a.actionableFindings,[]);
+});
