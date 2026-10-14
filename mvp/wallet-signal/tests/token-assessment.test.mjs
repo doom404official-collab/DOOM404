@@ -71,3 +71,20 @@ test("no evidence yields no invented top findings",()=>{
  const a=assessTokenEvidence({});
  assert.deepEqual(a.actionableFindings,[]);
 });
+
+test("missing data produces insufficient evidence verdicts",()=>{
+ const a=assessTokenEvidence({});
+ assert.ok(a.attributes.every(x=>x.verdict==="insufficient_evidence"));
+});
+test("active mint authority is caution, absent authorities only clear checked scope",()=>{
+ const active=assessTokenEvidence({result:{mintAuthority:"active",freezeAuthority:null}});
+ const absent=assessTokenEvidence({result:{mintAuthority:null,freezeAuthority:null}});
+ assert.equal(active.attributes.find(x=>x.id==="permissions").verdict,"caution");
+ assert.equal(absent.attributes.find(x=>x.id==="permissions").verdict,"no_concern_in_checked_scope");
+ assert.equal(absent.consolidatedScore,null);
+});
+test("verified creator is a verified fact rather than a safe-token conclusion",()=>{
+ const a=assessTokenEvidence({creatorEvidence:{creator:"Wallet",status:"VERIFIED"}});
+ assert.equal(a.attributes.find(x=>x.id==="creator").verdict,"verified_fact");
+ assert.equal(a.consolidatedScore,null);
+});
