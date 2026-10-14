@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import HolderBubbleMap from "./HolderBubbleMap";
 import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
 import { selectTokenInsights } from "../lib/tokenInsights.js";
 import { assessTokenEvidence } from "../lib/tokenAssessment.js";
@@ -623,6 +624,7 @@ function CreatorLookup() {
             {holderConnections && <>
               <p><strong>Top-20 supply:</strong> {holderConnections.top20SharePct.toFixed(2)}% · <strong>Connected wallets:</strong> {holderConnections.connectedWallets}/{holderConnections.ownerWalletsResolved} · <strong>Direct pairs:</strong> {holderConnections.directPairs}</p>
               <p>Transactions checked: {holderConnections.transactionsChecked} · Older history not yet examined</p>
+              <HolderBubbleMap holders={holderConnections.holders||[]} groups={holderConnections.connectedGroups||[]}/>
               {holderConnections.connectedGroups.map((group,index)=><details key={index}><summary>Connected group {index+1}: {group.members.length} wallets · {group.combinedObservedSharePct.toFixed(2)}% of supply</summary>
                 {group.members.map(wallet=><p key={wallet}><AddressLink address={wallet}/></p>)}
                 {group.directEdges.flatMap(edge=>edge.signatures).slice(0,10).map(sig=><p key={sig}><a href={"https://solscan.io/tx/"+encodeURIComponent(sig)} target="_blank" rel="noopener noreferrer">Transaction {sig.slice(0,12)}… ↗</a></p>)}
