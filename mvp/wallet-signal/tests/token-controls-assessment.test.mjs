@@ -6,7 +6,8 @@ test("creator does not affect token controls",()=>{
  const a=assessTokenControls({...args,creatorEvidence:null});
  const b=assessTokenControls({...args,creatorEvidence:{status:"VERIFIED",creator:"any"}});
  assert.deepEqual(a,b);
- assert.equal(a.score,100);
+ assert.equal(a.score,null);
+ assert.equal(a.provisionalScore,100);
  assert.equal(a.checks.find(x=>x.id==="token2022_fee").status,"not_applicable");
 });
 test("missing authorities cannot be scored as revoked",()=>{
@@ -16,7 +17,8 @@ test("missing authorities cannot be scored as revoked",()=>{
 });
 test("active mint authority is observable centralization, not scam probability",()=>{
  const x=assessTokenControls({result:{tokenProgram:"spl-token",mintAuthority:"wallet",freezeAuthority:null}});
- assert.equal(x.score,0);
+ assert.equal(x.score,null);
+ assert.equal(x.provisionalScore,0);
  assert.equal(x.notSafetyScore,true);
 });
 test("unknown Token-2022 fee authority is not zero risk",()=>{
