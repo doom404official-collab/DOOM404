@@ -332,6 +332,7 @@ function CreatorLookup() {
   const [mint, setMint] = useState("");
   const [result, setResult] = useState(null);
   const [creatorEvidence, setCreatorEvidence] = useState(null);
+  const [creatorEvidenceDiagnostic, setCreatorEvidenceDiagnostic] = useState("not_requested");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [historyCursor, setHistoryCursor] = useState(null);
@@ -394,7 +395,7 @@ function CreatorLookup() {
   }
   async function inspect(event, cursor = null) {
     event.preventDefault();
-    setBusy(true); setError(""); if (!cursor) { setResult(null); setCreatorEvidence(null); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
+    setBusy(true); setError(""); if (!cursor) { setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 45000);
@@ -407,8 +408,14 @@ function CreatorLookup() {
       if (!cursor) {
         try {
           const evidenceResponse = await fetch("/api/creator-evidence?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
-          if (evidenceResponse.ok) setCreatorEvidence(await evidenceResponse.json());
-        } catch { /* creator evidence is optional; keep token analysis available */ }
+          if (evidenceResponse.ok) {
+            const record = await evidenceResponse.json();
+            setCreatorEvidence(record);
+            setCreatorEvidenceDiagnostic(record?.creator && ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(record.status) ? "record_available" : "record_not_established");
+          } else {
+            setCreatorEvidenceDiagnostic(evidenceResponse.status === 503 ? "vault_unavailable" : "lookup_failed");
+          }
+        } catch { setCreatorEvidenceDiagnostic("network_failure"); }
       }
       if (!cursor) {
         try {
@@ -642,6 +649,14 @@ function CreatorLookup() {
       <Section title="CREATOR INTELLIGENCE">
       <p><strong>Mint authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.mintAuthority || "None")}</p>
       <p><strong>Freeze authority:</strong> {result.authorityDetailsStatus === "not_parsed" ? "Not available from parsed account" : (result.freezeAuthority || "None")}</p>
+      <p style={{ color: "#aaa", fontSize: 12 }}><strong>Creator evidence lookup:</strong> {({
+        not_requested: "Not requested",
+        record_available: "Stored creator evidence returned",
+        record_not_established: "No verified creator record returned",
+        vault_unavailable: "Intelligence Vault unavailable or not configured for this preview",
+        lookup_failed: "Creator evidence service returned an error",
+        network_failure: "Creator evidence request could not complete"
+      })[creatorEvidenceDiagnostic] || "Status unavailable"}</p>
       <p style={{ color: "#ffbf86" }}><strong>Creator attribution:</strong> {storedCreatorMatch ? storedCreatorLabel : result.creator?.status === "provider_attributed" ? "Provider-identified creator; on-chain confirmation pending" : "Creator not yet identified by available evidence."}</p>
       {result.creator?.status === "provider_attributed" && <p><strong>Solscan creator address:</strong> <a href={"https://solscan.io/account/" + encodeURIComponent(result.creator.address)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff", overflowWrap: "anywhere" }}>{result.creator.address}</a></p>}
       <div style={{ border: "1px solid #453535", borderRadius: 9, padding: 12, margin: "12px 0" }}>
