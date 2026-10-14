@@ -88,3 +88,14 @@ test("verified creator is a verified fact rather than a safe-token conclusion",(
  assert.equal(a.attributes.find(x=>x.id==="creator").verdict,"verified_fact");
  assert.equal(a.consolidatedScore,null);
 });
+
+test("partial authority payload cannot be marked safe",()=>{
+ const a=assessTokenEvidence({result:{mintAuthority:null}});
+ const row=a.attributes.find(x=>x.id==="permissions");
+ assert.equal(row.coverage,"missing");
+ assert.equal(row.verdict,"insufficient_evidence");
+});
+test("missing freeze authority field cannot be marked safe",()=>{
+ const a=assessTokenEvidence({result:{mintAuthority:null,authorityDetailsStatus:"parsed"}});
+ assert.equal(a.attributes.find(x=>x.id==="permissions").verdict,"insufficient_evidence");
+});
