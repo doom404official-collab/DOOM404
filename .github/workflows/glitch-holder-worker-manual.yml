@@ -1,0 +1,58 @@
+# GLITCH Holder Worker — controlled scheduler
+# Manual only. No cron, deployment or live execution until explicitly enabled.
+name: GLITCH holder worker manual
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  run:
+    if: github.ref == 'refs/heads/feature/glitch-assessment-sprint1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Check scheduler and process one candidate
+        env:
+          GLITCH_PREVIEW_URL: https://doom404-wallet-signal-git-feature-glitch-assess-3d8131-doom-404.vercel.app
+          GLITCH_HOLDER_WORKER_TOKEN: ${{ secrets.GLITCH_HOLDER_WORKER_TOKEN }}
+          GLITCH_HOLDER_SCAN_INTERNAL_TOKEN: ${{ secrets.GLITCH_HOLDER_SCAN_INTERNAL_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json,os,urllib.request,urllib.error,urllib.parse
+          base=os.environ.get("GLITCH_PREVIEW_URL","").rstrip("/")
+          token=os.environ.get("GLITCH_HOLDER_WORKER_TOKEN","")
+          if not base.startswith("https://") or not token:
+              raise SystemExit("Preview URL or worker token not configured")
+          if urllib.parse.urlparse(base).hostname != "doom404-wallet-signal-git-feature-glitch-assess-3d8131-doom-404.vercel.app":
+              raise SystemExit("Only explicit Vercel preview hosts are allowed")
+          class NoRedirect(urllib.request.HTTPRedirectHandler):\n              def redirect_request(self,req,fp,code,msg,hdrs,newurl):\n                  raise RuntimeError("Redirect refused for authenticated worker request")\n          opener=urllib.request.build_opener(NoRedirect)\n          def post(path,payload):
+              req=urllib.request.Request(base+path,data=json.dumps(payload).encode(),
+                  headers={"Content-Type":"application/json","x-glitch-worker-token":token},method="POST")
+              try:
+                  with opener.open(req,timeout=70) as response:return json.load(response)
+              except urllib.error.HTTPError as exc:raise RuntimeError(f"Worker endpoint HTTP {exc.code}") from None
+          mint="98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump"
+          start_token=os.environ.get("GLITCH_HOLDER_SCAN_INTERNAL_TOKEN","")
+          if not start_token:raise SystemExit("Scan-start secret missing")
+          def start_scan():
+              req=urllib.request.Request(base+"/api/holder-scan-start",
+                  data=json.dumps({"mint":mint}).encode(),method="POST",
+                  headers={"Content-Type":"application/json","x-glitch-internal-token":start_token})
+              try:
+                  with urllib.request.urlopen(req,timeout=70) as response:return json.load(response)
+              except urllib.error.HTTPError as exc:raise RuntimeError(f"Scan-start HTTP {exc.code}") from None
+          started=start_scan()
+          print(json.dumps({"step":"start","status":started.get("status")}))
+          for batch in range(2):
+              result=post("/api/holder-scan-tick",{})
+              print(json.dumps({"step":"tick","batch":batch+1,"status":result.get("status"),"requestCount":result.get("requestCount")}))
+              if result.get("status")=="idle":break
+          with urllib.request.urlopen(base+"/api/holder-scan-status?mint="+mint,timeout=30) as response:
+              state=json.load(response)
+          scan=state.get("scan") or {}
+          print(json.dumps({"step":"verify","status":state.get("status"),
+              "transactionsChecked":scan.get("transactionsChecked"),
+              "walletHistoriesReached":scan.get("walletHistoriesReached"),
+              "directPairs":scan.get("directPairs")}))
+          if state.get("status")=="not_started":raise SystemExit("Checkpoint not persisted")
+          PY
