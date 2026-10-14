@@ -578,6 +578,24 @@ function CreatorLookup() {
             <p style={{ color: "#bbb", fontSize: 13 }}>Evidence-backed interpretations. Numerical attribute ratings are withheld pending calibration.</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
               {assessment.attributes.map(item => <div key={item.id} style={{ background: "#191919", border: "1px solid #484040", borderRadius: 9, padding: 12 }}>
+                {item.id==="concentration"&&concentration&&(()=>{
+                  const h=scoreHolderConcentration({
+                    top20SharePct:concentration.top20TokenAccountSharePct,
+                    largestAccountSharePct:concentration.largestAccountSharePct,
+                    holders:currentHolderConnections?.holders||[],
+                    connectedGroups:currentHolderConnections?.connectedGroups||[],
+                    directPairs:currentHolderConnections?.directPairs||0,
+                    connectedWallets:currentHolderConnections?.connectedWallets||0,
+                    walletHistoriesReached:currentHolderConnections?.walletHistoriesReached||0,
+                    ownerWalletsResolved:concentration.ownership?.resolvedAccountCount||0,
+                    historyComplete:currentHolderConnections?.historyComplete||false
+                  });
+                  return <div style={{marginBottom:10,padding:10,background:"#222b38",borderRadius:8}}>
+                    <strong style={{fontSize:24,color:"#f3c66b"}}>{h.score??"—"} / 100</strong>
+                    <p style={{fontSize:12,color:"#b6c3d3",margin:"4px 0"}}>{h.earned} points earned · {h.possible}/100 assessable</p>
+                    <a href="#holder-structure-details" style={{fontSize:12,color:"#83d4ff"}}>Holder score breakdown ↓</a>
+                  </div>;
+                })()}
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "start" }}>
                   <strong style={{ fontSize: 14 }}>{item.label}</strong>
                   <span style={{ color: item.coverage === "missing" ? "#ffbf86" : "#9ddab6", fontWeight: 700 }}>{item.coverage === "missing" ? "Not assessed" : item.coverage === "verified" ? "Verified evidence" : "Partial evidence"}</span>
@@ -645,7 +663,7 @@ function CreatorLookup() {
       <p><strong>Token program:</strong> {result.tokenProgram}</p>
       <p><strong>Supply:</strong> {result.supply ?? "Unavailable"}</p>
       </Section>
-      <Section title="HOLDER CONCENTRATION">
+      <div id="holder-structure-details"><Section title="HOLDER CONCENTRATION">
         <h3 style={{ marginTop: 0 }}>TOKEN ACCOUNT CONCENTRATION // Evidence</h3>
         {concentrationError && <p style={{ color: "#ffb86b" }}>Account concentration unavailable: {concentrationError}. No conclusion inferred.</p>}
         {!concentration && !concentrationError && <p style={{ color: "#aaa" }}>Retrieving largest token accounts...</p>}
@@ -714,7 +732,7 @@ function CreatorLookup() {
           </details>
           <p style={{ color: "#aaa", fontSize: 12 }}>Source: {concentration.coverage?.source}. Token-account owners are grouped where available; beneficial ownership, pool balances and exchange custody remain unresolved. No risk verdict.</p>
         </>}
-      </Section>
+      </Section></div>
       {result.tokenProgram === "spl-token-2022" && <Section title="TOKEN SECURITY">
         <h3 style={{ marginTop: 0 }}>TOKEN-2022 EXTENSIONS // Evidence</h3>
         {extensionsError && <p style={{ color: "#ffbf86" }}>Inspection unavailable: {extensionsError}. No safety conclusion inferred.</p>}
