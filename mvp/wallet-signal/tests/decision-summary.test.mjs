@@ -17,7 +17,8 @@ test("cached creator plus controls produces useful caution",()=>{
  assert.ok(x.findings.length>0);
  assert.ok(x.findings.some(f=>f.title.includes("Creator")));
 });
-test("active mint authority raises observed concern without scam claim",()=>{
+test("active mint authority identifies centralized controls without scam claim",()=>{
  const x=buildDecisionSummary({result:{mintAuthority:"authority",freezeAuthority:null,tokenProgram:"spl-token"}});
- assert.equal(x.status,"ELEVATED_OBSERVED_CONCERN");
+ assert.equal(x.status,"CENTRALIZED_CONTROLS_OBSERVED");
+ assert.match(x.explanation,/do not by themselves demonstrate malicious behavior/);
 });
