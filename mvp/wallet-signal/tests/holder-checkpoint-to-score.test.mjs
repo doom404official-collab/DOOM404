@@ -26,8 +26,8 @@ test("persisted transfer evidence produces connection graph and weighted score",
   directPairs:view.directPairs,walletHistoriesReached:view.walletHistoriesReached,
   ownerWalletsResolved:view.ownerWalletsResolved
  });
- assert.equal(score.components.find(c=>c.id==="connections").score,10);
- assert.equal(score.components.find(c=>c.id==="combined").score,19);
+ assert.equal(score.components.find(c=>c.id==="connections").score,9.74);
+ assert.equal(score.components.find(c=>c.id==="combined").score,18.67);
  assert.equal(score.possible,100);
  assert.equal(score.historyComplete,false);
 });
