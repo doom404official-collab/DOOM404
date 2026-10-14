@@ -82,12 +82,17 @@ try{
  report.supplyRaw=total.toString();
  report.top30RawAmount=ranked.reduce((s,x)=>s+x.amount,0n).toString();
  const wallets=[...new Set(holders.map(x=>x.ownerWallet))];
+ // A bounded historical window prevents the first three recent signatures from
+ // being mistaken for a wallet's entire transaction history.
+ const perWalletSignatureLimit=10;
+ report.historySampling={requestedSignaturesPerWallet:perWalletSignatureLimit,
+  paginationExhausted:false,allHistoryChecked:false,notes:"One recent page per wallet; older signatures not examined."};
  const transfers=[];
  let inspected=0,failures=0,walletsVisited=0;
  progress={holders,transfers,inspected,failures,walletsVisited};
  for(const wallet of wallets){
   let sigs;
-  try{sigs=await rpc("getSignaturesForAddress",[wallet,{limit:3,commitment:"confirmed"}]);}
+  try{sigs=await rpc("getSignaturesForAddress",[wallet,{limit:perWalletSignatureLimit,commitment:"confirmed"}]);}
   catch(e){report.reason=String(e.message);break;}
   walletsVisited++;
   for(const entry of sigs||[]){
