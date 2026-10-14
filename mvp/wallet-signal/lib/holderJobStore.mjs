@@ -28,6 +28,11 @@ export function createHolderJobStore({url=process.env.SUPABASE_URL,key=process.e
    if(!existing?.[0])throw Error("HOLDER_JOB_NOT_FOUND_AFTER_CONFLICT");
    return existing[0];
   },
+  async getNextRunnable(){
+   const rows=await request(table+"?select=id,mint,status,updated_at&status=in.(queued,partial,running)&order=updated_at.asc&limit=25");
+   // Expired running leases are handled by the atomic claim function.
+   return rows?.[0]||null;
+  },
   claim:(jobId,workerId,seconds=90)=>rpc("glitch_claim_holder_scan",{p_job_id:jobId,p_worker:workerId,p_lease_seconds:seconds}),
   renew:(jobId,workerId,version,seconds=90)=>rpc("glitch_renew_holder_scan",{p_job_id:jobId,p_worker:workerId,p_expected_version:version,p_lease_seconds:seconds}),
   commit:(jobId,workerId,version,checkpoint,summary,status)=>rpc("glitch_commit_holder_scan",{
