@@ -48,10 +48,33 @@ export function assessTokenEvidence({ result, extensions, concentration, liquidi
   const verifiedCount = attributes.filter(a=>a.coverage === "verified").length;
   const partialCount = attributes.filter(a=>a.coverage === "partial").length;
   const missingCount = attributes.filter(a=>a.coverage === "missing").length;
+  const priority = { permissions: 0, concentration: 1, transfer_fee: 2, liquidity: 3, creator: 4 };
+  const actionableFindings = attributes
+    .filter(a => a.coverage !== "missing")
+    .map(a => ({
+      id: a.id,
+      title: a.assessment,
+      evidence: a.explanation,
+      source: a.source,
+      coverage: a.coverage,
+      severity: a.id === "permissions" && (result?.mintAuthority || result?.freezeAuthority) ? "caution"
+        : a.id === "concentration" && Number.isFinite(share) && share >= 20 ? "caution"
+        : a.id === "transfer_fee" && extensions?.transferFee?.configAuthorityReported && extensions?.transferFee?.configAuthority ? "caution"
+        : "information",
+      nextStep: ({
+        permissions: "Review mint/freeze authority holders and any applicable Token-2022 controls.",
+        concentration: "Classify pools, custodians and related accounts before inferring ownership concentration.",
+        transfer_fee: "Verify the active fee schedule, authority and an actual transfer before estimating fees.",
+        liquidity: "Check pool reserves, LP control and executable trade depth.",
+        creator: "Inspect the creation transaction and investigate previous launches separately."
+      })[a.id]
+    }))
+    .sort((a,b) => (a.severity === "caution" ? 0 : 1) - (b.severity === "caution" ? 0 : 1) || priority[a.id] - priority[b.id])
+    .slice(0,3);
   // Scores from partially assessed permissions must not imply a complete token score.
   const coverageCount = attributes.filter(a=>a.coverage !== "missing").length;
   return {
-    version:"prototype_v1", attributes,
+    version:"prototype_v1", attributes, actionableFindings,
     assessedAttributes: coverageCount, totalAttributes: attributes.length,
     verifiedAttributes: verifiedCount, partialAttributes: partialCount, missingAttributes: missingCount,
     verifiedCoveragePct: Math.round(verifiedCount/attributes.length*100),
