@@ -34,7 +34,7 @@ try{
  const rpcTop20Raw=topRpc.reduce((sum,a)=>sum+BigInt(a.amount),0n);
  const supplyRaw=BigInt(supply?.value?.amount||"0");
  const dasAmounts=rows.map(a=>({address:String(a.address),amount:String(a.amount)}));
- const dasRawSum=dasAmounts.every(a=>/^\\d+$/.test(a.amount))?
+ const dasRawSum=dasAmounts.every(a=>/^\d+$/.test(a.amount))?
   dasAmounts.reduce((sum,a)=>sum+BigInt(a.amount),0n):null;
  Object.assign(report,{status:"CROSSCHECK_COMPLETE",dasReturned:rows.length,
   dasTotal:das?.total??null,tokenSupplyRaw:supplyRaw.toString(),
@@ -48,6 +48,6 @@ try{
   dasSampleFields:rows[0]?Object.keys(rows[0]).sort():[],
   globalRankingVerified:false,
   note:"A DAS total/page count is not proof of global top-holder ranking. Investigate amount units and inclusion of RPC top accounts."});
-}catch(e){report.reason=String(e.message||"UNKNOWN_ERROR").replace(/https?:\\/\\/\\S+/g,"[redacted]");}
+}catch(e){report.reason=String(e.message||"UNKNOWN_ERROR").replace(/https?:\/\/\S+/g,"[redacted]");}
 console.log(JSON.stringify(report));
 if(report.status!=="CROSSCHECK_COMPLETE")process.exitCode=2;
