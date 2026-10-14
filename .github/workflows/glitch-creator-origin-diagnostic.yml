@@ -28,9 +28,9 @@ jobs:
             echo "HELIUS_RPC_URL GitHub Actions secret is not configured"
             exit 1
           fi
-      - name: Corroborate exact Pump.fun creation transaction (read-only)
+      - name: Cross-check Pump.fun creator with secondary parser (read-only)
         env:
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
           CREATOR_DIAGNOSTIC_MINT: 98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump
           CREATOR_EXPECTED_INDEXED_WALLET: 6RKsroTt2NgJvyUyhUcKqANrphWDw6eE52X9TMBsQ7WC
-        run: node scripts/corroborate-pump-creation.mjs
+        run: node scripts/crosscheck-pump-creator.mjs
