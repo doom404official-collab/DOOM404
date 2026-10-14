@@ -9,15 +9,15 @@ test("known partial history yields weighted components but no fabricated complet
  assert.equal(r.possible,100);
  assert.equal(r.score,r.earned);
  assert.equal(r.historyComplete,false);
- assert.equal(r.components[1].score,9);
+ assert.equal(r.components[1].score,7.89);
  assert.equal(r.components[4].score,6);
 });
-test("missing historical evidence is not scored as zero connections",()=>{
+test("no observed historical edges still yields an explicitly observed-data score",()=>{
  const r=scoreHolderConcentration({top20SharePct:30,largestAccountSharePct:6,ownerWalletsResolved:20});
- assert.equal(r.components[1].score,null);
- assert.equal(r.components[2].score,null);
- assert.equal(r.score,null);
- assert.equal(r.possible,70);
+ assert.equal(r.components[1].score,10);
+ assert.equal(r.components[2].score,20);
+ assert.equal(r.score,r.earned);
+ assert.equal(r.possible,100);
 });
 test("extreme concentration earns fewer points than diversified holdings",()=>{
  const low=scoreHolderConcentration({top20SharePct:15,largestAccountSharePct:2,ownerWalletsResolved:20});
