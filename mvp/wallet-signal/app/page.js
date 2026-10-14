@@ -575,7 +575,7 @@ function CreatorLookup() {
                 <small style={{ color: "#aaa" }}>Evidence: {item.coverage} · {item.source}</small>
               </div>)}
             </div>
-            <p style={{ color: "#bbb", fontSize: 13 }}>Evidence-backed interpretations. Numerical attribute ratings are withheld pending calibration.</p>
+            <p style={{ color: "#bbb", fontSize: 13 }}>Numerical scores use the available on-chain evidence and update as additional transactions are discovered.</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
               {assessment.attributes.map(item => <div key={item.id} style={{ background: "#191919", border: "1px solid #484040", borderRadius: 9, padding: 12 }}>
                 {item.id==="concentration"&&concentration&&(()=>{
@@ -682,14 +682,14 @@ function CreatorLookup() {
           return <div style={{background:"#151c2a",border:"1px solid #334154",borderRadius:18,padding:22,marginBottom:16}}>
             <div style={{fontSize:12,letterSpacing:1,color:"#aab9cc"}}>GLITCH HOLDER STRUCTURE SCORE</div>
             <div style={{fontSize:38,fontWeight:800,color:"#f3c66b"}}>{assessment.score===null?"—":assessment.score}<span style={{fontSize:18,color:"#9ca8b9"}}> / 100</span></div>
-            <p style={{fontSize:13,color:"#bac4d3"}}>{assessment.score===null?"Observed components scored below; remaining evidence is being collected.":"Numerical holder-structure assessment based on observed data."}</p>
+            <p style={{fontSize:13,color:"#bac4d3"}}>{assessment.score===null?"Current observed-data score; historical investigation continues in the background.":"Numerical holder-structure assessment based on observed data."}</p>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(175px,1fr))",gap:10}}>
               {assessment.components.map(item=><div key={item.id} style={{background:"#20293a",borderRadius:12,padding:13}}>
                 <div style={{fontSize:13,color:"#c3ccda"}}>{item.label}</div>
                 <strong style={{fontSize:22,color:"#f3c66b"}}>{item.score===null?"—":item.score}</strong><span style={{color:"#9ca8b9"}}> / {item.max}</span>
               </div>)}
             </div>
-            <p style={{fontSize:12,color:"#9ca8b9"}}>Assessed: {assessment.possible}/100 points. Historical links may increase as scanning progresses. Connections do not establish common ownership.</p>
+            <p style={{fontSize:12,color:"#9ca8b9"}}>Scores are based on retrievable on-chain data available at the time of analysis. Historical coverage may vary, and transaction connections do not establish coordinated trading.</p>
           </div>;
         })()}
         {concentration && <>
