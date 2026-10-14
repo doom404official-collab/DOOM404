@@ -29,9 +29,10 @@ export function createHolderJobStore({url=process.env.SUPABASE_URL,key=process.e
    return existing[0];
   },
   async getNextRunnable(){
-   const rows=await request(table+"?select=id,mint,status,updated_at&status=in.(queued,partial,running)&order=updated_at.asc&limit=25");
-   // Expired running leases are handled by the atomic claim function.
-   return rows?.[0]||null;
+   const now=new Date().toISOString();
+   const rows=await request(table+"?select=id,mint,status,updated_at,lease_owner,lease_expires_at&status=in.(queued,partial,running)&order=updated_at.asc&limit=100");
+   // Scheduler filters active leases; atomic DB claim remains the final authority.
+   return (rows||[]).find(row=>!row.lease_owner||row.lease_expires_at&&row.lease_expires_at<=now)||null;
   },
   claim:(jobId,workerId,seconds=90)=>rpc("glitch_claim_holder_scan",{p_job_id:jobId,p_worker:workerId,p_lease_seconds:seconds}),
   renew:(jobId,workerId,version,seconds=90)=>rpc("glitch_renew_holder_scan",{p_job_id:jobId,p_worker:workerId,p_expected_version:version,p_lease_seconds:seconds}),
