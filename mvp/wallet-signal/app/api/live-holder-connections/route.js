@@ -38,7 +38,7 @@ export async function GET(request){
   return NextResponse.json({mint:mint.toBase58(),observedAt:new Date().toISOString(),
    top20SharePct:Number(sum*1000000n/total)/10000,ownerWalletsResolved:wallets.length,
    topAccounts:rows.length,connectedWallets:graph.connectedWalletCount,directPairs:graph.edges.length,
-   connectedGroups:graph.connectedGroups,transactionsChecked:checked,transactionFailures:failures,
+   connectedGroups:graph.connectedGroups,holders:holders.filter(h=>h.ownerWallet).map(h=>({ownerWallet:h.ownerWallet,sharePct:h.sharePct,tokenAccount:h.tokenAccount})),transactionsChecked:checked,transactionFailures:failures,
    historyScope:"Two recent signatures per owner wallet; older history not examined",
    commonOwnershipEstablished:false,completeHistory:false},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({error:"Live holder analysis unavailable; retry later"},{status:503,headers:{"Cache-Control":"no-store"}});}
