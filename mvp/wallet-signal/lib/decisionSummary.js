@@ -13,9 +13,8 @@ export function buildDecisionSummary({result,extensions,concentration,liquidity,
   if(result.mintAuthority||result.freezeAuthority)add(98,"Active token authorities","Mint or freeze authority remains present. This is centralized control exposure, not evidence of misuse; review issuer powers, governance and actual usage.","Solana RPC");
   else add(45,"Mint and freeze controls","Neither mint nor freeze authority was reported in the verified mint state. This does not rule out other controls.","Solana RPC");
  }
- if(result?.tokenProgram==="spl-token")
-  add(40,"Transfer-fee extension not applicable","Standard SPL Token mints do not support Token-2022 transfer-fee extensions. Other application-level charges are not assessed.","Solana mint owner");
- else if(extensions?.transferFee?.status==="observed")
+ // Non-applicable controls belong in attribute details, not prioritized risk findings.
+ if(extensions?.transferFee?.status==="observed")
   add(85,"Transfer-fee controls observed","A Token-2022 fee configuration was observed; effective fees and change authority require review.","Token-2022 RPC");
  if(liquidity?.reportedLiquidityUsd!=null)
   add(70,"Liquidity depth not established","Provider reports $"+Math.round(liquidity.reportedLiquidityUsd).toLocaleString("en-US")+" in liquidity. Reserve control and executable sell depth remain unverified.","Liquidity provider");
