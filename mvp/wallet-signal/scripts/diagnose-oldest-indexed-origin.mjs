@@ -34,7 +34,8 @@ try{
    const exactMatch = role.address === expected;
    const firstDifference = [...role.address].findIndex((char,index)=>char!==expected[index]);
    result={status:exactMatch?"ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW":"CREATOR_CONFLICT",
-    comparison:{exactMatch,decodedLength:role.address.length,expectedLength:expected.length,firstDifferenceIndex:exactMatch?null:firstDifference===-1?Math.min(role.address.length,expected.length):firstDifference},
+    comparison:{exactMatch,decodedLength:role.address.length,expectedLength:expected.length,firstDifferenceIndex:exactMatch?null:firstDifference===-1?Math.min(role.address.length,expected.length):firstDifference,
+     differingCharacters:exactMatch?null:{decoded:role.address[firstDifference]??null,expected:expected[firstDifference]??null}},
     mint,signature,decodedCreator:role.address,expectedCreator:expected,
     programId:role.programId,decoderVersion:role.decoderVersion,writeAttempted:false};
    break;
