@@ -37,7 +37,7 @@ try{
  const parsed=[];
  for(const row of rows){
   const result=await rpc("getAccountInfo",[row.tokenAccount,{encoding:"jsonParsed",commitment:"confirmed"}]);
-  parsed.push({value:result});
+  parsed.push({value:result?.value ?? null});
  }
  const owners=summarizeResolvedTokenAccounts(rows,parsed);
  const ownerWallets=[...new Set(owners.accounts.map(x=>x.ownerWallet).filter(Boolean))];
