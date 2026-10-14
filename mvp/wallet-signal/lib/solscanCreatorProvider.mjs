@@ -9,7 +9,7 @@ export function createSolscanCreatorProvider({ apiKey, fetchImpl = fetch } = {})
       url.searchParams.set("address", mint);
       let response;
       try { response = await fetchImpl(url.toString(), {
-        method: "GET", headers: { token: apiKey, accept: "application/json" }, cache: "no-store",
+        method: "GET", redirect: "error", headers: { token: apiKey, accept: "application/json" }, cache: "no-store",
         signal: AbortSignal.timeout(10000),
       }); } catch { throw new Error("SOLSCAN_NETWORK_ERROR"); }
       if (!response.ok) throw new Error(response.status === 401 || response.status === 403

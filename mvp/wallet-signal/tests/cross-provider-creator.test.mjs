@@ -31,3 +31,12 @@ test("missing Solscan key yields an explicit incomplete status",async()=>{
  const r=await corroborateCreatorAcrossProviders({...base,solscanApiKey:null});
  assert.equal(r.status,"SOLSCAN_NOT_CONFIGURED");
 });
+test('missing signature is insufficient evidence, not disagreement',async()=>{
+ const r=await corroborateCreatorAcrossProviders({...base,solscanFetch:solscan(creator,null)});
+ assert.equal(r.comparisonStatus,'INSUFFICIENT_EVIDENCE');
+ assert.equal(r.status,'INSUFFICIENT_EVIDENCE');
+});
+test('case-sensitive creator comparison',async()=>{
+ const r=await corroborateCreatorAcrossProviders({...base,solscanFetch:solscan(creator.toLowerCase(),sig)});
+ assert.notEqual(r.comparisonStatus,'PROVIDER_AGREEMENT');
+});

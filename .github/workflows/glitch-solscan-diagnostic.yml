@@ -1,0 +1,31 @@
+name: GLITCH Solscan cross-provider diagnostic
+on:
+  push:
+    branches: [feature/glitch-assessment-sprint1]
+    paths:
+      - 'mvp/wallet-signal/scripts/diagnose-solscan-cross-provider.mjs'
+      - '.github/workflows/glitch-solscan-diagnostic.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/feature/glitch-assessment-sprint1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Automated tests
+        run: npm run test:smoke
+      - name: Live Solscan comparison (read-only, no Vault credentials)
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          SOLSCAN_API_KEY: ${{ secrets.SOLSCAN_API_KEY }}
+        run: node scripts/diagnose-solscan-cross-provider.mjs

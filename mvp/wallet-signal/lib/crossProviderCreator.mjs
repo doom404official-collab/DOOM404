@@ -17,19 +17,20 @@ export async function corroborateCreatorAcrossProviders({
  solscanFetch=fetch, archiveFetch=fetch
 }={}){
  if(!address.test(mint||"")||!address.test(heliusCreator||"")||!signature.test(heliusSignature||""))
-  return {status:"INVALID_INPUT",independentlyDecoded:false};
- if(!solscanApiKey)return {status:"SOLSCAN_NOT_CONFIGURED",independentlyDecoded:false};
+  return {status:"INVALID_INPUT",comparisonStatus:"INSUFFICIENT_EVIDENCE",independentlyDecoded:false};
+ if(!solscanApiKey)return {status:"SOLSCAN_NOT_CONFIGURED",comparisonStatus:"PROVIDER_UNAVAILABLE",independentlyDecoded:false};
  let records;
  try{records=await createSolscanCreatorProvider({apiKey:solscanApiKey,fetchImpl:solscanFetch}).lookup(mint);}
- catch(error){return {status:"SOLSCAN_UNAVAILABLE",reason:error?.message||"PROVIDER_ERROR",independentlyDecoded:false};}
+ catch(error){return {status:"SOLSCAN_UNAVAILABLE",comparisonStatus:"PROVIDER_UNAVAILABLE",reason:error?.message||"PROVIDER_ERROR",independentlyDecoded:false};}
  const record=records[0];
- if(!record)return {status:"SOLSCAN_NO_CREATOR_LABEL",independentlyDecoded:false};
+ if(!record)return {status:"SOLSCAN_NO_CREATOR_LABEL",comparisonStatus:"INSUFFICIENT_EVIDENCE",independentlyDecoded:false};
  const creatorMatches=record.creator===heliusCreator;
  const signatureMatches=record.creationSignature===heliusSignature;
  const base={solscanCreator:record.creator,solscanSignature:record.creationSignature,
-  creatorMatches,signatureMatches,independentlyDecoded:false};
- if(!creatorMatches||!signatureMatches)
+  creatorMatches,signatureMatches,comparisonStatus:!creatorMatches || (record.creationSignature && !signatureMatches) ? "PROVIDER_DISAGREEMENT" : !record.creationSignature ? "INSUFFICIENT_EVIDENCE" : "PROVIDER_AGREEMENT",independentlyDecoded:false};
+ if(!creatorMatches||(record.creationSignature&&!signatureMatches))
   return {...base,status:"PROVIDER_DISAGREEMENT"};
+ if(!record.creationSignature)return {...base,status:"INSUFFICIENT_EVIDENCE"};
  if(!archiveRpcUrl)return {...base,status:"PROVIDER_LABELS_AGREE_TRANSACTION_NOT_INDEPENDENTLY_DECODED"};
  // Archive RPC must be independently operated; reject obvious Helius endpoint reuse.
  try{
