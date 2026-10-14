@@ -15,9 +15,12 @@ export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,page
   if(used>=maxRequests)throw Error("REQUEST_BUDGET_EXHAUSTED");
   used++;return rpc(method,params);
  };
- const decodePending=async(limit=Infinity)=>{\n  let attempted=0;
+ const decodePending=async(limit=Infinity)=>{
+  let attempted=0;
   for(const [signature,state] of Object.entries(checkpoint.signatures)){
-   if(state!=="pending")continue;\n   if(attempted>=limit)break;\n   attempted++;
+   if(state!=="pending")continue;
+   if(attempted>=limit)break;
+   attempted++;
    const tx=await limitedRpc("getTransaction",[signature,{encoding:"jsonParsed",commitment:"confirmed",maxSupportedTransactionVersion:1}]);
    // A temporarily unavailable transaction is retryable. Do not permanently
    // classify it as checked or failed; preserve the pending checkpoint state.
