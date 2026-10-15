@@ -23,6 +23,11 @@ export function createTop20Vault({url,serviceRoleKey,fetchImpl=fetch}={}) {
     throw new Error('Frozen snapshot persistence mismatch');
    return snapshot.id;
   },
+  async getFrozen(snapshotId){
+   const rows=await request('glitch_top20_snapshots',{query:'?id=eq.'+encodeURIComponent(snapshotId)+'&select=id,mint,snapshot_slot,supply_raw,holder_ranking,excluded_wallets,status'});
+   if(rows?.length!==1)throw new Error('Frozen snapshot not found');
+   return rows[0];
+  },
   async saveBatch({snapshotId,startIndex,results,coverage,status='complete'}){
    if(![0,5,10,15].includes(startIndex)||!['complete','partial','failed'].includes(status))
     throw new TypeError('Invalid batch');
