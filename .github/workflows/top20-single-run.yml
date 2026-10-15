@@ -1,0 +1,33 @@
+name: Top20 Single Run Investigation
+on:
+  workflow_dispatch:
+    inputs:
+      snapshot_id:
+        description: 'Verified frozen Top20 snapshot ID'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: top20-${{ inputs.snapshot_id }}
+  cancel-in-progress: false
+jobs:
+  investigate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Investigate and checkpoint frozen Top20
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TOP20_SNAPSHOT_ID: ${{ inputs.snapshot_id }}
+        run: node scripts/run-top20-job.mjs
