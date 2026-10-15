@@ -16,6 +16,18 @@ export function createHolderEvidenceStore({url=process.env.SUPABASE_URL,key=proc
   return response.json();
  }
  return {
+  async listForJob(jobId,{pageSize=500}={}){
+   if(!Number.isInteger(pageSize)||pageSize<1||pageSize>1000)throw Error("INVALID_PAGE_SIZE");
+   const all=[];
+   for(let offset=0;offset<100000;offset+=pageSize){
+    const rows=await request("?job_id=eq."+encodeURIComponent(jobId)+
+     "&select=signature,status,evidence,attempts&order=signature.asc&limit="+pageSize+"&offset="+offset);
+    if(!Array.isArray(rows))throw Error("INVALID_EVIDENCE_ROWS");
+    all.push(...rows);
+    if(rows.length<pageSize)return all;
+   }
+   throw Error("EVIDENCE_PAGINATION_LIMIT");
+  },
   claim:(jobId,workerId,limit=6)=>callRpc("glitch_claim_holder_evidence",{p_job_id:jobId,p_worker:workerId,p_limit:limit}),
   finish:(jobId,signature,workerId,{status,evidence,attempts})=>callRpc("glitch_finish_holder_evidence",{p_job_id:jobId,p_signature:signature,p_worker:workerId,p_status:status,p_evidence:evidence,p_attempts:attempts}),
   async enqueue(jobId,signatures){
