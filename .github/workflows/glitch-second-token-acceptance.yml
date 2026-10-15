@@ -35,7 +35,12 @@ jobs:
           try:
               with opener.open(req,timeout=75) as response:result=json.load(response)
           except urllib.error.HTTPError as exc:
-              print(json.dumps({"httpStatus":exc.code,"step":"scan_start"}))
+              body=exc.read().decode("utf-8")
+              try:
+                  detail=json.loads(body)
+              except ValueError:
+                  detail={}
+              print(json.dumps({"httpStatus":exc.code,"step":"scan_start","stage":detail.get("stage","unknown"),"code":detail.get("code","unknown")}))
               raise SystemExit("Second-token scan could not start")
           print(json.dumps({"step":"scan_start","status":result.get("status"),"jobCreated":bool(result.get("jobId"))}))
           PY
