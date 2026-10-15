@@ -13,9 +13,9 @@ jobs:
     steps:
       - name: Send bounded failure notification
         env:
-          SMTP_HOST: ${{ secrets.GLITCH_ALERT_SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.GLITCH_ALERT_SMTP_PORT }}
-          SMTP_USER: ${{ secrets.GLITCH_ALERT_SMTP_USER }}
+          SMTP_HOST: smtp.gmail.com
+          SMTP_PORT: "465"
+          SMTP_USER: doom404official@gmail.com
           SMTP_PASSWORD: ${{ secrets.GLITCH_ALERT_SMTP_PASSWORD }}
           ALERT_TO: doom404official@gmail.com
           RUN_URL: ${{ github.event.workflow_run.html_url }}
@@ -27,8 +27,8 @@ jobs:
           port=int(os.getenv("SMTP_PORT") or "465")
           user=os.getenv("SMTP_USER","")
           password=os.getenv("SMTP_PASSWORD","")
-          if not all((host,user,password)) or port not in (465,587):
-              raise SystemExit("GLITCH SMTP alert secrets are not configured")
+          if not password or host!="smtp.gmail.com" or port!=465 or user!="doom404official@gmail.com":
+              raise SystemExit("GLITCH Gmail App Password is not configured")
           msg=email.message.EmailMessage()
           msg["From"]=user
           msg["To"]=os.environ["ALERT_TO"]
