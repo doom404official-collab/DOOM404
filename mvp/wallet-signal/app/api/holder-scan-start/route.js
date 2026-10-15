@@ -21,14 +21,26 @@ export async function POST(request){
   const body=await request.json();
   mint=new PublicKey(body?.mint||"").toBase58();
  }catch{return NextResponse.json({error:"Invalid token mint"},{status:400});}
+ let stage="store_configuration";
  try{
   const store=createHolderJobStore();
+  stage="existing_job_lookup";
   const existing=await store.getLatest(mint);
   if(existing&&["queued","running"].includes(existing.status))
    return NextResponse.json({mint,status:existing.status,scan:store.publicView(existing)},{headers:{"Cache-Control":"no-store"}});
+  stage="rpc_connection";
   const connection=createReliableConnection({primary:process.env.HELIUS_RPC_URL||process.env.SOLANA_RPC_URL||"https://api.mainnet-beta.solana.com"});
+  stage="holder_snapshot";
   const snapshot=await prepareHolderScanSnapshot({mint,connection});
+  stage="job_persistence";
   const job=await store.createOrReuse(snapshot);
   return NextResponse.json({mint,status:job.status,jobId:job.id},{status:202,headers:{"Cache-Control":"no-store"}});
- }catch{return NextResponse.json({error:"Unable to initialize holder investigation"},{status:503});}
+ }catch(error){
+  const message=String(error?.message||"");
+  const code=/^HOLDER_STORE_HTTP_\d{3}$/.test(message)?message:
+   message==="HOLDER_STORE_NOT_CONFIGURED"?"HOLDER_STORE_NOT_CONFIGURED":
+   message==="HOLDER_JOB_NOT_FOUND_AFTER_CONFLICT"?"HOLDER_JOB_NOT_FOUND_AFTER_CONFLICT":"UNEXPECTED_ERROR";
+  console.error("GLITCH_SCAN_START_FAILURE",{stage,code});
+  return NextResponse.json({error:"Unable to initialize holder investigation",stage,code},{status:503,headers:{"Cache-Control":"no-store"}});
+ }
 }
