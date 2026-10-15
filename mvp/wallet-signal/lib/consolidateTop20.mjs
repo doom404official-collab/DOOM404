@@ -29,15 +29,20 @@ export function consolidateTop20({snapshot,batches,infrastructureWallets=[],crea
   if(!unique.has(key))unique.set(key,e);
  }
  const transfers=[...unique.values()];
- const network=analyzeHolderNetwork({holders,transfers,infrastructureWallets,creatorWallets});
- const exposure=summarizeHolderNetworkExposure({holders,network,circulatingSupply:supply});
- const networkScore=scoreTop20Network({holders,transfers,network,exposure,
+ const exclusions=new Set(infrastructureWallets);
+ const eligibleHolders=holders.filter(h=>!exclusions.has(h.wallet));
+ const eligibleTransfers=transfers.filter(t=>!exclusions.has(t.from)&&!exclusions.has(t.to));
+ const network=analyzeHolderNetwork({holders:eligibleHolders,transfers:eligibleTransfers,infrastructureWallets,creatorWallets});
+ const exposure=summarizeHolderNetworkExposure({holders:eligibleHolders,network,circulatingSupply:supply});
+ const networkScore=scoreTop20Network({holders:eligibleHolders,transfers:eligibleTransfers,network,exposure,
   historyCoverage:records.map(r=>({wallet:r.wallet,decoded:r.coverage?.decoded??0,failed:r.coverage?.failed??0}))});
  return {status:'provisional',snapshotId:snapshot.id,slot:snapshot.snapshot_slot,
   supplyDefinition:'mint-total-supply-not-circulating',holdersSampled:records.length,
   partialBatches:batches.filter(b=>b.status==='partial').length,
   rawTransferRecords:records.reduce((n,r)=>n+(r.edges?.length??0),0),
   deduplicatedVerifiedTransfers:transfers.length,
+  excludedInfrastructureWalletCount:holders.length-eligibleHolders.length,
+  eligibleHoldersScored:eligibleHolders.length,
   networkScore,
   network:{connectedHolderCount:network.connectedHolderCount,directHolderCount:network.directHolderCount,
    excludedHighDegreeHubCount:network.excludedHighDegreeHubCount},
