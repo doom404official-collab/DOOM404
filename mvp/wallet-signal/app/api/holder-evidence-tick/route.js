@@ -41,7 +41,7 @@ export async function POST(request){
   return NextResponse.json({...result,requestCount:count},{headers:{"Cache-Control":"no-store"}});
  }catch(error){
   const message=String(error?.message||"");
-  const code=/^EVIDENCE_(ENQUEUE_FAILED|CLAIM_FAILED|CLAIM_INVALID_RESPONSE|FINISH_FAILED)$/.test(message)?message:
+  const code=/^EVIDENCE_(SEED_FAILED|ENQUEUE_FAILED|CLAIM_FAILED|CLAIM_INVALID_RESPONSE|FINISH_FAILED)$/.test(message)?message:
    /^INVALID_EVIDENCE_JOB$/.test(message)?"INVALID_EVIDENCE_JOB":
    /^EVIDENCE_(STORE|RPC)_HTTP_\d{3}$/.test(message)?message:
    /^HOLDER_STORE_HTTP_\d{3}$/.test(message)?message:
