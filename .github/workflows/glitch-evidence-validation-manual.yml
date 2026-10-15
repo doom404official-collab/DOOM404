@@ -1,6 +1,8 @@
 name: GLITCH evidence validation manual
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"
 permissions:
   contents: read
 concurrency:
