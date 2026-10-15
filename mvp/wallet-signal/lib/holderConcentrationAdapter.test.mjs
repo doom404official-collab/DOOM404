@@ -11,7 +11,7 @@ test('valid snapshot produces provisional assessment with provenance',()=>{
  assert.equal(r.dataProvenance,'fixture');
 });
 test('validated edges are merged and scored after investigation completion',()=>{
- const r=assessHolderSnapshot({snapshot,investigationComplete:true,transferEdges:[
+ const r=assessHolderSnapshot({snapshot,investigationComplete:true,creatorTeamVerified:true,transferEdges:[
   {from:'a',to:'b',verifiedTransfer:true,signature:'tx1',strength:'strong'},
   {from:'b',to:'c',verifiedTransfer:true,signature:'tx2',strength:'moderate'}
  ]});
@@ -20,7 +20,7 @@ test('validated edges are merged and scored after investigation completion',()=>
  assert.equal(r.metrics.maxVerifiedClusterPct,100);
 });
 test('incomplete holder snapshot cannot receive a score',()=>{
- const r=assessHolderSnapshot({snapshot:{...snapshot,complete:false},investigationComplete:true});
+ const r=assessHolderSnapshot({snapshot:{...snapshot,complete:false},investigationComplete:true,creatorTeamVerified:true});
  assert.equal(r.status,'unavailable');
  assert.equal(r.score,null);
 });
