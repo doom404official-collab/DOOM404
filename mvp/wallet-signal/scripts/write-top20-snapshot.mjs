@@ -20,7 +20,7 @@ if(!env.HELIUS_RPC_URL||!env.TEST_TOKEN_MINT||!env.SUPABASE_URL||!env.SUPABASE_S
   await vault.saveFrozen(frozen);
   stage='read_back_snapshot';
   const stored=await vault.getFrozen(frozen.id);
-  if(stored.id!==frozen.id||stored.snapshot_slot!==frozen.slot)throw new Error('Snapshot verification mismatch');
+  if(stored.id!==frozen.id||Number(stored.snapshot_slot)!==frozen.slot)throw new Error('Snapshot verification mismatch');
   console.log(JSON.stringify({status:'verified',snapshotId:frozen.id,slot:frozen.slot,
    holderCount:frozen.holders.length,supplyDefinition:raw.supplyDefinition,finalScore:false}));
  }catch(error){
