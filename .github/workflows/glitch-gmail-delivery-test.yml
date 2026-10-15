@@ -1,0 +1,31 @@
+name: GLITCH Gmail delivery test
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-email:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Send Gmail operational alert test
+        env:
+          GLITCH_ALERT_SMTP_PASSWORD: ${{ secrets.GLITCH_ALERT_SMTP_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import os,ssl,smtplib
+          from email.message import EmailMessage
+          password=os.environ.get("GLITCH_ALERT_SMTP_PASSWORD","")
+          if not password:
+              raise SystemExit("Gmail App Password secret is missing")
+          address="doom404official@gmail.com"
+          msg=EmailMessage()
+          msg["From"]=address
+          msg["To"]=address
+          msg["Subject"]="[GLITCH TEST] Operational email delivery"
+          msg.set_content("This is a GLITCH operational alert delivery test. No evidence validation failure occurred and no database records were changed.")
+          with smtplib.SMTP_SSL("smtp.gmail.com",465,timeout=20,context=ssl.create_default_context()) as smtp:
+              smtp.login(address,password)
+              smtp.send_message(msg)
+          print("Gmail SMTP accepted the test message; confirm inbox delivery separately.")
+          PY
