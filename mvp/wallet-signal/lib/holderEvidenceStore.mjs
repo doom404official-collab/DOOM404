@@ -1,7 +1,8 @@
 /** Server-only Supabase REST persistence for transaction evidence checks. */
 export function createHolderEvidenceStore({url=process.env.SUPABASE_URL,key=process.env.SUPABASE_SERVICE_ROLE_KEY,fetchImpl=fetch}={}){
  if(!url||!key||!/^https:\/\//.test(url))throw Error("EVIDENCE_STORE_NOT_CONFIGURED");
- const base=url.replace(/\/$/,"")+"/rest/v1/glitch_holder_evidence_validation";
+ const root=url.replace(/\/$/,"")+"/rest/v1/";
+ const base=root+"glitch_holder_evidence_validation";
  const headers={apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json"};
  async function request(path,{method="GET",body,prefer}={}){
   const response=await fetchImpl(base+path,{method,headers:{...headers,...(prefer?{Prefer:prefer}:{})},
@@ -9,7 +10,14 @@ export function createHolderEvidenceStore({url=process.env.SUPABASE_URL,key=proc
   if(!response.ok)throw Error("EVIDENCE_STORE_HTTP_"+response.status);
   return response.status===204?[]:response.json();
  }
+ async function callRpc(name,args){
+  const response=await fetchImpl(root+"rpc/"+name,{method:"POST",headers,body:JSON.stringify(args),cache:"no-store"});
+  if(!response.ok)throw Error("EVIDENCE_RPC_HTTP_"+response.status);
+  return response.json();
+ }
  return {
+  claim:(jobId,workerId,limit=6)=>callRpc("glitch_claim_holder_evidence",{p_job_id:jobId,p_worker:workerId,p_limit:limit}),
+  finish:(jobId,signature,workerId,{status,evidence,attempts})=>callRpc("glitch_finish_holder_evidence",{p_job_id:jobId,p_signature:signature,p_worker:workerId,p_status:status,p_evidence:evidence,p_attempts:attempts}),
   async enqueue(jobId,signatures){
    const rows=[...new Set(signatures)].filter(x=>typeof x==="string"&&x.length>0)
     .map(signature=>({job_id:jobId,signature}));
