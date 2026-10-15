@@ -25,6 +25,8 @@ on:
       - 'mvp/wallet-signal/lib/signaturePagination.mjs'
       - 'mvp/wallet-signal/lib/signaturePagination.test.mjs'
       - 'mvp/wallet-signal/lib/historicalRpcRetry.test.mjs'
+      - 'mvp/wallet-signal/lib/holderSampleInvestigation.mjs'
+      - 'mvp/wallet-signal/lib/holderSampleInvestigation.test.mjs'
       - '.github/workflows/holder-concentration-tests.yml'
   pull_request:
     paths:
@@ -49,6 +51,8 @@ on:
       - 'mvp/wallet-signal/lib/signaturePagination.mjs'
       - 'mvp/wallet-signal/lib/signaturePagination.test.mjs'
       - 'mvp/wallet-signal/lib/historicalRpcRetry.test.mjs'
+      - 'mvp/wallet-signal/lib/holderSampleInvestigation.mjs'
+      - 'mvp/wallet-signal/lib/holderSampleInvestigation.test.mjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -62,4 +66,4 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-audit --no-fund --prefix mvp/wallet-signal
-      - run: node --test mvp/wallet-signal/lib/holderConcentrationScore.test.mjs mvp/wallet-signal/lib/concentrationEvidence.test.mjs mvp/wallet-signal/lib/holderConcentrationAdapter.test.mjs mvp/wallet-signal/lib/concentrationEvidenceBridge.test.mjs mvp/wallet-signal/lib/holderProviderIntegration.test.mjs mvp/wallet-signal/lib/holderRelationshipNetwork.test.mjs mvp/wallet-signal/lib/historicalSolRelationships.test.mjs mvp/wallet-signal/lib/crossAssetTokenTransfers.test.mjs mvp/wallet-signal/lib/holderNetworkExposure.test.mjs mvp/wallet-signal/lib/signaturePagination.test.mjs mvp/wallet-signal/lib/historicalRpcRetry.test.mjs
+      - run: node --test mvp/wallet-signal/lib/holderConcentrationScore.test.mjs mvp/wallet-signal/lib/concentrationEvidence.test.mjs mvp/wallet-signal/lib/holderConcentrationAdapter.test.mjs mvp/wallet-signal/lib/concentrationEvidenceBridge.test.mjs mvp/wallet-signal/lib/holderProviderIntegration.test.mjs mvp/wallet-signal/lib/holderRelationshipNetwork.test.mjs mvp/wallet-signal/lib/historicalSolRelationships.test.mjs mvp/wallet-signal/lib/crossAssetTokenTransfers.test.mjs mvp/wallet-signal/lib/holderNetworkExposure.test.mjs mvp/wallet-signal/lib/signaturePagination.test.mjs mvp/wallet-signal/lib/historicalRpcRetry.test.mjs mvp/wallet-signal/lib/holderSampleInvestigation.test.mjs
