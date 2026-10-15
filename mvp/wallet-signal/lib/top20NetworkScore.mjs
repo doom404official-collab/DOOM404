@@ -5,7 +5,7 @@
 const clamp=x=>Math.max(0,Math.min(1,x));
 const round=x=>Math.round(x*100)/100;
 export function scoreTop20Network({holders,transfers,network,exposure,historyCoverage}={}){
- if(!Array.isArray(holders)||holders.length!==20||!Array.isArray(transfers)||!network||!exposure)
+ if(!Array.isArray(holders)||holders.length<1||holders.length>20||!Array.isArray(transfers)||!network||!exposure)
   throw new TypeError('Frozen Top20 and consolidated network evidence required');
  const top=new Set(holders.map(h=>h.wallet));
  const pairs=new Map();
