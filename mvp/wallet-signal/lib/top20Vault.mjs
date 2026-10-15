@@ -26,11 +26,11 @@ export function createTop20Vault({url,serviceRoleKey,fetchImpl=fetch}={}) {
    await request('glitch_top20_snapshots',{method:'POST',body:row,prefer:'resolution=ignore-duplicates,return=minimal'});
    const stored=await request('glitch_top20_snapshots',{query:'?id=eq.'+encodeURIComponent(snapshot.id)+'&select=id,mint,snapshot_slot,supply_raw,holder_ranking'});
    if(stored?.length!==1)throw new Error('Frozen snapshot row count mismatch');
-   const row=stored[0];
-   if(row.id!==snapshot.id||row.mint!==snapshot.mint||Number(row.snapshot_slot)!==snapshot.slot||
-    String(row.supply_raw)!==String(snapshot.supply)||!Array.isArray(row.holder_ranking)||
-    row.holder_ranking.length!==snapshot.holders.length||
-    row.holder_ranking.some((h,i)=>h.wallet!==snapshot.holders[i].wallet||
+   const persistedRow=stored[0];
+   if(persistedRow.id!==snapshot.id||persistedRow.mint!==snapshot.mint||Number(persistedRow.snapshot_slot)!==snapshot.slot||
+    String(persistedRow.supply_raw)!==String(snapshot.supply)||!Array.isArray(persistedRow.holder_ranking)||
+    persistedRow.holder_ranking.length!==snapshot.holders.length||
+    persistedRow.holder_ranking.some((h,i)=>h.wallet!==snapshot.holders[i].wallet||
       Number(h.balance)!==snapshot.holders[i].balance||Number(h.rank)!==snapshot.holders[i].rank))
     throw new Error('Frozen snapshot persistence mismatch');
    return snapshot.id;
