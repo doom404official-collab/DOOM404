@@ -1,0 +1,30 @@
+name: Holder Snapshot RPC Diagnostic
+on:
+  workflow_dispatch:
+    inputs:
+      mint:
+        description: 'Solana mint address to inspect'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mvp/wallet-signal/package-lock.json
+      - run: npm ci
+      - name: Check holder snapshot
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          TEST_TOKEN_MINT: ${{ inputs.mint }}
+        run: node scripts/check-holder-snapshot.mjs
