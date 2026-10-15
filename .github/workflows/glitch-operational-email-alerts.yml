@@ -1,0 +1,45 @@
+name: GLITCH operational email alerts
+on:
+  workflow_run:
+    workflows: ["GLITCH evidence validation manual"]
+    types: [completed]
+permissions:
+  contents: read
+jobs:
+  email-on-failure:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Send bounded failure notification
+        env:
+          SMTP_HOST: ${{ secrets.GLITCH_ALERT_SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.GLITCH_ALERT_SMTP_PORT }}
+          SMTP_USER: ${{ secrets.GLITCH_ALERT_SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.GLITCH_ALERT_SMTP_PASSWORD }}
+          ALERT_TO: doom404official@gmail.com
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          python3 - <<'PY'
+          import os,ssl,smtplib,email.message
+          host=os.getenv("SMTP_HOST","")
+          port=int(os.getenv("SMTP_PORT") or "465")
+          user=os.getenv("SMTP_USER","")
+          password=os.getenv("SMTP_PASSWORD","")
+          if not all((host,user,password)) or port not in (465,587):
+              raise SystemExit("GLITCH SMTP alert secrets are not configured")
+          msg=email.message.EmailMessage()
+          msg["From"]=user
+          msg["To"]=os.environ["ALERT_TO"]
+          msg["Subject"]="[GLITCH] Evidence validation workflow failed"
+          msg.set_content("Evidence validation requires attention.\nRun: "+os.environ["RUN_URL"]+"\nRun ID: "+os.environ["RUN_ID"]+"\nReview GitHub Actions logs; no secrets are included.")
+          if port==465:
+              with smtplib.SMTP_SSL(host,port,timeout=20,context=ssl.create_default_context()) as smtp:
+                  smtp.login(user,password);smtp.send_message(msg)
+          else:
+              with smtplib.SMTP(host,port,timeout=20) as smtp:
+                  smtp.starttls(context=ssl.create_default_context())
+                  smtp.login(user,password);smtp.send_message(msg)
+          print("Alert submitted to SMTP server")
+          PY
