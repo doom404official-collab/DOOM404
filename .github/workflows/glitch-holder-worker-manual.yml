@@ -16,11 +16,14 @@ jobs:
           GLITCH_PREVIEW_URL: https://doom404-wallet-signal-git-feature-glitch-assess-3d8131-doom-404.vercel.app
           GLITCH_HOLDER_WORKER_TOKEN: ${{ secrets.GLITCH_HOLDER_WORKER_TOKEN }}
           GLITCH_HOLDER_SCAN_INTERNAL_TOKEN: ${{ secrets.GLITCH_HOLDER_SCAN_INTERNAL_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
           python3 - <<'PY'
           import json,os,urllib.request,urllib.error,urllib.parse
           base=os.environ.get("GLITCH_PREVIEW_URL","").rstrip("/")
           token=os.environ.get("GLITCH_HOLDER_WORKER_TOKEN","")
+          bypass=os.environ.get("VERCEL_AUTOMATION_BYPASS_SECRET","")
+          if not bypass:raise SystemExit("Vercel automation bypass secret missing")
           if not base.startswith("https://") or not token:
               raise SystemExit("Preview URL or worker token not configured")
           if urllib.parse.urlparse(base).hostname != "doom404-wallet-signal-git-feature-glitch-assess-3d8131-doom-404.vercel.app":
@@ -31,7 +34,7 @@ jobs:
           opener=urllib.request.build_opener(NoRedirect)
           def post(path,payload):
               req=urllib.request.Request(base+path,data=json.dumps(payload).encode(),
-                  headers={"Content-Type":"application/json","x-glitch-worker-token":token},method="POST")
+                  headers={"Content-Type":"application/json","x-glitch-worker-token":token,"x-vercel-protection-bypass":bypass},method="POST")
               try:
                   with opener.open(req,timeout=70) as response:return json.load(response)
               except urllib.error.HTTPError as exc:raise RuntimeError(f"Worker endpoint HTTP {exc.code}") from None
@@ -41,9 +44,9 @@ jobs:
           def start_scan():
               req=urllib.request.Request(base+"/api/holder-scan-start",
                   data=json.dumps({"mint":mint}).encode(),method="POST",
-                  headers={"Content-Type":"application/json","x-glitch-internal-token":start_token})
+                  headers={"Content-Type":"application/json","x-glitch-internal-token":start_token,"x-vercel-protection-bypass":bypass})
               try:
-                  with urllib.request.urlopen(req,timeout=70) as response:return json.load(response)
+                  with opener.open(req,timeout=70) as response:return json.load(response)
               except urllib.error.HTTPError as exc:raise RuntimeError(f"Scan-start HTTP {exc.code}") from None
           started=start_scan()
           print(json.dumps({"step":"start","status":started.get("status")}))
@@ -51,7 +54,9 @@ jobs:
               result=post("/api/holder-scan-tick",{})
               print(json.dumps({"step":"tick","batch":batch+1,"status":result.get("status"),"requestCount":result.get("requestCount")}))
               if result.get("status")=="idle":break
-          with urllib.request.urlopen(base+"/api/holder-scan-status?mint="+mint,timeout=30) as response:
+          status_request=urllib.request.Request(base+"/api/holder-scan-status?mint="+mint,
+              headers={"x-vercel-protection-bypass":bypass})
+          with opener.open(status_request,timeout=30) as response:
               state=json.load(response)
           scan=state.get("scan") or {}
           print(json.dumps({"step":"verify","status":state.get("status"),
