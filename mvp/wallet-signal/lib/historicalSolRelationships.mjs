@@ -1,6 +1,7 @@
 // Read-only historical discovery of direct SOL transfers from a sampled wallet history.
 // All edges carry on-chain signatures. Does not claim complete wallet history.
 import {Connection,PublicKey} from '@solana/web3.js';
+import {extractCrossAssetTokenTransfers} from './crossAssetTokenTransfers.mjs';
 export async function discoverSolRelationships({rpcUrl,wallet,limit=100}={}) {
  if(!rpcUrl || !wallet)throw new TypeError('RPC URL and wallet required');
  if(!Number.isInteger(limit)||limit<1||limit>1000)throw new TypeError('limit must be 1..1000');
@@ -13,6 +14,7 @@ export async function discoverSolRelationships({rpcUrl,wallet,limit=100}={}) {
   try{
    const tx=await connection.getParsedTransaction(entry.signature,{commitment:'finalized',maxSupportedTransactionVersion:0});
    if(!tx || tx.meta?.err!==null){errors.push(entry.signature);continue;}
+   edges.push(...extractCrossAssetTokenTransfers(tx,{signature:entry.signature,wallet}));
    const instructions=[...(tx.transaction?.message?.instructions??[]),
      ...(tx.meta?.innerInstructions??[]).flatMap(g=>g.instructions??[])];
    for(const ix of instructions){
@@ -28,5 +30,5 @@ export async function discoverSolRelationships({rpcUrl,wallet,limit=100}={}) {
  }
  return {wallet,edges,coverage:{signaturesRetrieved:signatures.length,decoded:signatures.length-errors.length,
    failed:errors.length,requestedLimit:limit,exhausted:signatures.length<limit,
-   scope:'Recent signatures for one wallet; not full history'}};
+   scope:'Recent signatures for one wallet; explicit SOL and owner-resolved SPL transfers, not full history'}};
 }
