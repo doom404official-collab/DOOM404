@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import HolderBubbleMap from "./HolderBubbleMap";
+import HolderNetworkAssessment from "./HolderNetworkAssessment";
 import {reconcileHolderSnapshot} from "../lib/reconcileHolderSnapshot.mjs";
 import {scoreHolderConcentration} from "../lib/holderConcentrationScore.mjs";
 import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
@@ -520,6 +521,7 @@ function CreatorLookup() {
           </div>)}
         </div>;
       })()}
+      <HolderNetworkAssessment mint={result.mint} />
       <Section title="TOKEN SECURITY OVERVIEW" defaultOpen={true}>
         <p style={{ color: "#ff8585", letterSpacing: 2, fontSize: 12, fontWeight: 700, marginTop: 0 }}>GLITCH // TOKEN SECURITY OVERVIEW</p>
         <h3 style={{ margin: "0 0 8px" }}>Observed signals, not a safety rating</h3>
