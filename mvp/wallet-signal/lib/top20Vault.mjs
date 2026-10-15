@@ -35,6 +35,11 @@ export function createTop20Vault({url,serviceRoleKey,fetchImpl=fetch}={}) {
     throw new Error('Frozen snapshot persistence mismatch');
    return snapshot.id;
   },
+  async getLatestFrozenByMint(mint){
+   const rows=await request('glitch_top20_snapshots',{query:'?mint=eq.'+encodeURIComponent(mint)+'&select=id,mint,snapshot_slot,supply_raw,holder_ranking,excluded_wallets,status&order=created_at.desc&limit=10'});
+   if(!Array.isArray(rows))throw new Error('Invalid snapshot lookup response');
+   return rows.find(r=>Array.isArray(r.holder_ranking)&&r.holder_ranking.length===20&&Array.isArray(r.excluded_wallets)&&r.excluded_wallets.includes('1nc1nerator11111111111111111111111111111111'))??null;
+  },
   async getFrozen(snapshotId){
    const rows=await request('glitch_top20_snapshots',{query:'?id=eq.'+encodeURIComponent(snapshotId)+'&select=id,mint,snapshot_slot,supply_raw,holder_ranking,excluded_wallets,status'});
    if(rows?.length!==1)throw new Error('Frozen snapshot not found');
