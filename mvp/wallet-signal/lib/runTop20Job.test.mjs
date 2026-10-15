@@ -18,7 +18,7 @@ test('one run processes all twenty in four persisted batches',async()=>{
  assert.equal(calls,20);assert.equal(vault.batches.length,4);
 });
 test('completed batches are skipped on resumption',async()=>{
- const vault=mockVault([{start_index:0,status:'complete'}]);let calls=0;
+ const vault=mockVault([{start_index:0,status:'complete',wallet_results:holders.slice(0,5).map(h=>({wallet:h.wallet,edges:[],coverage:{failed:0}}))}]);let calls=0;
  const r=await runTop20Job({snapshotId:id,rpcUrl:'https://example.org',vault,
   discover:async()=>{calls++;return {edges:[],coverage:{failed:0,failedPage:false}};}});
  assert.equal(r.status,'sampled_not_final');assert.equal(calls,15);
