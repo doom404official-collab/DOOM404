@@ -1,0 +1,43 @@
+name: GLITCH evidence validation worker
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+permissions:
+  contents: read
+concurrency:
+  group: glitch-evidence-validation
+  cancel-in-progress: false
+jobs:
+  validate:
+    if: github.ref == 'refs/heads/feature/glitch-assessment-sprint1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Process one bounded evidence batch
+        env:
+          GLITCH_PREVIEW_URL: ${{ vars.GLITCH_PREVIEW_URL }}
+          GLITCH_HOLDER_WORKER_TOKEN: ${{ secrets.GLITCH_HOLDER_WORKER_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          python3 - <<'PY'
+          import json,os,urllib.request,urllib.parse
+          base=os.environ.get("GLITCH_PREVIEW_URL","").rstrip("/")
+          token=os.environ.get("GLITCH_HOLDER_WORKER_TOKEN","")
+          bypass=os.environ.get("VERCEL_AUTOMATION_BYPASS_SECRET","")
+          if not base.startswith("https://") or not token or not bypass:
+              raise SystemExit("Worker configuration missing")
+          host=urllib.parse.urlparse(base).hostname
+          if not host or not host.endswith(".vercel.app"):
+              raise SystemExit("Preview hostname rejected")
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args):
+                  raise RuntimeError("Authenticated redirect refused")
+          opener=urllib.request.build_opener(NoRedirect)
+          req=urllib.request.Request(base+"/api/holder-evidence-tick",method="POST",data=b"{}",
+              headers={"Content-Type":"application/json","x-glitch-worker-token":token,
+                       "x-vercel-protection-bypass":bypass})
+          with opener.open(req,timeout=75) as response:
+              result=json.load(response)
+          print(json.dumps({k:result.get(k) for k in ("processed","queuedSignatures","requestCount")}))
+          PY
