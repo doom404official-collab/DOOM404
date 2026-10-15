@@ -26,10 +26,19 @@ export function createTop20Vault({url,serviceRoleKey,fetchImpl=fetch}={}) {
   async saveBatch({snapshotId,startIndex,results,coverage,status='complete'}){
    if(![0,5,10,15].includes(startIndex)||!['complete','partial','failed'].includes(status))
     throw new TypeError('Invalid batch');
-   return request('glitch_top20_batches',{method:'POST',
-    query:'?on_conflict=snapshot_id,start_index',
+   if(!Array.isArray(results)||!coverage||typeof coverage!=='object')throw new TypeError('Invalid batch evidence');
+   const existing=await request('glitch_top20_batches',{query:'?snapshot_id=eq.'+encodeURIComponent(snapshotId)+'&start_index=eq.'+startIndex+'&select=status,wallet_results,coverage'});
+   if(existing?.length){
+    if(existing.length!==1 || existing[0].status!==status ||
+      JSON.stringify(existing[0].wallet_results)!==JSON.stringify(results) ||
+      JSON.stringify(existing[0].coverage)!==JSON.stringify(coverage))
+      throw new Error('Existing batch differs; explicit retry/version handling required');
+    return {status:'already_saved'};
+   }
+   await request('glitch_top20_batches',{method:'POST',
     body:{snapshot_id:snapshotId,start_index:startIndex,batch_size:5,status,wallet_results:results,coverage},
-    prefer:'resolution=merge-duplicates,return=minimal'});
+    prefer:'return=minimal'});
+   return {status:'saved'};
   },
   async getBatches(snapshotId){
    return request('glitch_top20_batches',{query:'?snapshot_id=eq.'+encodeURIComponent(snapshotId)+'&select=*&order=start_index.asc'});
