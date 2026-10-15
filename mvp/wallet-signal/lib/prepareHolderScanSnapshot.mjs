@@ -11,7 +11,7 @@ export async function prepareHolderScanSnapshot({mint,connection}){
  const total=BigInt(supply?.value?.amount||"0");
  if(total<=0n)throw Error("INVALID_TOKEN_SUPPLY");
  const rows=(largest?.value||[]).slice(0,20);
- if(rows.length!==20)throw Error("TOP20_UNAVAILABLE");
+ if(rows.length===0)throw Error("NO_HOLDER_ACCOUNTS");
  const accounts=await Promise.all(rows.map(row=>connection.getParsedAccountInfo(row.address,"confirmed")));
  const holders=rows.map((row,i)=>{
   const owner=accounts[i]?.value?.data?.parsed?.info?.owner;
