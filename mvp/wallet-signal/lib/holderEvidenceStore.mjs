@@ -28,6 +28,7 @@ export function createHolderEvidenceStore({url=process.env.SUPABASE_URL,key=proc
    }
    throw Error("EVIDENCE_PAGINATION_LIMIT");
   },
+  async nextJob(){const rows=await callRpc("glitch_next_holder_evidence_job",{});return Array.isArray(rows)?rows[0]||null:null;},
   seed:(jobId)=>callRpc("glitch_seed_holder_evidence",{p_job_id:jobId}),
   claim:(jobId,workerId,limit=6)=>callRpc("glitch_claim_holder_evidence",{p_job_id:jobId,p_worker:workerId,p_limit:limit}),
   finish:(jobId,signature,workerId,{status,evidence,attempts})=>callRpc("glitch_finish_holder_evidence",{p_job_id:jobId,p_signature:signature,p_worker:workerId,p_status:status,p_evidence:evidence,p_attempts:attempts}),
