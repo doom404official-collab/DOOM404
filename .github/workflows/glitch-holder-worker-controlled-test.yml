@@ -1,0 +1,85 @@
+name: GLITCH holder worker controlled test
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: glitch-holder-investigation
+  cancel-in-progress: false
+jobs:
+  run:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Resume bounded holder investigation
+        env:
+          GLITCH_PREVIEW_URL: https://doom404-wallet-signal-git-feature-glitch-assess-3d8131-doom-404.vercel.app
+          GLITCH_HOLDER_WORKER_TOKEN: ${{ secrets.GLITCH_HOLDER_WORKER_TOKEN }}
+          GLITCH_HOLDER_SCAN_INTERNAL_TOKEN: ${{ secrets.GLITCH_HOLDER_SCAN_INTERNAL_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          python3 - <<'PY'
+          import json, os, time, urllib.request, urllib.error, urllib.parse
+          base=os.environ["GLITCH_PREVIEW_URL"].rstrip("/")
+          host="doom404-wallet-signal-git-feature-glitch-assess-3d8131-doom-404.vercel.app"
+          if urllib.parse.urlparse(base).hostname != host or not base.startswith("https://"):
+              raise SystemExit("Unexpected preview host")
+          worker=os.environ.get("GLITCH_HOLDER_WORKER_TOKEN")
+          start_token=os.environ.get("GLITCH_HOLDER_SCAN_INTERNAL_TOKEN")
+          bypass=os.environ.get("VERCEL_AUTOMATION_BYPASS_SECRET")
+          if not all((worker,start_token,bypass)):
+              raise SystemExit("Required secret missing")
+          mint="98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump"
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,req,fp,code,msg,hdrs,newurl):
+                  raise RuntimeError("Authenticated redirect refused")
+          opener=urllib.request.build_opener(NoRedirect)
+          def request(path, payload=None, auth=None):
+              headers={"x-vercel-protection-bypass":bypass}
+              if auth: headers.update(auth)
+              if payload is not None: headers["Content-Type"]="application/json"
+              req=urllib.request.Request(base+path,headers=headers,
+                  data=json.dumps(payload).encode() if payload is not None else None,
+                  method="POST" if payload is not None else "GET")
+              for attempt in range(3):
+                  try:
+                      with opener.open(req,timeout=65) as response:return json.load(response)
+                  except urllib.error.HTTPError as exc:
+                      if exc.code not in (429,500,502,503,504) or attempt==2:
+                          raise RuntimeError(f"Endpoint HTTP {exc.code}") from None
+                  except (TimeoutError,urllib.error.URLError):
+                      if attempt==2:raise
+                  time.sleep(2**attempt)
+          def status():
+              return request("/api/holder-scan-status?mint="+mint)
+          before=status()
+          current=before.get("status")
+          if current=="complete":
+              print(json.dumps({"step":"skip","reason":"already_complete"}))
+              raise SystemExit(0)
+          if current=="failed":
+              raise SystemExit("Investigation failed: manual review required")
+          if current=="not_started":
+              started=request("/api/holder-scan-start",{"mint":mint},
+                  {"x-glitch-internal-token":start_token})
+              print(json.dumps({"step":"start","status":started.get("status")}))
+          elif current not in ("queued","running","partial"):
+              raise SystemExit("Unexpected scan status; refusing to run")
+          for batch in range(2):
+              result=request("/api/holder-scan-tick",{},
+                  {"x-glitch-worker-token":worker})
+              print(json.dumps({"step":"tick","batch":batch+1,
+                  "status":result.get("status"),"requestCount":result.get("requestCount")}))
+              if result.get("status") in ("complete","idle"):break
+              if result.get("status")=="failed":
+                  raise SystemExit("Worker reported failure")
+          after=status()
+          scan=after.get("scan") or {}
+          print(json.dumps({"step":"verify","status":after.get("status"),
+              "transactionsChecked":scan.get("transactionsChecked"),
+              "walletHistoriesReached":scan.get("walletHistoriesReached"),
+              "directPairs":scan.get("directPairs")}))
+          if after.get("status") not in ("partial","complete","running","queued"):
+              raise SystemExit("Unexpected final status")
+          PY
