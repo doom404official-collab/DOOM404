@@ -32,3 +32,15 @@ test('raw mint supply cannot produce final score despite investigation flags',()
  assert.equal(r.score,null);
  assert.equal(r.verification.supplyVerified,false);
 });
+
+test('independently verified components survive overall verification gate',()=>{
+ const r=assessHolderSnapshot({snapshot,investigationComplete:true,creatorTeamVerified:true,creatorTeamWallets:['a'],transferEdges:[
+  {from:'a',to:'b',verifiedTransfer:true,signature:'tx1',strength:'strong'}
+ ]});
+ assert.equal(r.status,'provisional');
+ assert.equal(r.score,null);
+ assert.equal(r.metrics.creatorTeamPct,40);
+ assert.equal(r.metrics.maxVerifiedClusterPct,70);
+ assert.ok(r.components.creatorTeam!==null);
+ assert.ok(r.components.connectedWallets!==null);
+});
