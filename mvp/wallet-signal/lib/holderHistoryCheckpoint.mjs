@@ -3,7 +3,7 @@
  * JSON is intended for GitHub Actions artifacts, never as an attribution write.
  */
 export function createHolderHistoryCheckpoint({mint,holders=[]}={}){
- if(typeof mint!=="string"||!mint||!Array.isArray(holders)||holders.length!==20)throw Error("INVALID_HOLDER_SET");
+ if(typeof mint!=="string"||!mint||!Array.isArray(holders)||holders.length<1||holders.length>20)throw Error("INVALID_HOLDER_SET");
  const wallets=[...new Set(holders.map(h=>h.ownerWallet))];
  if(wallets.some(w=>typeof w!=="string"||!w))throw Error("UNRESOLVED_HOLDER_OWNER");
  return {version:1,mint,holders:holders.map(h=>({...h})),
