@@ -2,12 +2,19 @@
 // REST writes use the snapshot ID as an idempotency key; rank data is immutable after insertion.
 export function createTop20Vault({url,serviceRoleKey,fetchImpl=fetch}={}) {
  if(!/^https:\/\//.test(url??'')||!serviceRoleKey)throw new TypeError('Supabase URL and server-side key required');
- const endpoint=url.replace(/\/$/,'')+'/rest/v1/';
+ const parsed=new URL(url);
+ if(parsed.pathname!=='/' || parsed.search || parsed.hash || parsed.username || parsed.password)
+  throw new TypeError('SUPABASE_URL must be the project origin without path or query');
+ const endpoint=parsed.origin+'/rest/v1/';
  const headers={apikey:serviceRoleKey,Authorization:'Bearer '+serviceRoleKey,'Content-Type':'application/json'};
  async function request(table,{method='GET',query='',body,prefer}={}){
   const response=await fetchImpl(endpoint+table+query,{method,headers:{...headers,...(prefer?{Prefer:prefer}:{})},
    ...(body===undefined?{}:{body:JSON.stringify(body)})});
-  if(!response.ok)throw new Error('VAULT_'+table.toUpperCase()+'_HTTP_'+response.status);
+  if(!response.ok){
+   let providerCode='UNKNOWN';
+   try {const payload=await response.json();if(/^PGRST[0-9]{3}$/.test(payload?.code??''))providerCode=payload.code;}catch{}
+   throw new Error('VAULT_'+table.toUpperCase()+'_HTTP_'+response.status+'_'+providerCode);
+  }
   const text=await response.text();
   return text?JSON.parse(text):null;
  }
