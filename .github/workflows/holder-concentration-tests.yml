@@ -16,6 +16,8 @@ on:
       - 'mvp/wallet-signal/lib/holderProviderIntegration.test.mjs'
       - 'mvp/wallet-signal/lib/holderRelationshipNetwork.mjs'
       - 'mvp/wallet-signal/lib/holderRelationshipNetwork.test.mjs'
+      - 'mvp/wallet-signal/lib/historicalSolRelationships.mjs'
+      - 'mvp/wallet-signal/lib/historicalSolRelationships.test.mjs'
       - '.github/workflows/holder-concentration-tests.yml'
   pull_request:
     paths:
@@ -31,6 +33,8 @@ on:
       - 'mvp/wallet-signal/lib/holderProviderIntegration.test.mjs'
       - 'mvp/wallet-signal/lib/holderRelationshipNetwork.mjs'
       - 'mvp/wallet-signal/lib/holderRelationshipNetwork.test.mjs'
+      - 'mvp/wallet-signal/lib/historicalSolRelationships.mjs'
+      - 'mvp/wallet-signal/lib/historicalSolRelationships.test.mjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -43,4 +47,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test mvp/wallet-signal/lib/holderConcentrationScore.test.mjs mvp/wallet-signal/lib/concentrationEvidence.test.mjs mvp/wallet-signal/lib/holderConcentrationAdapter.test.mjs mvp/wallet-signal/lib/concentrationEvidenceBridge.test.mjs mvp/wallet-signal/lib/holderProviderIntegration.test.mjs mvp/wallet-signal/lib/holderRelationshipNetwork.test.mjs
+      - run: npm install --no-audit --no-fund --prefix mvp/wallet-signal
+      - run: node --test mvp/wallet-signal/lib/holderConcentrationScore.test.mjs mvp/wallet-signal/lib/concentrationEvidence.test.mjs mvp/wallet-signal/lib/holderConcentrationAdapter.test.mjs mvp/wallet-signal/lib/concentrationEvidenceBridge.test.mjs mvp/wallet-signal/lib/holderProviderIntegration.test.mjs mvp/wallet-signal/lib/holderRelationshipNetwork.test.mjs mvp/wallet-signal/lib/historicalSolRelationships.test.mjs
