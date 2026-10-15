@@ -11,6 +11,7 @@ if(!env.HELIUS_RPC_URL||!env.TEST_TOKEN_MINT||!env.SUPABASE_URL||!env.SUPABASE_S
   const expectedHost='acwmtobcbpkjfqiatyke.supabase.co';
   const actualHost=new URL(env.SUPABASE_URL).hostname;
   if(actualHost!==expectedHost)throw new Error('SUPABASE_PROJECT_MISMATCH');
+  if(new URL(env.SUPABASE_URL).pathname!=='/')throw new Error('SUPABASE_URL_HAS_PATH');
   const raw=await fetchMintHolderSnapshot({rpcUrl:env.HELIUS_RPC_URL,mint:env.TEST_TOKEN_MINT});
   stage='freeze_top20';
   const frozen=freezeTop20Snapshot({mint:env.TEST_TOKEN_MINT,snapshot:raw});
@@ -24,7 +25,8 @@ if(!env.HELIUS_RPC_URL||!env.TEST_TOKEN_MINT||!env.SUPABASE_URL||!env.SUPABASE_S
    holderCount:frozen.holders.length,supplyDefinition:raw.supplyDefinition,finalScore:false}));
  }catch(error){
   const message=String(error?.message??'');
-  const code=/^VAULT_[A-Z0-9_]+_HTTP_[0-9]{3}$/.test(message)?message:
+  const code=/^VAULT_[A-Z0-9_]+_HTTP_[0-9]{3}(?:_PGRST[0-9]{3}|_UNKNOWN)?$/.test(message)?message:
+   /SUPABASE_URL_HAS_PATH/.test(message)?'SUPABASE_URL_HAS_PATH':
    /Token account totals do not match/.test(message)?'SUPPLY_RECONCILIATION':
    /slots too far apart/.test(message)?'SLOT_MISMATCH':
    /Read-after-write verification mismatch|Frozen snapshot persistence mismatch/.test(message)?'READBACK_MISMATCH':
