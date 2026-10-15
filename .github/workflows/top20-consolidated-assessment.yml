@@ -1,0 +1,29 @@
+name: Top20 Consolidated Assessment
+on:
+  workflow_dispatch:
+    inputs:
+      snapshot_id:
+        description: 'Verified frozen Top20 snapshot ID'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  assess:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Consolidate persisted holder relationships
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TOP20_SNAPSHOT_ID: ${{ inputs.snapshot_id }}
+        run: node scripts/consolidate-top20.mjs
