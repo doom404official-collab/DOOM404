@@ -17,11 +17,12 @@ export async function POST(request){
  if(!isAuthorized(request))return NextResponse.json({error:"Unauthorized"},{status:401});
  let stage="configuration";
  try{
-  const mint=process.env.GLITCH_EVIDENCE_MINT;
-  if(!mint)return NextResponse.json({error:"Mint not configured"},{status:503});
+  const evidenceStore=createHolderEvidenceStore();
+  const selected=await evidenceStore.nextJob();
+  if(!selected)return NextResponse.json({status:"idle",processed:0,requestCount:0},{headers:{"Cache-Control":"no-store"}});
   stage="checkpoint";
-  const job=await createHolderJobStore().getLatest(mint);
-  if(!job?.checkpoint)return NextResponse.json({status:"not_started"});
+  const job=await createHolderJobStore().getLatest(selected.mint);
+  if(!job?.checkpoint||job.id!==selected.id)return NextResponse.json({status:"stale_job",processed:0},{headers:{"Cache-Control":"no-store"}});
   stage="rpc_configuration";
   const endpoint=process.env.HELIUS_RPC_URL;
   if(!endpoint||!endpoint.startsWith("https://"))throw Error("RPC_NOT_CONFIGURED");
@@ -37,7 +38,7 @@ export async function POST(request){
   };
   stage="validation_batch";
   const result=await processEvidenceBatch({jobId:job.id,checkpoint:job.checkpoint,
-   store:createHolderEvidenceStore(),rpc,limit:6});
+   store:evidenceStore,rpc,limit:6});
   return NextResponse.json({...result,requestCount:count},{headers:{"Cache-Control":"no-store"}});
  }catch(error){
   const message=String(error?.message||"");
