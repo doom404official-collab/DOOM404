@@ -6,11 +6,16 @@ export function assessHolderSnapshot({snapshot,transferEdges=[],creatorTeamWalle
  const validation=validateHolderSnapshot(snapshot);
  if(!validation.valid) return {status:'unavailable',score:null,reason:validation.reason};
  const clusters=buildEvidenceClusters(transferEdges);
+ const supplyVerified=snapshot.supplyDefinition==='verified-circulating-supply' && snapshot.supplyVerified===true;
+ const coverageVerified=snapshot.coverageVerified===true;
+ const exclusionsVerified=snapshot.exclusionsVerified===true;
+ const canFinalize=supplyVerified && coverageVerified && exclusionsVerified;
  const result=scoreHolderConcentration({
    holders:snapshot.holders,circulatingSupply:snapshot.circulatingSupply,
-   connectedClusters:clusters,creatorTeamWallets,excludedWallets,investigationComplete,creatorTeamVerified
+   connectedClusters:clusters,creatorTeamWallets,excludedWallets,investigationComplete:canFinalize && investigationComplete,creatorTeamVerified:canFinalize && creatorTeamVerified
  });
  return {...result,snapshotSlot:snapshot.slot,clusterCount:clusters.length,
   dataProvenance:snapshot.source??'unspecified',
-  coverageWarning:'Completeness and circulating-supply definition require independent provider verification.'};
+  verification:{supplyVerified,coverageVerified,exclusionsVerified},
+  coverageWarning:canFinalize ? null : 'Final scoring blocked until circulating supply, holder coverage and exclusions are independently verified.'};
 }
