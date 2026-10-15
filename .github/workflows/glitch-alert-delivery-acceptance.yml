@@ -1,0 +1,15 @@
+name: GLITCH alert delivery acceptance
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  simulate-alert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Simulate evidence health alert (no database changes)
+        run: |
+          echo "::error title=GLITCH Evidence Health TEST::Simulated retry exhaustion — notification delivery acceptance"
+          echo "This intentional failure tests GitHub Actions notification settings. No production evidence was changed."
+          exit 1
