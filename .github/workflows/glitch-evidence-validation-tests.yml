@@ -1,0 +1,24 @@
+name: GLITCH evidence validation tests
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/glitch-assessment-sprint1]
+    paths:
+      - 'mvp/wallet-signal/lib/holderEvidenceValidator.mjs'
+      - 'mvp/wallet-signal/lib/directHolderTransfers.mjs'
+      - 'mvp/wallet-signal/tests/holderEvidenceValidator.test.mjs'
+      - '.github/workflows/glitch-evidence-validation-tests.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run evidence validation tests
+        working-directory: mvp/wallet-signal
+        run: node --test tests/holderEvidenceValidator.test.mjs
