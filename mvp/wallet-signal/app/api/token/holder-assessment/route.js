@@ -17,7 +17,8 @@ export async function GET(request){
   const snapshot=id?await vault.getFrozen(id):await vault.getLatestFrozenByMint(mint);
   if(!snapshot)return NextResponse.json({status:'not_assessed',reason:'No completed eligible Top-20 investigation for this token'},{status:404});
   if(snapshot.mint!==mint)return NextResponse.json({error:'Snapshot mint mismatch'},{status:400});
-  const batches=await vault.getBatches(id);
+  const batches=await vault.getBatches(snapshot.id);
+  if(batches.length!==4)return NextResponse.json({mint,status:'investigation_pending',snapshotId:snapshot.id,processedBatches:batches.length,totalBatches:4},{status:202,headers:{'Cache-Control':'no-store'}});
   const result=consolidateTop20({snapshot,batches});
   return NextResponse.json({mint,assessment:result},{headers:{'Cache-Control':'no-store'}});
  }catch{
