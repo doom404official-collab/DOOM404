@@ -4,15 +4,21 @@ import {createHolderHistoryCheckpoint} from "./holderHistoryCheckpoint.mjs";
 /** Create a stable holder snapshot from fresh RPC balances. */
 export async function prepareHolderScanSnapshot({mint,connection}){
  const key=new PublicKey(mint);
- const [largest,supply]=await Promise.all([
-  connection.getTokenLargestAccounts(key,"confirmed"),
-  connection.getTokenSupply(key,"confirmed")
- ]);
+ let largest,supply;
+ try{largest=await connection.getTokenLargestAccounts(key,"confirmed");}
+ catch{throw Error("SNAPSHOT_LARGEST_ACCOUNTS_RPC_FAILED");}
+ try{supply=await connection.getTokenSupply(key,"confirmed");}
+ catch{throw Error("SNAPSHOT_SUPPLY_RPC_FAILED");}
  const total=BigInt(supply?.value?.amount||"0");
  if(total<=0n)throw Error("INVALID_TOKEN_SUPPLY");
  const rows=(largest?.value||[]).slice(0,20);
  if(rows.length===0)throw Error("NO_HOLDER_ACCOUNTS");
- const accounts=await Promise.all(rows.map(row=>connection.getParsedAccountInfo(row.address,"confirmed")));
+ const accounts=[];
+ // Bound owner lookups to avoid bursts of 20 concurrent RPC calls.
+ for(let i=0;i<rows.length;i+=3){
+  try{accounts.push(...await Promise.all(rows.slice(i,i+3).map(row=>connection.getParsedAccountInfo(row.address,"confirmed"))));}
+  catch{throw Error("SNAPSHOT_OWNER_LOOKUP_RPC_FAILED");}
+ }
  const holders=rows.map((row,i)=>{
   const owner=accounts[i]?.value?.data?.parsed?.info?.owner;
   if(typeof owner!=="string"||!owner)throw Error("HOLDER_OWNER_UNRESOLVED");
