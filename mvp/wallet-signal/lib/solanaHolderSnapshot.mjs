@@ -1,6 +1,6 @@
 // Solana RPC token-account snapshot collector.
 // Collects all token accounts for SPL Token and Token-2022, groups by owner,
-// and refuses to claim a complete snapshot if RPC slots disagree.
+// and checks supply reconciliation without requiring identical RPC response slots.
 // Provider/RPC must explicitly support untruncated getProgramAccounts responses.
 import {Connection,PublicKey} from '@solana/web3.js';
 export const PROGRAMS=['TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA','TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'];
@@ -19,7 +19,8 @@ export async function fetchMintHolderSnapshot({rpcUrl,mint,timeoutMs=30000}) {
    filters:[{memcmp:{offset:0,bytes:mint}},...(owner===PROGRAMS[0]?[{dataSize:165}]:[])],
  });
  if(!response || !Array.isArray(response.value)) throw new Error('Unusable RPC holder response');
- if(response.context.slot!==supply.context.slot) throw new Error('Supply and holder snapshots have different slots; retry for consistent data');
+ const slotDelta=Math.abs(response.context.slot-supply.context.slot);
+ if(slotDelta>150) throw new Error('Supply and holder snapshots too far apart; retry for consistent data');
  // Token-2022 may have account extensions; first 72 bytes retain base account layout.
  const amounts=new Map();
  let total=0n;
@@ -41,6 +42,7 @@ export async function fetchMintHolderSnapshot({rpcUrl,mint,timeoutMs=30000}) {
  const holders=[...amounts].filter(([,v])=>v>0n).map(([wallet,balance])=>({wallet,balance:Number(balance)}));
  return {slot:response.context.slot,complete:true,holders,circulatingSupply:Number(rawSupply),
    rawMintSupply:Number(rawSupply),decimals,source:'solana-rpc-getProgramAccounts',
+   supplySlot:supply.context.slot,holderSlot:response.context.slot,slotDelta,
    supplyDefinition:'mint-total-supply-not-circulating',
    warning:'Mint total supply is not circulating supply. Exclusions and supply adjustments require verified provenance.'};
 }
