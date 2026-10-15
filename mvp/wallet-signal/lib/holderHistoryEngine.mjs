@@ -33,11 +33,11 @@ export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,page
  try{
   await decodePending(Math.max(1,Math.floor(maxRequests/3)));
   for(const wallet of nextHolderScanOrder(checkpoint)){
-   advanceHolderScanCursor(checkpoint,wallet);
    const page=await collectWalletSignaturePage({wallet,cursor:checkpoint.wallets[wallet].cursor,limit:pageLimit,
     fetchPage:(address,opts)=>limitedRpc("getSignaturesForAddress",[address,{limit:opts.limit,
      ...(opts.before?{before:opts.before}:{}),commitment:"confirmed"}])});
    recordHistoryPage(checkpoint,{wallet,page});
+   advanceHolderScanCursor(checkpoint,wallet);
    await decodePending();
   }
  }catch(error){reason=String(error?.message||"SCAN_INTERRUPTED");}
