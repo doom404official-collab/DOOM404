@@ -1,5 +1,6 @@
 import {analyzeHolderNetwork} from './holderRelationshipNetwork.mjs';
 import {summarizeHolderNetworkExposure} from './holderNetworkExposure.mjs';
+import {scoreTop20Network} from './top20NetworkScore.mjs';
 // Merge only on-chain verified transfer evidence. A transfer is not proof of common ownership.
 export function consolidateTop20({snapshot,batches,infrastructureWallets=[],creatorWallets=[]}={}){
  const holders=snapshot?.holder_ranking;
@@ -30,11 +31,14 @@ export function consolidateTop20({snapshot,batches,infrastructureWallets=[],crea
  const transfers=[...unique.values()];
  const network=analyzeHolderNetwork({holders,transfers,infrastructureWallets,creatorWallets});
  const exposure=summarizeHolderNetworkExposure({holders,network,circulatingSupply:supply});
+ const networkScore=scoreTop20Network({holders,transfers,network,exposure,
+  historyCoverage:records.map(r=>({wallet:r.wallet,decoded:r.coverage?.decoded??0,failed:r.coverage?.failed??0}))});
  return {status:'provisional',snapshotId:snapshot.id,slot:snapshot.snapshot_slot,
   supplyDefinition:'mint-total-supply-not-circulating',holdersSampled:records.length,
   partialBatches:batches.filter(b=>b.status==='partial').length,
   rawTransferRecords:records.reduce((n,r)=>n+(r.edges?.length??0),0),
   deduplicatedVerifiedTransfers:transfers.length,
+  networkScore,
   network:{connectedHolderCount:network.connectedHolderCount,directHolderCount:network.directHolderCount,
    excludedHighDegreeHubCount:network.excludedHighDegreeHubCount},
   exposure:{connectedSupplyPct:exposure.connectedSupplyPct,largestClusterPct:exposure.largestClusterPct,
