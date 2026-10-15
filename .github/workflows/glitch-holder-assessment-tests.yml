@@ -1,0 +1,24 @@
+name: GLITCH holder assessment tests
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/glitch-assessment-sprint1]
+    paths:
+      - 'mvp/wallet-signal/lib/verifiedHolderConnections.mjs'
+      - 'mvp/wallet-signal/lib/verifiedHolderConcentrationAssessment.mjs'
+      - 'mvp/wallet-signal/lib/holderConcentrationScore.mjs'
+      - 'mvp/wallet-signal/tests/verifiedHolderConnections.test.mjs'
+      - 'mvp/wallet-signal/tests/verifiedHolderConcentrationAssessment.test.mjs'
+      - '.github/workflows/glitch-holder-assessment-tests.yml'
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/verifiedHolderConnections.test.mjs tests/verifiedHolderConcentrationAssessment.test.mjs
+        working-directory: mvp/wallet-signal
