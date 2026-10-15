@@ -40,7 +40,7 @@ export async function POST(request){
   const code=/^HOLDER_STORE_HTTP_\d{3}$/.test(message)?message:
    message==="HOLDER_STORE_NOT_CONFIGURED"?"HOLDER_STORE_NOT_CONFIGURED":
    message==="HOLDER_JOB_NOT_FOUND_AFTER_CONFLICT"?"HOLDER_JOB_NOT_FOUND_AFTER_CONFLICT":
-   ["INVALID_TOKEN_SUPPLY","TOP20_UNAVAILABLE","HOLDER_OWNER_UNRESOLVED"].includes(message)?message:
+   ["INVALID_TOKEN_SUPPLY","TOP20_UNAVAILABLE","NO_HOLDER_ACCOUNTS","HOLDER_OWNER_UNRESOLVED"].includes(message)?message:
    /Solana RPC unavailable after retry and fallback/.test(message)?"RPC_RETRIES_EXHAUSTED":
    /429|rate limit/i.test(message)?"RPC_RATE_LIMITED":"UNEXPECTED_ERROR";
   console.error("GLITCH_SCAN_START_FAILURE",{stage,code});
