@@ -1,0 +1,41 @@
+name: GLITCH second-token acceptance
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: glitch-second-token-acceptance
+  cancel-in-progress: false
+jobs:
+  second-token:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Start independent holder investigation in Preview
+        env:
+          GLITCH_PREVIEW_URL: ${{ vars.GLITCH_PREVIEW_URL }}
+          GLITCH_HOLDER_SCAN_INTERNAL_TOKEN: ${{ secrets.GLITCH_HOLDER_SCAN_INTERNAL_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          python3 - <<'PY'
+          import os,json,urllib.request,urllib.error,urllib.parse
+          base=os.environ.get("GLITCH_PREVIEW_URL","").rstrip("/")
+          token=os.environ.get("GLITCH_HOLDER_SCAN_INTERNAL_TOKEN","")
+          bypass=os.environ.get("VERCEL_AUTOMATION_BYPASS_SECRET","")
+          host=urllib.parse.urlparse(base).hostname
+          if not base.startswith("https://") or not host or not host.endswith(".vercel.app") or not token or not bypass:
+              raise SystemExit("Preview configuration incomplete")
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args):raise RuntimeError("Redirect refused")
+          opener=urllib.request.build_opener(NoRedirect)
+          mint="6STAMY3TQZ1okW3roz7K2mkHLyDXiATYkc6JiWzWpump"
+          req=urllib.request.Request(base+"/api/holder-scan-start",method="POST",
+              data=json.dumps({"mint":mint}).encode(),
+              headers={"Content-Type":"application/json","x-glitch-internal-token":token,"x-vercel-protection-bypass":bypass})
+          try:
+              with opener.open(req,timeout=75) as response:result=json.load(response)
+          except urllib.error.HTTPError as exc:
+              print(json.dumps({"httpStatus":exc.code,"step":"scan_start"}))
+              raise SystemExit("Second-token scan could not start")
+          print(json.dumps({"step":"scan_start","status":result.get("status"),"jobCreated":bool(result.get("jobId"))}))
+          PY
