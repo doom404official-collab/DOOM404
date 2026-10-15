@@ -35,3 +35,9 @@ test("request budget preserves unknown rather than rejecting",async()=>{
  assert.deepEqual(result.results[0].unavailableSignatures,["sig2"]);
  assert.equal(result.requestsUsed,1);
 });
+
+test("partially verified relationship does not mean full validation complete",async()=>{
+ const result=await validateHolderEvidence({checkpoint:checkpoint(["sig1","sig2"]),maxRequests:1,rpc:async()=>transfer()});
+ assert.equal(result.results[0].status,"verified");
+ assert.equal(result.complete,false);
+});
