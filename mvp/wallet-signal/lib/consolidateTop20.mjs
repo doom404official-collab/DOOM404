@@ -34,6 +34,7 @@ export function consolidateTop20({snapshot,batches,infrastructureWallets=[],crea
  const eligibleTransfers=transfers.filter(t=>!exclusions.has(t.from)&&!exclusions.has(t.to));
  const network=analyzeHolderNetwork({holders:eligibleHolders,transfers:eligibleTransfers,infrastructureWallets,creatorWallets});
  const exposure=summarizeHolderNetworkExposure({holders:eligibleHolders,network,circulatingSupply:supply});
+ const creatorAttributionStatus=creatorWallets.length?'provided_for_analysis':'not_verified';
  const networkScore=scoreTop20Network({holders:eligibleHolders,transfers:eligibleTransfers,network,exposure,
   historyCoverage:records.map(r=>({wallet:r.wallet,decoded:r.coverage?.decoded??0,failed:r.coverage?.failed??0}))});
  return {status:'provisional',snapshotId:snapshot.id,slot:snapshot.snapshot_slot,
@@ -44,9 +45,15 @@ export function consolidateTop20({snapshot,batches,infrastructureWallets=[],crea
   excludedInfrastructureWalletCount:holders.length-eligibleHolders.length,
   eligibleHoldersScored:eligibleHolders.length,
   networkScore,
+  creatorAttributionStatus,
+  evidenceCoverage:{walletsSampled:records.length,partialBatches:batches.filter(b=>b.status==='partial').length,
+   decodedTransactions:records.reduce((n,r)=>n+(r.coverage?.decoded??0),0),
+   decodeFailures:records.reduce((n,r)=>n+(r.coverage?.failed??0),0),
+   unsuccessfulOnChainTransactions:records.reduce((n,r)=>n+(r.coverage?.skippedFailed??0),0),
+   historyExhaustedWallets:records.filter(r=>r.coverage?.historyComplete===true).length},
   network:{connectedHolderCount:network.connectedHolderCount,directHolderCount:network.directHolderCount,
    excludedHighDegreeHubCount:network.excludedHighDegreeHubCount},
   exposure:{connectedSupplyPct:exposure.connectedSupplyPct,largestClusterPct:exposure.largestClusterPct,
-   creatorLinkedSupplyPct:exposure.creatorLinkedSupplyPct},
+   creatorLinkedSupplyPct:creatorWallets.length?exposure.creatorLinkedSupplyPct:null},
   note:'Top-20 only, bounded historical samples; no connection found does not prove independence.'};
 }
