@@ -4,7 +4,7 @@ import {extractDirectHolderTransfers} from "./directHolderTransfers.mjs";
 export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}={}){
  if(!jobId||!checkpoint||!store||typeof rpc!=="function")throw Error("INVALID_EVIDENCE_JOB");
  const signatures=[...new Set(Object.values(checkpoint.edges||{}).flatMap(e=>e.signatures||[]))];
- try{await store.enqueue(jobId,signatures);}catch(error){throw Error("EVIDENCE_ENQUEUE_FAILED",{cause:error});}
+ // Evidence signatures are seeded separately; do not reinsert the entire queue on every tick.
  const workerId=randomUUID();
  let pending;
  try{pending=await store.claim(jobId,workerId,limit);}catch(error){throw Error("EVIDENCE_CLAIM_FAILED",{cause:error});}
