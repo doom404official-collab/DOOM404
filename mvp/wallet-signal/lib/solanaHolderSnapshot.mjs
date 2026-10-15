@@ -3,7 +3,8 @@
 // and refuses to claim a complete snapshot if RPC slots disagree.
 // Provider/RPC must explicitly support untruncated getProgramAccounts responses.
 import {Connection,PublicKey} from '@solana/web3.js';
-const PROGRAMS=['TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA','TokenzQdBNbLqP5VEhdkAS6EPFh6z1rP7mGXuUnxS'];
+import {TOKEN_PROGRAM_ID,TOKEN_2022_PROGRAM_ID} from '@solana/spl-token';
+export const PROGRAMS=[TOKEN_PROGRAM_ID.toBase58(),TOKEN_2022_PROGRAM_ID.toBase58()];
 export async function fetchMintHolderSnapshot({rpcUrl,mint,timeoutMs=30000}) {
  if(!rpcUrl || !mint) throw new TypeError('RPC URL and mint required');
  const conn=new Connection(rpcUrl,{commitment:'finalized',confirmTransactionInitialTimeout:timeoutMs});
