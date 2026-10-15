@@ -20,9 +20,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: mvp/wallet-signal/package-lock.json
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
       - name: Check holder snapshot
         env:
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
