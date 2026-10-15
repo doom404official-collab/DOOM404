@@ -41,7 +41,7 @@ export function scoreHolderConcentration(input) {
     topHolders: component(top10Pct, 10, 70, 35),
     connectedWallets: investigationComplete ? component(maxClusterPct, 2, 35, 35) : null,
     creatorTeam: component(teamPct, 1, 25, 20),
-    breadth: component(uniqueEligible, 20, 1000, 10) === 0 ? 10 : round(10 - component(uniqueEligible, 20, 1000, 10))
+    breadth: round(10 - component(uniqueEligible, 20, 1000, 10))
   };
   // Breadth rewards a larger distinct-holder population.
   const known = components.topHolders + components.creatorTeam + components.breadth;
