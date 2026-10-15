@@ -1,0 +1,29 @@
+name: Top20 Vault Connection Diagnostic
+on:
+  workflow_dispatch:
+    inputs:
+      snapshot_id:
+        description: 'Optional 64-character frozen snapshot ID'
+        required: false
+        type: string
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Check vault configuration
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TOP20_SNAPSHOT_ID: ${{ inputs.snapshot_id }}
+        run: node scripts/check-top20-vault.mjs
