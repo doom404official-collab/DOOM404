@@ -1,6 +1,7 @@
 import {NextResponse} from 'next/server';
 import {createTop20Vault} from '../../../../lib/top20Vault.mjs';
 import {consolidateTop20} from '../../../../lib/consolidateTop20.mjs';
+import {resolveAssessmentState} from '../../../../lib/assessmentAvailability.mjs';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
 const address=/^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
@@ -18,9 +19,10 @@ export async function GET(request){
   if(!snapshot)return NextResponse.json({status:'not_assessed',reason:'No completed eligible Top-20 investigation for this token'},{status:404});
   if(snapshot.mint!==mint)return NextResponse.json({error:'Snapshot mint mismatch'},{status:400});
   const batches=await vault.getBatches(snapshot.id);
-  if(batches.length!==4)return NextResponse.json({mint,status:'investigation_pending',snapshotId:snapshot.id,processedBatches:batches.length,totalBatches:4},{status:202,headers:{'Cache-Control':'no-store'}});
+  const availability=resolveAssessmentState({snapshot,batches});
+  if(availability.status==='investigation_pending')return NextResponse.json({mint,...availability,totalBatches:4},{status:202,headers:{'Cache-Control':'no-store'}});
   const result=consolidateTop20({snapshot,batches});
-  return NextResponse.json({mint,assessment:result},{headers:{'Cache-Control':'no-store'}});
+  return NextResponse.json({mint,availability,assessment:result},{headers:{'Cache-Control':'no-store'}});
  }catch{
   return NextResponse.json({status:'unavailable',reason:'Assessment could not be retrieved'},{status:503});
  }
