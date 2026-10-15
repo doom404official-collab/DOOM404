@@ -3,7 +3,7 @@
 import {discoverSolRelationships} from './historicalSolRelationships.mjs';
 import {analyzeHolderNetwork} from './holderRelationshipNetwork.mjs';
 import {summarizeHolderNetworkExposure} from './holderNetworkExposure.mjs';
-export async function investigateHolderSample({rpcUrl,snapshot,creatorWallet=null,holderLimit=5,historyLimit=20,discover=discoverSolRelationships}={}) {
+export async function investigateHolderSample({rpcUrl,snapshot,creatorWallet=null,holderLimit=5,historyLimit=20,maxPages=2,discover=discoverSolRelationships}={}) {
  if(!rpcUrl||!snapshot||!Array.isArray(snapshot.holders)||!Number.isFinite(snapshot.circulatingSupply)||snapshot.circulatingSupply<=0)
   throw new TypeError('RPC URL and valid holder snapshot required');
  if(!Number.isInteger(holderLimit)||holderLimit<1||holderLimit>20||
@@ -14,7 +14,7 @@ export async function investigateHolderSample({rpcUrl,snapshot,creatorWallet=nul
  const edges=[],coverage=[];
  for(const wallet of addresses){
   try {
-   const result=await discover({rpcUrl,wallet,limit:historyLimit});
+   const result=await discover({rpcUrl,wallet,limit:historyLimit,maxPages});
    edges.push(...result.edges);
    coverage.push({wallet,success:true,...result.coverage});
   }catch(error){
