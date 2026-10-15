@@ -43,7 +43,7 @@ export async function validateHolderEvidence({checkpoint,rpc,maxRequests=24}={})
    rejectedSignatures:rejected,unavailableSignatures:unavailable,
    reason:status==="verified"?"DIRECT_TRANSFER_PROVEN":status==="rejected"?"NO_DIRECT_TRANSFER":"INSUFFICIENT_EVIDENCE"});
  }
- return {results,requestsUsed:requests,complete:results.every(r=>r.status!=="unverified"),
+ return {results,requestsUsed:requests,complete:results.every(r=>r.status!=="unverified"&&(r.unavailableSignatures||[]).length===0),
   summary:{pairsReviewed:results.length,verified:results.filter(r=>r.status==="verified").length,
    rejected:results.filter(r=>r.status==="rejected").length,
    unverified:results.filter(r=>r.status==="unverified").length}};
