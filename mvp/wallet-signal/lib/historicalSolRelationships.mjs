@@ -2,12 +2,14 @@
 // All edges carry on-chain signatures. Does not claim complete wallet history.
 import {Connection,PublicKey} from '@solana/web3.js';
 import {extractCrossAssetTokenTransfers} from './crossAssetTokenTransfers.mjs';
-export async function discoverSolRelationships({rpcUrl,wallet,limit=100}={}) {
+import {collectSignaturePages} from './signaturePagination.mjs';
+export async function discoverSolRelationships({rpcUrl,wallet,limit=100,maxPages=1}={}) {
  if(!rpcUrl || !wallet)throw new TypeError('RPC URL and wallet required');
  if(!Number.isInteger(limit)||limit<1||limit>1000)throw new TypeError('limit must be 1..1000');
  const connection=new Connection(rpcUrl,'finalized');
  const key=new PublicKey(wallet);
- const signatures=await connection.getSignaturesForAddress(key,{limit},'finalized');
+ const paginated=await collectSignaturePages({connection,key,pageSize:limit,maxPages});
+ const signatures=paginated.signatures;
  const edges=[],errors=[];
  for(const entry of signatures){
   if(entry.err)continue;
@@ -29,6 +31,7 @@ export async function discoverSolRelationships({rpcUrl,wallet,limit=100}={}) {
   }catch{errors.push(entry.signature);}
  }
  return {wallet,edges,coverage:{signaturesRetrieved:signatures.length,decoded:signatures.length-errors.length,
-   failed:errors.length,requestedLimit:limit,exhausted:signatures.length<limit,
+   failed:errors.length,requestedLimit:limit,maxPages,
+   ...paginated.coverage,exhausted:paginated.coverage.historyExhausted,
    scope:'Recent signatures for one wallet; explicit SOL and owner-resolved SPL transfers, not full history'}};
 }
