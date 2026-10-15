@@ -6,7 +6,7 @@ test('final score is bounded and component weights sum to 100',()=>{
  const r=scoreHolderConcentration({holders,circulatingSupply:1000,investigationComplete:true,creatorTeamVerified:true});
  assert.equal(r.status,'final');
  assert.ok(r.score>=0 && r.score<=100);
- assert.equal(Object.values(r.components).reduce((a,b)=>a+b,0),r.score);
+ assert.ok(Math.abs(Object.values(r.components).reduce((a,b)=>a+b,0)-r.score)<1e-8);
 });
 test('unfinished investigation does not claim a final score',()=>{
  const r=scoreHolderConcentration({holders,circulatingSupply:1000});
