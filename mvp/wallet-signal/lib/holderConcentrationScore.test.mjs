@@ -12,7 +12,7 @@ test('unfinished investigation does not claim a final score',()=>{
  const r=scoreHolderConcentration({holders,circulatingSupply:1000});
  assert.equal(r.score,null);
  assert.equal(r.components.connectedWallets,null);
- assert.equal(r.provisionalRange[1]-r.provisionalRange[0],35);
+ assert.ok(Math.abs((r.provisionalRange[1]-r.provisionalRange[0])-35)<1e-8);
 });
 test('strong connected cluster increases risk',()=>{
  const base=scoreHolderConcentration({holders,circulatingSupply:1000,investigationComplete:true});
