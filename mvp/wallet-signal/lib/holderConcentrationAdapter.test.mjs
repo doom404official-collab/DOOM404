@@ -11,7 +11,8 @@ test('valid snapshot produces provisional assessment with provenance',()=>{
  assert.equal(r.dataProvenance,'fixture');
 });
 test('validated edges are merged and scored after investigation completion',()=>{
- const r=assessHolderSnapshot({snapshot,investigationComplete:true,creatorTeamVerified:true,transferEdges:[
+ const verifiedSnapshot={...snapshot,supplyDefinition:'verified-circulating-supply',supplyVerified:true,coverageVerified:true,exclusionsVerified:true};
+ const r=assessHolderSnapshot({snapshot:verifiedSnapshot,investigationComplete:true,creatorTeamVerified:true,transferEdges:[
   {from:'a',to:'b',verifiedTransfer:true,signature:'tx1',strength:'strong'},
   {from:'b',to:'c',verifiedTransfer:true,signature:'tx2',strength:'moderate'}
  ]});
@@ -23,4 +24,11 @@ test('incomplete holder snapshot cannot receive a score',()=>{
  const r=assessHolderSnapshot({snapshot:{...snapshot,complete:false},investigationComplete:true,creatorTeamVerified:true});
  assert.equal(r.status,'unavailable');
  assert.equal(r.score,null);
+});
+
+test('raw mint supply cannot produce final score despite investigation flags',()=>{
+ const r=assessHolderSnapshot({snapshot,investigationComplete:true,creatorTeamVerified:true});
+ assert.equal(r.status,'provisional');
+ assert.equal(r.score,null);
+ assert.equal(r.verification.supplyVerified,false);
 });
