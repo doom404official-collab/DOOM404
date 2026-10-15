@@ -13,7 +13,7 @@ export async function fetchMintHolderSnapshot({rpcUrl,mint,timeoutMs=30000}) {
  const programInfo=await conn.getAccountInfo(mintKey,'finalized');
  if(!programInfo) throw new Error('Mint account not found');
  const owner=programInfo.owner.toBase58();
- if(!PROGRAMS.includes(owner)) throw new Error('Unsupported mint program');
+ if(!PROGRAMS.includes(owner)) throw new Error('Unsupported mint program; actual owner: '+owner);
  const response=await conn.getProgramAccounts(new PublicKey(owner),{
    commitment:'finalized',withContext:true,
    filters:[{memcmp:{offset:0,bytes:mint}},...(owner===PROGRAMS[0]?[{dataSize:165}]:[])],
