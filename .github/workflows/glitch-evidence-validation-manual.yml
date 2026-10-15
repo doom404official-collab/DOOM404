@@ -46,5 +46,8 @@ jobs:
               except (ValueError,UnicodeError):
                   print(json.dumps({"httpStatus":exc.code,"stage":"unknown","code":"NON_JSON_RESPONSE"}))
               raise SystemExit("Evidence endpoint failed")
-          print(json.dumps({key:result.get(key) for key in ("processed","queuedSignatures","requestCount")}))
+          health=result.get("health") or {}
+          print(json.dumps({"status":result.get("status"),"processed":result.get("processed"),"queuedSignatures":result.get("queuedSignatures"),"requestCount":result.get("requestCount"),"health":health}))
+          if any(int(health.get(k,0) or 0)>0 for k in ("retry_exhausted","expired_leases")):
+              raise SystemExit("Evidence health requires attention")
           PY
