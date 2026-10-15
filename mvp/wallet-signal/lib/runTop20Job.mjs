@@ -7,10 +7,17 @@ export async function runTop20Job({snapshotId,rpcUrl,url,serviceRoleKey,discover
  const holders=frozen.holder_ranking;
  if(!Array.isArray(holders)||holders.length!==20)throw new Error('Invalid frozen ranking');
  const existing=await store.getBatches(snapshotId);
- const completed=new Set(existing.filter(b=>b.status==='complete').map(b=>b.start_index));
+ const recorded=new Map(existing.map(b=>[b.start_index,b]));
+ const summary=[];
  for(const startIndex of [0,5,10,15]){
-  if(completed.has(startIndex))continue;
-  if(existing.some(b=>b.start_index===startIndex))return {status:'needs_recovery',snapshotId,startIndex};
+  if(recorded.has(startIndex)){
+   const batch=recorded.get(startIndex);
+   if(!['complete','partial'].includes(batch.status)||!Array.isArray(batch.wallet_results)||batch.wallet_results.length!==5||
+    batch.wallet_results.some((r,i)=>r.wallet!==holders[startIndex+i].wallet))
+    throw new Error('Stored checkpoint does not match frozen holder ranking');
+   summary.push({startIndex,status:batch.status,reused:true});
+   continue;
+  }
   const results=[];
   for(const h of holders.slice(startIndex,startIndex+5)){
    try{
@@ -22,7 +29,7 @@ export async function runTop20Job({snapshotId,rpcUrl,url,serviceRoleKey,discover
   }
   const complete=results.every(r=>!r.coverage.errorCode&&r.coverage.failed===0&&!r.coverage.failedPage);
   await store.saveBatch({snapshotId,startIndex,results,coverage:{complete},status:complete?'complete':'partial'});
-  if(!complete)return {status:'partial',snapshotId,startIndex};
+  summary.push({startIndex,status:complete?'complete':'partial',reused:false});
  }
- return {status:'sampled_not_final',snapshotId,batches:4};
+ return {status:'sampled_not_final',snapshotId,batches:summary.length,partialBatches:summary.filter(x=>x.status==='partial').length,summary};
 }
