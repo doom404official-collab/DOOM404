@@ -1,0 +1,40 @@
+name: GLITCH evidence validation manual
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: glitch-evidence-validation
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Run bounded preview evidence validation
+        env:
+          GLITCH_PREVIEW_URL: ${{ vars.GLITCH_PREVIEW_URL }}
+          GLITCH_HOLDER_WORKER_TOKEN: ${{ secrets.GLITCH_HOLDER_WORKER_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          python3 - <<'PY'
+          import json,os,urllib.parse,urllib.request
+          url=os.environ.get("GLITCH_PREVIEW_URL","").rstrip("/")
+          token=os.environ.get("GLITCH_HOLDER_WORKER_TOKEN","")
+          bypass=os.environ.get("VERCEL_AUTOMATION_BYPASS_SECRET","")
+          host=urllib.parse.urlparse(url).hostname
+          if not host or not host.endswith(".vercel.app") or not url.startswith("https://"):
+              raise SystemExit("Invalid preview URL")
+          if not token or not bypass:
+              raise SystemExit("Missing worker credentials")
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args):
+                  raise RuntimeError("Redirect refused")
+          opener=urllib.request.build_opener(NoRedirect)
+          req=urllib.request.Request(url+"/api/holder-evidence-tick",data=b"{}",method="POST",
+              headers={"Content-Type":"application/json","x-glitch-worker-token":token,
+                       "x-vercel-protection-bypass":bypass})
+          with opener.open(req,timeout=75) as response:
+              result=json.load(response)
+          print(json.dumps({key:result.get(key) for key in ("processed","queuedSignatures","requestCount")}))
+          PY
