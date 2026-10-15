@@ -13,8 +13,9 @@ export async function GET(request){
   const vault=createTop20Vault({url,serviceRoleKey:key});
   const {searchParams}=new URL(request.url);
   const id=searchParams.get('snapshotId');
-  if(!/^[a-f0-9]{64}$/.test(id??''))return NextResponse.json({status:'unavailable',reason:'Verified snapshot ID required'},{status:400});
-  const snapshot=await vault.getFrozen(id);
+  if(id&&!/^[a-f0-9]{64}$/.test(id))return NextResponse.json({error:'Invalid snapshot ID'},{status:400});
+  const snapshot=id?await vault.getFrozen(id):await vault.getLatestFrozenByMint(mint);
+  if(!snapshot)return NextResponse.json({status:'not_assessed',reason:'No completed eligible Top-20 investigation for this token'},{status:404});
   if(snapshot.mint!==mint)return NextResponse.json({error:'Snapshot mint mismatch'},{status:400});
   const batches=await vault.getBatches(id);
   const result=consolidateTop20({snapshot,batches});
