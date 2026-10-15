@@ -15,11 +15,14 @@ function isAuthorized(request){
 export async function POST(request){
  if(process.env.GLITCH_EVIDENCE_WORKER_ENABLED!=="true")return NextResponse.json({error:"Disabled"},{status:503});
  if(!isAuthorized(request))return NextResponse.json({error:"Unauthorized"},{status:401});
+ let stage="configuration";
  try{
   const mint=process.env.GLITCH_EVIDENCE_MINT;
   if(!mint)return NextResponse.json({error:"Mint not configured"},{status:503});
+  stage="checkpoint";
   const job=await createHolderJobStore().getLatest(mint);
   if(!job?.checkpoint)return NextResponse.json({status:"not_started"});
+  stage="rpc_configuration";
   const endpoint=process.env.HELIUS_RPC_URL;
   if(!endpoint||!endpoint.startsWith("https://"))throw Error("RPC_NOT_CONFIGURED");
   let count=0;
@@ -32,8 +35,16 @@ export async function POST(request){
    if(body.error)throw Error("RPC_METHOD_ERROR");
    return body.result;
   };
+  stage="validation_batch";
   const result=await processEvidenceBatch({jobId:job.id,checkpoint:job.checkpoint,
    store:createHolderEvidenceStore(),rpc,limit:6});
   return NextResponse.json({...result,requestCount:count},{headers:{"Cache-Control":"no-store"}});
- }catch{return NextResponse.json({error:"Validation temporarily unavailable"},{status:503});}
+ }catch(error){
+  const message=String(error?.message||"");
+  const code=/^EVIDENCE_(STORE|RPC)_HTTP_\d{3}$/.test(message)?message:
+   /^HOLDER_STORE_HTTP_\d{3}$/.test(message)?message:
+   message==="RPC_NOT_CONFIGURED"?"RPC_NOT_CONFIGURED":"UNEXPECTED_ERROR";
+  console.error("GLITCH_EVIDENCE_FAILURE",{stage,code});
+  return NextResponse.json({error:"Validation temporarily unavailable",stage,code},{status:503,headers:{"Cache-Control":"no-store"}});
+ }
 }
