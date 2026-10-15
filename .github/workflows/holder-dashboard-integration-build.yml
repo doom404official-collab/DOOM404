@@ -22,5 +22,5 @@ jobs:
       - run: node --check lib/consolidateTop20.mjs
       - run: node --check lib/top20NetworkScore.mjs
       - run: node --check lib/top20Vault.mjs
-      - run: node --test lib/assessmentAvailability.test.mjs
+      - run: node --test lib/assessmentAvailability.test.mjs lib/publicDeepScanAdmission.test.mjs
       - run: npm run build
