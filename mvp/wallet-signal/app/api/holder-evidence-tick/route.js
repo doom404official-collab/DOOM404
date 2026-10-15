@@ -19,7 +19,7 @@ export async function POST(request){
  try{
   const evidenceStore=createHolderEvidenceStore();
   const selected=await evidenceStore.nextJob();
-  if(!selected)return NextResponse.json({status:"idle",processed:0,requestCount:0},{headers:{"Cache-Control":"no-store"}});
+  if(!selected){const health=await evidenceStore.health();return NextResponse.json({status:"idle",processed:0,requestCount:0,health},{headers:{"Cache-Control":"no-store"}});}
   stage="checkpoint";
   const job=await createHolderJobStore().getLatest(selected.mint);
   if(!job?.checkpoint||job.id!==selected.id)return NextResponse.json({status:"stale_job",processed:0},{headers:{"Cache-Control":"no-store"}});
@@ -39,7 +39,8 @@ export async function POST(request){
   stage="validation_batch";
   const result=await processEvidenceBatch({jobId:job.id,checkpoint:job.checkpoint,
    store:evidenceStore,rpc,limit:6});
-  return NextResponse.json({...result,requestCount:count},{headers:{"Cache-Control":"no-store"}});
+  const health=await evidenceStore.health();
+  return NextResponse.json({...result,requestCount:count,health},{headers:{"Cache-Control":"no-store"}});
  }catch(error){
   const message=String(error?.message||"");
   const code=/^EVIDENCE_(SEED_FAILED|ENQUEUE_FAILED|CLAIM_FAILED|CLAIM_INVALID_RESPONSE|FINISH_FAILED)$/.test(message)?message:
