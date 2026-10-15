@@ -7,7 +7,7 @@ function component(value, low, high, weight) {
 }
 export function scoreHolderConcentration(input) {
   const { holders, circulatingSupply, connectedClusters = [], creatorTeamWallets = [],
-    excludedWallets = [], investigationComplete = false } = input ?? {};
+    excludedWallets = [], investigationComplete = false, creatorTeamVerified = false } = input ?? {};
   if (!Array.isArray(holders) || !finite(circulatingSupply) || circulatingSupply <= 0)
     throw new TypeError('holders array and positive circulatingSupply required');
   const excluded = new Set(excludedWallets);
@@ -40,19 +40,20 @@ export function scoreHolderConcentration(input) {
   const components = {
     topHolders: component(top10Pct, 10, 70, 35),
     connectedWallets: investigationComplete ? component(maxClusterPct, 2, 35, 35) : null,
-    creatorTeam: component(teamPct, 1, 25, 20),
+    creatorTeam: creatorTeamVerified ? component(teamPct, 1, 25, 20) : null,
     breadth: round(10 - component(uniqueEligible, 20, 1000, 10))
   };
   // Breadth rewards a larger distinct-holder population.
-  const known = components.topHolders + components.creatorTeam + components.breadth;
-  const score = investigationComplete ? round(known + components.connectedWallets) : null;
+  const known = components.topHolders + (components.creatorTeam ?? 0) + components.breadth;
+  const finalizable = investigationComplete && creatorTeamVerified;
+  const score = finalizable ? round(known + components.connectedWallets) : null;
   return {
-    status: investigationComplete ? 'final' : 'provisional',
+    status: finalizable ? 'final' : 'provisional',
     score,
-    provisionalRange: investigationComplete ? null : [round(known), round(known + 35)],
+    provisionalRange: finalizable ? null : [round(known + (components.connectedWallets ?? 0)), round(known + (components.connectedWallets ?? 35) + (creatorTeamVerified ? 0 : 20))],
     components,
     metrics: { top10Pct: round(top10Pct), maxVerifiedClusterPct: investigationComplete ? round(maxClusterPct) : null,
-      creatorTeamPct: round(teamPct), eligibleHolderCount: uniqueEligible },
+      creatorTeamPct: creatorTeamVerified ? round(teamPct) : null, eligibleHolderCount: uniqueEligible },
     caveats: ['Transfer relationships do not prove common ownership or manipulation.',
       'Excluded wallets must be independently verified as infrastructure.',
       'Input balances must represent a consistent supply snapshot.']
