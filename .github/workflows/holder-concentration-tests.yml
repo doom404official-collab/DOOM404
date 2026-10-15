@@ -1,0 +1,26 @@
+name: Holder Concentration Scoring Tests
+on:
+  push:
+    branches:
+      - feature/holder-concentration-scoring
+    paths:
+      - 'mvp/wallet-signal/lib/holderConcentrationScore.mjs'
+      - 'mvp/wallet-signal/lib/holderConcentrationScore.test.mjs'
+      - '.github/workflows/holder-concentration-tests.yml'
+  pull_request:
+    paths:
+      - 'mvp/wallet-signal/lib/holderConcentrationScore.mjs'
+      - 'mvp/wallet-signal/lib/holderConcentrationScore.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test mvp/wallet-signal/lib/holderConcentrationScore.test.mjs
