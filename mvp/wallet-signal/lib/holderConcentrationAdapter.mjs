@@ -10,11 +10,13 @@ export function assessHolderSnapshot({snapshot,transferEdges=[],creatorTeamWalle
  const coverageVerified=snapshot.coverageVerified===true;
  const exclusionsVerified=snapshot.exclusionsVerified===true;
  const canFinalize=supplyVerified && coverageVerified && exclusionsVerified;
+ // Missing verification must not erase already independently verified component evidence.
  const result=scoreHolderConcentration({
    holders:snapshot.holders,circulatingSupply:snapshot.circulatingSupply,
-   connectedClusters:clusters,creatorTeamWallets,excludedWallets,investigationComplete:canFinalize && investigationComplete,creatorTeamVerified:canFinalize && creatorTeamVerified
+   connectedClusters:clusters,creatorTeamWallets,excludedWallets,investigationComplete,creatorTeamVerified
  });
- return {...result,snapshotSlot:snapshot.slot,clusterCount:clusters.length,
+ const gated=canFinalize ? result : {...result,status:'provisional',score:null};
+ return {...gated,snapshotSlot:snapshot.slot,clusterCount:clusters.length,
   dataProvenance:snapshot.source??'unspecified',
   verification:{supplyVerified,coverageVerified,exclusionsVerified},
   coverageWarning:canFinalize ? null : 'Final scoring blocked until circulating supply, holder coverage and exclusions are independently verified.'};
