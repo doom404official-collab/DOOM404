@@ -39,7 +39,10 @@ export async function POST(request){
   const message=String(error?.message||"");
   const code=/^HOLDER_STORE_HTTP_\d{3}$/.test(message)?message:
    message==="HOLDER_STORE_NOT_CONFIGURED"?"HOLDER_STORE_NOT_CONFIGURED":
-   message==="HOLDER_JOB_NOT_FOUND_AFTER_CONFLICT"?"HOLDER_JOB_NOT_FOUND_AFTER_CONFLICT":"UNEXPECTED_ERROR";
+   message==="HOLDER_JOB_NOT_FOUND_AFTER_CONFLICT"?"HOLDER_JOB_NOT_FOUND_AFTER_CONFLICT":
+   ["INVALID_TOKEN_SUPPLY","TOP20_UNAVAILABLE","HOLDER_OWNER_UNRESOLVED"].includes(message)?message:
+   /Solana RPC unavailable after retry and fallback/.test(message)?"RPC_RETRIES_EXHAUSTED":
+   /429|rate limit/i.test(message)?"RPC_RATE_LIMITED":"UNEXPECTED_ERROR";
   console.error("GLITCH_SCAN_START_FAILURE",{stage,code});
   return NextResponse.json({error:"Unable to initialize holder investigation",stage,code},{status:503,headers:{"Cache-Control":"no-store"}});
  }
