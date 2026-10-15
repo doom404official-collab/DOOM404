@@ -4,12 +4,14 @@ const valid = new Set(['strong', 'moderate']);
 export function buildEvidenceClusters(edges = []) {
   if (!Array.isArray(edges)) throw new TypeError('edges must be an array');
   const parent = new Map();
+  const accepted=[];
   function root(x) { if (!parent.has(x)) parent.set(x,x); if(parent.get(x)!==x) parent.set(x,root(parent.get(x))); return parent.get(x); }
   function union(a,b) { const ra=root(a),rb=root(b); if(ra!==rb) parent.set(rb,ra); }
   for(const e of edges) {
     if (!e || typeof e.from !== 'string' || !e.from || typeof e.to !== 'string' || !e.to || !valid.has(e.strength)) continue;
     if(e.from===e.to || e.verifiedTransfer!==true || !e.signature) continue;
     union(e.from,e.to);
+    accepted.push(e);
   }
   const groups=new Map();
   for(const wallet of parent.keys()) {
@@ -17,7 +19,10 @@ export function buildEvidenceClusters(edges = []) {
     if(!groups.has(key)) groups.set(key,[]);
     groups.get(key).push(wallet);
   }
-  return [...groups.values()].filter(wallets=>wallets.length>1).map(wallets=>({wallets:wallets.sort(),strength:'strong'}));
+  return [...groups.entries()].filter(([,wallets])=>wallets.length>1).map(([key,wallets])=>({
+    wallets:wallets.sort(),
+    strength:accepted.some(e=>e.strength==='moderate' && root(e.from)===key)?'moderate':'strong'
+  }));
 }
 export function validateHolderSnapshot(snapshot) {
   if(!snapshot || !Number.isSafeInteger(snapshot.slot) || snapshot.slot<0 ||
