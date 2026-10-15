@@ -16,7 +16,7 @@ export async function fetchMintHolderSnapshot({rpcUrl,mint,timeoutMs=30000}) {
  if(!PROGRAMS.includes(owner)) throw new Error('Unsupported mint program');
  const response=await conn.getProgramAccounts(new PublicKey(owner),{
    commitment:'finalized',withContext:true,
-   filters:[{memcmp:{offset:0,bytes:mint}},{dataSize:owner===PROGRAMS[0]?165:undefined}].filter(f=>f.dataSize!==undefined || f.memcmp),
+   filters:[{memcmp:{offset:0,bytes:mint}},...(owner===PROGRAMS[0]?[{dataSize:165}]:[])],
  });
  if(!response || !Array.isArray(response.value)) throw new Error('Unusable RPC holder response');
  if(response.context.slot!==supply.context.slot) throw new Error('Supply and holder snapshots have different slots; retry for consistent data');
