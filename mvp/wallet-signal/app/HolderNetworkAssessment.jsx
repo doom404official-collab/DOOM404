@@ -3,10 +3,10 @@ import {useEffect,useState} from 'react';
 export default function HolderNetworkAssessment({mint,snapshotId}){
  const [data,setData]=useState(null),[state,setState]=useState('loading');
  useEffect(()=>{
-  if(!mint||!snapshotId){setState('unavailable');return;}
+  if(!mint){setState('unavailable');return;}
   const controller=new AbortController();
   setState('loading');
-  fetch('/api/token/holder-assessment?mint='+encodeURIComponent(mint)+'&snapshotId='+encodeURIComponent(snapshotId),{signal:controller.signal,cache:'no-store'})
+  fetch('/api/token/holder-assessment?mint='+encodeURIComponent(mint)+(snapshotId?'&snapshotId='+encodeURIComponent(snapshotId):''),{signal:controller.signal,cache:'no-store'})
    .then(async r=>{if(!r.ok)throw Error('Unavailable');return r.json();})
    .then(v=>{setData(v.assessment);setState('ready');})
    .catch(e=>{if(e.name!=='AbortError')setState('unavailable');});
