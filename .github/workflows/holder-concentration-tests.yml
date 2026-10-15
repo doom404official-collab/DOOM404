@@ -6,11 +6,15 @@ on:
     paths:
       - 'mvp/wallet-signal/lib/holderConcentrationScore.mjs'
       - 'mvp/wallet-signal/lib/holderConcentrationScore.test.mjs'
+      - 'mvp/wallet-signal/lib/concentrationEvidence.mjs'
+      - 'mvp/wallet-signal/lib/concentrationEvidence.test.mjs'
       - '.github/workflows/holder-concentration-tests.yml'
   pull_request:
     paths:
       - 'mvp/wallet-signal/lib/holderConcentrationScore.mjs'
       - 'mvp/wallet-signal/lib/holderConcentrationScore.test.mjs'
+      - 'mvp/wallet-signal/lib/concentrationEvidence.mjs'
+      - 'mvp/wallet-signal/lib/concentrationEvidence.test.mjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,4 +27,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test mvp/wallet-signal/lib/holderConcentrationScore.test.mjs
+      - run: node --test mvp/wallet-signal/lib/holderConcentrationScore.test.mjs mvp/wallet-signal/lib/concentrationEvidence.test.mjs
