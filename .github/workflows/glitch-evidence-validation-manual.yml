@@ -48,6 +48,8 @@ jobs:
               raise SystemExit("Evidence endpoint failed")
           health=result.get("health") or {}
           print(json.dumps({"status":result.get("status"),"processed":result.get("processed"),"queuedSignatures":result.get("queuedSignatures"),"requestCount":result.get("requestCount"),"health":health}))
-          if any(int(health.get(k,0) or 0)>0 for k in ("retry_exhausted","expired_leases")):
+          issues=[k for k in ("retry_exhausted","expired_leases") if int(health.get(k,0) or 0)>0]
+          if issues:
+              print("::error title=GLITCH Evidence Health::"+",".join(issues)+" require attention")
               raise SystemExit("Evidence health requires attention")
           PY
