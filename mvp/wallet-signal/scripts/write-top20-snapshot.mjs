@@ -8,6 +8,9 @@ if(!env.HELIUS_RPC_URL||!env.TEST_TOKEN_MINT||!env.SUPABASE_URL||!env.SUPABASE_S
  let stage='initializing';
  try{
   stage='fetch_holder_snapshot';
+  const expectedHost='acwmtobcbpkjfqiatyke.supabase.co';
+  const actualHost=new URL(env.SUPABASE_URL).hostname;
+  if(actualHost!==expectedHost)throw new Error('SUPABASE_PROJECT_MISMATCH');
   const raw=await fetchMintHolderSnapshot({rpcUrl:env.HELIUS_RPC_URL,mint:env.TEST_TOKEN_MINT});
   stage='freeze_top20';
   const frozen=freezeTop20Snapshot({mint:env.TEST_TOKEN_MINT,snapshot:raw});
@@ -25,6 +28,7 @@ if(!env.HELIUS_RPC_URL||!env.TEST_TOKEN_MINT||!env.SUPABASE_URL||!env.SUPABASE_S
    /Token account totals do not match/.test(message)?'SUPPLY_RECONCILIATION':
    /slots too far apart/.test(message)?'SLOT_MISMATCH':
    /Read-after-write verification mismatch|Frozen snapshot persistence mismatch/.test(message)?'READBACK_MISMATCH':
+   /SUPABASE_PROJECT_MISMATCH/.test(message)?'SUPABASE_PROJECT_MISMATCH':
    /fetch failed|network|ECONN|ETIMEDOUT/i.test(message)?'NETWORK_ERROR':'UNCLASSIFIED_ERROR';
   console.error(JSON.stringify({status:'error',stage,code}));process.exitCode=1;
  }
