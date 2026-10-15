@@ -17,9 +17,9 @@ export async function fetchMintHolderSnapshot({rpcUrl,mint,timeoutMs=30000}) {
  const response=await conn.getProgramAccounts(new PublicKey(owner),{
    commitment:'finalized',withContext:true,
    filters:[{memcmp:{offset:0,bytes:mint}},{dataSize:owner===PROGRAMS[0]?165:undefined}].filter(f=>f.dataSize!==undefined || f.memcmp),
-   encoding:'base64'
  });
  if(!response || !Array.isArray(response.value)) throw new Error('Unusable RPC holder response');
+ if(response.context.slot!==supply.context.slot) throw new Error('Supply and holder snapshots have different slots; retry for consistent data');
  // Token-2022 may have account extensions; first 72 bytes retain base account layout.
  const amounts=new Map();
  let total=0n;
