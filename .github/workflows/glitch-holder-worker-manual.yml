@@ -1,10 +1,13 @@
 # GLITCH Holder Worker — controlled scheduler
-# Manual only. No cron, deployment or live execution until explicitly enabled.
+# Manual fallback. Serialized with the automatic workflow.
 name: GLITCH holder worker manual
 on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: glitch-holder-investigation
+  cancel-in-progress: false
 jobs:
   run:
     if: github.ref == 'refs/heads/feature/glitch-assessment-sprint1'
