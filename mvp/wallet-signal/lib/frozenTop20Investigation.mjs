@@ -9,7 +9,7 @@ export function freezeTop20Snapshot({mint,snapshot,excludedWallets=[]}) {
  const eligible=snapshot.holders.filter(h=>h && typeof h.wallet==='string' && Number.isFinite(h.balance) && h.balance>0 && !excluded.has(h.wallet))
   .sort((a,b)=>b.balance-a.balance || a.wallet.localeCompare(b.wallet)).slice(0,20)
   .map(({wallet,balance},rank)=>({wallet,balance,rank:rank+1}));
- const canonical=JSON.stringify({mint,slot:snapshot.slot,supply:snapshot.circulatingSupply,eligible});
+ const canonical=JSON.stringify({mint,slot:snapshot.slot,supply:snapshot.circulatingSupply,eligible,excludedWallets:[...excluded].sort()});
  const id=createHash('sha256').update(canonical).digest('hex');
  return {id,mint,slot:snapshot.slot,supply:snapshot.circulatingSupply,
   holders:eligible,excludedWallets:[...excluded].sort(),status:'frozen',schemaVersion:1};
