@@ -41,9 +41,13 @@ export async function POST(request){
   return NextResponse.json({...result,requestCount:count},{headers:{"Cache-Control":"no-store"}});
  }catch(error){
   const message=String(error?.message||"");
-  const code=/^EVIDENCE_(STORE|RPC)_HTTP_\d{3}$/.test(message)?message:
+  const code=/^INVALID_EVIDENCE_JOB$/.test(message)?"INVALID_EVIDENCE_JOB":
+   /^EVIDENCE_(STORE|RPC)_HTTP_\d{3}$/.test(message)?message:
    /^HOLDER_STORE_HTTP_\d{3}$/.test(message)?message:
-   message==="RPC_NOT_CONFIGURED"?"RPC_NOT_CONFIGURED":"UNEXPECTED_ERROR";
+   message==="RPC_NOT_CONFIGURED"?"RPC_NOT_CONFIGURED":
+   message==="INVALID_LIMIT"?"INVALID_LIMIT":
+   message==="INVALID_EVIDENCE_RESULT"?"INVALID_EVIDENCE_RESULT":
+   message==="REQUEST_BUDGET"?"REQUEST_BUDGET":"UNEXPECTED_ERROR";
   console.error("GLITCH_EVIDENCE_FAILURE",{stage,code});
   return NextResponse.json({error:"Validation temporarily unavailable",stage,code},{status:503,headers:{"Cache-Control":"no-store"}});
  }
