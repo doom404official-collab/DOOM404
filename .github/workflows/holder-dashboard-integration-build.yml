@@ -22,6 +22,6 @@ jobs:
       - run: node --check lib/consolidateTop20.mjs
       - run: node --check lib/top20NetworkScore.mjs
       - run: node --check lib/top20Vault.mjs
-      - run: node --test lib/assessmentAvailability.test.mjs lib/publicDeepScanAdmission.test.mjs lib/deepScanQuota.test.mjs lib/rpcQuotaDomains.test.mjs lib/sharedRpcLimiter.test.mjs lib/customerRpcAdmission.test.mjs lib/rpcContentionHarness.test.mjs
+      - run: node --test lib/assessmentAvailability.test.mjs lib/publicDeepScanAdmission.test.mjs lib/deepScanQuota.test.mjs lib/verifyScanUser.test.mjs lib/rpcQuotaDomains.test.mjs lib/sharedRpcLimiter.test.mjs lib/customerRpcAdmission.test.mjs lib/rpcContentionHarness.test.mjs
       - run: node --test tests/holder-adaptive-decoding.test.mjs tests/holder-pagination-fairness.test.mjs tests/holder-pending-retry.test.mjs tests/holder-scan-start-safety.test.mjs
       - run: npm run build
