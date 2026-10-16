@@ -34,7 +34,7 @@ function position(nodes){
 }
 const panel={background:"#101823",border:"1px solid #303d50",borderRadius:14,padding:14,color:"#e8eff8"};
 const action={background:"#1c2a3b",border:"1px solid #43536a",borderRadius:7,color:"#e8eff8",padding:"7px 10px",cursor:"pointer"};
-export default function HolderBubbleMap({holders=[],groups=[],scanStatus=null,transactionsChecked=null,walletHistoriesReached=null}){
+export default function HolderBubbleMap({holders=[],groups=[],scanStatus=null,transactionsChecked=null,walletHistoriesReached=null,verifiedAssessment=null}){
  const [selected,setSelected]=useState(null);
  const [linkedOnly,setLinkedOnly]=useState(false);
  const [zoom,setZoom]=useState(1);
@@ -56,12 +56,17 @@ export default function HolderBubbleMap({holders=[],groups=[],scanStatus=null,tr
  const active=nodes.find(n=>n.wallet===selected);
  const activeEdges=active?edges.filter(e=>e.walletA===selected||e.walletB===selected):[];
  const uniqueEvidence=new Set(edges.flatMap(e=>e.signatures));
+ const verified=verifiedAssessment?.evidence||null;
+ const verifiedKeys=new Set((verified?.pairs||[]).map(e=>[e.walletA,e.walletB].sort().join("|")));
+ const verifiedCount=verifiedKeys.size;
+ const assessmentStatus=verifiedAssessment?.status||"not_available";
  return <section style={panel} aria-label="Holder connection bubble map">
   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,flexWrap:"wrap"}}>
    <strong>HOLDER CONNECTION MAP</strong>
    <span style={{fontSize:12,color:"#a9b6c9"}}>{nodes.length} wallets · {edges.length} candidate pairs · {uniqueEvidence.size} signature references</span>
   </div>
   <p style={{fontSize:12,color:"#a9b6c9"}}>Scan: {scanStatus||"coverage unknown"}{Number.isFinite(Number(transactionsChecked))&&transactionsChecked!==null?` · ${transactionsChecked} transactions checked`:""}{walletHistoriesReached!==null?` · ${walletHistoriesReached} wallet histories reached`:""}. Network edges are provisional until transaction evidence is independently classified.</p>
+  <div style={{fontSize:12,color:"#b9d5e8",marginBottom:8}}>Evidence validation: {verified?`${verifiedCount} verified pairs · ${verified.counts?.pending??0} signatures pending · ${verified.counts?.unavailable??0} unavailable`:`Not available for this snapshot`} · Assessment: {assessmentStatus.replaceAll("_"," ")}{verifiedAssessment?.provisionalScore!=null?` · provisional ${verifiedAssessment.provisionalScore}/${verifiedAssessment.provisionalScoreDenominator}`:""}</div>
   <p style={{fontSize:12,color:"#a9b6c9",lineHeight:1.5}}>Bubble area indicates observed holder share. Lines show recorded candidate wallet relationships; these do not establish common ownership or coordinated trading. Inspect transaction evidence before drawing conclusions.</p>
   <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,marginBottom:10}}>
    <label style={{fontSize:12,display:"flex",alignItems:"center",gap:6}}><input type="checkbox" checked={linkedOnly} onChange={e=>setLinkedOnly(e.target.checked)}/> Connected wallets only</label>
@@ -72,18 +77,18 @@ export default function HolderBubbleMap({holders=[],groups=[],scanStatus=null,tr
   </div>
   <svg viewBox="0 0 100 100" role="group" aria-label="Interactive wallet connection network" style={{width:"100%",height:"auto",maxHeight:430,background:"#0b1420",borderRadius:10}}>
    <g transform={`translate(50 50) scale(${zoom}) translate(-50 -50)`}>
-    {shownEdges.map(e=>{const a=lookup.get(e.walletA),b=lookup.get(e.walletB),highlight=selected&&(e.walletA===selected||e.walletB===selected);return <line key={e.key} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={highlight?"#fff1a7":"#efbd68"} strokeWidth={highlight?.85:.35} opacity={selected&&!highlight?.22:.8}/>;})}
+    {shownEdges.map(e=>{const a=lookup.get(e.walletA),b=lookup.get(e.walletB),highlight=selected&&(e.walletA===selected||e.walletB===selected);return <line key={e.key} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={highlight?"#fff1a7":verifiedKeys.has(e.key)?"#58d7b0":"#efbd68"} strokeWidth={highlight?.85:.35} opacity={selected&&!highlight?.22:.8}/>;})}
     {visible.map(n=>{const linked=connected.has(n.wallet),radius=clamp(1.8+Math.sqrt(n.sharePct)*1.2,2,8);return <circle key={n.wallet} cx={n.x} cy={n.y} r={radius} fill={linked?"#c76b53":"#268a81"} stroke={selected===n.wallet?"#ffffff":"#b4c6d8"} strokeWidth={selected===n.wallet?.85:.22} opacity={selected&&selected!==n.wallet?.6:1} tabIndex={0} role="button" aria-label={`Wallet ${short(n.wallet)}, ${n.sharePct.toFixed(2)} percent supply, ${linked?"connected":"no detected connections"}`} onClick={()=>setSelected(n.wallet)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();setSelected(n.wallet);}}} style={{cursor:"pointer",outline:"none"}}><title>{n.wallet}: {n.sharePct.toFixed(2)}% supply</title></circle>;})}
    </g>
   </svg>
   {clusters.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:10,marginBottom:8}}>{clusters.map((g,i)=><button key={i} type="button" style={{...action,borderColor:groupFilter===String(i)?"#ffb58b":"#43536a"}} onClick={()=>{setGroupFilter(String(i));setSelected(null);}}>Group {i+1}: {g.members.length} wallets · {g.sharePct.toFixed(2)}% observed supply</button>)}</div>}
-  <p style={{fontSize:12,color:"#a9b6c9"}}>Select a bubble with touch, mouse or keyboard to inspect its relationships. Orange = candidate connection; teal = no detected connection in available evidence.</p>
+  <p style={{fontSize:12,color:"#a9b6c9"}}>Select a bubble with touch, mouse or keyboard to inspect its relationships. Green line = evidence-verified pair; amber line = candidate pair; teal bubble = no detected connection in available evidence.</p>
   {active?<div aria-live="polite" style={{background:"#172537",borderRadius:10,padding:12,overflowWrap:"anywhere",fontSize:13}}>
    <strong>Wallet #{active.rank} · {active.sharePct.toFixed(2)}% observed supply</strong>
    <p><a href={solscan("account",active.wallet)} target="_blank" rel="noopener noreferrer" style={{color:"#9cdcff"}}>{active.wallet} ↗</a></p>
    <strong>{activeEdges.length} candidate relationship(s)</strong>
    {activeEdges.length===0?<p>No direct relationships detected in the currently available investigation.</p>:activeEdges.map(e=><div key={e.key} style={{borderTop:"1px solid #34465c",marginTop:10,paddingTop:10}}>
-    <div>With <a href={solscan("account",e.walletA===active.wallet?e.walletB:e.walletA)} target="_blank" rel="noopener noreferrer" style={{color:"#9cdcff"}}>{short(e.walletA===active.wallet?e.walletB:e.walletA)} ↗</a> · {e.signatures.length} signature reference(s)</div>
+    <div>With <a href={solscan("account",e.walletA===active.wallet?e.walletB:e.walletA)} target="_blank" rel="noopener noreferrer" style={{color:"#9cdcff"}}>{short(e.walletA===active.wallet?e.walletB:e.walletA)} ↗</a> · {e.signatures.length} signature reference(s) · {verifiedKeys.has(e.key)?"Verified transfer evidence":"Candidate — validation pending or unavailable"}</div>
     <details style={{marginTop:5}}><summary style={{cursor:"pointer"}}>View transaction evidence</summary>
      {e.signatures.length===0?<p>No signatures attached to this relationship.</p>:<ul style={{paddingLeft:20}}>{e.signatures.map(sig=><li key={sig}><a href={solscan("tx",sig)} target="_blank" rel="noopener noreferrer" style={{color:"#9cdcff"}}>{short(sig)} ↗</a></li>)}</ul>}
     </details>
