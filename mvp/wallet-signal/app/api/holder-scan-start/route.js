@@ -26,7 +26,7 @@ export async function POST(request){
   const store=createHolderJobStore();
   stage="existing_job_lookup";
   const existing=await store.getLatest(mint);
-  if(existing&&["queued","running"].includes(existing.status))
+  if(existing&&["queued","running","partial"].includes(existing.status))
    return NextResponse.json({mint,status:existing.status,scan:store.publicView(existing)},{headers:{"Cache-Control":"no-store"}});
   stage="rpc_connection";
   const connection=createReliableConnection({primary:process.env.HELIUS_RPC_URL||process.env.SOLANA_RPC_URL||"https://api.mainnet-beta.solana.com"});
