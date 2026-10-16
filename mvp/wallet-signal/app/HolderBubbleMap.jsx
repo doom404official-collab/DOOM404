@@ -32,13 +32,14 @@ function position(nodes){
   return {...n,x:50+Math.cos(angle)*distance,y:50+Math.sin(angle)*distance};
  });
 }
-const panel={background:"#101823",border:"1px solid #303d50",borderRadius:14,padding:14,color:"#e8eff8"};
-const action={background:"#1c2a3b",border:"1px solid #43536a",borderRadius:7,color:"#e8eff8",padding:"7px 10px",cursor:"pointer"};
+const panel={background:"#101823",border:"1px solid #303d50",borderRadius:14,padding:"12px",color:"#e8eff8",minWidth:0,overflow:"hidden"};
+const action={background:"#1c2a3b",border:"1px solid #43536a",borderRadius:7,color:"#e8eff8",padding:"7px 10px",cursor:"pointer",minHeight:38};
 export default function HolderBubbleMap({holders=[],groups=[],scanStatus=null,transactionsChecked=null,walletHistoriesReached=null,verifiedAssessment=null}){
  const [selected,setSelected]=useState(null);
  const [linkedOnly,setLinkedOnly]=useState(false);
  const [zoom,setZoom]=useState(1);
  const [groupFilter,setGroupFilter]=useState("all");
+ const [showGuide,setShowGuide]=useState(false);
  const {nodes,edges}=useMemo(()=>buildGraph(holders,groups),[holders,groups]);
  const connected=new Set(edges.flatMap(e=>[e.walletA,e.walletB]));
  const clusters=useMemo(()=>{
@@ -68,11 +69,13 @@ export default function HolderBubbleMap({holders=[],groups=[],scanStatus=null,tr
   <p style={{fontSize:12,color:"#a9b6c9"}}>Scan: {scanStatus||"coverage unknown"}{Number.isFinite(Number(transactionsChecked))&&transactionsChecked!==null?` · ${transactionsChecked} transactions checked`:""}{walletHistoriesReached!==null?` · ${walletHistoriesReached} wallet histories reached`:""}. Network edges are provisional until transaction evidence is independently classified.</p>
   <div style={{fontSize:12,color:"#b9d5e8",marginBottom:8}}>Evidence validation: {verified?`${verifiedCount} verified pairs · ${verified.counts?.pending??0} signatures pending · ${verified.counts?.unavailable??0} unavailable`:`Not available for this snapshot`} · Assessment: {assessmentStatus.replaceAll("_"," ")}{verifiedAssessment?.provisionalScore!=null?` · provisional ${verifiedAssessment.provisionalScore}/${verifiedAssessment.provisionalScoreDenominator}`:""}</div>
   <p style={{fontSize:12,color:"#a9b6c9",lineHeight:1.5}}>Bubble area indicates observed holder share. Lines show recorded candidate wallet relationships; these do not establish common ownership or coordinated trading. Inspect transaction evidence before drawing conclusions.</p>
-  <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,marginBottom:10}}>
-   <label style={{fontSize:12,display:"flex",alignItems:"center",gap:6}}><input type="checkbox" checked={linkedOnly} onChange={e=>setLinkedOnly(e.target.checked)}/> Connected wallets only</label>
+  <div style={{display:"grid",gridTemplateColumns:"minmax(0,1fr) auto auto auto",alignItems:"center",gap:6,marginBottom:8}}>
+   <label style={{fontSize:12,display:"flex",alignItems:"center",gap:6,minWidth:0}}><input type="checkbox" checked={linkedOnly} onChange={e=>setLinkedOnly(e.target.checked)}/> Connected wallets only</label>
    <button type="button" style={action} onClick={()=>setZoom(z=>clamp(Number((z+.25).toFixed(2)),1,2))} aria-label="Zoom in">＋</button>
    <button type="button" style={action} onClick={()=>setZoom(z=>clamp(Number((z-.25).toFixed(2)),1,2))} aria-label="Zoom out">−</button>
-   <label style={{fontSize:12}}>Cluster <select aria-label="Filter by connected cluster" value={groupFilter} onChange={e=>{setGroupFilter(e.target.value);setSelected(null);}} style={{...action,maxWidth:175}}><option value="all">All wallets</option>{clusters.map((g,i)=><option key={i} value={String(i)}>Group {i+1} · {g.members.length} wallets</option>)}</select></label>
+  </div>
+  <div style={{display:"grid",gridTemplateColumns:"minmax(0,1fr) auto",gap:6,alignItems:"center",marginBottom:10}}>
+   <label style={{fontSize:12,display:"flex",alignItems:"center",gap:6,minWidth:0}}>Cluster <select aria-label="Filter by connected cluster" value={groupFilter} onChange={e=>{setGroupFilter(e.target.value);setSelected(null);}} style={{...action,minWidth:0,width:"100%"}}><option value="all">All wallets</option>{clusters.map((g,i)=><option key={i} value={String(i)}>Group {i+1} · {g.members.length} wallets</option>)}</select></label>
    <button type="button" style={action} onClick={()=>{setZoom(1);setSelected(null);setLinkedOnly(false);setGroupFilter("all");}}>Reset</button>
   </div>
   <svg viewBox="0 0 100 100" role="group" aria-label="Interactive wallet connection network" style={{width:"100%",height:"auto",maxHeight:430,background:"#0b1420",borderRadius:10}}>
@@ -82,7 +85,8 @@ export default function HolderBubbleMap({holders=[],groups=[],scanStatus=null,tr
    </g>
   </svg>
   {clusters.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:10,marginBottom:8}}>{clusters.map((g,i)=><button key={i} type="button" style={{...action,borderColor:groupFilter===String(i)?"#ffb58b":"#43536a"}} onClick={()=>{setGroupFilter(String(i));setSelected(null);}}>Group {i+1}: {g.members.length} wallets · {g.sharePct.toFixed(2)}% observed supply</button>)}</div>}
-  <p style={{fontSize:12,color:"#a9b6c9"}}>Select a bubble with touch, mouse or keyboard to inspect its relationships. Green line = evidence-verified pair; amber line = candidate pair; teal bubble = no detected connection in available evidence.</p>
+  <button type="button" style={{...action,fontSize:12,marginTop:8}} onClick={()=>setShowGuide(v=>!v)} aria-expanded={showGuide}>{showGuide?"Hide map legend":"Map legend & interpretation"}</button>
+  {showGuide&&<p style={{fontSize:12,color:"#a9b6c9",lineHeight:1.5}}>Tap a bubble to inspect a wallet. Green lines indicate evidence-verified pairs; amber lines indicate candidates. Teal bubbles have no detected connections in the current investigation. Connections do not establish common ownership or coordinated trading.</p>}
   {active?<div aria-live="polite" style={{background:"#172537",borderRadius:10,padding:12,overflowWrap:"anywhere",fontSize:13}}>
    <strong>Wallet #{active.rank} · {active.sharePct.toFixed(2)}% observed supply</strong>
    <p><a href={solscan("account",active.wallet)} target="_blank" rel="noopener noreferrer" style={{color:"#9cdcff"}}>{active.wallet} ↗</a></p>
