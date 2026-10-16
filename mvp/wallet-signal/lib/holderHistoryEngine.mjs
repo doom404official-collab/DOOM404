@@ -31,7 +31,15 @@ export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,page
   }
  };
  try{
-  await decodePending(Math.max(1,Math.floor(maxRequests/3)));
+  // Prioritize decoding when a large backlog exists, but reserve one RPC
+  // request for forward pagination whenever any wallet remains unexhausted.
+  const pendingCount=Object.values(checkpoint.signatures).filter(s=>s==="pending").length;
+  const hasUnexhaustedWallet=Object.values(checkpoint.wallets).some(w=>!w.exhausted);
+  const reserveForPagination=hasUnexhaustedWallet?1:0;
+  const decodeFirst=pendingCount>=pageLimit
+   ?Math.max(0,maxRequests-reserveForPagination)
+   :Math.max(1,Math.floor(maxRequests/3));
+  await decodePending(decodeFirst);
   for(const wallet of nextHolderScanOrder(checkpoint)){
    const page=await collectWalletSignaturePage({wallet,cursor:checkpoint.wallets[wallet].cursor,limit:pageLimit,
     fetchPage:(address,opts)=>limitedRpc("getSignaturesForAddress",[address,{limit:opts.limit,
