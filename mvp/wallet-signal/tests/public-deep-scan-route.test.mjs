@@ -18,3 +18,11 @@ test('admission locks and rechecks before quota and snapshot',()=>{
  assert.match(admission,/await lockManager.release\(lock\)/);
  assert.match(admission,/await store.createOrReuse\(snapshot\)/);
 });
+
+test('route authenticates before constructing privileged scan adapters',()=>{
+ const auth=route.indexOf('const user=await verifyScanUser(');
+ const store=route.indexOf('const store=createHolderJobStore()');
+ const quota=route.indexOf('const quota=createDeepScanQuota(');
+ assert.ok(auth>0&&auth<store&&store<quota);
+ assert.match(route,/if\(!user\)return json\(\{error:'authentication_required'\},401\)/);
+});
