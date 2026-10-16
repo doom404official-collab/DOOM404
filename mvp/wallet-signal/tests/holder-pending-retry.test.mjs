@@ -14,5 +14,8 @@ test("unavailable historical transaction stays pending for future retries",async
  assert.equal(result.checkpoint.signatures.sig,"pending");
  assert.equal(result.summary.transactionsPending,1);
  assert.equal(result.summary.transactionsChecked,0);
- assert.equal(result.summary.reason,"REQUEST_BUDGET_EXHAUSTED");
+ assert.equal(result.summary.reason,null);
+ assert.equal(result.summary.decodeAttempts,1);
+ assert.equal(result.summary.decodeSuccesses,0);
+ assert.equal(result.summary.discoveryRequests,0);
 });
