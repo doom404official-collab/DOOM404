@@ -13,7 +13,7 @@ export async function GET(request){
   if(!job?.checkpoint)return NextResponse.json({mint,status:"not_started"},{headers:{"Cache-Control":"no-store"}});
   const evidenceRows=await createHolderEvidenceStore().listForJob(job.id);
   const assessment=assessVerifiedHolderConcentration({checkpoint:job.checkpoint,evidenceRows});
-  return NextResponse.json({mint,scanStatus:job.status,updatedAt:job.updated_at,assessment},
+  return NextResponse.json({mint,jobId:job.id,scanStatus:job.status,updatedAt:job.updated_at,assessment},
    {headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({error:"Holder assessment unavailable"},{status:503,headers:{"Cache-Control":"no-store"}});}
 }
