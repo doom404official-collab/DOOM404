@@ -17,9 +17,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: mvp/wallet-signal/package-lock.json
-      - run: npm ci --no-audit --no-fund
+      - run: npm install --no-audit --no-fund
       - run: npm run build
       - name: Validate HTTP 401 with feature enabled only in isolated CI
         env:
