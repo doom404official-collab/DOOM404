@@ -357,6 +357,10 @@ function CreatorLookup() {
              .reduce((n,h)=>n+Number(h.sharePct||0),0),0)
        }))}
     :null;
+  // A historical network remains useful even when its holder snapshot differs
+  // from live balances. Never substitute current balances into historical nodes.
+  const mapHolderConnections=currentHolderConnections||holderConnections;
+  const historicalMapOnly=Boolean(holderConnections&&!currentHolderConnections);
   const [extensions, setExtensions] = useState(null);
   const [extensionsError, setExtensionsError] = useState("");
   const [liquidity, setLiquidity] = useState(null);
@@ -712,19 +716,20 @@ function CreatorLookup() {
         })()}
         {concentration && <>
           <div style={{background:"#171c1a",border:"1px solid #355247",borderRadius:10,padding:14,marginBottom:12}}>
-            <strong>LIVE HOLDER CONNECTIONS</strong>
-            {holderConnections && !currentHolderConnections && <p style={{color:"#ffbf86"}}>Historical holder set differs from current live accounts. Connections are excluded from the current score until refreshed.</p>}
+            <strong>HOLDER CONNECTION NETWORK</strong>
+            {holderConnections && !currentHolderConnections && <p style={{color:"#ffbf86"}}>Historical snapshot differs from current live holders. The saved network is available below for exploration, but its connections are excluded from the current live score.</p>}
             {holderConnectionsBusy && <p role="status">Retrieving saved holder intelligence…</p>}
             {holderConnectionsError && <p style={{color:"#ffbf86"}}>{holderConnectionsError}</p>}
-            {currentHolderConnections && <>
-              <p><strong>Top-20 supply:</strong> {currentHolderConnections.top20SharePct.toFixed(2)}% · <strong>Connected wallets:</strong> {currentHolderConnections.connectedWallets}/{currentHolderConnections.ownerWalletsResolved} · <strong>Direct pairs:</strong> {currentHolderConnections.directPairs}</p>
-              <p>Transactions checked: {currentHolderConnections.transactionsChecked} · Wallet histories reached: {currentHolderConnections.walletHistoriesReached}/20 · Older history may remain</p>
-              <HolderBubbleMap holders={currentHolderConnections.holders||[]} groups={currentHolderConnections.connectedGroups||[]} scanStatus={currentHolderConnections.status||"partial"} transactionsChecked={currentHolderConnections.transactionsChecked} walletHistoriesReached={currentHolderConnections.walletHistoriesReached} verifiedAssessment={verifiedHolderAssessment?.jobId&&verifiedHolderAssessment.jobId===currentHolderConnections.jobId?verifiedHolderAssessment.assessment:null}/>
-              {currentHolderConnections.connectedGroups.map((group,index)=><details key={index}><summary>Connected group {index+1}: {group.members.length} wallets · {group.combinedObservedSharePct.toFixed(2)}% of supply</summary>
+            {mapHolderConnections && <>
+              {historicalMapOnly && <p style={{color:"#ffbf86",fontWeight:600}}>HISTORICAL SNAPSHOT — balances and relationships reflect the saved investigation, not the current live holder set.</p>}
+              <p><strong>Top-20 supply:</strong> {mapHolderConnections.top20SharePct.toFixed(2)}% · <strong>Connected wallets:</strong> {mapHolderConnections.connectedWallets}/{mapHolderConnections.ownerWalletsResolved} · <strong>Direct pairs:</strong> {mapHolderConnections.directPairs}</p>
+              <p>Transactions checked: {mapHolderConnections.transactionsChecked} · Wallet histories reached: {mapHolderConnections.walletHistoriesReached}/20 · Older history may remain</p>
+              <HolderBubbleMap holders={mapHolderConnections.holders||[]} groups={mapHolderConnections.connectedGroups||[]} scanStatus={historicalMapOnly?"historical snapshot":mapHolderConnections.scanStatus||"partial"} transactionsChecked={mapHolderConnections.transactionsChecked} walletHistoriesReached={mapHolderConnections.walletHistoriesReached} verifiedAssessment={verifiedHolderAssessment?.jobId&&verifiedHolderAssessment.jobId===mapHolderConnections.jobId?verifiedHolderAssessment.assessment:null}/>
+              {mapHolderConnections.connectedGroups.map((group,index)=><details key={index}><summary>Connected group {index+1}: {group.members.length} wallets · {group.combinedObservedSharePct.toFixed(2)}% of supply</summary>
                 {group.members.map(wallet=><p key={wallet}><AddressLink address={wallet}/></p>)}
                 {group.directEdges.flatMap(edge=>edge.signatures).slice(0,10).map(sig=><p key={sig}><a href={"https://solscan.io/tx/"+encodeURIComponent(sig)} target="_blank" rel="noopener noreferrer">Transaction {sig.slice(0,12)}… ↗</a></p>)}
               </details>)}
-              <small style={{color:"#aaa"}}>Stored investigation updated {currentHolderConnections.observedAt||"time unavailable"}. Live balances appear in the account concentration figures below. Connections indicate transfers, not shared ownership.</small>
+              <small style={{color:"#aaa"}}>Stored investigation updated {mapHolderConnections.observedAt||"time unavailable"}. Current live balances appear separately in the account concentration figures below. Connections indicate transfers, not shared ownership.</small>
             </>}
           </div>
           <p><strong>Largest account:</strong> {concentration.largestAccountSharePct ?? "Unavailable"}% of supply</p>
