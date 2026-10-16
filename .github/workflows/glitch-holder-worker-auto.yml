@@ -12,7 +12,7 @@ jobs:
   run:
     if: github.event_name == 'workflow_dispatch' || github.repository == 'doom404official-collab/DOOM404'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
     steps:
       - name: Resume bounded holder investigation
         env:
@@ -68,7 +68,7 @@ jobs:
               print(json.dumps({"step":"start","status":started.get("status")}))
           elif current not in ("queued","running","partial"):
               raise SystemExit("Unexpected scan status; refusing to run")
-          for batch in range(2):
+          for batch in range(4):
               result=request("/api/holder-scan-tick",{},
                   {"x-glitch-worker-token":worker})
               print(json.dumps({"step":"tick","batch":batch+1,
