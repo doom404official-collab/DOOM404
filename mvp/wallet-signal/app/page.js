@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import HolderBubbleMap from "./HolderBubbleMap";
 import HolderNetworkAssessment from "./HolderNetworkAssessment";
+import HolderScanProgress from "./HolderScanProgress";
 import {reconcileHolderSnapshot} from "../lib/reconcileHolderSnapshot.mjs";
 import {scoreHolderConcentration} from "../lib/holderConcentrationScore.mjs";
 import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
@@ -521,6 +522,7 @@ function CreatorLookup() {
           </div>)}
         </div>;
       })()}
+      <HolderScanProgress mint={result.mint} />
       <HolderNetworkAssessment mint={result.mint} />
       <Section title="TOKEN SECURITY OVERVIEW" defaultOpen={true}>
         <p style={{ color: "#ff8585", letterSpacing: 2, fontSize: 12, fontWeight: 700, marginTop: 0 }}>GLITCH // TOKEN SECURITY OVERVIEW</p>
