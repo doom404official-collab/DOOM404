@@ -11,6 +11,6 @@ export async function GET(request){
   const row=await store.getLatest(mint);
   if(!row)return NextResponse.json({mint,status:"not_started"},{headers:{"Cache-Control":"no-store"}});
   const view=store.publicView(row);
-  return NextResponse.json({mint,status:row.status,scan:view},{headers:{"Cache-Control":"no-store"}});
+  return NextResponse.json({mint,status:row.status,jobId:row.id,scan:view},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({error:"Holder scan status unavailable"},{status:503,headers:{"Cache-Control":"no-store"}});}
 }
