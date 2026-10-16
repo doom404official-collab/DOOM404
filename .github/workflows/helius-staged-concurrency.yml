@@ -1,0 +1,24 @@
+name: Helius Staged Concurrency Diagnostic
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: helius-live-diagnostic
+  cancel-in-progress: false
+jobs:
+  staged:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test lib/heliusStagedDiagnostic.test.mjs
+      - run: node scripts/check-helius-staged.mjs
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
