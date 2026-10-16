@@ -11,7 +11,7 @@ export async function processHolderScanJob({store,jobId,rpc,maxRequests=35,lease
  const claim=await store.claim(jobId,workerId,leaseSeconds);
  if(!claim)return {status:"ALREADY_CLAIMED"};
  // Lease renewal before commit prevents a stale worker from overwriting another.
- const batch=await scanHolderHistoryBatch({checkpoint:claim.checkpoint,rpc,maxRequests,pageLimit:10});
+ const batch=await scanHolderHistoryBatch({checkpoint:claim.checkpoint,rpc,maxRequests,pageLimit:100});
  const renewal=await store.renew(jobId,workerId,claim.version,leaseSeconds);
  if(!renewal)return {status:"LEASE_LOST",requestCount:batch.summary.requestCount};
  const status=batch.summary.providerHistoryExhausted?"complete":"partial";
