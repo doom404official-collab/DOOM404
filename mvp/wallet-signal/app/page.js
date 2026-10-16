@@ -701,7 +701,7 @@ function CreatorLookup() {
             {currentHolderConnections && <>
               <p><strong>Top-20 supply:</strong> {currentHolderConnections.top20SharePct.toFixed(2)}% · <strong>Connected wallets:</strong> {currentHolderConnections.connectedWallets}/{currentHolderConnections.ownerWalletsResolved} · <strong>Direct pairs:</strong> {currentHolderConnections.directPairs}</p>
               <p>Transactions checked: {currentHolderConnections.transactionsChecked} · Wallet histories reached: {currentHolderConnections.walletHistoriesReached}/20 · Older history may remain</p>
-              <HolderBubbleMap holders={currentHolderConnections.holders||[]} groups={currentHolderConnections.connectedGroups||[]}/>
+              <HolderBubbleMap holders={currentHolderConnections.holders||[]} groups={currentHolderConnections.connectedGroups||[]} scanStatus={currentHolderConnections.status||"partial"} transactionsChecked={currentHolderConnections.transactionsChecked} walletHistoriesReached={currentHolderConnections.walletHistoriesReached}/>
               {currentHolderConnections.connectedGroups.map((group,index)=><details key={index}><summary>Connected group {index+1}: {group.members.length} wallets · {group.combinedObservedSharePct.toFixed(2)}% of supply</summary>
                 {group.members.map(wallet=><p key={wallet}><AddressLink address={wallet}/></p>)}
                 {group.directEdges.flatMap(edge=>edge.signatures).slice(0,10).map(sig=><p key={sig}><a href={"https://solscan.io/tx/"+encodeURIComponent(sig)} target="_blank" rel="noopener noreferrer">Transaction {sig.slice(0,12)}… ↗</a></p>)}
