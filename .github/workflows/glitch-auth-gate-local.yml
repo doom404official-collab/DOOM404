@@ -1,0 +1,46 @@
+name: GLITCH Auth Gate Local Integration
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  auth-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/glitch-holder-dashboard-integration
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mvp/wallet-signal/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - name: Validate HTTP 401 with feature enabled only in isolated CI
+        env:
+          GLITCH_PUBLIC_DEEP_SCAN_ENABLED: 'true'
+          PORT: '3219'
+        run: |
+          npm run start -- --port 3219 > /tmp/glitch-auth-gate.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 40); do
+            if curl --silent --max-time 2 http://127.0.0.1:3219/ >/dev/null; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then echo 'Local server not ready'; exit 1; fi
+          node --input-type=module -e '
+            const response=await fetch("http://127.0.0.1:3219/api/token/deep-scan",{
+              method:"POST",headers:{"content-type":"application/json"},
+              body:JSON.stringify({mint:"98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump"})
+            });
+            const body=await response.json();
+            console.log(JSON.stringify({status:response.status,error:body.error,isolated:true,heliusRequests:0}));
+            if(response.status!==401||body.error!=="authentication_required")process.exit(1);
+          '
