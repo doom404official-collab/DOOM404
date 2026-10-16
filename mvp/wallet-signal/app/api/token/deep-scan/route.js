@@ -15,13 +15,18 @@ export async function POST(request){
  try{mint=new PublicKey((await request.json())?.mint??'').toBase58();}
  catch{return json({error:'invalid_mint'},400);}
  try{
+  // Authenticate before constructing service-role stores, quota or lock adapters.
+  // Unauthenticated callers must receive 401 even if scan infrastructure is unavailable.
+  const user=await verifyScanUser({authorization:request.headers.get('authorization'),
+   url:process.env.SUPABASE_URL,anonKey:process.env.SUPABASE_ANON_KEY});
+  if(!user)return json({error:'authentication_required'},401);
   const store=createHolderJobStore();
   const lockManager=createScanStartLock({url:process.env.SUPABASE_URL,key:process.env.SUPABASE_SERVICE_ROLE_KEY});
   const quota=createDeepScanQuota({url:process.env.SUPABASE_URL,
    serviceRoleKey:process.env.SUPABASE_SERVICE_ROLE_KEY,pepper:process.env.GLITCH_SCAN_QUOTA_PEPPER});
   const outcome=await admitCustomerScan({
    mint,authorization:request.headers.get('authorization'),enabled:true,
-   verifyUser:authorization=>verifyScanUser({authorization,url:process.env.SUPABASE_URL,anonKey:process.env.SUPABASE_ANON_KEY}),
+   verifyUser:async()=>user,
    store,lockManager,quota,
    prepareSnapshot:async mint=>{
     const endpoint=process.env.HELIUS_RPC_URL;
