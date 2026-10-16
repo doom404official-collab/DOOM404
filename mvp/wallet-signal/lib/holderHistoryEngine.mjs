@@ -35,14 +35,19 @@ export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,page
   // request for forward pagination whenever any wallet remains unexhausted.
   const pendingCount=Object.values(checkpoint.signatures).filter(s=>s==="pending").length;
   const hasUnexhaustedWallet=Object.values(checkpoint.wallets).some(w=>!w.exhausted);
-  const reserveForPagination=hasUnexhaustedWallet?1:0;
+  // Backlog-heavy jobs get three decoding-only batches, then one pagination batch.
+  // The counter is persisted in the existing checkpoint; no new database schema.
+  const priorDecodeOnly=Math.max(0,Math.min(3,Number(checkpoint.decodeOnlyBatches)||0));
+  const highBacklog=pendingCount>=Math.max(100,pageLimit*2);
+  const shouldDiscover=hasUnexhaustedWallet&&(!highBacklog||priorDecodeOnly>=3);
+  const reserveForPagination=shouldDiscover?1:0;
   const decodeFirst=pendingCount>=pageLimit
    ?Math.max(0,maxRequests-reserveForPagination)
    :Math.max(1,Math.floor(maxRequests/3));
   await decodePending(decodeFirst);
   // Reserve one discovery request when the decode backlog is high.
   // Do not deliberately exceed the bounded worker request budget.
-  if(used<maxRequests){
+  if(shouldDiscover&&used<maxRequests){
    for(const wallet of nextHolderScanOrder(checkpoint)){
     if(used>=maxRequests)break;
     const page=await collectWalletSignaturePage({wallet,cursor:checkpoint.wallets[wallet].cursor,limit:pageLimit,
@@ -55,6 +60,9 @@ export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,page
     if(used<maxRequests)await decodePending(maxRequests-used);
    }
   }
+  if(highBacklog&&hasUnexhaustedWallet){
+   checkpoint.decodeOnlyBatches=discoveryRequests>0?0:Math.min(3,priorDecodeOnly+1);
+  }else checkpoint.decodeOnlyBatches=0;
  }catch(error){reason=String(error?.message||"SCAN_INTERRUPTED");}
  const observations=[];
  for(const edge of Object.values(checkpoint.edges||{})){
@@ -66,6 +74,6 @@ export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,page
  const graph=buildHolderConnectionGraph({holders:checkpoint.holders,transactions:observations,historyComplete:false});
  return {checkpoint,summary:{...summarizeHistoryCheckpoint(checkpoint),
   scanCoverage:holderScanCoverage(checkpoint),connectedWallets:graph.connectedWalletCount,
-  connectedGroups:graph.connectedGroups,requestCount:used,decodeAttempts,decodeSuccesses,discoveryRequests,reason,
+  connectedGroups:graph.connectedGroups,requestCount:used,decodeAttempts,decodeSuccesses,discoveryRequests,decodeOnlyBatches:checkpoint.decodeOnlyBatches??0,reason,
   commonOwnershipEstablished:false,archiveCompletenessProven:false}};
 }
