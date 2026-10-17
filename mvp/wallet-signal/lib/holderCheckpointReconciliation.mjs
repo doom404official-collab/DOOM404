@@ -18,6 +18,8 @@ export function planHolderCheckpointReconciliation({checkpoint,eligibleHolders,e
   // Signature status is global to the old checkpoint, not per-wallet.
   // It must NOT be blindly copied to a new holder set.
   signatureStateTransferSafe:false,
+  evidenceReuseRequiresRevalidation:true,
+  eligibleWalletSetHashMustMatch:true,
   checkpointMutationPerformed:false
  });
 }
