@@ -7,6 +7,7 @@ import { summarizeCreatorSelling } from './creatorSellingEvidence.mjs';
 import { discoverCreatorWalletHistory } from './creatorWalletHistoryDiscovery.mjs';
 import { inspectCreatorHistoricalBatch } from './creatorHistoricalTransactionBatch.mjs';
 import { summarizePreviousLaunches } from './creatorPreviousLaunches.mjs';
+import { collectCreatorLaunchCandidates } from './creatorHistoricalLaunchDiscovery.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -32,8 +33,9 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
   if(stage==='previous_launches'){
    const creators=[...new Set((previous.originEvidence||[]).map(e=>e.creator))];
    if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
+   const discovery=collectCreatorLaunchCandidates({creator:creators[0],observations:previous.historicalLaunchObservations||[]});
    const launches=summarizePreviousLaunches({creator:creators[0],launches:previous.historicalLaunchEvidence||[]});
-   state={...previous,previousLaunches:launches,previousLaunchesStatus:launches.previousLaunchesScoreEligible?'EVIDENCE_READY':'HISTORICAL_COVERAGE_INCOMPLETE',lastTickAt:new Date().toISOString()};
+   state={...previous,historicalLaunchCandidates:discovery.candidates,launchDiscoveryCoverageComplete:false,previousLaunches:launches,previousLaunchesStatus:launches.previousLaunchesScoreEligible?'EVIDENCE_READY':'HISTORICAL_COVERAGE_INCOMPLETE',lastTickAt:new Date().toISOString()};
    // Never mark complete without verified historical discovery and comparable evidence.
   }else if(stage==='selling'){
    const creators=[...new Set((previous.originEvidence||[]).map(e=>e.creator))];
