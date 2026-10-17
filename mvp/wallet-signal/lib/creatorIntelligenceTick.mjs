@@ -85,8 +85,11 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
   else state.identificationStatus='INCOMPLETE';
   }
  }catch(error){
-  state={...previous,lastError:['CREATOR_REQUEST_BUDGET_EXHAUSTED','RPC_REQUEST_BUDGET_EXHAUSTED'].includes(error?.message)?'REQUEST_BUDGET_EXHAUSTED':'CREATOR_TICK_ERROR',lastTickAt:new Date().toISOString()};
+  const safeReasons=new Set(['CREATOR_REQUEST_BUDGET_EXHAUSTED','RPC_REQUEST_BUDGET_EXHAUSTED','PAGINATION_STALLED','RPC_RATE_LIMITED','RPC_HTTP_ERROR','RPC_RESPONSE_ERROR','RPC_AUTH_FAILED','INVALID_SIGNATURE_PAGE','INVALID_SIGNATURE_RESPONSE','CREATOR_IDENTITY_UNRESOLVED','HOLDINGS_EVIDENCE_INCOMPLETE']);
+  const errorCode=safeReasons.has(error?.message)?error.message:'CREATOR_TICK_ERROR';
+  state={...state,lastError:errorCode,lastTickAt:new Date().toISOString()};
+  status='partial';
  }
  await store.save({mint,owner,stage,status,state,requestCount:budget.used});
- return {status,stage,requests:budget.used,identificationStatus:state.identificationStatus||'INCOMPLETE'};
+ return {status,stage,requests:budget.used,identificationStatus:state.identificationStatus||'INCOMPLETE',errorCode:state.lastError||null};
 }
