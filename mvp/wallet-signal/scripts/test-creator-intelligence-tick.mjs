@@ -5,7 +5,7 @@ const sig='1'.repeat(88);
 let state={nextCursor:null},status='queued',stage='identification',saved=null;
 const store={
  async get(){return {status,stage,state}},
- async claim(){return true},
+ async claim(){state={...state,claimObserved:true};return true},
  async save(v){saved=v;state=v.state;status=v.status;stage=v.stage;return true}
 };
 const fetchImpl=async(_url,options)=>{
@@ -20,6 +20,7 @@ assert.equal(first.requests,2);
 assert.equal(saved.requestCount,2);
 assert.deepEqual(saved.state.deferredSignatures,[sig]);
 assert.equal(saved.state.historyComplete,false);
+assert.equal(saved.state.claimObserved,true,'tick must reload checkpoint after lease claim');
 assert.equal(saved.state.identificationStatus,'UNRESOLVED_ARCHIVE_NOT_PROVEN');
 assert.equal(saved.stage,'identification');
 console.log('creator intelligence tick tests passed');
