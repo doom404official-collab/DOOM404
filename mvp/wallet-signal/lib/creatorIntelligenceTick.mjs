@@ -5,6 +5,7 @@ import { scanCreatorOrigin } from './creatorOriginPagedScan.mjs';
 import { investigateCreatorHoldings } from './creatorHoldingsInvestigation.mjs';
 import { summarizeCreatorSelling } from './creatorSellingEvidence.mjs';
 import { discoverCreatorWalletHistory } from './creatorWalletHistoryDiscovery.mjs';
+import { inspectCreatorHistoricalBatch } from './creatorHistoricalTransactionBatch.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -35,6 +36,13 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
     creatorHistorySignatures:[...new Set([...(previous.creatorHistorySignatures||[]),...history.signatures])].slice(-2000),
     creatorHistoryRpcExhausted:history.rpcHistoryExhausted,creatorHistoryComplete:false,
     lastTickAt:new Date().toISOString()};
+   const processed=new Set(previous.creatorProcessedSignatures||[]);
+   const queue=[...new Set([...(previous.creatorPendingSignatures||[]),...(state.creatorHistorySignatures||[])])].filter(sig=>!processed.has(sig));
+   const decoded=await inspectCreatorHistoricalBatch({mint,creator:creators[0],signatures:queue,rpc,maxTransactions:20});
+   state={...state,creatorProcessedSignatures:[...new Set([...processed,...decoded.processed])].slice(-5000),
+    creatorPendingSignatures:[...new Set([...decoded.pending,...queue.filter(sig=>!decoded.processed.includes(sig)&&!decoded.pending.includes(sig))])].slice(-5000),
+    creatorTransactionObservations:[...(previous.creatorTransactionObservations||[]),...decoded.observations].slice(-1000),
+    creatorSwapVerificationComplete:false,creatorHistoryComplete:false};
    const launchTimestamp=Number(previous.launchTimestamp);
    const initialAttributableRaw=previous.initialAttributableRaw;
    if(!Number.isSafeInteger(launchTimestamp)||launchTimestamp<=0||!/^[0-9]+$/.test(String(initialAttributableRaw||''))){
