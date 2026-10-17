@@ -4,9 +4,10 @@
  * Transaction collection and top-30 ranking must be supplied by verified providers.
  */
 export function buildHolderConnectionGraph({holders=[],transactions=[],historyComplete=false}={}){
+ const excludedInfrastructure=new Set(["1nc1nerator11111111111111111111111111111111"]);
  const unique=new Map();
  for(const h of holders.slice(0,30)){
-  if(typeof h?.ownerWallet!=="string"||!Number.isFinite(Number(h.sharePct)))continue;
+  if(typeof h?.ownerWallet!=="string"||excludedInfrastructure.has(h.ownerWallet)||!Number.isFinite(Number(h.sharePct)))continue;
   const prior=unique.get(h.ownerWallet)||0;
   unique.set(h.ownerWallet,prior+Number(h.sharePct));
  }
