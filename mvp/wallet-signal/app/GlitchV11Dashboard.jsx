@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
 import {attributes} from "../lib/glitchScoringV11.mjs";
+import {summarizeHistoricalHolderPreview} from "../lib/holderHistoricalPreviewV11.mjs";
 import {scoreTokenSecurity,scoreHolderIntelligence,scoreCreatorIntelligence,scoreLiquidityQuality} from "../lib/glitchAttributeEnginesV11.mjs";
 const pretty=s=>s.replaceAll("_"," ").replace(/\b\w/g,x=>x.toUpperCase());
 /** Preview only. Historical investigations continue independently; no invented completion. */
-export default function GlitchV11Dashboard({result,extensions,concentration,creatorEvidence,liquidity}){
+export default function GlitchV11Dashboard({result,extensions,concentration,creatorEvidence,liquidity,historicalHolders,holderSnapshotCompatible=false}){
  const parsed=!!result&&result.authorityDetailsStatus!=="not_parsed"&&Object.hasOwn(result,"mintAuthority")&&Object.hasOwn(result,"freezeAuthority");
  const fee=extensions?.transferFee;
  const security=scoreTokenSecurity({
@@ -20,11 +21,13 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
  const creator=scoreCreatorIntelligence({creatorVerified:creatorEvidence?.status==="VERIFIED"&&!!creatorEvidence?.creator});
  const pools=scoreLiquidityQuality({});
  const scores={token_security:security,holder_intelligence:holders,creator_intelligence:creator,liquidity_quality_safety:pools};
+ const historical=summarizeHistoricalHolderPreview({historical:historicalHolders,compatible:holderSnapshotCompatible});
  return <section aria-label="GLITCH v1.1 attribute preview" style={{background:"#10141d",border:"1px solid #354156",borderRadius:16,padding:16,marginBottom:18}}>
   <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap",alignItems:"center"}}>
    <div><strong style={{fontSize:19,color:"#f3f5ff"}}>GLITCH // Intelligence v1.1</strong><p style={{color:"#aebbd0",fontSize:12,margin:"5px 0"}}>4 attributes · 18 checks · Evidence-first preview</p></div>
    <span style={{color:"#ffbf86",fontSize:13}}>Overall score: Pending calibration</span>
   </div>
+  {historical.available&&<div style={{background:"#202532",border:"1px solid #394456",borderRadius:10,padding:12,marginTop:12,color:"#d4dbea",fontSize:12}}><strong>Historical holder investigation</strong><p style={{margin:"5px 0"}}>{historical.holderCount} wallets · {historical.directPairs??"—"} observed direct pairs · {historical.connectedWallets??"—"} connected wallets · History {historical.historyComplete?"reported complete":"still partial"}</p><p style={{margin:0,color:"#aebbd0"}}>{historical.note}</p></div>}
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:12,marginTop:12}}>
   {attributes.map(a=>{const s=scores[a.id];return <article key={a.id} style={{background:"#1a202c",border:"1px solid #394456",borderRadius:12,padding:14}}>
    <div style={{color:"#e8efff",fontWeight:700}}>{a.name}</div>
