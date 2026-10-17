@@ -4,6 +4,7 @@ import { createSolanaRpcAdapter } from './creatorOriginRpc.mjs';
 import { scanCreatorOrigin } from './creatorOriginPagedScan.mjs';
 import { investigateCreatorHoldings } from './creatorHoldingsInvestigation.mjs';
 import { summarizeCreatorSelling } from './creatorSellingEvidence.mjs';
+import { discoverCreatorWalletHistory } from './creatorWalletHistoryDiscovery.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -27,13 +28,20 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  let stage=claimed.stage,status='partial';
  try {
   if(stage==='selling'){
+   const creators=[...new Set((previous.originEvidence||[]).map(e=>e.creator))];
+   if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
+   const history=await discoverCreatorWalletHistory({creator:creators[0],rpc,before:previous.creatorHistoryCursor||null,maxPages:3,maxSignatures:300});
+   state={...previous,creatorHistoryCursor:history.nextCursor,
+    creatorHistorySignatures:[...new Set([...(previous.creatorHistorySignatures||[]),...history.signatures])].slice(-2000),
+    creatorHistoryRpcExhausted:history.rpcHistoryExhausted,creatorHistoryComplete:false,
+    lastTickAt:new Date().toISOString()};
    const launchTimestamp=Number(previous.launchTimestamp);
    const initialAttributableRaw=previous.initialAttributableRaw;
    if(!Number.isSafeInteger(launchTimestamp)||launchTimestamp<=0||!/^[0-9]+$/.test(String(initialAttributableRaw||''))){
-    state={...previous,sellingStatus:'AWAITING_VERIFIED_INITIAL_ALLOCATION_AND_LAUNCH_TIME',lastTickAt:new Date().toISOString()};
+    state={...state,sellingStatus:'AWAITING_VERIFIED_INITIAL_ALLOCATION_AND_LAUNCH_TIME',lastTickAt:new Date().toISOString()};
    }else{
     const selling=summarizeCreatorSelling({launchTimestamp,initialAttributableRaw,transactions:previous.verifiedSwapSales||[],historyCompleteByWindow:previous.historyCompleteByWindow||{}});
-    state={...previous,selling,sellingStatus:selling.creatorSellingScoreEligible?'EVIDENCE_READY':'HISTORICAL_COVERAGE_INCOMPLETE',lastTickAt:new Date().toISOString()};
+    state={...state,selling,sellingStatus:selling.creatorSellingScoreEligible?'EVIDENCE_READY':'HISTORICAL_COVERAGE_INCOMPLETE',lastTickAt:new Date().toISOString()};
     if(selling.creatorSellingScoreEligible)stage='previous_launches';
    }
   }else if(stage==='holdings'){
