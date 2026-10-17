@@ -17,7 +17,7 @@ export async function scanCreatorOrigin({
   const started = Date.now();
   let cursor = before, pagesFetched = 0, rawSignaturesSeen = 0, failedSignaturesSkipped = 0;
   let retrieved = 0, unavailable = 0, fetchErrors = 0, exhausted = false;
-  const seen = new Set(), candidates = [], verified = [], failureReasons = {};
+  const seen = new Set(), candidates = [], verified = [], failureReasons = {};\n  const deferredSignatures = [];
   for (let page = 0; page < maxPages; page++) {
     if (Date.now() - started >= maxDurationMs) break;
     const batch = await lookupSignaturePage(mint, { before: cursor });
@@ -37,14 +37,14 @@ export async function scanCreatorOrigin({
       candidates.push(entry.signature);
       try {
         const tx = await fetchTransaction(entry.signature);
-        if (!tx || tx.meta?.err != null) { unavailable++; continue; }
+        if (!tx || tx.meta?.err != null) { unavailable++; deferredSignatures.push(entry.signature); cursor = entry.signature; continue; }
         retrieved++;
         const proof = verifyLaunchpadCreation({ mint, signature: entry.signature, transaction: tx, decoders: pumpFunDecoders });
         if (proof.status === "VERIFIED") verified.push(...proof.decodedRoles.map(role => ({
           signature: entry.signature, creator: role.address, programId: role.programId, decoderVersion: role.decoderVersion
         })));
       } catch (error) {
-        fetchErrors++;
+        if (error?.message === "CREATOR_REQUEST_BUDGET_EXHAUSTED" || error?.message === "RPC_REQUEST_BUDGET_EXHAUSTED") { consumedEntirePage = false; break; }\n        deferredSignatures.push(entry.signature); cursor = entry.signature;\n        fetchErrors++;
         const allowed = ["RPC_RATE_LIMITED", "RPC_AUTH_FAILED", "RPC_HTTP_ERROR", "RPC_UNSUPPORTED_VERSION", "RPC_RESPONSE_ERROR"];
         const reason = allowed.includes(error?.message) ? error.message : "TRANSACTION_FETCH_EXCEPTION";
         failureReasons[reason] = (failureReasons[reason] || 0) + 1;
@@ -64,7 +64,7 @@ export async function scanCreatorOrigin({
     creator: creators.length === 1 ? creators[0] : null,
     verified: creators.length === 1 ? verified : [],
     pagesFetched, rawSignaturesSeen, failedSignaturesSkipped, sampled: candidates.length, sampledSignatures: candidates,
-    retrieved, unavailable, fetchErrors, failureReasons, rpcHistoryExhausted: exhausted,
+    retrieved, unavailable, fetchErrors, failureReasons, deferredSignatures, rpcHistoryExhausted: exhausted,
     historyComplete: false, nextCursor: cursor, resumeRequired: !exhausted && creators.length === 0,
   };
 }
