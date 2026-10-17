@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import HolderBubbleMap from "./HolderBubbleMap";
 import {reconcileHolderSnapshot} from "../lib/reconcileHolderSnapshot.mjs";
-import {scoreHolderConcentration} from "../lib/holderConcentrationScore.mjs";
+import {scoreHolderIntelligenceForDisplay as scoreHolderConcentration} from "../lib/holderIntelligenceDisplayV11.mjs";
 import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
 import { selectTokenInsights } from "../lib/tokenInsights.js";
 import { assessTokenEvidence } from "../lib/tokenAssessment.js";
