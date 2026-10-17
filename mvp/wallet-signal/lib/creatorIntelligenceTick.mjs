@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { createCreatorHistoryBudget } from './creatorHistoryBudget.mjs';
 import { createSolanaRpcAdapter } from './creatorOriginRpc.mjs';
 import { scanCreatorOrigin } from './creatorOriginPagedScan.mjs';
+import { investigateCreatorHoldings } from './creatorHoldingsInvestigation.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -13,7 +14,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  if(!job)throw Error('CREATOR_JOB_NOT_ENQUEUED');
  if(job.status==='complete')return {status:'complete',requests:0};
  if(job.status==='failed')return {status:'failed',requests:0};
- if(job.stage!=='identification')return {status:'awaiting_stage_implementation',stage:job.stage,requests:0};
+ if(!['identification','holdings'].includes(job.stage))return {status:'awaiting_stage_implementation',stage:job.stage,requests:0};
  if(await store.claim(mint,owner,180)!==true)return {status:'busy',requests:0};
  // Re-read the checkpoint after acquiring the lease: the pre-claim snapshot may be stale.
  const claimed=await store.get(mint);
@@ -22,8 +23,16 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  const rpc=createSolanaRpcAdapter({rpcUrl,fetchImpl,sharedBudget:budget,maxRequests,maxRetries:2,pageLimit:100,minIntervalMs:250});
  const previous=claimed.state&&typeof claimed.state==='object'?claimed.state:{};
  let state={...previous};
- let stage='identification',status='partial';
+ let stage=claimed.stage,status='partial';
  try {
+  if(stage==='holdings'){
+   const evidence=previous.originEvidence||[];
+   const creators=[...new Set(evidence.map(x=>x.creator))];
+   if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
+   const holdings=await investigateCreatorHoldings({mint,creator:creators[0],rpc});
+   state={...previous,holdings,lastTickAt:new Date().toISOString()};
+   stage='selling';
+  }else{
   const scan=await scanCreatorOrigin({mint,before:previous.nextCursor||null,
    lookupSignaturePage:rpc.lookupSignaturePage,fetchTransaction:rpc.fetchTransaction,
    maxPages:5,maxTransactions:100,maxDurationMs:Math.min(maxDurationMs,120000)});
@@ -37,6 +46,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
   if(state.originEvidence.length>0){stage='holdings';state.identificationStatus='ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW';}
   else if(scan.rpcHistoryExhausted)state.identificationStatus='UNRESOLVED_ARCHIVE_NOT_PROVEN';
   else state.identificationStatus='INCOMPLETE';
+  }
  }catch(error){
   state={...previous,lastError:['CREATOR_REQUEST_BUDGET_EXHAUSTED','RPC_REQUEST_BUDGET_EXHAUSTED'].includes(error?.message)?'REQUEST_BUDGET_EXHAUSTED':'CREATOR_TICK_ERROR',lastTickAt:new Date().toISOString()};
  }
