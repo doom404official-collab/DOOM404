@@ -7,7 +7,7 @@ import {scoreHolderIntelligenceForDisplay as scoreHolderConcentration} from "../
 import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
 import { selectTokenInsights } from "../lib/tokenInsights.js";
 import { assessTokenEvidence } from "../lib/tokenAssessment.js";
-import { assessTokenControls } from "../lib/tokenControlsAssessment.mjs";
+import { assessTokenControls } from "../lib/tokenControlsDisplayV11.mjs";
 import { buildDecisionSummary } from "../lib/decisionSummary.js";
 
 function formatCoverage(status) {
@@ -597,7 +597,7 @@ function CreatorLookup() {
                 <small style={{ color: "#aaa" }}>Evidence: {item.coverage} · {item.source}</small>
               </div>)}
             </div>
-            <p style={{ color: "#bbb", fontSize: 13 }}>Numerical scores use the available on-chain evidence and update as additional transactions are discovered.</p>
+            <p style={{ color: "#bbb", fontSize: 13 }}>GLITCH v1.1 numerical ratings remain withheld until required evidence and calibration are complete.</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
               {assessment.attributes.map(item => <div key={item.id} style={{ background: "#191919", border: "1px solid #484040", borderRadius: 9, padding: 12 }}>
                 {item.id==="concentration"&&concentration&&(()=>{
