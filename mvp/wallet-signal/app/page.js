@@ -6,7 +6,7 @@ import {reconcileHolderSnapshot} from "../lib/reconcileHolderSnapshot.mjs";
 import {scoreHolderIntelligenceForDisplay as scoreHolderConcentration} from "../lib/holderIntelligenceDisplayV11.mjs";
 import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
 import { selectTokenInsights } from "../lib/tokenInsights.js";
-import { assessTokenEvidence } from "../lib/tokenAssessment.js";
+import { assessTokenEvidence } from "../lib/tokenAssessmentV11.js";
 import { assessTokenControls } from "../lib/tokenControlsDisplayV11.mjs";
 import { assessCreatorAndLiquidityV11 } from "../lib/creatorLiquidityDisplayV11.mjs";
 import { buildDecisionSummary } from "../lib/decisionSummary.js";
