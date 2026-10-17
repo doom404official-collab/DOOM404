@@ -10,4 +10,7 @@ assert.deepEqual(result.pending,[b]);
 assert.equal(result.observations[0].creatorTokenOutflowRaw,'50');
 assert.equal(result.observations[0].verifiedSale,null);
 assert.equal(result.historicalCoverageComplete,false);
+const verified=await inspectCreatorHistoricalBatch({mint,creator,signatures:[a],rpc,swapDecoder:({signature})=>({kind:'SWAP_SELL',protocolVerified:true,inputMint:mint,seller:creator,signature,timestamp:1700000000,soldRaw:'50',programId:'verified-program',decoderVersion:'test-v1',instructionVerified:true,outputAssetVerified:true,outputAsset:'SOL'})});
+assert.equal(verified.verifiedSales.length,1);
+assert.equal(verified.verifiedSales[0].soldRaw,'50');
 console.log('creator historical transaction batch tests passed');
