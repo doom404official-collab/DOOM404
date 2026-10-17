@@ -8,6 +8,7 @@ import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
 import { selectTokenInsights } from "../lib/tokenInsights.js";
 import { assessTokenEvidence } from "../lib/tokenAssessment.js";
 import { assessTokenControls } from "../lib/tokenControlsDisplayV11.mjs";
+import { assessCreatorAndLiquidityV11 } from "../lib/creatorLiquidityDisplayV11.mjs";
 import { buildDecisionSummary } from "../lib/decisionSummary.js";
 
 function formatCoverage(status) {
@@ -570,7 +571,13 @@ function CreatorLookup() {
         {(() => {
           const assessment = assessTokenEvidence({ result, extensions, concentration, liquidity, creatorEvidence });
           const controls = assessTokenControls({ result, extensions, concentration });
+          const intelligenceV11 = assessCreatorAndLiquidityV11({creatorEvidence,liquidity});
           return <>
+            <div style={{background:"#171b25",border:"1px solid #334154",borderRadius:10,padding:14,marginBottom:14}}>
+              <strong>GLITCH v1.1 Intelligence</strong>
+              <p style={{fontSize:13,color:"#bbb"}}>Creator Intelligence: {intelligenceV11.creator.complete?"Evidence evaluated":"Incomplete"} · Liquidity Quality &amp; Safety: {intelligenceV11.liquidity.complete?"Evidence evaluated":"Incomplete"} · Consolidated score: Withheld pending verification and calibration.</p>
+              <p style={{fontSize:12,color:"#aaa"}}>Creator attribution: {intelligenceV11.creatorEvidenceStatus} · Liquidity: {intelligenceV11.liquidityEvidenceStatus}</p>
+            </div>
             <div style={{ background:"#191b1e", border:"1px solid #4a4a55", borderRadius:10, padding:14, marginBottom:14 }}>
               <strong>Token controls — creator-independent assessment</strong>
               <p style={{ color:"#ddd", margin:"8px 0" }}>{controls.label}. {controls.observedEvidencePct}% of applicable weighted controls have observations; {controls.coveragePct}% have provisional numeric coverage. Unclassified ownership and liquidity are excluded from the numeric indicator.</p>
