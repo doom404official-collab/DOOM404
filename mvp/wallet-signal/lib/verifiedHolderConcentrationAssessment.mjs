@@ -1,33 +1,35 @@
 import {summarizeVerifiedHolderConnections} from "./verifiedHolderConnections.mjs";
-import {scoreHolderConcentration} from "./holderConcentrationScore.mjs";
-/** Evidence-gated holder assessment. A partial history must not be marketed as a final risk score. */
+import {scoreHolderIntelligence} from "./glitchAttributeEnginesV11.mjs";
+/** v1.1 holder assessment. A finished evidence queue is NOT complete archival history. */
 export function assessVerifiedHolderConcentration({checkpoint,evidenceRows=[],custodyClassificationComplete=false}={}){
  const graph=summarizeVerifiedHolderConnections({checkpoint,evidenceRows});
  const holders=checkpoint.holders||[];
- const validShares=holders.length>0&&holders.every(h=>typeof h.sharePct==="number"&&Number.isFinite(h.sharePct)&&h.sharePct>=0&&h.sharePct<=100);
- const ownerResolved=holders.length>0&&holders.every(h=>typeof h.ownerWallet==="string"&&h.ownerWallet.length>0);
- const holderDataReady=validShares&&ownerResolved;
- const top20SharePct=holders.reduce((sum,h)=>sum+(Number(h.sharePct)||0),0);
- const largestAccountSharePct=holders.length?Math.max(...holders.map(h=>Number(h.sharePct)||0)):null;
- const ownerWalletsResolved=new Set(holders.map(h=>h.ownerWallet).filter(Boolean)).size;
- const assessment=scoreHolderConcentration({
-  top20SharePct,largestAccountSharePct,holders,
-  connectedGroups:graph.connectedGroups,directPairs:graph.directPairs,
-  connectedWallets:graph.connectedWallets,ownerWalletsResolved,
-  walletHistoriesReached:Object.values(checkpoint.wallets||{}).filter(w=>w.pages>0).length,
-  custodyClassificationComplete,historyComplete:false
+ const validShares=holders.length===20&&holders.every(h=>typeof h.sharePct==="number"&&Number.isFinite(h.sharePct)&&h.sharePct>=0&&h.sharePct<=100);
+ const ownerResolved=holders.length===20&&holders.every(h=>typeof h.ownerWallet==="string"&&h.ownerWallet.length>0);
+ const top20SharePct=validShares?holders.reduce((sum,h)=>sum+h.sharePct,0):undefined;
+ // Graph evidence establishes observed connections, not history exhaustion.
+ // The authoritative 35-point network scorer must provide its independently
+ // validated result before this component can be numerically populated.
+ const assessment=scoreHolderIntelligence({
+  top20SharePct,
+  networkScore:undefined,
+  creatorTeamExposurePct:undefined,
+  independencePoints:undefined,
+  historyComplete:false,
+  classificationComplete:custodyClassificationComplete&&ownerResolved,
+  creatorAttributionComplete:false
  });
- const components=assessment.components.map(c=>{
-  if(!holderDataReady&&["top20","largest","connections","combined","integrity"].includes(c.id))return {...c,score:null,reason:"HOLDER_DATA_INCOMPLETE"};
-  if(["connections","combined"].includes(c.id)&&!graph.evidenceComplete)return {...c,score:null,reason:"EVIDENCE_PENDING"};
-  if(c.id==="integrity"&&!custodyClassificationComplete)return {...c,score:null,reason:"CUSTODY_UNCLASSIFIED"};
-  return c;
- });
+ const components=assessment.components.map(c=>({
+  ...c,score:c.points,
+  reason:c.points===null?(c.id==="connected_wallet_network"?"HISTORICAL_COVERAGE_UNVERIFIED":
+    c.id==="creator_team_exposure"?"CREATOR_LINKAGE_UNVERIFIED":
+    c.id==="holder_breadth_independence"?"INDEPENDENCE_UNVERIFIED":"TOP20_DATA_INCOMPLETE"):undefined
+ }));
  const possible=components.reduce((sum,c)=>sum+(c.score===null?0:c.max),0);
  const earned=Math.round(components.reduce((sum,c)=>sum+(c.score??0),0)*100)/100;
- return {...assessment,components,earned,possible,score:null,provisionalScore:graph.evidenceComplete&&holderDataReady?earned:null,
-  status:!holderDataReady?"holder_data_incomplete":graph.evidenceComplete?"provisional_evidence_complete":"evidence_pending",
-  evidence:graph,scoreCoveragePct:Math.round(possible),unscoredPoints:100-possible,
+ return {...assessment,components,earned,possible,score:null,provisionalScore:null,
+  status:!validShares||!ownerResolved?"holder_data_incomplete":graph.evidenceComplete?"provisional_evidence_complete":"evidence_pending",
+  evidence:graph,historyComplete:false,scoreCoveragePct:possible,unscoredPoints:100-possible,
   provisionalScoreDenominator:possible,
-  note:"Evidence-queue completion is not complete historical coverage. No final customer-facing score is issued."};
+  note:"GLITCH v1.1: no final score until history, creator linkage and custody coverage are verified."};
 }
