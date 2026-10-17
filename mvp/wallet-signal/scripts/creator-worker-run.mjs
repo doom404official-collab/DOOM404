@@ -20,5 +20,8 @@ const result = await runCreatorIntelligenceTick({
 console.log(JSON.stringify({
   status: result.status,
   stage: result.stage,
-  requests: result.requests
+  requests: result.requests,
+  errorCode: result.errorCode || null
 }));
+
+if(result.errorCode)throw Error('CREATOR_INVESTIGATION_INCOMPLETE_ERROR: '+result.errorCode);
