@@ -6,6 +6,7 @@ import { investigateCreatorHoldings } from './creatorHoldingsInvestigation.mjs';
 import { summarizeCreatorSelling } from './creatorSellingEvidence.mjs';
 import { discoverCreatorWalletHistory } from './creatorWalletHistoryDiscovery.mjs';
 import { inspectCreatorHistoricalBatch } from './creatorHistoricalTransactionBatch.mjs';
+import { summarizePreviousLaunches } from './creatorPreviousLaunches.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -17,7 +18,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  if(!job)throw Error('CREATOR_JOB_NOT_ENQUEUED');
  if(job.status==='complete')return {status:'complete',requests:0};
  if(job.status==='failed')return {status:'failed',requests:0};
- if(!['identification','holdings','selling'].includes(job.stage))return {status:'awaiting_stage_implementation',stage:job.stage,requests:0};
+ if(!['identification','holdings','selling','previous_launches'].includes(job.stage))return {status:'awaiting_stage_implementation',stage:job.stage,requests:0};
  if(await store.claim(mint,owner,180)!==true)return {status:'busy',requests:0};
  // Re-read the checkpoint after acquiring the lease: the pre-claim snapshot may be stale.
  const claimed=await store.get(mint);
@@ -28,7 +29,13 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  let state={...previous};
  let stage=claimed.stage,status='partial';
  try {
-  if(stage==='selling'){
+  if(stage==='previous_launches'){
+   const creators=[...new Set((previous.originEvidence||[]).map(e=>e.creator))];
+   if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
+   const launches=summarizePreviousLaunches({creator:creators[0],launches:previous.historicalLaunchEvidence||[]});
+   state={...previous,previousLaunches:launches,previousLaunchesStatus:launches.previousLaunchesScoreEligible?'EVIDENCE_READY':'HISTORICAL_COVERAGE_INCOMPLETE',lastTickAt:new Date().toISOString()};
+   // Never mark complete without verified historical discovery and comparable evidence.
+  }else if(stage==='selling'){
    const creators=[...new Set((previous.originEvidence||[]).map(e=>e.creator))];
    if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
    const history=await discoverCreatorWalletHistory({creator:creators[0],rpc,before:previous.creatorHistoryCursor||null,maxPages:3,maxSignatures:300});
