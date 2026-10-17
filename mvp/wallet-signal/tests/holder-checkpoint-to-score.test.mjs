@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createHolderHistoryCheckpoint,recordHistoryPage,recordDecodedTransaction} from "../lib/holderHistoryCheckpoint.mjs";
 import {publicHolderScanView} from "../lib/publicHolderScanView.mjs";
-import {scoreHolderConcentration} from "../lib/holderConcentrationScore.mjs";
+import {scoreHolderIntelligence} from "../lib/glitchAttributeEnginesV11.mjs";
 
 test("persisted transfer evidence produces connection graph and weighted score",()=>{
  const holders=Array.from({length:20},(_,i)=>({
@@ -20,14 +20,10 @@ test("persisted transfer evidence produces connection graph and weighted score",
  assert.equal(view.directPairs,1);
  assert.equal(view.connectedWallets,2);
  assert.equal(view.connectedGroups[0].combinedObservedSharePct,7);
- const score=scoreHolderConcentration({
-  top20SharePct:25,largestAccountSharePct:6,
-  connectedGroups:view.connectedGroups,connectedWallets:view.connectedWallets,
-  directPairs:view.directPairs,walletHistoriesReached:view.walletHistoriesReached,
-  ownerWalletsResolved:view.ownerWalletsResolved
- });
- assert.equal(score.components.find(c=>c.id==="connections").score,9.74);
- assert.equal(score.components.find(c=>c.id==="combined").score,18.67);
- assert.equal(score.possible,100);
- assert.equal(score.historyComplete,false);
+ const score=scoreHolderIntelligence({top20SharePct:25});
+ assert.equal(score.components[0].max,35);
+ assert.equal(score.components[0].points,28);
+ assert.equal(score.components[1].points,null);
+ assert.equal(score.complete,false);
+ assert.equal(score.score,null);
 });
