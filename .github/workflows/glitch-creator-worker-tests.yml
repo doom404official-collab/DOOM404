@@ -47,3 +47,4 @@ jobs:
           node scripts/test-creator-swap-verification.mjs
           node scripts/test-creator-selling-persistence.mjs
           node scripts/test-creator-previous-launches.mjs
+          node scripts/test-creator-previous-launches-tick.mjs
