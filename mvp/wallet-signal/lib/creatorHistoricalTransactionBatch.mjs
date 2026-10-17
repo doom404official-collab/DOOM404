@@ -1,20 +1,25 @@
 import { observeCreatorTransaction } from './creatorTransactionEvidence.mjs';
+import { verifyCreatorSwapSale } from './creatorSwapVerification.mjs';
 /** Decode a bounded batch of discovered signatures. Failed fetches stay pending.
  * This does not claim swap verification or archival completeness.
  */
-export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],rpc,maxTransactions=20}={}){
+export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],rpc,maxTransactions=20,swapDecoder=null}={}){
  if(typeof rpc?.fetchTransaction!=='function'||!Array.isArray(signatures)||!Number.isInteger(maxTransactions)||maxTransactions<1||maxTransactions>100)throw Error('INVALID_CREATOR_BATCH');
- const observations=[],processed=[],pending=[];
+ const observations=[],processed=[],pending=[],verifiedSales=[];
  for(const signature of [...new Set(signatures)].slice(0,maxTransactions)){
   try{
    const tx=await rpc.fetchTransaction(signature);
    if(!tx){pending.push(signature);continue;}
    observations.push(observeCreatorTransaction({signature,transaction:tx,creator,mint}));
+   if(swapDecoder){
+    const proof=verifyCreatorSwapSale({mint,creator,signature,transaction:tx,decoder:swapDecoder});
+    if(proof.status==='VERIFIED')verifiedSales.push(proof.sale);
+   }
    processed.push(signature);
   }catch(error){
    if(['CREATOR_REQUEST_BUDGET_EXHAUSTED','RPC_REQUEST_BUDGET_EXHAUSTED'].includes(error?.message)){pending.push(signature);break;}
    pending.push(signature);
   }
  }
- return {observations,processed,pending,verifiedSales:[],historicalCoverageComplete:false};
+ return {observations,processed,pending,verifiedSales,historicalCoverageComplete:false};
 }
