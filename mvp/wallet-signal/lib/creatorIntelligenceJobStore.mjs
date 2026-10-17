@@ -9,7 +9,7 @@ export function createCreatorIntelligenceJobStore({url,key,fetchImpl=fetch}={}){
  async function request(path,{method='GET',body,prefer}={}){
   const response=await fetchImpl(base+path,{method,headers:{...headers,...(prefer?{prefer}:{})},cache:'no-store',...(body===undefined?{}:{body:JSON.stringify(body)}),signal:AbortSignal.timeout(15000)});
   if(!response.ok)throw Error('CREATOR_STORE_HTTP_'+response.status);
-  if(method==='GET'||path.startsWith('rpc/'))return response.json();
+  if(method==='GET'||path.startsWith('rpc/')||prefer==='return=representation')return response.json();
   return true;
  }
  function checkMint(mint){if(!address.test(mint||''))throw Error('INVALID_MINT')}
@@ -22,7 +22,8 @@ export function createCreatorIntelligenceJobStore({url,key,fetchImpl=fetch}={}){
    if(!stages.has(stage)||!statuses.has(status)||typeof owner!=='string'||owner.length<8||!Number.isInteger(requestCount)||requestCount<0||requestCount>500||!state||typeof state!=='object'||Array.isArray(state))throw Error('INVALID_JOB_UPDATE');
    // Match the active lease owner and ensure the lease is still valid.
    const query='creator_intelligence_jobs?mint=eq.'+mint+'&lease_owner=eq.'+encodeURIComponent(owner)+'&lease_until=gt.'+encodeURIComponent(new Date().toISOString());
-   await request(query,{method:'PATCH',prefer:'return=representation',body:{stage,status,state,updated_at:new Date().toISOString()}});
+   const response=await request(query,{method:'PATCH',prefer:'return=representation',body:{stage,status,state,updated_at:new Date().toISOString()}});
+   if(!Array.isArray(response)||response.length!==1)throw Error('CREATOR_LEASE_LOST');
    // Request counts are persisted by the caller in state until an atomic increment RPC is available.
    return true;
   }
