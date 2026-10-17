@@ -1,14 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {scoreHolderConcentration} from "../lib/holderConcentrationScore.mjs";
-test("unclassified token account owners earn at most six integrity points",()=>{
- const result=scoreHolderConcentration({ownerWalletsResolved:20});
- assert.equal(result.components.find(c=>c.id==="integrity").score,6);
- assert.equal(result.possible,40);
- assert.equal(result.score,null); // Live concentration inputs are required for a meaningful total.
+import {scoreHolderIntelligence} from "../lib/glitchAttributeEnginesV11.mjs";
+test("unknown classification does not earn independence points",()=>{
+ const r=scoreHolderIntelligence({top20SharePct:25,independencePoints:10,historyComplete:true,classificationComplete:false});
+ assert.equal(r.components.find(c=>c.id==="holder_breadth_independence").points,null);
+ assert.equal(r.score,null);
 });
-test("verified custody classification earns remaining four points",()=>{
- const result=scoreHolderConcentration({ownerWalletsResolved:20,custodyClassificationComplete:true});
- assert.equal(result.components.find(c=>c.id==="integrity").score,10);
- assert.equal(result.classificationComplete,true);
+test("verified classification still requires history coverage",()=>{
+ const r=scoreHolderIntelligence({independencePoints:10,classificationComplete:true,historyComplete:false});
+ assert.equal(r.components.find(c=>c.id==="holder_breadth_independence").points,null);
 });
