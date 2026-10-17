@@ -43,6 +43,7 @@ export async function scanCreatorOrigin({
         if (proof.status === "VERIFIED") verified.push(...proof.decodedRoles.map(role => ({
           signature: entry.signature, creator: role.address, programId: role.programId, decoderVersion: role.decoderVersion
         })));
+        cursor = entry.signature;
       } catch (error) {
         if (error?.message === "CREATOR_REQUEST_BUDGET_EXHAUSTED" || error?.message === "RPC_REQUEST_BUDGET_EXHAUSTED") { consumedEntirePage = false; candidates.pop(); break; }
         deferredSignatures.push(entry.signature); cursor = entry.signature;
@@ -55,7 +56,9 @@ export async function scanCreatorOrigin({
     if (!consumedEntirePage) break;
     const next = batch.nextCursor;
     if (batch.exhausted === true) { exhausted = true; break; }
-    // On a fully consumed page, the returned cursor SHOULD equal its last processed signature.\n    if (!next || next === before || seen.has("cursor:" + next)) throw Error("PAGINATION_STALLED");\n    if (next !== cursor) throw Error("PAGINATION_CURSOR_MISMATCH");
+    // On a fully consumed page, the returned cursor SHOULD equal its last processed signature.
+    if (!next || next === before || seen.has("cursor:" + next)) throw Error("PAGINATION_STALLED");
+    if (next !== cursor) throw Error("PAGINATION_CURSOR_MISMATCH");
     seen.add("cursor:" + next);
     if (verified.length || candidates.length >= maxTransactions) break;
   }
