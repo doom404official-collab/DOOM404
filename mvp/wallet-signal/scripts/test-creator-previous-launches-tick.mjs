@@ -10,6 +10,8 @@ async function run(launches){
 }
 const unknown=await run([]);
 assert.equal(unknown.stage,'previous_launches');
+assert.deepEqual(unknown.state.historicalLaunchCandidates,[]);
+assert.equal(unknown.state.launchDiscoveryCoverageComplete,false);
 assert.equal(unknown.status,'partial');
 assert.equal(unknown.state.previousLaunches.noPriorLaunchesVerified,false);
 assert.equal(unknown.state.previousLaunchesStatus,'HISTORICAL_COVERAGE_INCOMPLETE');
