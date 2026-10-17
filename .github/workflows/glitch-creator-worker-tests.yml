@@ -39,3 +39,4 @@ jobs:
           node scripts/test-creator-pagination-resume.mjs
           node scripts/test-creator-intelligence-tick.mjs
           node scripts/test-creator-holdings-investigation.mjs
+          node scripts/test-creator-holdings-tick.mjs
