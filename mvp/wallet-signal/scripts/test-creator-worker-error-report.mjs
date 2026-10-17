@@ -7,7 +7,7 @@ const store={
  async claim(){return true},
  async save(v){saved=v}
 };
-const fetchImpl=async()=>({ok:true,status:200,json:async()=>({result:[{signature:'1'.repeat(88),err:null}]})});
+const fetchImpl=async()=>{throw Error('SIMULATED_RPC_FAILURE')};
 const result=await runCreatorIntelligenceTick({mint,store,rpcUrl:'https://example.com',fetchImpl,maxRequests:5});
 assert.equal(result.status,'partial');
 assert.equal(result.errorCode,'CREATOR_TICK_ERROR');
