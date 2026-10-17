@@ -1,0 +1,14 @@
+name: GLITCH creator historical worker
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  creator-history:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain safe development-branch execution
+        run: |
+          echo "Creator worker is under development on feature/creator-history-worker-500."
+          echo "This default-branch registration does not execute the historical scan."
+          echo "Select the development branch when dispatching the workflow."
