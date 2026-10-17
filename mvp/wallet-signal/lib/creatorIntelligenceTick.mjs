@@ -15,9 +15,12 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  if(job.status==='failed')return {status:'failed',requests:0};
  if(job.stage!=='identification')return {status:'awaiting_stage_implementation',stage:job.stage,requests:0};
  if(await store.claim(mint,owner,180)!==true)return {status:'busy',requests:0};
+ // Re-read the checkpoint after acquiring the lease: the pre-claim snapshot may be stale.
+ const claimed=await store.get(mint);
+ if(!claimed||claimed.lease_owner && claimed.lease_owner!==owner)throw Error('CREATOR_LEASE_MISMATCH');
  const budget=createCreatorHistoryBudget({maxRequests});
  const rpc=createSolanaRpcAdapter({rpcUrl,fetchImpl,sharedBudget:budget,maxRequests,maxRetries:2,pageLimit:100,minIntervalMs:250});
- const previous=job.state&&typeof job.state==='object'?job.state:{};
+ const previous=claimed.state&&typeof claimed.state==='object'?claimed.state:{};
  let state={...previous};
  let stage='identification',status='partial';
  try {
