@@ -27,7 +27,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  const budget=createCreatorHistoryBudget({maxRequests});
  const rpc=createSolanaRpcAdapter({rpcUrl,fetchImpl,sharedBudget:budget,maxRequests,maxRetries:2,pageLimit:100,minIntervalMs:250});
  const previous=claimed.state&&typeof claimed.state==='object'?claimed.state:{};
- let state={...previous};
+ let state={...previous,lastError:null};
  let stage=claimed.stage,status='partial';
  try {
   if(stage==='previous_launches'){
@@ -35,13 +35,13 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
    const discovery=collectCreatorLaunchCandidates({creator:creators[0],observations:previous.historicalLaunchObservations||[]});
    const launches=summarizePreviousLaunches({creator:creators[0],launches:previous.historicalLaunchEvidence||[]});
-   state={...previous,historicalLaunchCandidates:discovery.candidates,launchDiscoveryCoverageComplete:false,previousLaunches:launches,previousLaunchesStatus:launches.previousLaunchesScoreEligible?'EVIDENCE_READY':'HISTORICAL_COVERAGE_INCOMPLETE',lastTickAt:new Date().toISOString()};
+   state={...previous,lastError:null,historicalLaunchCandidates:discovery.candidates,launchDiscoveryCoverageComplete:false,previousLaunches:launches,previousLaunchesStatus:launches.previousLaunchesScoreEligible?'EVIDENCE_READY':'HISTORICAL_COVERAGE_INCOMPLETE',lastTickAt:new Date().toISOString()};
    // Never mark complete without verified historical discovery and comparable evidence.
   }else if(stage==='selling'){
    const creators=[...new Set((previous.originEvidence||[]).map(e=>e.creator))];
    if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
    const history=await discoverCreatorWalletHistory({creator:creators[0],rpc,before:previous.creatorHistoryCursor||null,maxPages:3,maxSignatures:300});
-   state={...previous,creatorHistoryCursor:history.nextCursor,
+   state={...previous,lastError:null,creatorHistoryCursor:history.nextCursor,
     creatorHistorySignatures:[...new Set([...(previous.creatorHistorySignatures||[]),...history.signatures])].slice(-2000),
     creatorHistoryRpcExhausted:history.rpcHistoryExhausted,creatorHistoryComplete:false,
     lastTickAt:new Date().toISOString()};
@@ -67,14 +67,14 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    const creators=[...new Set(evidence.map(x=>x.creator))];
    if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
    const holdings=await investigateCreatorHoldings({mint,creator:creators[0],rpc});
-   state={...previous,holdings,lastTickAt:new Date().toISOString()};
+   state={...previous,lastError:null,holdings,lastTickAt:new Date().toISOString()};
    stage='selling';
   }else{
   const scan=await scanCreatorOrigin({mint,before:previous.nextCursor||null,
    lookupSignaturePage:rpc.lookupSignaturePage,fetchTransaction:rpc.fetchTransaction,
    maxPages:5,maxTransactions:100,maxDurationMs:Math.min(maxDurationMs,120000)});
   const deferred=[...new Set([...(previous.deferredSignatures||[]),...scan.deferredSignatures])].slice(-1000);
-  state={...previous,nextCursor:scan.nextCursor,deferredSignatures:deferred,
+  state={...previous,lastError:null,nextCursor:scan.nextCursor,deferredSignatures:deferred,
    pagesFetched:(previous.pagesFetched||0)+scan.pagesFetched,
    sampled:(previous.sampled||0)+scan.sampled,
    originEvidence:[...new Map([...(previous.originEvidence||[]),...scan.verified].map(v=>[v.signature+':'+v.creator,v])).values()].slice(-100),
