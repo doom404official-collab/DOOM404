@@ -55,7 +55,7 @@ export async function scanCreatorOrigin({
     if (!consumedEntirePage) break;
     const next = batch.nextCursor;
     if (batch.exhausted === true) { exhausted = true; break; }
-    if (!next || next !== cursor || seen.has("cursor:" + next)) throw Error("PAGINATION_STALLED");
+    // On a fully consumed page, the returned cursor SHOULD equal its last processed signature.\n    if (!next || next === before || seen.has("cursor:" + next)) throw Error("PAGINATION_STALLED");\n    if (next !== cursor) throw Error("PAGINATION_CURSOR_MISMATCH");
     seen.add("cursor:" + next);
     if (verified.length || candidates.length >= maxTransactions) break;
   }
