@@ -1,4 +1,7 @@
 # DOOM404 GLITCH Scanner — Master Requirements & Release Tracker
+
+> **Scoring governance update (2026-10-17):** [GLITCH_SCORING_FRAMEWORK_V1_1.md](docs/GLITCH_SCORING_FRAMEWORK_V1_1.md) is the authoritative approved Token Analysis attribute taxonomy and proposed numerical scoring specification. It supersedes conflicting older scoring weights/names in this tracker. Legacy scoring modules remain non-authoritative until migrated, tested and accepted. This does not authorize publishing incomplete scores or bypass production release gates.
+
 Updated: 2026-10-12
 Status: Development planning; evidence-first. This tracker is not proof of production readiness.
 
