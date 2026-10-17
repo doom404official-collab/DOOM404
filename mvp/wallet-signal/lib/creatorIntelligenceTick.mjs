@@ -3,6 +3,7 @@ import { createCreatorHistoryBudget } from './creatorHistoryBudget.mjs';
 import { createSolanaRpcAdapter } from './creatorOriginRpc.mjs';
 import { scanCreatorOrigin } from './creatorOriginPagedScan.mjs';
 import { investigateCreatorHoldings } from './creatorHoldingsInvestigation.mjs';
+import { summarizeCreatorSelling } from './creatorSellingEvidence.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -14,7 +15,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  if(!job)throw Error('CREATOR_JOB_NOT_ENQUEUED');
  if(job.status==='complete')return {status:'complete',requests:0};
  if(job.status==='failed')return {status:'failed',requests:0};
- if(!['identification','holdings'].includes(job.stage))return {status:'awaiting_stage_implementation',stage:job.stage,requests:0};
+ if(!['identification','holdings','selling'].includes(job.stage))return {status:'awaiting_stage_implementation',stage:job.stage,requests:0};
  if(await store.claim(mint,owner,180)!==true)return {status:'busy',requests:0};
  // Re-read the checkpoint after acquiring the lease: the pre-claim snapshot may be stale.
  const claimed=await store.get(mint);
@@ -25,7 +26,17 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  let state={...previous};
  let stage=claimed.stage,status='partial';
  try {
-  if(stage==='holdings'){
+  if(stage==='selling'){
+   const launchTimestamp=Number(previous.launchTimestamp);
+   const initialAttributableRaw=previous.initialAttributableRaw;
+   if(!Number.isSafeInteger(launchTimestamp)||launchTimestamp<=0||!/^[0-9]+$/.test(String(initialAttributableRaw||''))){
+    state={...previous,sellingStatus:'AWAITING_VERIFIED_INITIAL_ALLOCATION_AND_LAUNCH_TIME',lastTickAt:new Date().toISOString()};
+   }else{
+    const selling=summarizeCreatorSelling({launchTimestamp,initialAttributableRaw,transactions:previous.verifiedSwapSales||[],historyCompleteByWindow:previous.historyCompleteByWindow||{}});
+    state={...previous,selling,sellingStatus:selling.creatorSellingScoreEligible?'EVIDENCE_READY':'HISTORICAL_COVERAGE_INCOMPLETE',lastTickAt:new Date().toISOString()};
+    if(selling.creatorSellingScoreEligible)stage='previous_launches';
+   }
+  }else if(stage==='holdings'){
    const evidence=previous.originEvidence||[];
    const creators=[...new Set(evidence.map(x=>x.creator))];
    if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
