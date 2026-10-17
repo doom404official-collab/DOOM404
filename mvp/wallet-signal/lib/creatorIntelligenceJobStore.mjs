@@ -20,11 +20,10 @@ export function createCreatorIntelligenceJobStore({url,key,fetchImpl=fetch}={}){
   async save({mint,owner,stage,status='partial',state,requestCount=0}){
    checkMint(mint);
    if(!stages.has(stage)||!statuses.has(status)||typeof owner!=='string'||owner.length<8||!Number.isInteger(requestCount)||requestCount<0||requestCount>500||!state||typeof state!=='object'||Array.isArray(state))throw Error('INVALID_JOB_UPDATE');
-   // Match the active lease owner and ensure the lease is still valid.
-   const query='creator_intelligence_jobs?mint=eq.'+mint+'&lease_owner=eq.'+encodeURIComponent(owner)+'&lease_until=gt.'+encodeURIComponent(new Date().toISOString());
-   const response=await request(query,{method:'PATCH',prefer:'return=representation',body:{stage,status,state,updated_at:new Date().toISOString()}});
-   if(!Array.isArray(response)||response.length!==1)throw Error('CREATOR_LEASE_LOST');
-   // Request counts are persisted by the caller in state until an atomic increment RPC is available.
+   const result=await request('rpc/save_creator_intelligence_progress',{method:'POST',body:{
+    p_mint:mint,p_owner:owner,p_stage:stage,p_status:status,p_state:state,p_request_delta:requestCount
+   }});
+   if(result!==true)throw Error('CREATOR_LEASE_LOST');
    return true;
   }
  };
