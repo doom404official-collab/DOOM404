@@ -17,7 +17,8 @@ export async function scanCreatorOrigin({
   const started = Date.now();
   let cursor = before, pagesFetched = 0, rawSignaturesSeen = 0, failedSignaturesSkipped = 0;
   let retrieved = 0, unavailable = 0, fetchErrors = 0, exhausted = false;
-  const seen = new Set(), candidates = [], verified = [], failureReasons = {};\n  const deferredSignatures = [];
+  const seen = new Set(), candidates = [], verified = [], failureReasons = {};
+  const deferredSignatures = [];
   for (let page = 0; page < maxPages; page++) {
     if (Date.now() - started >= maxDurationMs) break;
     const batch = await lookupSignaturePage(mint, { before: cursor });
@@ -31,8 +32,7 @@ export async function scanCreatorOrigin({
       if (candidates.length >= maxTransactions || Date.now() - started >= maxDurationMs) { consumedEntirePage = false; break; }
       if (!entry || typeof entry.signature !== "string") { consumedEntirePage = false; break; }
       if (seen.has(entry.signature)) { consumedEntirePage = false; break; }
-      cursor = entry.signature;
-      if (entry.err != null) continue;
+      if (entry.err != null) { cursor = entry.signature; continue; }
       seen.add(entry.signature);
       candidates.push(entry.signature);
       try {
@@ -44,7 +44,9 @@ export async function scanCreatorOrigin({
           signature: entry.signature, creator: role.address, programId: role.programId, decoderVersion: role.decoderVersion
         })));
       } catch (error) {
-        if (error?.message === "CREATOR_REQUEST_BUDGET_EXHAUSTED" || error?.message === "RPC_REQUEST_BUDGET_EXHAUSTED") { consumedEntirePage = false; break; }\n        deferredSignatures.push(entry.signature); cursor = entry.signature;\n        fetchErrors++;
+        if (error?.message === "CREATOR_REQUEST_BUDGET_EXHAUSTED" || error?.message === "RPC_REQUEST_BUDGET_EXHAUSTED") { consumedEntirePage = false; candidates.pop(); break; }
+        deferredSignatures.push(entry.signature); cursor = entry.signature;
+        fetchErrors++;
         const allowed = ["RPC_RATE_LIMITED", "RPC_AUTH_FAILED", "RPC_HTTP_ERROR", "RPC_UNSUPPORTED_VERSION", "RPC_RESPONSE_ERROR"];
         const reason = allowed.includes(error?.message) ? error.message : "TRANSACTION_FETCH_EXCEPTION";
         failureReasons[reason] = (failureReasons[reason] || 0) + 1;
