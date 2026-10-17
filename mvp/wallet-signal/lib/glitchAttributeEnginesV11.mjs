@@ -2,12 +2,13 @@ import {attributes,version} from "./glitchScoringV11.mjs";
 const round=n=>Math.round(n*100)/100;
 const valid=(n,max=100)=>typeof n==="number"&&Number.isFinite(n)&&n>=0&&n<=max;
 const linear=(x,full,zero,max)=>round(max*Math.max(0,Math.min(1,(x-zero)/(full-zero))));
-const component=(id,max,points,reason)=>({id,max,points:valid(points,max)?round(points):null,...(reason?{reason}:{})});
+const component=(id,max,points,reason)=>({id,max,points:max===0?null:valid(points,max)?round(points):null,...(reason?{reason}:{})});
 function result(id,parts,{calibrated=false}={}){
- const complete=parts.every(p=>p.points!==null);
- const assessed=parts.reduce((s,p)=>s+(p.points!==null?p.max:0),0);
- const maximum=parts.reduce((s,p)=>s+p.max,0);
- return {version,attribute:id,components:parts,score:complete?round(parts.reduce((s,p)=>s+p.points,0)*100/maximum):null,complete,calibrated,coveragePct:round(assessed*100/maximum)};
+ const eligible=parts.filter(p=>p.max>0);
+ const complete=eligible.length>0&&eligible.every(p=>p.points!==null);
+ const assessed=eligible.reduce((s,p)=>s+(p.points!==null?p.max:0),0);
+ const maximum=eligible.reduce((s,p)=>s+p.max,0);
+ return {version,attribute:id,components:parts,score:complete?round(eligible.reduce((s,p)=>s+p.points,0)*100/maximum):null,complete,calibrated,coveragePct:maximum?round(assessed*100/maximum):0};
 }
 export function scoreTokenSecurity({tokenProgram,authoritiesParsed=false,mintAuthority,freezeAuthority,feeExtensionVerified=false,feeApplicable,feePercent,feeConfigAuthorityReported=false,feeConfigAuthority}={}){
  const feeNA=tokenProgram==="spl-token"||(feeExtensionVerified&&feeApplicable===false);
@@ -18,8 +19,7 @@ export function scoreTokenSecurity({tokenProgram,authoritiesParsed=false,mintAut
   component("mint_authority",25,authoritiesParsed&&mintAuthority!==undefined?(mintAuthority?0:25):null),
   component("freeze_authority",25,authoritiesParsed&&freezeAuthority!==undefined?(freezeAuthority?0:25):null)
  ];
- const eligible=parts.filter(p=>p.max>0);
- return {...result("token_security",eligible),components:parts};
+ return result("token_security",parts);
 }
 export function scoreHolderIntelligence({top20SharePct,networkScore,creatorTeamExposurePct,independencePoints,historyComplete=false,classificationComplete=false,creatorAttributionComplete=false}={}){
  return result("holder_intelligence",[
