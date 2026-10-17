@@ -1,0 +1,54 @@
+name: GLITCH creator worker regression checks
+on:
+  push:
+    branches:
+      - feature/creator-history-worker-500
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  creator-worker-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate and commit missing lockfile once
+        if: ${{ hashFiles('mvp/wallet-signal/package-lock.json') == '' }}
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "build: commit reproducible wallet-signal npm lockfile"
+          git push origin HEAD:feature/creator-history-worker-500
+      - name: Install from committed dependency lock
+        run: npm ci --no-audit --no-fund
+      - name: Verify creator budget, RPC, store and pagination
+        run: |
+          node scripts/test-creator-history-budget.mjs
+          node scripts/test-creator-rpc-budget.mjs
+          node scripts/test-creator-job-store.mjs
+          node scripts/test-creator-pagination-resume.mjs
+          node scripts/test-creator-pagination-full-page.mjs
+          node scripts/test-creator-successful-resume.mjs
+          node scripts/test-creator-intelligence-tick.mjs
+          node scripts/test-creator-holdings-investigation.mjs
+          node scripts/test-creator-holdings-tick.mjs
+          node scripts/test-creator-selling-evidence.mjs
+          node scripts/test-creator-selling-tick.mjs
+          node scripts/test-creator-wallet-history.mjs
+          node scripts/test-creator-historical-batch.mjs
+          node scripts/test-creator-swap-verification.mjs
+          node scripts/test-creator-selling-persistence.mjs
+          node scripts/test-creator-previous-launches.mjs
+          node scripts/test-creator-previous-launches-tick.mjs
+          node scripts/test-creator-historical-launch-discovery.mjs
+          node scripts/test-creator-worker-error-report.mjs

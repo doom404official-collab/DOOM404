@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {createCreatorIntelligenceJobStore} from '../lib/creatorIntelligenceJobStore.mjs';
+const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+const requests=[];
+let result=true;
+const store=createCreatorIntelligenceJobStore({url:'https://test.supabase.co',key:'test-service-key',fetchImpl:async(url,options)=>{
+ requests.push({url,options});
+ return {ok:true,json:async()=>url.endsWith('rpc/save_creator_intelligence_progress')?result:[]};
+}});
+await store.save({mint,owner:'worker-123456',stage:'identification',state:{cursor:'abc'},requestCount:500});
+const req=requests.at(-1);
+assert.match(req.url,/rpc\/save_creator_intelligence_progress$/);
+const payload=JSON.parse(req.options.body);
+assert.equal(payload.p_request_delta,500);
+assert.equal(payload.p_state.cursor,'abc');
+assert.ok(!req.options.body.includes('test-service-key'));
+result=false;
+await assert.rejects(()=>store.save({mint,owner:'worker-123456',stage:'holdings',state:{},requestCount:1}),/CREATOR_LEASE_LOST/);
+await assert.rejects(()=>store.save({mint,owner:'worker-123456',stage:'selling',state:{},requestCount:501}),/INVALID_JOB_UPDATE/);
+console.log('creator job store tests passed');
