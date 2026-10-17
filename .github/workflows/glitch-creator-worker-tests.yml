@@ -37,6 +37,7 @@ jobs:
           node scripts/test-creator-rpc-budget.mjs
           node scripts/test-creator-job-store.mjs
           node scripts/test-creator-pagination-resume.mjs
+          node scripts/test-creator-pagination-full-page.mjs
           node scripts/test-creator-intelligence-tick.mjs
           node scripts/test-creator-holdings-investigation.mjs
           node scripts/test-creator-holdings-tick.mjs
