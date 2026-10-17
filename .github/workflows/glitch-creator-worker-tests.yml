@@ -1,0 +1,29 @@
+name: GLITCH creator worker regression checks
+on:
+  push:
+    branches:
+      - feature/creator-history-worker-500
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  creator-worker-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mvp/wallet-signal/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Verify creator budget, RPC, store and pagination
+        run: |
+          node scripts/test-creator-history-budget.mjs
+          node scripts/test-creator-rpc-budget.mjs
+          node scripts/test-creator-job-store.mjs
+          node scripts/test-creator-pagination-resume.mjs
