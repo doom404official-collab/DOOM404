@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {inspectCreatorHistoricalBatch} from '../lib/creatorHistoricalTransactionBatch.mjs';
+const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+const creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
+const a='1'.repeat(88),b='2'.repeat(88);
+const rpc={fetchTransaction:async sig=>sig===a?{blockTime:1700000000,meta:{err:null,preTokenBalances:[{mint,owner:creator,uiTokenAmount:{amount:'100'}}],postTokenBalances:[{mint,owner:creator,uiTokenAmount:{amount:'50'}}]}}:null};
+const result=await inspectCreatorHistoricalBatch({mint,creator,signatures:[a,b,a],rpc});
+assert.deepEqual(result.processed,[a]);
+assert.deepEqual(result.pending,[b]);
+assert.equal(result.observations[0].creatorTokenOutflowRaw,'50');
+assert.equal(result.observations[0].verifiedSale,null);
+assert.equal(result.historicalCoverageComplete,false);
+console.log('creator historical transaction batch tests passed');
