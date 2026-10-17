@@ -78,10 +78,13 @@ jobs:
                   raise SystemExit("Worker reported failure")
           after=status()
           scan=after.get("scan") or {}
-          print(json.dumps({"step":"verify","status":after.get("status"),
+          report={"step":"verify","status":after.get("status"),
               "transactionsChecked":scan.get("transactionsChecked"),
               "walletHistoriesReached":scan.get("walletHistoriesReached"),
-              "directPairs":scan.get("directPairs")}))
+              "directPairs":scan.get("directPairs")}
+          for field in ("transactionsPending","walletHistoriesExhausted","historyComplete"):
+              if field in scan: report[field]=scan[field]
+          print(json.dumps(report))
           if after.get("status") not in ("partial","complete","running","queued"):
               raise SystemExit("Unexpected final status")
           PY
