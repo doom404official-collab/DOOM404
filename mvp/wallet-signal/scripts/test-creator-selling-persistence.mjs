@@ -1,0 +1,19 @@
+import assert from 'node:assert/strict';
+import {runCreatorIntelligenceTick} from '../lib/creatorIntelligenceTick.mjs';
+const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+const creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
+const signature='1'.repeat(88);
+let state={originEvidence:[{creator,signature}],creatorHistorySignatures:[signature],launchTimestamp:1700000000,initialAttributableRaw:'1000'};
+let saved;
+const store={async get(){return {status:'partial',stage:'selling',state}},async claim(){return true},async save(v){saved=v;state=v.state}};
+const fetchImpl=async(_url,options)=>{
+ const {method}=JSON.parse(options.body);
+ return {ok:true,status:200,json:async()=>({result:method==='getTransaction'?{meta:{err:null,preTokenBalances:[],postTokenBalances:[]},blockTime:1700000100}:[]})};
+};
+const swapDecoder=({signature})=>({kind:'SWAP_SELL',protocolVerified:true,inputMint:mint,seller:creator,signature,timestamp:1700000100,soldRaw:'100',programId:'verified-test-program',decoderVersion:'test-v1',instructionVerified:true,outputAssetVerified:true,outputAsset:'SOL'});
+await runCreatorIntelligenceTick({mint,store,rpcUrl:'https://example.com',fetchImpl,swapDecoder});
+assert.equal(saved.state.verifiedSwapSales.length,1);
+assert.equal(saved.state.selling.windows[0].verifiedSoldRaw,'100');
+assert.equal(saved.state.selling.windows[0].sellThroughPct,null);
+assert.equal(saved.state.creatorSwapVerificationComplete,false);
+console.log('creator verified selling persistence tests passed');
