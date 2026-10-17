@@ -74,7 +74,7 @@ export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 
       // Even an exhausted RPC history may be pruned; never assert archive completeness.
       return { signatures, complete: false, rpcHistoryExhausted: exhausted, pagesFetched, rawSignaturesSeen, failedSignaturesSkipped, paginationLimitReached: !exhausted };
     },
-    fetchTransaction(signature) {
+    getTokenSupply(mint) {\n      return rpc("getTokenSupply", [mint, { commitment: "finalized" }]);\n    },\n    getTokenAccountsByOwner(owner, mint) {\n      return rpc("getTokenAccountsByOwner", [owner, { mint }, { encoding: "jsonParsed", commitment: "finalized" }]);\n    },\n    fetchTransaction(signature) {
       return rpc("getTransaction", [signature, { encoding: "jsonParsed", commitment: "finalized", maxSupportedTransactionVersion: 1 }]);
     },
   };
