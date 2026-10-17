@@ -48,3 +48,4 @@ jobs:
           node scripts/test-creator-selling-persistence.mjs
           node scripts/test-creator-previous-launches.mjs
           node scripts/test-creator-previous-launches-tick.mjs
+          node scripts/test-creator-historical-launch-discovery.mjs
