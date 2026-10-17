@@ -1,7 +1,8 @@
 name: GLITCH creator historical worker
 on:
   workflow_dispatch:
-  # Schedule activation is gated until historical verification coverage is ready.
+  schedule:
+    - cron: '23 * * * *'
 permissions:
   contents: read
 concurrency:
