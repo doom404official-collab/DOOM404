@@ -41,3 +41,4 @@ jobs:
           node scripts/test-creator-holdings-investigation.mjs
           node scripts/test-creator-holdings-tick.mjs
           node scripts/test-creator-selling-evidence.mjs
+          node scripts/test-creator-selling-tick.mjs
