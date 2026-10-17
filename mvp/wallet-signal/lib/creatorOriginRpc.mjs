@@ -2,12 +2,13 @@
  * Read-only Solana RPC adapter. Supply a server-side RPC URL from environment.
  * Standard RPC pagination is NOT proof of complete archival coverage.
  */
-export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 1000, maxRequests = 100, maxRetries = 2, minIntervalMs = 250, sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms)) } = {}) {
+export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 1000, maxRequests = 100, sharedBudget = null, maxRetries = 2, minIntervalMs = 250, sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms)) } = {}) {
   if (!rpcUrl || !/^https:\/\//.test(rpcUrl)) throw new TypeError("HTTPS rpcUrl required");
   if (!Number.isInteger(pageLimit) || pageLimit < 1 || pageLimit > 1000) throw new RangeError("invalid pageLimit");
   if (!Number.isInteger(maxRequests) || maxRequests < 1 || maxRequests > 1000) throw new RangeError("invalid maxRequests");
   if (!Number.isInteger(maxRetries) || maxRetries < 0 || maxRetries > 3) throw new RangeError("invalid maxRetries");
   if (!Number.isInteger(minIntervalMs) || minIntervalMs < 0 || minIntervalMs > 5000) throw new RangeError("invalid minIntervalMs");
+  if (sharedBudget !== null && (typeof sharedBudget.take !== "function" || !Number.isInteger(sharedBudget.remaining))) throw new TypeError("INVALID_SHARED_BUDGET");
   let requestId = 0, lastRequestAt = 0;
   async function rpc(method, params) {
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -15,6 +16,7 @@ export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 
       const wait = Math.max(0, minIntervalMs - (Date.now() - lastRequestAt));
       if (wait) await sleep(wait);
       lastRequestAt = Date.now();
+      if (sharedBudget) await sharedBudget.take(); // Includes retries; shared across creator stages.
       const response = await fetchImpl(rpcUrl, {
         method: "POST",
         headers: { "content-type": "application/json" },
