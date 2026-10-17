@@ -44,3 +44,4 @@ jobs:
           node scripts/test-creator-selling-tick.mjs
           node scripts/test-creator-wallet-history.mjs
           node scripts/test-creator-historical-batch.mjs
+          node scripts/test-creator-swap-verification.mjs
