@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm ci --no-audit --no-fund
+      # This development branch has no package-lock.json; npm ci cannot run.\n      - run: npm install --no-audit --no-fund --package-lock=false
       - name: Verify creator budget, RPC, store and pagination
         run: |
           node scripts/test-creator-history-budget.mjs
