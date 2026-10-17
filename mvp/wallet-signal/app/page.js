@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import HolderBubbleMap from "./HolderBubbleMap";
+import GlitchV11Dashboard from "./GlitchV11Dashboard";
 import {reconcileHolderSnapshot} from "../lib/reconcileHolderSnapshot.mjs";
 import {scoreHolderIntelligenceForDisplay as scoreHolderConcentration} from "../lib/holderIntelligenceDisplayV11.mjs";
 import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
@@ -567,6 +568,7 @@ function CreatorLookup() {
         </div>
         <p style={{ color: "#ffbf86", fontSize: 13, marginBottom: 0 }}>Liquidity: {liquidity?.reportedLiquidityUsd != null ? "Provider estimate $" + formatNumber(liquidity.reportedLiquidityUsd, 0) + " across reported pools" : "Not assessed"} · Overall security verdict: Not issued. Expand evidence sections below before making decisions.</p>
       </Section>
+      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} />
       <Section title="GLITCH ATTRIBUTE ASSESSMENT" defaultOpen={true}>
         {(() => {
           const assessment = assessTokenEvidence({ result, extensions, concentration, liquidity, creatorEvidence });
