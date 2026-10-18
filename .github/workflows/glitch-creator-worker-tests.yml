@@ -63,6 +63,7 @@ jobs:
           node scripts/test-pump-fun-pool-state.mjs
           node scripts/test-pump-fun-live-pool.mjs
           node scripts/test-creator-sol-receipt.mjs
+          node scripts/test-creator-pool-sol-transfers.mjs
           node scripts/test-creator-intelligence-tick.mjs
           node scripts/test-creator-holdings-investigation.mjs
           node scripts/test-creator-holdings-tick.mjs
