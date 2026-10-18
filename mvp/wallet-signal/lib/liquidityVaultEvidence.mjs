@@ -1,7 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 const TOKEN_PROGRAMS = new Set([
- "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
- "TokenzQdBNbLqP5VEhdkAS6EPF3zBNqR2f2f7B6VQ5"
+ "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
 ]);
 export function inspectTokenVault(account, expectedMint) {
  if(!account || !TOKEN_PROGRAMS.has(account.owner?.toBase58?.())) return {verified:false,reason:"unsupported_token_account_program"};
