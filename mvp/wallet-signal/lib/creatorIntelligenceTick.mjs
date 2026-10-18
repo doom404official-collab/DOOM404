@@ -12,6 +12,7 @@ import { investigateIndexedCreatorOrigin } from './creatorIndexedOriginInvestiga
 import { fetchHeliusOldestOriginCandidates } from './heliusIndexedOriginProvider.mjs';
 import { recheckCreatorOrigin } from './creatorIndependentOriginRecheck.mjs';
 import { extractCreatorLaunchTime } from './creatorLaunchTimeEvidence.mjs';
+import { assessCreatorInitialAllocation } from './creatorInitialAllocationEvidence.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -58,9 +59,13 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
     creatorTransactionObservations:[...(previous.creatorTransactionObservations||[]),...decoded.observations].slice(-1000),
     creatorSwapVerificationComplete:false,creatorHistoryComplete:false};
    const launchTimestamp=Number(previous.launchTimestamp);
-   const initialAttributableRaw=previous.initialAttributableRaw;
+   const allocation=Number.isSafeInteger(launchTimestamp)&&launchTimestamp>0?
+    assessCreatorInitialAllocation({mint,creator:creators[0],launchTimestamp,
+     distributions:previous.verifiedLaunchDistributions||[],coverageComplete:previous.launchDistributionCoverageComplete===true}):null;
+   if(allocation)state={...state,initialAllocationEvidence:allocation};
+   const initialAttributableRaw=allocation?.initialAttributableRaw??null;
    if(!Number.isSafeInteger(launchTimestamp)||launchTimestamp<=0||!/^[0-9]+$/.test(String(initialAttributableRaw||''))){
-    state={...state,sellingStatus:'AWAITING_VERIFIED_INITIAL_ALLOCATION_AND_LAUNCH_TIME',lastTickAt:new Date().toISOString()};
+    state={...state,sellingStatus:launchTimestamp>0?'AWAITING_VERIFIED_INITIAL_ALLOCATION':'AWAITING_VERIFIED_LAUNCH_TIME',lastTickAt:new Date().toISOString()};
    }else{
     const selling=summarizeCreatorSelling({launchTimestamp,initialAttributableRaw,transactions:state.verifiedSwapSales||[],historyCompleteByWindow:previous.historyCompleteByWindow||{}});
     state={...state,selling,sellingStatus:selling.creatorSellingScoreEligible?'EVIDENCE_READY':'HISTORICAL_COVERAGE_INCOMPLETE',lastTickAt:new Date().toISOString()};
