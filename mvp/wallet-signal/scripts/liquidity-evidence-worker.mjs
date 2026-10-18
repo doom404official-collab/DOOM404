@@ -4,6 +4,8 @@ import { writeFile } from "node:fs/promises";
 import { validateLiquidityCheckpoint } from "../lib/liquidityEvidenceCheckpoint.mjs";
 import { persistLiquidityCheckpoint } from "../lib/liquidityCheckpointStore.mjs";
 import { classifyPoolProgram } from "../lib/liquidityProtocolClassification.mjs";
+import { readLiquidityCheckpoint } from "../lib/liquidityCheckpointReader.mjs";
+import { comparePoolInventories } from "../lib/liquidityPoolContinuity.mjs";
 const base = process.env.GLITCH_PREVIEW_URL?.replace(/\/$/, "");
 const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
 const mint = process.env.GLITCH_LIQUIDITY_MINT;
@@ -20,6 +22,7 @@ async function read(path,options={}) {
 const report=await read("/api/token-liquidity?mint="+encodeURIComponent(mint));
 if(!Array.isArray(report.pools))throw Error("Missing pool inventory");
 const addresses=[...new Set(report.pools.map(p=>p.pairAddress).filter(Boolean))].slice(0,30);
+const previous=await readLiquidityCheckpoint(mint,{url:process.env.SUPABASE_URL,serviceRoleKey:process.env.SUPABASE_SERVICE_ROLE_KEY});
 const evidence={schemaVersion:1,mint,observedAt:new Date().toISOString(),source:"Solana RPC via GLITCH pool-account-evidence",providerReportedPools:report.poolCountReturned,poolInventoryComplete:false,verifiedDepth:false,lpSecurityVerified:false,finalScore:null,pools:[],batchErrors:[]};
 for(let i=0;i<addresses.length;i+=5){
  const batchAddresses=addresses.slice(i,i+5);
@@ -30,6 +33,7 @@ for(let i=0;i<addresses.length;i+=5){
  }catch(error){evidence.batchErrors.push({startIndex:i,count:batchAddresses.length,error:String(error.message).slice(0,160)});}
 }
 evidence.protocolClassification=evidence.pools.map(classifyPoolProgram);
+evidence.poolContinuity=comparePoolInventories((previous?.pools||[]).map(p=>p.pairAddress),evidence.pools.map(p=>p.pairAddress));
 evidence.lpHolderEvidence=[];
 for(const candidate of evidence.pools.filter(p=>p.decodedPumpAmmCandidate).slice(0,4)){
  const lpMint=candidate.decodedPumpAmmCandidate.lpMint;
