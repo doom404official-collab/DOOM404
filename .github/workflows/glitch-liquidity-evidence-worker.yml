@@ -9,10 +9,11 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: glitch-liquidity-evidence
+  group: glitch-liquidity-evidence-${{ inputs.mint }}
   cancel-in-progress: false
 jobs:
   collect:
+    if: github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -28,7 +29,15 @@ jobs:
         working-directory: mvp/wallet-signal
         env:
           GLITCH_PREVIEW_URL: ${{ vars.GLITCH_PREVIEW_URL }}
-          GLITCH_LIQUIDITY_WORKER_TOKEN: ${{ secrets.GLITCH_LIQUIDITY_WORKER_TOKEN }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           GLITCH_LIQUIDITY_MINT: ${{ inputs.mint }}
+          GLITCH_EVIDENCE_OUTPUT: liquidity-evidence.json
         run: node scripts/liquidity-evidence-worker.mjs
+      - name: Retain evidence for audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquidity-evidence-${{ github.run_id }}
+          path: mvp/wallet-signal/liquidity-evidence.json
+          if-no-files-found: ignore
+          retention-days: 30
