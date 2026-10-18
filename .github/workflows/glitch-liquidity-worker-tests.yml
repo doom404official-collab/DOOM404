@@ -13,6 +13,7 @@ on:
       - 'mvp/wallet-signal/tests/pump-amm-pool-state.test.mjs'
       - 'mvp/wallet-signal/lib/liquidityVaultEvidence.mjs'
       - 'mvp/wallet-signal/tests/liquidity-vault-evidence.test.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-vault-diagnostics.test.mjs'
       - 'mvp/wallet-signal/app/api/pool-account-evidence/route.js'
       - '.github/workflows/glitch-liquidity-evidence-worker.yml'
       - '.github/workflows/glitch-liquidity-worker-tests.yml'
@@ -32,6 +33,6 @@ jobs:
         working-directory: mvp/wallet-signal
         run: npm install --no-audit --no-fund
       - name: Validate worker and workflow contracts
-        run: node --test mvp/wallet-signal/tests/liquidity-evidence-worker.test.mjs mvp/wallet-signal/tests/liquidity-checkpoint-store.test.mjs mvp/wallet-signal/tests/liquidity-protocol-classification.test.mjs mvp/wallet-signal/tests/pump-amm-pool-state.test.mjs mvp/wallet-signal/tests/liquidity-vault-evidence.test.mjs
+        run: node --test mvp/wallet-signal/tests/liquidity-evidence-worker.test.mjs mvp/wallet-signal/tests/liquidity-checkpoint-store.test.mjs mvp/wallet-signal/tests/liquidity-protocol-classification.test.mjs mvp/wallet-signal/tests/pump-amm-pool-state.test.mjs mvp/wallet-signal/tests/liquidity-vault-evidence.test.mjs mvp/wallet-signal/tests/liquidity-vault-diagnostics.test.mjs
       - name: Validate worker syntax
         run: node --check mvp/wallet-signal/scripts/liquidity-evidence-worker.mjs
