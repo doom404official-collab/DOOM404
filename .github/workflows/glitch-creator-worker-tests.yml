@@ -45,6 +45,7 @@ jobs:
           node scripts/test-creator-indexed-tick.mjs
           node scripts/test-helius-indexed-origin.mjs
           node scripts/test-creator-indexed-once.mjs
+          node scripts/test-creator-indexed-reservation.mjs
           node scripts/test-creator-intelligence-tick.mjs
           node scripts/test-creator-holdings-investigation.mjs
           node scripts/test-creator-holdings-tick.mjs
