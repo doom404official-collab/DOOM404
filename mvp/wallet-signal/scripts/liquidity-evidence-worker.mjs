@@ -30,6 +30,7 @@ for(let i=0;i<addresses.length;i+=5){
  }catch(error){evidence.batchErrors.push({startIndex:i,count:batchAddresses.length,error:String(error.message).slice(0,160)});}
 }
 evidence.protocolClassification=evidence.pools.map(classifyPoolProgram);
+evidence.decodedPumpAmmCandidates=evidence.pools.filter(p=>p.decodedPumpAmmCandidate).map(p=>({pairAddress:p.pairAddress,...p.decodedPumpAmmCandidate}));
 evidence.status=evidence.batchErrors.length?"partial":"account_checks_completed";
 evidence.checked=evidence.pools.length;
 evidence.accountExists=evidence.pools.filter(p=>p.accountExists).length;
