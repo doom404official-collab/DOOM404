@@ -41,6 +41,7 @@ jobs:
           node scripts/test-creator-successful-resume.mjs
           node scripts/test-creator-origin-priority.mjs
           node scripts/test-creator-zero-purchase.mjs
+          node scripts/test-creator-indexed-origin.mjs
           node scripts/test-creator-intelligence-tick.mjs
           node scripts/test-creator-holdings-investigation.mjs
           node scripts/test-creator-holdings-tick.mjs
