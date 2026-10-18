@@ -59,6 +59,7 @@ jobs:
           node scripts/test-pump-fun-pool-observation.mjs
           node scripts/test-pump-fun-pool-account.mjs
           node scripts/test-pump-fun-bonding-curve.mjs
+          node scripts/test-pump-fun-pool-comparison.mjs
           node scripts/test-creator-intelligence-tick.mjs
           node scripts/test-creator-holdings-investigation.mjs
           node scripts/test-creator-holdings-tick.mjs
