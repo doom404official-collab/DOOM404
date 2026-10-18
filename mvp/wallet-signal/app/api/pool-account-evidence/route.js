@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
+import { decodePumpAmmPoolState } from "../../../lib/pumpAmmPoolState.mjs";
 
 export const dynamic = "force-dynamic";
 const MAX_POOLS = 5;
@@ -36,11 +37,12 @@ export async function POST(request) {
         accountOwnerProgram: accounts[index]?.owner?.toBase58() ?? null,
         accountExecutable: accounts[index]?.executable ?? null,
         accountLamports: accounts[index]?.lamports ?? null,
+        decodedPumpAmmCandidate: accounts[index] ? decodePumpAmmPoolState(accounts[index].data, accounts[index].owner.toBase58()) : null,
         protocolVerified: false, reservesVerified: false,
         lpLocksVerified: false, lpBurnsVerified: false, withdrawalRightsVerified: false,
         limitation: "Account existence and owner program do not prove this is an authentic liquidity pool, verify reserves, or establish LP custody."
       })),
-      coverage: { checked: addresses.length, completePoolInventory: false, protocolVerified: false, reservesVerified: false,
+      coverage: { decodedStateIsUnverified: true, checked: addresses.length, completePoolInventory: false, protocolVerified: false, reservesVerified: false,
         warning: "Do not interpret an account owner program as proof of pool legitimacy or lock status." }
     }, { headers: { "Cache-Control": "no-store" } });
   } catch {
