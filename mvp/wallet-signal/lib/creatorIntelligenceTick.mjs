@@ -10,6 +10,7 @@ import { summarizePreviousLaunches } from './creatorPreviousLaunches.mjs';
 import { collectCreatorLaunchCandidates } from './creatorHistoricalLaunchDiscovery.mjs';
 import { investigateIndexedCreatorOrigin } from './creatorIndexedOriginInvestigation.mjs';
 import { fetchHeliusOldestOriginCandidates } from './heliusIndexedOriginProvider.mjs';
+import { recheckCreatorOrigin } from './creatorIndependentOriginRecheck.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -68,9 +69,14 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    const evidence=previous.originEvidence||[];
    const creators=[...new Set(evidence.map(x=>x.creator))];
    if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
+   const review=await recheckCreatorOrigin({mint,evidence,rpc});
+   if(!review.rechecked){
+    state={...previous,lastError:null,originRecheck:review,identificationStatus:'ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW',lastTickAt:new Date().toISOString()};
+   }else{
    const holdings=await investigateCreatorHoldings({mint,creator:creators[0],rpc});
-   state={...previous,lastError:null,holdings,lastTickAt:new Date().toISOString()};
+   state={...previous,lastError:null,originRecheck:review,identificationStatus:'ONCHAIN_CREATOR_RECHECKED',holdings,lastTickAt:new Date().toISOString()};
    stage='selling';
+   }
   }else{
   // Reserve the paid call durably before contacting Helius. A crash must not trigger a second charge.
   let provider={status:'NOT_REQUESTED',candidates:[]};
