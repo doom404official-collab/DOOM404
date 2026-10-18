@@ -65,6 +65,7 @@ jobs:
           node scripts/test-creator-sol-receipt.mjs
           node scripts/test-creator-pool-sol-transfers.mjs
           node scripts/test-pump-fun-sol-payment.mjs
+          node scripts/test-pump-fun-creator-sell-assessment.mjs
           node scripts/test-creator-intelligence-tick.mjs
           node scripts/test-creator-holdings-investigation.mjs
           node scripts/test-creator-holdings-tick.mjs
