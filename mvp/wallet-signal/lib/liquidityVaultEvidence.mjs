@@ -1,6 +1,7 @@
 import { PublicKey } from "@solana/web3.js";
 const TOKEN_PROGRAMS = new Set([
- "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+ "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+ "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
 ]);
 export function inspectTokenVault(account, expectedMint) {
  if(!account) return {verified:false,reason:"vault_account_missing"};
