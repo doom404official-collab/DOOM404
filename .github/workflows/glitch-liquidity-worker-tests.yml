@@ -25,6 +25,8 @@ on:
       - 'mvp/wallet-signal/tests/liquidity-pool-continuity.test.mjs'
       - 'mvp/wallet-signal/lib/liquidityCheckpointReader.mjs'
       - 'mvp/wallet-signal/tests/liquidity-checkpoint-reader.test.mjs'
+      - 'mvp/wallet-signal/lib/liquiditySnapshotArchive.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-snapshot-archive.test.mjs'
       - 'mvp/wallet-signal/lib/pumpAmmWithdrawalEvidence.mjs'
       - 'mvp/wallet-signal/tests/pump-amm-withdrawal-evidence.test.mjs'
       - 'mvp/wallet-signal/app/api/pool-account-evidence/route.js'
@@ -46,6 +48,6 @@ jobs:
         working-directory: mvp/wallet-signal
         run: npm install --no-audit --no-fund
       - name: Validate worker and workflow contracts
-        run: node --test mvp/wallet-signal/tests/liquidity-evidence-worker.test.mjs mvp/wallet-signal/tests/liquidity-checkpoint-store.test.mjs mvp/wallet-signal/tests/liquidity-protocol-classification.test.mjs mvp/wallet-signal/tests/pump-amm-pool-state.test.mjs mvp/wallet-signal/tests/liquidity-vault-evidence.test.mjs mvp/wallet-signal/tests/liquidity-vault-diagnostics.test.mjs mvp/wallet-signal/tests/liquidity-pool-authority.test.mjs mvp/wallet-signal/tests/liquidity-lp-mint-evidence.test.mjs mvp/wallet-signal/tests/liquidity-lp-holder-evidence.test.mjs mvp/wallet-signal/tests/pump-amm-withdrawal-evidence.test.mjs mvp/wallet-signal/tests/liquidity-pool-continuity.test.mjs mvp/wallet-signal/tests/liquidity-checkpoint-reader.test.mjs
+        run: node --test mvp/wallet-signal/tests/liquidity-evidence-worker.test.mjs mvp/wallet-signal/tests/liquidity-checkpoint-store.test.mjs mvp/wallet-signal/tests/liquidity-protocol-classification.test.mjs mvp/wallet-signal/tests/pump-amm-pool-state.test.mjs mvp/wallet-signal/tests/liquidity-vault-evidence.test.mjs mvp/wallet-signal/tests/liquidity-vault-diagnostics.test.mjs mvp/wallet-signal/tests/liquidity-pool-authority.test.mjs mvp/wallet-signal/tests/liquidity-lp-mint-evidence.test.mjs mvp/wallet-signal/tests/liquidity-lp-holder-evidence.test.mjs mvp/wallet-signal/tests/pump-amm-withdrawal-evidence.test.mjs mvp/wallet-signal/tests/liquidity-pool-continuity.test.mjs mvp/wallet-signal/tests/liquidity-checkpoint-reader.test.mjs mvp/wallet-signal/tests/liquidity-snapshot-archive.test.mjs
       - name: Validate worker syntax
         run: node --check mvp/wallet-signal/scripts/liquidity-evidence-worker.mjs
