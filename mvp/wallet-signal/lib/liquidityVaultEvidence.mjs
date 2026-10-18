@@ -1,10 +1,10 @@
 import { PublicKey } from "@solana/web3.js";
 const TOKEN_PROGRAMS = new Set([
- "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
- "TokenzQdBNbLqP5VEhdkAS6EPF3zBNqR2f2f7B6VQ5"
+ "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
 ]);
 export function inspectTokenVault(account, expectedMint) {
- if(!account || !TOKEN_PROGRAMS.has(account.owner?.toBase58?.())) return {verified:false,reason:"unsupported_token_account_program"};
+ if(!account) return {verified:false,reason:"vault_account_missing"};
+ if(!TOKEN_PROGRAMS.has(account.owner?.toBase58?.())) return {verified:false,reason:"unsupported_token_account_program",observedOwnerProgram:account.owner?.toBase58?.() ?? null};
  const data=account.data;
  if(!Buffer.isBuffer(data)||data.length<165)return {verified:false,reason:"invalid_token_account_data"};
  const mint=new PublicKey(data.subarray(0,32)).toBase58();
