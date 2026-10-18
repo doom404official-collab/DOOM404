@@ -49,6 +49,7 @@ jobs:
           node scripts/test-creator-attribution-review.mjs
           node scripts/test-creator-independent-recheck.mjs
           node scripts/test-creator-launch-time.mjs
+          node scripts/test-creator-selling-launch-gate.mjs
           node scripts/test-creator-intelligence-tick.mjs
           node scripts/test-creator-holdings-investigation.mjs
           node scripts/test-creator-holdings-tick.mjs
