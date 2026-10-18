@@ -9,11 +9,12 @@ import { inspectCreatorHistoricalBatch } from './creatorHistoricalTransactionBat
 import { summarizePreviousLaunches } from './creatorPreviousLaunches.mjs';
 import { collectCreatorLaunchCandidates } from './creatorHistoricalLaunchDiscovery.mjs';
 import { investigateIndexedCreatorOrigin } from './creatorIndexedOriginInvestigation.mjs';
+import { fetchHeliusOldestOriginCandidates } from './heliusIndexedOriginProvider.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
  */
-export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fetch,maxRequests=500,maxDurationMs=90000,swapDecoder=null,owner=randomUUID()}={}){
+export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fetch,maxRequests=500,maxDurationMs=90000,swapDecoder=null,indexedOriginEnabled=false,owner=randomUUID()}={}){
  if(!store||typeof store.claim!=='function'||typeof store.get!=='function'||typeof store.save!=='function')throw Error('CREATOR_STORE_REQUIRED');
  if(!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(mint||''))throw Error('INVALID_MINT');
  const job=await store.get(mint);
@@ -71,12 +72,21 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    state={...previous,lastError:null,holdings,lastTickAt:new Date().toISOString()};
    stage='selling';
   }else{
-  const indexed=await investigateIndexedCreatorOrigin({mint,candidates:(previous.indexedOriginCandidates||[]).filter(x=>!(previous.indexedOriginChecked||[]).includes(x.signature)),rpc,limit:10});
+  // One paid indexed lookup per mint. Persist the result even if no candidates are returned.
+  let provider={status:'NOT_REQUESTED',candidates:[]};
+  if(indexedOriginEnabled && !previous.indexedOriginLookupAttempted){
+   provider=await fetchHeliusOldestOriginCandidates({mint,rpcUrl,fetchImpl,budget,enabled:true,limit:5});
+  }
+  const candidates=[...(previous.indexedOriginCandidates||[]),...provider.candidates];
+  const indexed=await investigateIndexedCreatorOrigin({mint,candidates:candidates.filter(x=>!(previous.indexedOriginChecked||[]).includes(x.signature)),rpc,limit:10});
   const scan=await scanCreatorOrigin({mint,before:previous.nextCursor||null,
    lookupSignaturePage:rpc.lookupSignaturePage,fetchTransaction:rpc.fetchTransaction,
    maxPages:5,maxTransactions:100,maxDurationMs:Math.min(maxDurationMs,120000)});
   const deferred=[...new Set([...(previous.deferredSignatures||[]),...scan.deferredSignatures])].slice(-1000);
   state={...previous,lastError:null,nextCursor:scan.nextCursor,
+   indexedOriginLookupAttempted:previous.indexedOriginLookupAttempted||provider.status!=='NOT_REQUESTED',
+   indexedOriginProviderStatus:provider.status==='NOT_REQUESTED'?(previous.indexedOriginProviderStatus||'NOT_REQUESTED'):provider.status,
+   indexedOriginCandidates:candidates.slice(0,50),
    indexedOriginChecked:[...new Set([...(previous.indexedOriginChecked||[]),...indexed.checked])].slice(-1000),
    indexedOriginDeferred:[...new Set([...(previous.indexedOriginDeferred||[]),...indexed.deferred])].slice(-1000),
    deferredSignatures:deferred,
