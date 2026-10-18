@@ -21,9 +21,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: mvp/wallet-signal/package-lock.json
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
         working-directory: mvp/wallet-signal
       - name: Collect conservative pool account evidence
         working-directory: mvp/wallet-signal
