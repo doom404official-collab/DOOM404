@@ -54,6 +54,7 @@ jobs:
           node scripts/test-pump-fun-sell-candidates.mjs
           node scripts/test-pump-fun-sell-instruction.mjs
           node scripts/test-creator-sell-flows.mjs
+          node scripts/test-pump-fun-creator-sell.mjs
           node scripts/test-creator-intelligence-tick.mjs
           node scripts/test-creator-holdings-investigation.mjs
           node scripts/test-creator-holdings-tick.mjs
