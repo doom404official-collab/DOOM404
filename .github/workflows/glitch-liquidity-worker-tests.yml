@@ -1,0 +1,24 @@
+name: GLITCH liquidity worker tests
+on:
+  pull_request:
+    paths:
+      - 'mvp/wallet-signal/scripts/liquidity-evidence-worker.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-evidence-worker.test.mjs'
+      - '.github/workflows/glitch-liquidity-evidence-worker.yml'
+      - '.github/workflows/glitch-liquidity-worker-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate worker and workflow contracts
+        run: node --test mvp/wallet-signal/tests/liquidity-evidence-worker.test.mjs
+      - name: Validate worker syntax
+        run: node --check mvp/wallet-signal/scripts/liquidity-evidence-worker.mjs
