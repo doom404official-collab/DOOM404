@@ -509,10 +509,10 @@ function CreatorLookup() {
     } catch (failure) { setError(failure.name === "AbortError" ? "Historical scan timed out after 45 seconds. Retry the same batch or use an archival data provider." : failure.message); }
     finally { setBusy(false); }
   }
-  return <section aria-label="Creator Intelligence" className="doom-token-inspect" style={{ ...cardStyle, borderColor: "#633" }}>
-    <p style={{ color: "#ff7777", fontSize: 12, fontWeight: 700, letterSpacing: 2 }}>DOOM404 // CREATOR INTELLIGENCE · CB-01</p>
+  return <section aria-label="GLITCH Scanner Token Analysis" className="doom-token-inspect" style={{ ...cardStyle, border: "none", boxShadow: "none" }}>
+    <p style={{ color: "#ff7777", fontSize: 12, fontWeight: 700, letterSpacing: 2 }}>DOOM404 // GLITCH SCANNER · TOKEN ANALYSIS</p>
     <h2 style={{ marginTop: 8 }}>Inspect a Solana token</h2>
-    <p style={{ color: "#bbb", lineHeight: 1.6 }}>First verify the token mint. Historical creator identification and holding-time analytics are under development.</p>
+    <p style={{ color: "#bbb", lineHeight: 1.6 }}>Enter a Solana token address to explore security, holder connections, creator activity, and liquidity intelligence in one assessment.</p>
     <form onSubmit={inspect} style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
       <input aria-label="Solana token mint address" value={mint} onChange={e => setMint(e.target.value)} placeholder="Paste Solana token mint address" required style={{ flex: "1 1 260px", minWidth: 0, padding: 12, background: "#101010", border: "1px solid #555", borderRadius: 8, color: "white" }} />
       <button type="submit" disabled={busy} style={{ padding: "12px 18px", border: 0, borderRadius: 8, background: "#a52222", color: "white", cursor: "pointer" }}>{busy ? "INSPECTING..." : "INSPECT TOKEN"}</button>
@@ -707,7 +707,7 @@ export default function Home() {
     >
 
       <style>{`
-        .doom-token-inspect { width: calc(100vw - 24px); max-width: 1600px; position: relative; left: 50%; transform: translateX(-50%); box-sizing: border-box; }
+        .doom-token-inspect { width: calc(100vw - 24px); max-width: 1600px; position: relative; left: 50%; transform: translateX(-50%); box-sizing: border-box; border: 0 !important; box-shadow: none !important; }
         .doom-token-inspect form { width: 100%; }
         .doom-token-inspect input[aria-label="Solana token mint address"] { min-width: 0; }
         @media (max-width: 480px) { .doom-token-inspect { width: calc(100vw - 12px); padding: 16px !important; } }
