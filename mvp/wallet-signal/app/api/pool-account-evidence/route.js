@@ -5,6 +5,7 @@ import { decodePumpAmmPoolState } from "../../../lib/pumpAmmPoolState.mjs";
 import { inspectTokenVault } from "../../../lib/liquidityVaultEvidence.mjs";
 import { assessPumpAmmVaultAuthority } from "../../../lib/liquidityPoolAuthority.mjs";
 import { inspectLpMintAccount } from "../../../lib/liquidityLpMintEvidence.mjs";
+import { assessPumpAmmWithdrawalRights } from "../../../lib/pumpAmmWithdrawalEvidence.mjs";
 
 export const dynamic = "force-dynamic";
 const MAX_POOLS = 5;
@@ -60,6 +61,7 @@ export async function POST(request) {
           reservesVerified:false
         } : null,
         lpMintEvidence: candidates[index] && lpMintLookup.has(candidates[index].lpMint) ? inspectLpMintAccount(lpMintLookup.get(candidates[index].lpMint),candidates[index].lpMint,candidates[index].lpSupply) : null,
+        withdrawalEvidence: candidates[index] && lpMintLookup.has(candidates[index].lpMint) ? assessPumpAmmWithdrawalRights({lpMintEvidence:inspectLpMintAccount(lpMintLookup.get(candidates[index].lpMint),candidates[index].lpMint,candidates[index].lpSupply)}) : null,
         protocolVerified: false, reservesVerified: false,
         lpLocksVerified: false, lpBurnsVerified: false, withdrawalRightsVerified: false,
         limitation: "Account existence and owner program do not prove this is an authentic liquidity pool, verify reserves, or establish LP custody."
