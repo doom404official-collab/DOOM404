@@ -47,6 +47,15 @@ for(const candidate of evidence.pools.filter(p=>p.decodedPumpAmmCandidate).slice
   evidence.lpHolderEvidence.push({pairAddress:candidate.pairAddress,lpMint,status:"unavailable",error:String(error.message).slice(0,120)});
  }
 }
+evidence.transactionEvidence=[];
+for(const movement of evidence.reserveHistoryComparison.pools.filter(p=>p.baseRawDelta!=="0"||p.quoteRawDelta!=="0").slice(0,4)){
+ try{
+  const tx=await read("/api/liquidity-transaction-evidence",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({poolAddress:movement.pairAddress})});
+  evidence.transactionEvidence.push({pairAddress:movement.pairAddress,...tx});
+ }catch(error){
+  evidence.transactionEvidence.push({pairAddress:movement.pairAddress,status:"unavailable",error:String(error.message).slice(0,120)});
+ }
+}
 evidence.decodedPumpAmmCandidates=evidence.pools.filter(p=>p.decodedPumpAmmCandidate).map(p=>({pairAddress:p.pairAddress,...p.decodedPumpAmmCandidate}));
 evidence.status=evidence.batchErrors.length?"partial":"account_checks_completed";
 evidence.checked=evidence.pools.length;
