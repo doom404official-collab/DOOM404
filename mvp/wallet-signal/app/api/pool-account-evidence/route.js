@@ -37,7 +37,7 @@ export async function POST(request) {
         accountOwnerProgram: accounts[index]?.owner?.toBase58() ?? null,
         accountExecutable: accounts[index]?.executable ?? null,
         accountLamports: accounts[index]?.lamports ?? null,
-        decodedPumpAmmCandidate: accounts[index] ? decodePumpAmmPoolState(accounts[index].data, accounts[index].owner.toBase58()) : null,
+        decodedPumpAmmCandidate: accounts[index] ? (() => { const decoded = decodePumpAmmPoolState(accounts[index].data, accounts[index].owner.toBase58()); return decoded && [decoded.baseMint, decoded.quoteMint].includes(mint.toBase58()) ? decoded : null; })() : null,
         protocolVerified: false, reservesVerified: false,
         lpLocksVerified: false, lpBurnsVerified: false, withdrawalRightsVerified: false,
         limitation: "Account existence and owner program do not prove this is an authentic liquidity pool, verify reserves, or establish LP custody."
