@@ -5,7 +5,7 @@ const creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
 const signature='1'.repeat(88);
 let saved;
 const store={
- async get(){return {status:'partial',stage:'holdings',state:{originEvidence:[{creator,signature}]}},
+ async get(){return {status:'partial',stage:'holdings',state:{originEvidence:[{creator,signature}]}}},
  async claim(){return true},
  async save(value){saved=value;return true}
 };
