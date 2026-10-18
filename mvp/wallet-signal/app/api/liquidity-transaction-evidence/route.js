@@ -4,6 +4,7 @@ import {createReliableConnection} from "../../../lib/reliableConnection.js";
 import {summarizePoolSignatures} from "../../../lib/liquidityTransactionEvidence.mjs";
 import {inspectPumpAmmParsedTransaction} from "../../../lib/pumpAmmParsedTransactionEvidence.mjs";
 import {describeLiquidityRpcFailure} from "../../../lib/liquidityRpcFailure.mjs";
+import {inspectVersionRejection} from "../../../lib/liquidityVersionProbe.mjs";
 export const dynamic="force-dynamic";
 export async function POST(request){
  let payload;
@@ -21,7 +22,7 @@ export async function POST(request){
     const tx=await connection.getTransaction(entry.signature,{maxSupportedTransactionVersion:0,commitment:"confirmed"});
     decoded.push({signature:entry.signature,...inspectPumpAmmParsedTransaction(tx,pool.toBase58())});
    }catch(error){
-    decoded.push({signature:entry.signature,status:"unavailable",...describeLiquidityRpcFailure(error),candidateOperations:[],withdrawalConfirmed:false});
+    decoded.push({signature:entry.signature,status:"unavailable",...describeLiquidityRpcFailure(error),versionProbe:inspectVersionRejection(error),candidateOperations:[],withdrawalConfirmed:false});
    }
   }
   return NextResponse.json({poolAddress:pool.toBase58(),observedAt:new Date().toISOString(),source:"Solana RPC getSignaturesForAddress + getTransaction",...summary,decodedTransactions:decoded,decodedCount:decoded.length,classificationComplete:false},{headers:{"Cache-Control":"no-store"}});
