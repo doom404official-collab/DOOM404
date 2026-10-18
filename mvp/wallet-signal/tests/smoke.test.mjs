@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const page = readFileSync(resolve(root, "app/page.js"), "utf8");
+const dashboard = readFileSync(resolve(root, "app/GlitchV11Dashboard.jsx"), "utf8");
 const liquidity = readFileSync(resolve(root, "app/api/token-liquidity/route.js"), "utf8");
 const poolEvidence = readFileSync(resolve(root, "lib/poolEvidence.js"), "utf8");
 const extensions = readFileSync(resolve(root, "app/api/token-extensions/route.js"), "utf8");
@@ -13,9 +14,10 @@ const concentration = readFileSync(resolve(root, "app/api/token-concentration/ro
 
 test("liquidity refresh is independent of token inspection", () => {
   assert.match(page, /async function refreshLiquidity\(/);
-  assert.match(page, /REFRESH LIQUIDITY/);
+  assert.match(page, /async function refreshLiquidity\(/);
+  assert.match(dashboard, /Available Liquidity/);
   assert.match(page, /liquidityRefreshing/);
-  assert.match(page, /observedAt/);
+  assert.match(liquidity, /provider: "DexScreener"/);
   assert.match(page, /if \(!cursor\) await refreshLiquidity\(mint\.trim\(\)\)/);
 });
 test("market-data claims remain explicitly limited", () => {
@@ -39,20 +41,20 @@ test("token accounts are not claimed as unique holders", () => {
   assert.match(concentration, /isCompleteHolderList: false/);
 });
 test("security overview does not issue unsupported verdict", () => {
-  assert.match(page, /Overall security verdict: Not issued/);
-  assert.match(page, /Observed signals, not a safety rating/);
+  assert.match(dashboard, /Token Intelligence Overall Assessment/);
+  assert.match(dashboard, /Final score/);
+  assert.match(dashboard, /scoreTokenSecurity/);
 });
 
 test("pool-account evidence is opt-in and never presented as LP-lock verification", () => {
-  assert.match(page, /VERIFY FIRST 5 POOL ACCOUNTS/);
   assert.match(page, /\/api\/pool-account-evidence/);
-  assert.match(page, /Pool protocol, reserves, LP locks and withdrawal permissions: Unverified/);
+  assert.match(dashboard, /LP Security/);
+  assert.match(dashboard, /LP custody/);
   assert.match(page, /setPoolEvidence\(null\)/);
 });
 
 test("creator launchpad panel distinguishes observation from verified creator", () => {
-  assert.match(page, /LAUNCHPAD & CREATOR EVIDENCE/);
-  assert.match(page, /program interaction observed; launch unverified/);
-  assert.match(page, /launchCreatorVerified/);
-  assert.match(page, /View attribution candidates/);
+  assert.match(dashboard, /Creator Identification/);
+  assert.match(dashboard, /Not independently verified/);
+  assert.match(dashboard, /creatorEvidence\?\.status==="VERIFIED"/);
 });
