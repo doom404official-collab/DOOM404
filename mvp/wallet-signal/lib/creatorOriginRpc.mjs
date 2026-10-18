@@ -74,6 +74,9 @@ export function createSolanaRpcAdapter({ rpcUrl, fetchImpl = fetch, pageLimit = 
       // Even an exhausted RPC history may be pruned; never assert archive completeness.
       return { signatures, complete: false, rpcHistoryExhausted: exhausted, pagesFetched, rawSignaturesSeen, failedSignaturesSkipped, paginationLimitReached: !exhausted };
     },
+    getParsedAccountInfo(address) {
+      return rpc('getAccountInfo', [address, { encoding: 'jsonParsed', commitment: 'finalized' }]);
+    },
     getTokenSupply(mint) {
       return rpc("getTokenSupply", [mint, { commitment: "finalized" }]);
     },
