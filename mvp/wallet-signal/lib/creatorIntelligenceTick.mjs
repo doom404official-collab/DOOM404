@@ -30,7 +30,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  const rpc=createSolanaRpcAdapter({rpcUrl,fetchImpl,sharedBudget:budget,maxRequests,maxRetries:2,pageLimit:100,minIntervalMs:250});
  const previous=claimed.state&&typeof claimed.state==='object'?claimed.state:{};
  let state={...previous,lastError:null};
- let stage=claimed.stage,status='partial';
+ let stage=claimed.stage,status='partial',accountedRequests=0;
  try {
   if(stage==='previous_launches'){
    const creators=[...new Set((previous.originEvidence||[]).map(e=>e.creator))];
@@ -72,20 +72,31 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    state={...previous,lastError:null,holdings,lastTickAt:new Date().toISOString()};
    stage='selling';
   }else{
-  // One paid indexed lookup per mint. Persist the result even if no candidates are returned.
+  // Reserve the paid call durably before contacting Helius. A crash must not trigger a second charge.
   let provider={status:'NOT_REQUESTED',candidates:[]};
   if(indexedOriginEnabled && !previous.indexedOriginLookupAttempted){
-   provider=await fetchHeliusOldestOriginCandidates({mint,rpcUrl,fetchImpl,budget,enabled:true,limit:5});
+   state={...state,indexedOriginLookupAttempted:true,indexedOriginProviderStatus:'RESERVED',indexedOriginReservedAt:new Date().toISOString()};
+   await store.save({mint,owner,stage,status:'running',state,requestCount:0});
+   try{
+    provider=await fetchHeliusOldestOriginCandidates({mint,rpcUrl,fetchImpl,budget,enabled:true,limit:5});
+   }catch(error){
+    provider={status:'LOOKUP_FAILED',candidates:[]};
+    if(error?.message==='CREATOR_REQUEST_BUDGET_EXHAUSTED')throw error;
+   }
+   state={...state,indexedOriginProviderStatus:provider.status,
+    indexedOriginCandidates:[...(previous.indexedOriginCandidates||[]),...provider.candidates].slice(0,50)};
+   await store.save({mint,owner,stage,status:'running',state,requestCount:budget.used});
+   accountedRequests=budget.used;
   }
-  const candidates=[...(previous.indexedOriginCandidates||[]),...provider.candidates];
+  const candidates=[...(state.indexedOriginCandidates||previous.indexedOriginCandidates||[])];
   const indexed=await investigateIndexedCreatorOrigin({mint,candidates:candidates.filter(x=>!(previous.indexedOriginChecked||[]).includes(x.signature)),rpc,limit:10});
   const scan=await scanCreatorOrigin({mint,before:previous.nextCursor||null,
    lookupSignaturePage:rpc.lookupSignaturePage,fetchTransaction:rpc.fetchTransaction,
    maxPages:5,maxTransactions:100,maxDurationMs:Math.min(maxDurationMs,120000)});
   const deferred=[...new Set([...(previous.deferredSignatures||[]),...scan.deferredSignatures])].slice(-1000);
   state={...previous,lastError:null,nextCursor:scan.nextCursor,
-   indexedOriginLookupAttempted:previous.indexedOriginLookupAttempted||provider.status!=='NOT_REQUESTED',
-   indexedOriginProviderStatus:provider.status==='NOT_REQUESTED'?(previous.indexedOriginProviderStatus||'NOT_REQUESTED'):provider.status,
+   indexedOriginLookupAttempted:state.indexedOriginLookupAttempted||previous.indexedOriginLookupAttempted||false,
+   indexedOriginProviderStatus:state.indexedOriginProviderStatus||previous.indexedOriginProviderStatus||'NOT_REQUESTED',
    indexedOriginCandidates:candidates.slice(0,50),
    indexedOriginChecked:[...new Set([...(previous.indexedOriginChecked||[]),...indexed.checked])].slice(-1000),
    indexedOriginDeferred:[...new Set([...(previous.indexedOriginDeferred||[]),...indexed.deferred])].slice(-1000),
@@ -105,6 +116,6 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
   state={...state,lastError:errorCode,lastTickAt:new Date().toISOString()};
   status='partial';
  }
- await store.save({mint,owner,stage,status,state,requestCount:budget.used});
+ await store.save({mint,owner,stage,status,state,requestCount:budget.used-accountedRequests});
  return {status,stage,requests:budget.used,identificationStatus:state.identificationStatus||'INCOMPLETE',errorCode:state.lastError||null};
 }
