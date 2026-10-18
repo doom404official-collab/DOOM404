@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import {observePumpFunPoolTokenSettlement} from '../lib/pumpFunPoolTokenObservation.mjs';
 const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
-const transaction={meta:{err:null,preTokenBalances:[{mint,accountPubkey:'pool',uiTokenAmount:{amount:'100'}}],
- postTokenBalances:[{mint,accountPubkey:'pool',uiTokenAmount:{amount:'300'}}]}};
+const transaction={transaction:{message:{accountKeys:['pool']}},meta:{err:null,preTokenBalances:[{mint,accountIndex:0,uiTokenAmount:{amount:'100'}}],
+ postTokenBalances:[{mint,accountIndex:0,uiTokenAmount:{amount:'300'}}]}};
 const unknown=observePumpFunPoolTokenSettlement({transaction,mint});
 assert.equal(unknown.status,'UNVERIFIED');
 const observed=observePumpFunPoolTokenSettlement({transaction,mint,poolTokenAccounts:['pool']});
