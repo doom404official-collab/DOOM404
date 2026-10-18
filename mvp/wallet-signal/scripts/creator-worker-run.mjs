@@ -15,7 +15,8 @@ const result = await runCreatorIntelligenceTick({
   store,
   rpcUrl: process.env.HELIUS_RPC_URL,
   maxRequests: 500,
-  maxDurationMs: 90000
+  maxDurationMs: 90000,
+  indexedOriginEnabled: process.env.GLITCH_INDEXED_ORIGIN_ENABLED === 'true'
 });
 console.log(JSON.stringify({
   status: result.status,
