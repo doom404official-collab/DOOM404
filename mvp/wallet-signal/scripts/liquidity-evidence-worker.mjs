@@ -7,6 +7,7 @@ import { classifyPoolProgram } from "../lib/liquidityProtocolClassification.mjs"
 import { readLiquidityCheckpoint } from "../lib/liquidityCheckpointReader.mjs";
 import { appendLiquiditySnapshot } from "../lib/liquiditySnapshotArchive.mjs";
 import { comparePoolInventories } from "../lib/liquidityPoolContinuity.mjs";
+import { comparePoolVaultSnapshots } from "../lib/liquidityHistoricalComparison.mjs";
 const base = process.env.GLITCH_PREVIEW_URL?.replace(/\/$/, "");
 const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
 const mint = process.env.GLITCH_LIQUIDITY_MINT;
@@ -35,6 +36,7 @@ for(let i=0;i<addresses.length;i+=5){
 }
 evidence.protocolClassification=evidence.pools.map(classifyPoolProgram);
 evidence.poolContinuity=comparePoolInventories((previous?.pools||[]).map(p=>p.pairAddress),evidence.pools.map(p=>p.pairAddress));
+evidence.reserveHistoryComparison=comparePoolVaultSnapshots(previous?.pools||[],evidence.pools);
 evidence.lpHolderEvidence=[];
 for(const candidate of evidence.pools.filter(p=>p.decodedPumpAmmCandidate).slice(0,4)){
  const lpMint=candidate.decodedPumpAmmCandidate.lpMint;
