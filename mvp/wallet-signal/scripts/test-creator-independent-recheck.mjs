@@ -7,4 +7,14 @@ const missing=await recheckCreatorOrigin({mint,evidence,rpc:{fetchTransaction:as
 assert.equal(missing.status,'TRANSACTION_UNAVAILABLE');
 assert.equal(missing.rechecked,false);
 assert.equal(missing.beneficialOwnerVerified,undefined);
+const transaction={meta:{err:null}};
+const verifyCreation=()=>({status:'VERIFIED',decodedRoles:[{address:creator,programId:evidence[0].programId,decoderVersion:evidence[0].decoderVersion}]});
+const confirmed=await recheckCreatorOrigin({mint,evidence,rpc:{fetchTransaction:async()=>transaction},verifyCreation});
+assert.equal(confirmed.status,'ONCHAIN_CREATOR_RECHECKED');
+assert.equal(confirmed.rechecked,true);
+assert.equal(confirmed.beneficialOwnerVerified,false);
+const mismatch=await recheckCreatorOrigin({mint,evidence,rpc:{fetchTransaction:async()=>transaction},
+ verifyCreation:()=>({status:'VERIFIED',decodedRoles:[{address:'different',programId:evidence[0].programId,decoderVersion:evidence[0].decoderVersion}]})});
+assert.equal(mismatch.status,'ATTRIBUTION_MISMATCH');
+assert.equal(mismatch.rechecked,false);
 console.log('creator independent origin recheck tests passed');
