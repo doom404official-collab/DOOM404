@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {comparePumpFunPoolAccounts} from '../lib/pumpFunPoolAccountComparison.mjs';
+import {derivePumpFunBondingCurveAccounts} from '../lib/pumpFunBondingCurveDerivation.mjs';
+import {PUMP_FUN_PROGRAM_ID} from '../lib/pumpFunSellCandidates.mjs';
+const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+const derived=derivePumpFunBondingCurveAccounts({mint});
+const accounts=['global','fees',mint,derived.bondingCurve,derived.poolTokenAccount,'user-token','user','system','token','rent','event',PUMP_FUN_PROGRAM_ID];
+const transaction={transaction:{message:{accountKeys:accounts}}};
+const instruction={programId:PUMP_FUN_PROGRAM_ID,accounts:accounts.map((_,i)=>i)};
+const result=comparePumpFunPoolAccounts({mint,transaction,instruction});
+assert.equal(result.status,'POOL_ADDRESS_MATCH');
+assert.equal(result.ownershipVerified,false);
+accounts[4]='incorrect';
+assert.equal(comparePumpFunPoolAccounts({mint,transaction,instruction}).status,'POOL_ADDRESS_MISMATCH');
+console.log('Pump.fun pool account comparison tests passed');
