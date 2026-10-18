@@ -8,6 +8,7 @@ import { discoverCreatorWalletHistory } from './creatorWalletHistoryDiscovery.mj
 import { inspectCreatorHistoricalBatch } from './creatorHistoricalTransactionBatch.mjs';
 import { summarizePreviousLaunches } from './creatorPreviousLaunches.mjs';
 import { collectCreatorLaunchCandidates } from './creatorHistoricalLaunchDiscovery.mjs';
+import { investigateIndexedCreatorOrigin } from './creatorIndexedOriginInvestigation.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -70,14 +71,18 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    state={...previous,lastError:null,holdings,lastTickAt:new Date().toISOString()};
    stage='selling';
   }else{
+  const indexed=await investigateIndexedCreatorOrigin({mint,candidates:(previous.indexedOriginCandidates||[]).filter(x=>!(previous.indexedOriginChecked||[]).includes(x.signature)),rpc,limit:10});
   const scan=await scanCreatorOrigin({mint,before:previous.nextCursor||null,
    lookupSignaturePage:rpc.lookupSignaturePage,fetchTransaction:rpc.fetchTransaction,
    maxPages:5,maxTransactions:100,maxDurationMs:Math.min(maxDurationMs,120000)});
   const deferred=[...new Set([...(previous.deferredSignatures||[]),...scan.deferredSignatures])].slice(-1000);
-  state={...previous,lastError:null,nextCursor:scan.nextCursor,deferredSignatures:deferred,
+  state={...previous,lastError:null,nextCursor:scan.nextCursor,
+   indexedOriginChecked:[...new Set([...(previous.indexedOriginChecked||[]),...indexed.checked])].slice(-1000),
+   indexedOriginDeferred:[...new Set([...(previous.indexedOriginDeferred||[]),...indexed.deferred])].slice(-1000),
+   deferredSignatures:deferred,
    pagesFetched:(previous.pagesFetched||0)+scan.pagesFetched,
    sampled:(previous.sampled||0)+scan.sampled,
-   originEvidence:[...new Map([...(previous.originEvidence||[]),...scan.verified].map(v=>[v.signature+':'+v.creator,v])).values()].slice(-100),
+   originEvidence:[...new Map([...(previous.originEvidence||[]),...indexed.proofs,...scan.verified].map(v=>[v.signature+':'+v.creator,v])).values()].slice(-100),
    rpcHistoryExhausted:scan.rpcHistoryExhausted,
    historyComplete:false,lastTickAt:new Date().toISOString()};
   if(state.originEvidence.length>0){stage='holdings';state.identificationStatus='ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW';}
