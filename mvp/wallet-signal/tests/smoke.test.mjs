@@ -41,7 +41,8 @@ test("token accounts are not claimed as unique holders", () => {
   assert.match(concentration, /isCompleteHolderList: false/);
 });
 test("security overview does not issue unsupported verdict", () => {
-  assert.match(dashboard, /Token Intelligence Overall Assessment/);
+  assert.match(dashboard, /GLITCH \/\/ OVERALL TOKEN ASSESSMENT/);
+  assert.match(dashboard, /Token Intelligence Score:/);
   assert.match(dashboard, /Final score/);
   assert.match(dashboard, /scoreTokenSecurity/);
 });
