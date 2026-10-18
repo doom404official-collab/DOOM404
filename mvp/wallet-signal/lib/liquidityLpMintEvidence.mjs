@@ -13,6 +13,6 @@ export function inspectLpMintAccount(account,expectedMintAddress,reportedSupply)
  const supply=data.readBigUInt64LE(36).toString();
  const mintAuthority=option===1?new PublicKey(data.subarray(4,36)).toBase58():null;
  const freezeAuthority=freezeOption===1?new PublicKey(data.subarray(50,82)).toBase58():null;
- const supplyMatches=reportedSupply!==undefined&&reportedSupply!==null&&supply===String(reportedSupply);
- return {...unknown,mintAccountVerified:true,lpMint:expectedMintAddress,tokenProgram:owner,rawSupply:supply,poolReportedRawSupply:String(reportedSupply??""),supplyMatchesPool:supplyMatches,mintAuthority,freezeAuthority,reason:"LP holder custody, burns, locks and withdrawal rights not established"};
+ const supplyMatches=null; // Pump AMM lp_supply is a protocol-defined accounting quantity; direct equality is not a safety invariant.
+ return {...unknown,mintAccountVerified:true,lpMint:expectedMintAddress,tokenProgram:owner,rawSupply:supply,poolReportedRawSupply:String(reportedSupply??""),supplyMatchesPool:supplyMatches, supplyComparisonStatus:"not_directly_comparable", poolSupplyDefinition:"Pump AMM reported circulating supply excluding burns and lock-ups",mintAuthority,freezeAuthority,reason:"LP holder custody, burns, locks and withdrawal rights not established"};
 }
