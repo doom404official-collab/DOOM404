@@ -42,7 +42,9 @@ test("token accounts are not claimed as unique holders", () => {
 });
 test("security overview does not issue unsupported verdict", () => {
   assert.match(dashboard, /GLITCH \/\/ OVERALL TOKEN ASSESSMENT/);
-  assert.match(dashboard, /Token Intelligence Score:/);
+  assert.match(dashboard, /Final score:/);
+  assert.match(dashboard, /g11-attribute-tabs/);
+  assert.doesNotMatch(dashboard, /Token Intelligence Score:/);
   assert.match(dashboard, /Final score/);
   assert.match(dashboard, /scoreTokenSecurity/);
 });
