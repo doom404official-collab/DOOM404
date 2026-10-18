@@ -26,3 +26,10 @@ test("liquidity worker requires durable checkpoint persistence",()=>{
  assert.match(script,/persistLiquidityCheckpoint/);
  assert.match(script,/LIQUIDITY_STORAGE_NOT_CONFIGURED/);
 });
+
+test("transaction discovery is limited to reserve movements and four pools",()=>{
+ assert.match(script,/reserveHistoryComparison\.pools\.filter/);
+ assert.match(script,/slice\(0,4\)/);
+ assert.match(script,/liquidity-transaction-evidence/);
+ assert.match(script,/evidence\.transactionEvidence/);
+});
