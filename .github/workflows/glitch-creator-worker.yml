@@ -28,4 +28,5 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          GLITCH_INDEXED_ORIGIN_ENABLED: 'true'
         run: node scripts/creator-worker-run.mjs
