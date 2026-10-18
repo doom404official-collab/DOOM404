@@ -1,4 +1,5 @@
 import {classifyPumpAmmInstruction} from "./pumpAmmInstructionEvidence.mjs";
+import {decodeInstructionBytes} from "./liquidityInstructionBytes.mjs";
 const asKey=k=>typeof k==="string"?k:k?.pubkey?.toBase58?.()??k?.toBase58?.()??String(k);
 export function inspectPumpAmmParsedTransaction(tx,poolAddress) {
  if(!tx)return {status:"unavailable",candidateOperations:[],withdrawalConfirmed:false};
@@ -12,7 +13,7 @@ export function inspectPumpAmmParsedTransaction(tx,poolAddress) {
  for(const [source,instructions] of [["outer",outer],["inner",inner]]){
   for(const ix of instructions){
    const program=ix.programId?.toBase58?.()??keys[ix.programIdIndex]??"";
-   const data=ix.data instanceof Uint8Array?Buffer.from(ix.data):null;
+   const data=decodeInstructionBytes(ix.data);
    instructionDiagnostics.push({source,programId:program,dataType:ix.data instanceof Uint8Array?"bytes":typeof ix.data,dataLength:ix.data?.length??null});
    const result=classifyPumpAmmInstruction(program,data);
    if(!result.candidate)continue;
