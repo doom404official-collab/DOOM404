@@ -12,7 +12,8 @@ test("valid LP mint supply comparison does not claim locks or burns",()=>{
  data.writeUInt32LE(0,46);
  const result=inspectLpMintAccount({owner:tokenProgram,data},"lp",1000n);
  assert.equal(result.mintAccountVerified,true);
- assert.equal(result.supplyMatchesPool,true);
+ assert.equal(result.supplyMatchesPool,null);
+ assert.equal(result.supplyComparisonStatus,"not_directly_comparable");
  assert.equal(result.lpBurnVerified,false);
  assert.equal(result.lpLockVerified,false);
  assert.equal(result.withdrawalRightsVerified,false);
