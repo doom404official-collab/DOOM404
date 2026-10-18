@@ -1,0 +1,34 @@
+name: GLITCH liquidity evidence worker (stage 1)
+on:
+  workflow_dispatch:
+    inputs:
+      mint:
+        description: Solana token mint to investigate
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: glitch-liquidity-evidence
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mvp/wallet-signal/package-lock.json
+      - run: npm ci
+        working-directory: mvp/wallet-signal
+      - name: Collect conservative pool account evidence
+        working-directory: mvp/wallet-signal
+        env:
+          GLITCH_PREVIEW_URL: ${{ vars.GLITCH_PREVIEW_URL }}
+          GLITCH_LIQUIDITY_WORKER_TOKEN: ${{ secrets.GLITCH_LIQUIDITY_WORKER_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          GLITCH_LIQUIDITY_MINT: ${{ inputs.mint }}
+        run: node scripts/liquidity-evidence-worker.mjs
