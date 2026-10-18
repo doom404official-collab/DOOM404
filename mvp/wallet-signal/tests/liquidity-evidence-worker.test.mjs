@@ -21,3 +21,8 @@ test("liquidity workflow is manual-only and branch-scoped",()=>{
  assert.match(workflow,/refs\/heads\/feature\/glitch-liquidity-evidence-worker/);
  assert.match(workflow,/upload-artifact@v4/);
 });
+
+test("liquidity worker requires durable checkpoint persistence",()=>{
+ assert.match(script,/persistLiquidityCheckpoint/);
+ assert.match(script,/LIQUIDITY_STORAGE_NOT_CONFIGURED/);
+});
