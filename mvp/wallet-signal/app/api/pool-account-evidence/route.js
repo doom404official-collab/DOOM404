@@ -3,6 +3,7 @@ import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
 import { decodePumpAmmPoolState } from "../../../lib/pumpAmmPoolState.mjs";
 import { inspectTokenVault } from "../../../lib/liquidityVaultEvidence.mjs";
+import { assessPumpAmmVaultAuthority } from "../../../lib/liquidityPoolAuthority.mjs";
 
 export const dynamic = "force-dynamic";
 const MAX_POOLS = 5;
@@ -46,6 +47,10 @@ export async function POST(request) {
         vaultAccountEvidence: candidates[index] && [candidates[index].baseMint,candidates[index].quoteMint].includes(mint.toBase58()) ? {
           base: inspectTokenVault(vaultLookup.get(candidates[index].poolBaseTokenAccount),candidates[index].baseMint),
           quote: inspectTokenVault(vaultLookup.get(candidates[index].poolQuoteTokenAccount),candidates[index].quoteMint),
+          authorityAssessment: assessPumpAmmVaultAuthority(address,candidates[index],{
+            base:inspectTokenVault(vaultLookup.get(candidates[index].poolBaseTokenAccount),candidates[index].baseMint),
+            quote:inspectTokenVault(vaultLookup.get(candidates[index].poolQuoteTokenAccount),candidates[index].quoteMint)
+          }),
           poolAuthorityVerified:false,
           reserveBalancesIndependentlyRead: Boolean(vaultLookup.get(candidates[index].poolBaseTokenAccount) && vaultLookup.get(candidates[index].poolQuoteTokenAccount)),
           reservesVerified:false
