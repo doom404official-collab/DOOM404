@@ -6,4 +6,5 @@ const result=assessPumpFunCreatorSellTransaction({mint,creator,signature:'1'.rep
  transaction:{message:{accountKeys:[],instructions:[]}}}});
 assert.equal(result.status,'UNVERIFIED');
 assert.equal(result.saleVerified,undefined);
+assert.notEqual(result.status,'SETTLEMENT_REVIEW_PENDING');
 console.log('Pump.fun creator sell assessment tests passed');
