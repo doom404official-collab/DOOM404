@@ -19,3 +19,12 @@ test("recognizes inner withdraw referencing loaded pool address",()=>{
  assert.equal(r.candidateOperations[0].source,"inner");
  assert.equal(r.withdrawalConfirmed,false);
 });
+
+test("reports bounded instruction program and encoding diagnostics",()=>{
+ const tx={meta:{err:null},transaction:{message:{staticAccountKeys:["program"],compiledInstructions:[{programIdIndex:0,accountKeyIndexes:[],data:Buffer.from([1,2,3])}]}}};
+ const result=inspectPumpAmmParsedTransaction(tx,"pool");
+ assert.equal(result.instructionCount,1);
+ assert.equal(result.instructionDiagnostics[0].programId,"program");
+ assert.equal(result.instructionDiagnostics[0].dataType,"bytes");
+ assert.equal(result.withdrawalConfirmed,false);
+});
