@@ -3,6 +3,7 @@ import { PublicKey } from "@solana/web3.js";
 import { writeFile } from "node:fs/promises";
 import { validateLiquidityCheckpoint } from "../lib/liquidityEvidenceCheckpoint.mjs";
 import { persistLiquidityCheckpoint } from "../lib/liquidityCheckpointStore.mjs";
+import { classifyPoolProgram } from "../lib/liquidityProtocolClassification.mjs";
 const base = process.env.GLITCH_PREVIEW_URL?.replace(/\/$/, "");
 const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
 const mint = process.env.GLITCH_LIQUIDITY_MINT;
@@ -28,6 +29,7 @@ for(let i=0;i<addresses.length;i+=5){
   evidence.pools.push(...batch.pools);
  }catch(error){evidence.batchErrors.push({startIndex:i,count:batchAddresses.length,error:String(error.message).slice(0,160)});}
 }
+evidence.protocolClassification=evidence.pools.map(classifyPoolProgram);
 evidence.status=evidence.batchErrors.length?"partial":"account_checks_completed";
 evidence.checked=evidence.pools.length;
 evidence.accountExists=evidence.pools.filter(p=>p.accountExists).length;
