@@ -1,6 +1,7 @@
 // First-stage liquidity evidence: pool account existence only, never a final risk score.
 import { PublicKey } from "@solana/web3.js";
 import { writeFile } from "node:fs/promises";
+import { validateLiquidityCheckpoint } from "../lib/liquidityEvidenceCheckpoint.mjs";
 const base = process.env.GLITCH_PREVIEW_URL?.replace(/\/$/, "");
 const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
 const mint = process.env.GLITCH_LIQUIDITY_MINT;
@@ -29,6 +30,7 @@ for(let i=0;i<addresses.length;i+=5){
 evidence.status=evidence.batchErrors.length?"partial":"account_checks_completed";
 evidence.checked=evidence.pools.length;
 evidence.accountExists=evidence.pools.filter(p=>p.accountExists).length;
+validateLiquidityCheckpoint(evidence);
 await writeFile(process.env.GLITCH_EVIDENCE_OUTPUT||"liquidity-evidence.json",JSON.stringify(evidence,null,2));
 console.log(JSON.stringify({status:evidence.status,mint,reportedPools:evidence.providerReportedPools,checked:evidence.checked,exists:evidence.accountExists,batchErrors:evidence.batchErrors.length,verifiedDepth:false,lpSecurityVerified:false,finalScore:null}));
 if(evidence.batchErrors.length)process.exitCode=1;
