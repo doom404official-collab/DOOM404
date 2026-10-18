@@ -30,6 +30,16 @@ for(let i=0;i<addresses.length;i+=5){
  }catch(error){evidence.batchErrors.push({startIndex:i,count:batchAddresses.length,error:String(error.message).slice(0,160)});}
 }
 evidence.protocolClassification=evidence.pools.map(classifyPoolProgram);
+evidence.lpHolderEvidence=[];
+for(const candidate of evidence.pools.filter(p=>p.decodedPumpAmmCandidate).slice(0,4)){
+ const lpMint=candidate.decodedPumpAmmCandidate.lpMint;
+ try {
+  const holders=await read("/api/lp-holder-evidence",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({lpMint})});
+  evidence.lpHolderEvidence.push({pairAddress:candidate.pairAddress,...holders});
+ }catch(error){
+  evidence.lpHolderEvidence.push({pairAddress:candidate.pairAddress,lpMint,status:"unavailable",error:String(error.message).slice(0,120)});
+ }
+}
 evidence.decodedPumpAmmCandidates=evidence.pools.filter(p=>p.decodedPumpAmmCandidate).map(p=>({pairAddress:p.pairAddress,...p.decodedPumpAmmCandidate}));
 evidence.status=evidence.batchErrors.length?"partial":"account_checks_completed";
 evidence.checked=evidence.pools.length;
