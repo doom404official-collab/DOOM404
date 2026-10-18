@@ -32,6 +32,8 @@ jobs:
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           GLITCH_LIQUIDITY_MINT: ${{ inputs.mint }}
           GLITCH_EVIDENCE_OUTPUT: liquidity-evidence.json
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/liquidity-evidence-worker.mjs
       - name: Retain evidence for audit
         if: always()
