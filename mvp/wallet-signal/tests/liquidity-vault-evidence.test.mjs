@@ -26,3 +26,11 @@ test("rejects missing account and malformed data",()=>{
  assert.equal(inspectTokenVault(null,mint).verified,false);
  assert.equal(inspectTokenVault({owner:program,data:Buffer.alloc(20)},mint).verified,false);
 });
+
+test("supports Token-2022 base account layout with correct mint",()=>{
+ const token2022=new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
+ const result=inspectTokenVault(account({owner:token2022}),mint);
+ assert.equal(result.verified,true);
+ assert.equal(result.tokenProgram,token2022.toBase58());
+ assert.equal(result.scope,"vault_token_account_only");
+});
