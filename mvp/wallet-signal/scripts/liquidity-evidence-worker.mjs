@@ -5,6 +5,7 @@ import { validateLiquidityCheckpoint } from "../lib/liquidityEvidenceCheckpoint.
 import { persistLiquidityCheckpoint } from "../lib/liquidityCheckpointStore.mjs";
 import { classifyPoolProgram } from "../lib/liquidityProtocolClassification.mjs";
 import { readLiquidityCheckpoint } from "../lib/liquidityCheckpointReader.mjs";
+import { appendLiquiditySnapshot } from "../lib/liquiditySnapshotArchive.mjs";
 import { comparePoolInventories } from "../lib/liquidityPoolContinuity.mjs";
 const base = process.env.GLITCH_PREVIEW_URL?.replace(/\/$/, "");
 const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
@@ -51,6 +52,7 @@ evidence.accountExists=evidence.pools.filter(p=>p.accountExists).length;
 validateLiquidityCheckpoint(evidence);
 await writeFile(process.env.GLITCH_EVIDENCE_OUTPUT||"liquidity-evidence.json",JSON.stringify(evidence,null,2));
 if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+ await appendLiquiditySnapshot(evidence,{url:process.env.SUPABASE_URL,serviceRoleKey:process.env.SUPABASE_SERVICE_ROLE_KEY});
  await persistLiquidityCheckpoint(evidence,{url:process.env.SUPABASE_URL,serviceRoleKey:process.env.SUPABASE_SERVICE_ROLE_KEY});
 } else {
  throw Error("LIQUIDITY_STORAGE_NOT_CONFIGURED: audit artifact written but checkpoint not persisted");
