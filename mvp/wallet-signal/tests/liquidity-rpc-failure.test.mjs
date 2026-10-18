@@ -7,3 +7,8 @@ test("classifies common RPC failures without exposing messages",()=>{
  assert.equal(classifyLiquidityRpcFailure(new Error("unsupported transaction version")),"UNSUPPORTED_VERSION");
  assert.equal(classifyLiquidityRpcFailure(new Error("private provider detail")),"RPC_RETRIEVAL_ERROR");
 });
+
+test("distinguishes client decoding from explicit version rejection",()=>{
+ assert.equal(classifyLiquidityRpcFailure(new Error("Invalid transaction version format")),"CLIENT_DECODE_ERROR");
+ assert.equal(classifyLiquidityRpcFailure(new Error("unsupported transaction version 1")),"UNSUPPORTED_VERSION");
+});
