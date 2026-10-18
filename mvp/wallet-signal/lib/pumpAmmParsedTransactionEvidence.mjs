@@ -8,10 +8,12 @@ export function inspectPumpAmmParsedTransaction(tx,poolAddress) {
  const outer=message?.compiledInstructions??message?.instructions??[];
  const inner=(tx.meta?.innerInstructions??[]).flatMap(group=>group.instructions??[]);
  const candidateOperations=[];
+ const instructionDiagnostics=[];
  for(const [source,instructions] of [["outer",outer],["inner",inner]]){
   for(const ix of instructions){
    const program=ix.programId?.toBase58?.()??keys[ix.programIdIndex]??"";
    const data=ix.data instanceof Uint8Array?Buffer.from(ix.data):null;
+   instructionDiagnostics.push({source,programId:program,dataType:ix.data instanceof Uint8Array?"bytes":typeof ix.data,dataLength:ix.data?.length??null});
    const result=classifyPumpAmmInstruction(program,data);
    if(!result.candidate)continue;
    const indices=ix.accountKeyIndexes??ix.accounts??[];
@@ -19,5 +21,5 @@ export function inspectPumpAmmParsedTransaction(tx,poolAddress) {
    candidateOperations.push({operation:result.candidate,poolMatched,source,verified:false});
   }
  }
- return {status:"candidate_only",candidateOperations,withdrawalConfirmed:false,tokenBalanceCorroborated:false,loadedAddressCount:(tx.meta?.loadedAddresses?.writable?.length??0)+(tx.meta?.loadedAddresses?.readonly?.length??0)};
+ return {status:"candidate_only",candidateOperations,withdrawalConfirmed:false,tokenBalanceCorroborated:false,loadedAddressCount:(tx.meta?.loadedAddresses?.writable?.length??0)+(tx.meta?.loadedAddresses?.readonly?.length??0),instructionDiagnostics:instructionDiagnostics.slice(0,40),instructionCount:instructionDiagnostics.length};
 }
