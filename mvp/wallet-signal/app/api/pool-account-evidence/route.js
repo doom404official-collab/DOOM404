@@ -47,7 +47,7 @@ export async function POST(request) {
           base: inspectTokenVault(vaultLookup.get(candidates[index].poolBaseTokenAccount),candidates[index].baseMint),
           quote: inspectTokenVault(vaultLookup.get(candidates[index].poolQuoteTokenAccount),candidates[index].quoteMint),
           poolAuthorityVerified:false,
-          reserveBalancesIndependentlyRead:true,
+          reserveBalancesIndependentlyRead: Boolean(vaultLookup.get(candidates[index].poolBaseTokenAccount) && vaultLookup.get(candidates[index].poolQuoteTokenAccount)),
           reservesVerified:false
         } : null,
         protocolVerified: false, reservesVerified: false,
