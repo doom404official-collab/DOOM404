@@ -509,7 +509,7 @@ function CreatorLookup() {
     } catch (failure) { setError(failure.name === "AbortError" ? "Historical scan timed out after 45 seconds. Retry the same batch or use an archival data provider." : failure.message); }
     finally { setBusy(false); }
   }
-  return <section aria-label="Creator Intelligence" style={{ ...cardStyle, borderColor: "#633" }}>
+  return <section aria-label="Creator Intelligence" className="doom-token-inspect" style={{ ...cardStyle, borderColor: "#633" }}>
     <p style={{ color: "#ff7777", fontSize: 12, fontWeight: 700, letterSpacing: 2 }}>DOOM404 // CREATOR INTELLIGENCE · CB-01</p>
     <h2 style={{ marginTop: 8 }}>Inspect a Solana token</h2>
     <p style={{ color: "#bbb", lineHeight: 1.6 }}>First verify the token mint. Historical creator identification and holding-time analytics are under development.</p>
@@ -706,6 +706,12 @@ export default function Home() {
       }}
     >
 
+      <style>{`
+        .doom-token-inspect { width: calc(100vw - 24px); max-width: 1600px; position: relative; left: 50%; transform: translateX(-50%); box-sizing: border-box; }
+        .doom-token-inspect form { width: 100%; }
+        .doom-token-inspect input[aria-label="Solana token mint address"] { min-width: 0; }
+        @media (max-width: 480px) { .doom-token-inspect { width: calc(100vw - 12px); padding: 16px !important; } }
+      `}</style>
       <style>{`
         .doom-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 360px); align-items: center; gap: 12px; margin-bottom: -46px; }
         .doom-mascot { position: relative; width: 100%; max-width: 360px; aspect-ratio: 1; isolation: isolate; perspective: 900px; margin: 0 auto; }
