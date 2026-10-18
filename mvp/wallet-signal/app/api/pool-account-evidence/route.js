@@ -4,6 +4,7 @@ import { createReliableConnection } from "../../../lib/reliableConnection.js";
 import { decodePumpAmmPoolState } from "../../../lib/pumpAmmPoolState.mjs";
 import { inspectTokenVault } from "../../../lib/liquidityVaultEvidence.mjs";
 import { assessPumpAmmVaultAuthority } from "../../../lib/liquidityPoolAuthority.mjs";
+import { inspectLpMintAccount } from "../../../lib/liquidityLpMintEvidence.mjs";
 
 export const dynamic = "force-dynamic";
 const MAX_POOLS = 5;
@@ -33,6 +34,9 @@ export async function POST(request) {
     const vaultAddresses = [...new Set(candidates.flatMap(candidate => candidate && [candidate.baseMint,candidate.quoteMint].includes(mint.toBase58()) ? [candidate.poolBaseTokenAccount,candidate.poolQuoteTokenAccount] : []))];
     const vaultAccounts = vaultAddresses.length ? await connection.getMultipleAccountsInfo(vaultAddresses.map(address => new PublicKey(address)),"confirmed") : [];
     const vaultLookup = new Map(vaultAddresses.map((address,index)=>[address,vaultAccounts[index]]));
+    const lpMintAddresses = [...new Set(candidates.filter(candidate=>candidate && [candidate.baseMint,candidate.quoteMint].includes(mint.toBase58())).map(candidate=>candidate.lpMint))];
+    const lpMintAccounts = lpMintAddresses.length ? await connection.getMultipleAccountsInfo(lpMintAddresses.map(address=>new PublicKey(address)),"confirmed") : [];
+    const lpMintLookup = new Map(lpMintAddresses.map((address,index)=>[address,lpMintAccounts[index]]));
     const observedAt = new Date().toISOString();
     return NextResponse.json({
       status: "account_checks_completed", mint: mint.toBase58(), observedAt,
@@ -55,6 +59,7 @@ export async function POST(request) {
           reserveBalancesIndependentlyRead: Boolean(vaultLookup.get(candidates[index].poolBaseTokenAccount) && vaultLookup.get(candidates[index].poolQuoteTokenAccount)),
           reservesVerified:false
         } : null,
+        lpMintEvidence: candidates[index] && lpMintLookup.has(candidates[index].lpMint) ? inspectLpMintAccount(lpMintLookup.get(candidates[index].lpMint),candidates[index].lpMint,candidates[index].lpSupply) : null,
         protocolVerified: false, reservesVerified: false,
         lpLocksVerified: false, lpBurnsVerified: false, withdrawalRightsVerified: false,
         limitation: "Account existence and owner program do not prove this is an authentic liquidity pool, verify reserves, or establish LP custody."
