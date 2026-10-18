@@ -4,6 +4,9 @@ on:
     paths:
       - 'mvp/wallet-signal/scripts/liquidity-evidence-worker.mjs'
       - 'mvp/wallet-signal/tests/liquidity-evidence-worker.test.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-checkpoint-store.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityCheckpointStore.mjs'
+      - 'mvp/wallet-signal/lib/liquidityEvidenceCheckpoint.mjs'
       - '.github/workflows/glitch-liquidity-evidence-worker.yml'
       - '.github/workflows/glitch-liquidity-worker-tests.yml'
   workflow_dispatch:
@@ -19,6 +22,6 @@ jobs:
         with:
           node-version: '22'
       - name: Validate worker and workflow contracts
-        run: node --test mvp/wallet-signal/tests/liquidity-evidence-worker.test.mjs
+        run: node --test mvp/wallet-signal/tests/liquidity-evidence-worker.test.mjs mvp/wallet-signal/tests/liquidity-checkpoint-store.test.mjs
       - name: Validate worker syntax
         run: node --check mvp/wallet-signal/scripts/liquidity-evidence-worker.mjs
