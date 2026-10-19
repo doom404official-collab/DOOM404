@@ -1,6 +1,7 @@
 import { observeCreatorTransaction } from './creatorTransactionEvidence.mjs';
 import { verifyCreatorSwapSale } from './creatorSwapVerification.mjs';
 import { assessPumpFunCreatorSellTransaction } from './pumpFunCreatorSellAssessment.mjs';
+import { corroborateHistoricalCreatorSellPath } from './creatorHistoricalSellPath.mjs';
 /** Decode a bounded batch of discovered signatures. Failed fetches stay pending.
  * This does not claim swap verification or archival completeness.
  */
@@ -13,7 +14,10 @@ export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],
    if(!tx){pending.push(signature);continue;}
    observations.push(observeCreatorTransaction({signature,transaction:tx,creator,mint}));
    const candidate=assessPumpFunCreatorSellTransaction({mint,creator,signature,transaction:tx});
-   if(candidate.status==='SETTLEMENT_REVIEW_PENDING')sellCandidates.push({signature,status:candidate.status,saleVerified:false});
+   if(candidate.status==='SETTLEMENT_REVIEW_PENDING'){
+    const path=corroborateHistoricalCreatorSellPath({mint,creator,transaction:tx});
+    sellCandidates.push({signature,status:path.status==='HISTORICAL_CREATOR_TOKEN_PATH_CORROBORATED'?'HISTORICAL_SETTLEMENT_REVIEW_PENDING':'SOURCE_OWNERSHIP_UNVERIFIED',saleVerified:false});
+   }
    if(swapDecoder){
     const proof=verifyCreatorSwapSale({mint,creator,signature,transaction:tx,decoder:swapDecoder});
     if(proof.status==='VERIFIED')verifiedSales.push(proof.sale);
