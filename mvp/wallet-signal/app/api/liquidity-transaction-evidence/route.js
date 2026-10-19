@@ -24,7 +24,9 @@ export async function POST(request){
   const signatures=await connection.getSignaturesForAddress(pool,{limit:50},"confirmed");
   const summary=summarizePoolSignatures(signatures);
   const selection=selectLiquidityTransactionSignatures(summary.signatures,{limit:10,exclude:Array.isArray(payload?.excludeSignatures)?payload.excludeSignatures:[]});
-  const selected=selection.selected;
+  const requestedSignature=payload?.signature;
+  if(requestedSignature!==undefined&&(typeof requestedSignature!=="string"||!/^[1-9A-HJ-NP-Za-km-z]{64,90}$/.test(requestedSignature)))return NextResponse.json({error:"Invalid transaction signature"},{status:400});
+  const selected=requestedSignature?[{signature:requestedSignature,err:null}]:selection.selected;
   const decoded=[];
   for(const entry of selected){
    try{
@@ -40,6 +42,6 @@ export async function POST(request){
     decoded.push({signature:entry.signature,status:"unavailable",...describeLiquidityRpcFailure(error),versionProbe:inspectVersionRejection(error),candidateOperations:[],withdrawalConfirmed:false});
    }
   }
-  return NextResponse.json({poolAddress:pool.toBase58(),observedAt:new Date().toISOString(),source:"Solana RPC getSignaturesForAddress + getTransaction",...summary,decodedTransactions:decoded,decodedCount:decoded.length,excludedSignatures:selection.excludedCount,classificationComplete:false},{headers:{"Cache-Control":"no-store"}});
+  return NextResponse.json({poolAddress:pool.toBase58(),observedAt:new Date().toISOString(),source:"Solana RPC getSignaturesForAddress + getTransaction",...summary,decodedTransactions:decoded,decodedCount:decoded.length,excludedSignatures:selection.excludedCount,focusedSignature:requestedSignature??null,classificationComplete:false},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({status:"unavailable",reason:"Transaction signature evidence unavailable"},{status:503});}
 }
