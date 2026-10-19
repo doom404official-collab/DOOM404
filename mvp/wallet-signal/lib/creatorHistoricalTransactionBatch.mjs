@@ -4,10 +4,11 @@ import { assessPumpFunCreatorSellTransaction } from './pumpFunCreatorSellAssessm
 import { corroborateHistoricalCreatorSellPath } from './creatorHistoricalSellPath.mjs';
 import { verifyPumpFunCreatorSettlement } from './pumpFunCreatorSettlement.mjs';
 import { extractPumpFunSettlementEvidence } from './pumpFunSettlementEvidenceExtractor.mjs';
+import { extractPumpFunSettlementEvidence } from './pumpFunSettlementEvidenceExtractor.mjs';
 /** Decode a bounded batch of discovered signatures. Failed fetches stay pending.
  * This does not claim swap verification or archival completeness.
  */
-export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],rpc,maxTransactions=20,swapDecoder=null,settlementDecoder=null}={}){
+export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],rpc,maxTransactions=20,swapDecoder=null,settlementDecoder=extractPumpFunSettlementEvidence}={}){
  if(typeof rpc?.fetchTransaction!=='function'||!Array.isArray(signatures)||!Number.isInteger(maxTransactions)||maxTransactions<1||maxTransactions>100)throw Error('INVALID_CREATOR_BATCH');
  const observations=[],processed=[],pending=[],verifiedSales=[],sellCandidates=[];
  for(const signature of [...new Set(signatures)].slice(0,maxTransactions)){
