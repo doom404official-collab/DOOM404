@@ -7,7 +7,7 @@ export function extractFeeSweepAccounts(tx,poolAddress){
  const keys=[...(m?.staticAccountKeys??m?.accountKeys??[]),...(tx?.meta?.loadedAddresses?.writable??[]),...(tx?.meta?.loadedAddresses?.readonly??[])].map(key);
  const instructions=m?.compiledInstructions??m?.instructions??[];
  const sweeps=[];
- for(const ix of instructions){
+ for(const [outerInstructionIndex,ix] of instructions.entries()){
   const program=ix.programId?.toBase58?.()??keys[ix.programIdIndex];
   if(program!==PUMP_AMM)continue;
   const data=decodeInstructionBytes(ix.data);
@@ -15,7 +15,7 @@ export function extractFeeSweepAccounts(tx,poolAddress){
   if(!operation)continue;
   const indexes=ix.accountKeyIndexes??ix.accounts??[];
   const accounts=indexes.map(i=>typeof i==="number"?keys[i]:key(i));
-  sweeps.push({operation,pool:accounts[2]??null,poolMatched:accounts[2]===poolAddress,quoteVault:accounts[5]??null,recipient:accounts[6]??null,recipientTokenAccount:accounts[7]??null,accountLayoutComplete:accounts.length>=12,settlementVerified:false});
+  sweeps.push({operation,outerInstructionIndex,pool:accounts[2]??null,poolMatched:accounts[2]===poolAddress,quoteVault:accounts[5]??null,recipient:accounts[6]??null,recipientTokenAccount:accounts[7]??null,accountLayoutComplete:accounts.length>=12,settlementVerified:false});
  }
  return {sweeps,settlementVerified:false};
 }
