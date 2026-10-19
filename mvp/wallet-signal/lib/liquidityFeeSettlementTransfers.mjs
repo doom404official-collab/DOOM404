@@ -17,9 +17,9 @@ export function inspectFeeSettlementTransfers(tx,sweepEvidence){
    const accounts=indexes.map(i=>typeof i==="number"?keys[i]:key(i));
    if(data[0]===12&&data.length<10)continue;
    const source=accounts[0],destination=data[0]===3?accounts[1]:accounts[2];
-   const matched=sweeps.find(s=>s.quoteVault===source&&s.recipientTokenAccount===destination);
+   const matched=sweeps.find(s=>s.quoteVault===source&&s.recipientTokenAccount===destination&&s.outerInstructionIndex===group.index);
    if(!matched)continue;
-   transfers.push({operation:matched.operation,source,destination,amountRaw:uint64(data),tokenInstruction:data[0]===3?"transfer":"transfer_checked",outerInstructionIndex:group.index,recipient:matched.recipient});
+   transfers.push({operation:matched.operation,source,destination,amountRaw:uint64(data),tokenInstruction:data[0]===3?"transfer":"transfer_checked",outerInstructionIndex:group.index,parentInstructionMatched:true,recipient:matched.recipient});
   }
  }
  return {transfers,matchedTransferCount:transfers.length,settlementVerified:false,authorizationVerified:false};
