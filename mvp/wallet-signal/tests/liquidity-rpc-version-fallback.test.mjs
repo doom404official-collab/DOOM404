@@ -21,3 +21,13 @@ test("does not retry identical RPC endpoint",async()=>{
  const r=await retrieveLiquidityTransaction("sig",{primaryConnection:primary,primaryUrl:"https://same.example",alternateUrl:"https://same.example"});
  assert.equal(r.fallbackUsed,false);assert.equal(r.fallbackSkipped,"SAME_RPC_ENDPOINT");
 });
+
+test("records attempted Helius fallback failure separately",async()=>{
+ const primary={getTransaction:async()=>{throw Object.assign(new Error("unsupported"),{code:-32015});}};
+ const alternate={getTransaction:async()=>{throw Object.assign(new Error("alternate unsupported"),{code:-32015});}};
+ const r=await retrieveLiquidityTransaction("sig",{primaryConnection:primary,alternateUrl:"https://helius.example",connectionFactory:()=>alternate});
+ assert.equal(r.fallbackAttempted,true);
+ assert.equal(r.fallbackUsed,false);
+ assert.equal(r.primaryError.code,-32015);
+ assert.equal(r.error.code,-32015);
+});
