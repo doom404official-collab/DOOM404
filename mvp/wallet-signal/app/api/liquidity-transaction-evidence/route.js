@@ -9,6 +9,7 @@ import {calculateVaultTransactionDeltas} from "../../../lib/liquidityVaultTransa
 import {assessSwapReserveDirection} from "../../../lib/liquiditySwapDirection.mjs";
 import {diagnoseSwapAmbiguity} from "../../../lib/liquidityAmbiguityDiagnostics.mjs";
 import {assessPoolTransactionRelevance} from "../../../lib/liquidityTransactionRelevance.mjs";
+import {selectLiquidityTransactionSignatures} from "../../../lib/liquidityTransactionSelection.mjs";
 export const dynamic="force-dynamic";
 export async function POST(request){
  let payload;
@@ -21,7 +22,8 @@ export async function POST(request){
   const connection=createReliableConnection({timeoutMs:8000,retries:1});
   const signatures=await connection.getSignaturesForAddress(pool,{limit:50},"confirmed");
   const summary=summarizePoolSignatures(signatures);
-  const selected=summary.signatures.filter(s=>s.err===null).slice(0,10);
+  const selection=selectLiquidityTransactionSignatures(summary.signatures,{limit:10,exclude:Array.isArray(payload?.excludeSignatures)?payload.excludeSignatures:[]});
+  const selected=selection.selected;
   const decoded=[];
   for(const entry of selected){
    try{
@@ -35,6 +37,6 @@ export async function POST(request){
     decoded.push({signature:entry.signature,status:"unavailable",...describeLiquidityRpcFailure(error),versionProbe:inspectVersionRejection(error),candidateOperations:[],withdrawalConfirmed:false});
    }
   }
-  return NextResponse.json({poolAddress:pool.toBase58(),observedAt:new Date().toISOString(),source:"Solana RPC getSignaturesForAddress + getTransaction",...summary,decodedTransactions:decoded,decodedCount:decoded.length,classificationComplete:false},{headers:{"Cache-Control":"no-store"}});
+  return NextResponse.json({poolAddress:pool.toBase58(),observedAt:new Date().toISOString(),source:"Solana RPC getSignaturesForAddress + getTransaction",...summary,decodedTransactions:decoded,decodedCount:decoded.length,excludedSignatures:selection.excludedCount,classificationComplete:false},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({status:"unavailable",reason:"Transaction signature evidence unavailable"},{status:503});}
 }
