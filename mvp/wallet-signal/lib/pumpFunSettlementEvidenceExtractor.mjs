@@ -2,6 +2,7 @@ import {groupPumpFunSellInnerInstructions} from './pumpFunSellInnerInstructionGr
 import {derivePumpFunBondingCurveAccounts} from './pumpFunBondingCurveDerivation.mjs';
 import {corroborateHistoricalCreatorSellPath} from './creatorHistoricalSellPath.mjs';
 import {PUMP_FUN_PROGRAM_ID} from './pumpFunSellCandidates.mjs';
+import {verifyHistoricalPumpFunPoolOwnership} from './pumpFunHistoricalPoolOwnership.mjs';
 /** Extract transaction-local settlement evidence from a single sell instruction group.
  * Does not assert historical pool ownership without an independently validated account state.
  */
@@ -18,12 +19,14 @@ export function extractPumpFunSettlementEvidence({mint,creator,signature,transac
    ix.parsed.info?.source===derived.bondingCurve&&ix.parsed.info?.destination===creator&&
    Number.isSafeInteger(ix.parsed.info?.lamports)&&ix.parsed.info.lamports>0);
   if(payments.length!==1)continue;
+  const poolOwnership=verifyHistoricalPumpFunPoolOwnership({mint,transaction});
   return {independentlyDecoded:false,signature,mint,creator,programId:PUMP_FUN_PROGRAM_ID,
    instructionType:'SELL',soldRaw:group.soldRaw,creatorReceivedLamports:String(payments[0].parsed.info.lamports),
    timestamp:transaction.blockTime,decoderVersion:'pump-fun-linked-settlement-v1',
-   poolTokenReceiptVerified:false,creatorSolReceiptVerified:true,outputAsset:'SOL',
+   poolTokenReceiptVerified:poolOwnership.historicalOwnershipVerified===true,
+   creatorSolReceiptVerified:true,outputAsset:'SOL',
    sourceOwnershipVerified:true,transactionInstructionLinked:true,
-   historicalPoolOwnershipVerified:false};
+   historicalPoolOwnershipVerified:poolOwnership.historicalOwnershipVerified===true};
  }
  return null;
 }
