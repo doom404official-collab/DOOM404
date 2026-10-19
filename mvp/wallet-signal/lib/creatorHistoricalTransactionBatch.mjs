@@ -3,6 +3,7 @@ import { verifyCreatorSwapSale } from './creatorSwapVerification.mjs';
 import { assessPumpFunCreatorSellTransaction } from './pumpFunCreatorSellAssessment.mjs';
 import { corroborateHistoricalCreatorSellPath } from './creatorHistoricalSellPath.mjs';
 import { verifyPumpFunCreatorSettlement } from './pumpFunCreatorSettlement.mjs';
+import { extractPumpFunSettlementEvidence } from './pumpFunSettlementEvidenceExtractor.mjs';
 /** Decode a bounded batch of discovered signatures. Failed fetches stay pending.
  * This does not claim swap verification or archival completeness.
  */
@@ -17,7 +18,9 @@ export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],
    const candidate=assessPumpFunCreatorSellTransaction({mint,creator,signature,transaction:tx});
    if(candidate.status==='SETTLEMENT_REVIEW_PENDING'){
     const path=corroborateHistoricalCreatorSellPath({mint,creator,transaction:tx});
-    sellCandidates.push({signature,status:path.status==='HISTORICAL_CREATOR_TOKEN_PATH_CORROBORATED'?'HISTORICAL_SETTLEMENT_REVIEW_PENDING':'SOURCE_OWNERSHIP_UNVERIFIED',saleVerified:false});
+    const extracted=path.status==='HISTORICAL_CREATOR_TOKEN_PATH_CORROBORATED'?
+     extractPumpFunSettlementEvidence({mint,creator,signature,transaction:tx}):null;
+    sellCandidates.push({signature,status:extracted?'POOL_OWNERSHIP_REVIEW_PENDING':path.status==='HISTORICAL_CREATOR_TOKEN_PATH_CORROBORATED'?'HISTORICAL_SETTLEMENT_REVIEW_PENDING':'SOURCE_OWNERSHIP_UNVERIFIED',saleVerified:false});
     if(path.status==='HISTORICAL_CREATOR_TOKEN_PATH_CORROBORATED' && typeof settlementDecoder==='function'){
      const settlement=await settlementDecoder({mint,creator,signature,transaction:tx,candidate,path});
      const proof=verifyPumpFunCreatorSettlement({candidate:{status:'CORROBORATED_CANDIDATE',saleVerified:false,signature,creator,mint,soldRaw:candidate.soldRaw},settlement});
