@@ -14,6 +14,7 @@ import {retrieveLiquidityTransaction} from "../../../lib/liquidityRpcVersionFall
 import {extractFeeSweepAccounts} from "../../../lib/liquidityFeeSweepAccounts.mjs";
 import {inspectFeeSettlementTransfers} from "../../../lib/liquidityFeeSettlementTransfers.mjs";
 import {assessFeeSettlement} from "../../../lib/liquidityFeeSettlementAssessment.mjs";
+import {assessFeeRecipientAuthorization} from "../../../lib/liquidityFeeRecipientAuthorization.mjs";
 export const dynamic="force-dynamic";
 export async function POST(request){
  let payload;
@@ -43,7 +44,8 @@ export async function POST(request){
     const feeSweepAccounts=extractFeeSweepAccounts(tx,pool.toBase58());
     const feeSettlementTransfers=inspectFeeSettlementTransfers(tx,feeSweepAccounts);
     const feeSettlementAssessment=assessFeeSettlement({sweepAccounts:feeSweepAccounts,transferEvidence:feeSettlementTransfers,vaultBalanceEvidence});
-    decoded.push({signature:entry.signature,retrievalProvider:retrieval.provider,fallbackUsed:retrieval.fallbackUsed,fallbackAttempted:retrieval.fallbackAttempted,...instructionEvidence,vaultBalanceEvidence,swapDirectionEvidence:assessSwapReserveDirection(instructionEvidence.candidateOperations,vaultBalanceEvidence),ambiguityDiagnostics:diagnoseSwapAmbiguity(instructionEvidence.candidateOperations,vaultBalanceEvidence),transactionRelevance:assessPoolTransactionRelevance(instructionEvidence.candidateOperations,vaultBalanceEvidence),feeSweepAccounts,feeSettlementTransfers,feeSettlementAssessment});
+    const feeRecipientAuthorization=assessFeeRecipientAuthorization(feeSweepAccounts.sweeps);
+    decoded.push({signature:entry.signature,retrievalProvider:retrieval.provider,fallbackUsed:retrieval.fallbackUsed,fallbackAttempted:retrieval.fallbackAttempted,...instructionEvidence,vaultBalanceEvidence,swapDirectionEvidence:assessSwapReserveDirection(instructionEvidence.candidateOperations,vaultBalanceEvidence),ambiguityDiagnostics:diagnoseSwapAmbiguity(instructionEvidence.candidateOperations,vaultBalanceEvidence),transactionRelevance:assessPoolTransactionRelevance(instructionEvidence.candidateOperations,vaultBalanceEvidence),feeSweepAccounts,feeSettlementTransfers,feeSettlementAssessment,feeRecipientAuthorization});
    }catch(error){
     decoded.push({signature:entry.signature,status:"unavailable",...describeLiquidityRpcFailure(error),versionProbe:inspectVersionRejection(error),candidateOperations:[],withdrawalConfirmed:false});
    }
