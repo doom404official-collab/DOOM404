@@ -1,0 +1,33 @@
+name: GLITCH focused liquidity transaction
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --no-audit --no-fund
+        working-directory: mvp/wallet-signal
+      - name: Inspect known fee-sweep signature
+        working-directory: mvp/wallet-signal
+        env:
+          GLITCH_PREVIEW_URL: https://doom404-wallet-signal-6vgq1iyzt-doom-404.vercel.app
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          GLITCH_LIQUIDITY_SIGNATURE: 61NV8BsnCRB6AnXUeFqRvLB1VysGivC4Ha9TxQZBE7pZQWee8dYsr9F2a4b21AvoCuUV8kKFmZNVdiPY3dkQQ449
+          GLITCH_LIQUIDITY_POOL: 6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA
+          GLITCH_LIQUIDITY_VAULTS: F1Gw5qjivGuLcTsUBeq7ztzE4mi9uaDm7vQdz9sB9mp8,78nPA3tUEH4b2jZjH1JKdqXjykYWzA7Az37CeKj1tTcg
+        run: node scripts/liquidity-focused-transaction.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: liquidity-focused-evidence
+          path: mvp/wallet-signal/liquidity-focused-evidence.json
+          if-no-files-found: ignore
+          retention-days: 30
