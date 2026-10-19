@@ -6,6 +6,7 @@ import {inspectPumpAmmParsedTransaction} from "../../../lib/pumpAmmParsedTransac
 import {describeLiquidityRpcFailure} from "../../../lib/liquidityRpcFailure.mjs";
 import {inspectVersionRejection} from "../../../lib/liquidityVersionProbe.mjs";
 import {calculateVaultTransactionDeltas} from "../../../lib/liquidityVaultTransactionDeltas.mjs";
+import {assessSwapReserveDirection} from "../../../lib/liquiditySwapDirection.mjs";
 export const dynamic="force-dynamic";
 export async function POST(request){
  let payload;
@@ -25,7 +26,9 @@ export async function POST(request){
     const tx=await connection.getTransaction(entry.signature,{maxSupportedTransactionVersion:0,commitment:"confirmed"});
     const message=tx?.transaction?.message;
     const keys=[...(message?.staticAccountKeys??message?.accountKeys??[]),...(tx?.meta?.loadedAddresses?.writable??[]),...(tx?.meta?.loadedAddresses?.readonly??[])].map(k=>typeof k==="string"?k:k?.pubkey?.toBase58?.()??k?.toBase58?.()??String(k));
-    decoded.push({signature:entry.signature,...inspectPumpAmmParsedTransaction(tx,pool.toBase58()),vaultBalanceEvidence:calculateVaultTransactionDeltas(tx?.meta,keys,vaultAddresses)});
+    const instructionEvidence=inspectPumpAmmParsedTransaction(tx,pool.toBase58());
+    const vaultBalanceEvidence=calculateVaultTransactionDeltas(tx?.meta,keys,vaultAddresses);
+    decoded.push({signature:entry.signature,...instructionEvidence,vaultBalanceEvidence,swapDirectionEvidence:assessSwapReserveDirection(instructionEvidence.candidateOperations,vaultBalanceEvidence)});
    }catch(error){
     decoded.push({signature:entry.signature,status:"unavailable",...describeLiquidityRpcFailure(error),versionProbe:inspectVersionRejection(error),candidateOperations:[],withdrawalConfirmed:false});
    }
