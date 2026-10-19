@@ -28,3 +28,12 @@ test("reports bounded instruction program and encoding diagnostics",()=>{
  assert.equal(result.instructionDiagnostics[0].dataType,"bytes");
  assert.equal(result.withdrawalConfirmed,false);
 });
+
+test("records unknown Pump AMM discriminator without inventing operation",()=>{
+ const program="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";
+ const tx={meta:{err:null},transaction:{message:{staticAccountKeys:[program],compiledInstructions:[{programIdIndex:0,accountKeyIndexes:[],data:Buffer.from([1,2,3,4,5,6,7,8])}]}}};
+ const r=inspectPumpAmmParsedTransaction(tx,"pool");
+ assert.equal(r.instructionDiagnostics[0].discriminatorHex,"0102030405060708");
+ assert.equal(r.candidateOperations.length,0);
+ assert.equal(r.withdrawalConfirmed,false);
+});
