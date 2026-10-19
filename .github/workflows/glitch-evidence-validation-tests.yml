@@ -1,12 +1,26 @@
 name: GLITCH evidence validation tests
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'mvp/wallet-signal/**'
+      - '.github/tests/test_evidence_workflow_responses.py'
+      - '.github/workflows/glitch-evidence-worker.yml'
+      - '.github/workflows/glitch-evidence-validation-tests.yml'
   push:
     branches: [feature/glitch-assessment-sprint1]
     paths:
       - 'mvp/wallet-signal/lib/holderEvidenceValidator.mjs'
       - 'mvp/wallet-signal/lib/directHolderTransfers.mjs'
       - 'mvp/wallet-signal/lib/holderEvidenceBatch.mjs'
+      - 'mvp/wallet-signal/lib/holderEvidenceStore.mjs'
+      - 'mvp/wallet-signal/lib/holderJobStore.mjs'
+      - 'mvp/wallet-signal/lib/selectedHolderEvidenceJob.mjs'
+      - 'mvp/wallet-signal/app/api/holder-evidence-tick/route.js'
+      - 'mvp/wallet-signal/tests/holder-job-store.test.mjs'
+      - 'mvp/wallet-signal/tests/selectedHolderEvidenceJob.test.mjs'
+      - '.github/workflows/glitch-evidence-worker.yml'
+      - '.github/tests/test_evidence_workflow_responses.py'
       - 'mvp/wallet-signal/tests/holderEvidenceRecovery.test.mjs'
       - 'mvp/wallet-signal/tests/holderEvidenceLeaseModel.test.mjs'
       - 'mvp/wallet-signal/tests/holderEvidenceValidator.test.mjs'
@@ -24,4 +38,6 @@ jobs:
           node-version: '22'
       - name: Run evidence validation tests
         working-directory: mvp/wallet-signal
-        run: node --test tests/holderEvidenceValidator.test.mjs tests/holderEvidenceRecovery.test.mjs tests/holderEvidenceLeaseModel.test.mjs
+        run: node --test tests/holderEvidenceValidator.test.mjs tests/holderEvidenceRecovery.test.mjs tests/holderEvidenceLeaseModel.test.mjs tests/holder-job-store.test.mjs tests/selectedHolderEvidenceJob.test.mjs
+      - name: Check workflow response guards without network access
+        run: python3 .github/tests/test_evidence_workflow_responses.py .github/workflows/glitch-evidence-worker.yml

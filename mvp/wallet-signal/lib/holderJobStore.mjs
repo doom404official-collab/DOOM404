@@ -15,6 +15,12 @@ export function createHolderJobStore({url=process.env.SUPABASE_URL,key=process.e
   return response&&response.id?response:null;
  }
  return {
+  async getById(jobId){
+   if(typeof jobId!=="string"||!jobId.trim())throw Error("INVALID_HOLDER_JOB_ID");
+   const rows=await request(table+"?id=eq."+encodeURIComponent(jobId)+"&select=id,mint,status,checkpoint,summary,updated_at,version&limit=1");
+   if(!Array.isArray(rows)||rows.length>1||(rows.length===1&&(!rows[0]||typeof rows[0]!=="object"||Array.isArray(rows[0]))))throw Error("INVALID_HOLDER_JOB_RESPONSE");
+   return rows[0]||null;
+  },
   async getLatest(mint){
    const rows=await request(table+"?mint=eq."+encodeURIComponent(mint)+"&select=id,mint,status,checkpoint,summary,updated_at,version&order=updated_at.desc&limit=1");
    return rows?.[0]||null;

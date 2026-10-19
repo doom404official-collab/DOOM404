@@ -3,15 +3,21 @@ import {extractDirectHolderTransfers} from "./directHolderTransfers.mjs";
 /** Process bounded evidence records; persist results without exposing RPC credentials. */
 export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}={}){
  if(!jobId||!checkpoint||!store||typeof rpc!=="function")throw Error("INVALID_EVIDENCE_JOB");
+ if(!Number.isInteger(limit)||limit<1||limit>6)throw Error("INVALID_LIMIT");
  const signatures=[...new Set(Object.values(checkpoint.edges||{}).flatMap(e=>e.signatures||[]))];
  let seeded=0;
  try{seeded=await store.seed(jobId);}catch(error){throw Error("EVIDENCE_SEED_FAILED",{cause:error});}
+ if(!Number.isSafeInteger(seeded)||seeded<0)throw Error("EVIDENCE_SEED_INVALID_RESPONSE");
  const workerId=randomUUID();
  let pending;
  try{pending=await store.claim(jobId,workerId,limit);}catch(error){throw Error("EVIDENCE_CLAIM_FAILED",{cause:error});}
- if(!Array.isArray(pending))throw Error("EVIDENCE_CLAIM_INVALID_RESPONSE");
+ if(!Array.isArray(pending)||pending.length>limit||pending.some(item=>
+  !item||typeof item!=="object"||Array.isArray(item)||typeof item.signature!=="string"||!item.signature.trim()||
+  !Number.isInteger(item.attempts)||item.attempts<0||item.attempts>=5||
+  (Object.hasOwn(item,"job_id")&&item.job_id!==jobId))||
+  new Set(pending.map(item=>item.signature)).size!==pending.length)throw Error("EVIDENCE_CLAIM_INVALID_RESPONSE");
  const holders=Object.keys(checkpoint.wallets||{});
- let processed=0;
+ let processed=0,leaseLost=0;
  for(const item of pending){
   let status="unavailable",evidence={reason:"RPC_UNAVAILABLE"};
   try{
@@ -27,7 +33,9 @@ export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}=
   let saved;
   try{saved=await store.finish(jobId,item.signature,workerId,{status,evidence,attempts:item.attempts+1});}
   catch(error){throw Error("EVIDENCE_FINISH_FAILED",{cause:error});}
-  if(saved)processed++;
+  if(saved===true)processed++;
+  else if(saved===false)leaseLost++;
+  else throw Error("EVIDENCE_FINISH_INVALID_RESPONSE");
  }
- return {processed,seeded,queuedSignatures:signatures.length};
+ return {processed,claimed:pending.length,leaseLost,seeded,queuedSignatures:signatures.length};
 }

@@ -28,8 +28,23 @@ export function createHolderEvidenceStore({url=process.env.SUPABASE_URL,key=proc
    }
    throw Error("EVIDENCE_PAGINATION_LIMIT");
   },
-  health:()=>callRpc("glitch_holder_evidence_health",{}),
-  async nextJob(){const rows=await callRpc("glitch_next_holder_evidence_job",{});return Array.isArray(rows)?rows[0]||null:null;},
+  async health(){
+   const health=await callRpc("glitch_holder_evidence_health",{});
+   const fields=["total","pending","verified","rejected","unavailable","active_leases","expired_leases","retry_exhausted"];
+   if(!health||typeof health!=="object"||Array.isArray(health)||
+    fields.some(field=>!Number.isSafeInteger(health[field])||health[field]<0))
+    throw Error("EVIDENCE_HEALTH_INVALID");
+   return health;
+  },
+  async nextJob(){
+   const rows=await callRpc("glitch_next_holder_evidence_job",{});
+   if(!Array.isArray(rows)||rows.length>1)throw Error("EVIDENCE_SELECTION_INVALID");
+   if(rows.length===0)return null;
+   const selected=rows[0];
+   if(typeof selected?.id!=="string"||!selected.id.trim()||typeof selected?.mint!=="string"||!selected.mint.trim())
+    throw Error("EVIDENCE_SELECTION_INVALID");
+   return selected;
+  },
   seed:(jobId)=>callRpc("glitch_seed_holder_evidence",{p_job_id:jobId}),
   claim:(jobId,workerId,limit=6)=>callRpc("glitch_claim_holder_evidence",{p_job_id:jobId,p_worker:workerId,p_limit:limit}),
   finish:(jobId,signature,workerId,{status,evidence,attempts})=>callRpc("glitch_finish_holder_evidence",{p_job_id:jobId,p_signature:signature,p_worker:workerId,p_status:status,p_evidence:evidence,p_attempts:attempts}),

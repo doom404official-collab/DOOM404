@@ -3,6 +3,7 @@ import {timingSafeEqual} from "node:crypto";
 import {createHolderJobStore} from "../../../lib/holderJobStore.mjs";
 import {createHolderEvidenceStore} from "../../../lib/holderEvidenceStore.mjs";
 import {processEvidenceBatch} from "../../../lib/holderEvidenceBatch.mjs";
+import {loadSelectedHolderEvidenceJob} from "../../../lib/selectedHolderEvidenceJob.mjs";
 export const dynamic="force-dynamic";
 export const maxDuration=60;
 function isAuthorized(request){
@@ -18,11 +19,11 @@ export async function POST(request){
  let stage="configuration";
  try{
   const evidenceStore=createHolderEvidenceStore();
+  stage="selection";
   const selected=await evidenceStore.nextJob();
-  if(!selected){const health=await evidenceStore.health();return NextResponse.json({status:"idle",processed:0,requestCount:0,health},{headers:{"Cache-Control":"no-store"}});}
+  if(!selected){stage="health";const health=await evidenceStore.health();return NextResponse.json({status:"idle",processed:0,claimed:0,leaseLost:0,requestCount:0,health},{headers:{"Cache-Control":"no-store"}});}
   stage="checkpoint";
-  const job=await createHolderJobStore().getLatest(selected.mint);
-  if(!job?.checkpoint||job.id!==selected.id)return NextResponse.json({status:"stale_job",processed:0},{headers:{"Cache-Control":"no-store"}});
+  const job=await loadSelectedHolderEvidenceJob({selected,jobStore:createHolderJobStore()});
   stage="rpc_configuration";
   const endpoint=process.env.HELIUS_RPC_URL;
   if(!endpoint||!endpoint.startsWith("https://"))throw Error("RPC_NOT_CONFIGURED");
@@ -39,11 +40,15 @@ export async function POST(request){
   stage="validation_batch";
   const result=await processEvidenceBatch({jobId:job.id,checkpoint:job.checkpoint,
    store:evidenceStore,rpc,limit:6});
+  if(result.leaseLost>0)throw Error("EVIDENCE_LEASE_LOST");
+  stage="health";
   const health=await evidenceStore.health();
-  return NextResponse.json({...result,requestCount:count,health},{headers:{"Cache-Control":"no-store"}});
+  return NextResponse.json({status:result.claimed===0?"no_claims":"processed",...result,requestCount:count,health},{headers:{"Cache-Control":"no-store"}});
  }catch(error){
   const message=String(error?.message||"");
-  const code=/^EVIDENCE_(SEED_FAILED|ENQUEUE_FAILED|CLAIM_FAILED|CLAIM_INVALID_RESPONSE|FINISH_FAILED)$/.test(message)?message:
+  const code=/^EVIDENCE_(SEED_FAILED|SEED_INVALID_RESPONSE|ENQUEUE_FAILED|CLAIM_FAILED|CLAIM_INVALID_RESPONSE|FINISH_FAILED|FINISH_INVALID_RESPONSE|LEASE_LOST)$/.test(message)?message:
+   /^EVIDENCE_(SELECTION_INVALID|HEALTH_INVALID|JOB_NOT_FOUND|JOB_IDENTITY_MISMATCH|JOB_NOT_ELIGIBLE|CHECKPOINT_INVALID)$/.test(message)?message:
+   ["INVALID_HOLDER_JOB_ID","INVALID_HOLDER_JOB_RESPONSE"].includes(message)?message:
    /^INVALID_EVIDENCE_JOB$/.test(message)?"INVALID_EVIDENCE_JOB":
    /^EVIDENCE_(STORE|RPC)_HTTP_\d{3}$/.test(message)?message:
    /^HOLDER_STORE_HTTP_\d{3}$/.test(message)?message:

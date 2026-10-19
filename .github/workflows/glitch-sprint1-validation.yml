@@ -31,3 +31,5 @@ jobs:
         run: npm run build
         env:
           NEXT_TELEMETRY_DISABLED: '1'
+      - name: Exercise compiled evidence route without network access
+        run: node scripts/check-holder-evidence-route.mjs

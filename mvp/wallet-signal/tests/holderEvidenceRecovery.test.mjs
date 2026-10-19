@@ -34,3 +34,29 @@ test("lease lost does not count as processed",async()=>{
  const r=await processEvidenceBatch({jobId:"test",checkpoint,store:s,rpc:async()=>tx});
  assert.equal(r.processed,0);
 });
+
+test("no claims are distinct from a lost lease, without inventing progress",async()=>{
+ const idle=await processEvidenceBatch({jobId:"test",checkpoint,store:store({claim:async()=>[]}),rpc:()=>assert.fail("Unexpected RPC")});
+ assert.equal(idle.claimed,0);assert.equal(idle.leaseLost,0);assert.equal(idle.processed,0);
+ const lost=await processEvidenceBatch({jobId:"test",checkpoint,store:store({finish:async()=>false}),rpc:async()=>tx});
+ assert.equal(lost.claimed,1);assert.equal(lost.leaseLost,1);assert.equal(lost.processed,0);
+});
+test("malformed seed, claims, and finish cannot fabricate validation progress",async()=>{
+ for(const value of [null,{},true,"1",-1,0.5]){
+  await assert.rejects(processEvidenceBatch({jobId:"test",checkpoint,store:store({seed:async()=>value}),rpc:()=>assert.fail("Unexpected RPC")}),{message:"EVIDENCE_SEED_INVALID_RESPONSE"});
+ }
+ const good={signature:"sig1",attempts:0};
+ for(const value of [null,{},[null],[{}],[{...good,signature:" "}],[{...good,attempts:-1}],[{...good,attempts:5}],
+  [{...good,attempts:0.5}],[{...good,job_id:"other"}],[good,good],Array(7).fill(good)]){
+  await assert.rejects(processEvidenceBatch({jobId:"test",checkpoint,store:store({claim:async()=>value}),rpc:()=>assert.fail("Unexpected RPC")}),{message:"EVIDENCE_CLAIM_INVALID_RESPONSE"});
+ }
+ for(const value of [null,{},[],"false",0,1]){
+  await assert.rejects(processEvidenceBatch({jobId:"test",checkpoint,store:store({finish:async()=>value}),rpc:async()=>tx}),{message:"EVIDENCE_FINISH_INVALID_RESPONSE"});
+ }
+});
+
+test("mixed successful and lost finishes report actual saved progress only",async()=>{
+ const s=store({claim:async()=>[{signature:"sig1",attempts:0},{signature:"sig2",attempts:0}],finish:async(_id,signature)=>signature==="sig1"});
+ const r=await processEvidenceBatch({jobId:"test",checkpoint,store:s,rpc:async()=>tx});
+ assert.equal(r.claimed,2);assert.equal(r.processed,1);assert.equal(r.leaseLost,1);
+});
