@@ -14,7 +14,8 @@ export function inspectPumpAmmParsedTransaction(tx,poolAddress) {
   for(const ix of instructions){
    const program=ix.programId?.toBase58?.()??keys[ix.programIdIndex]??"";
    const data=decodeInstructionBytes(ix.data);
-   instructionDiagnostics.push({source,programId:program,dataType:ix.data instanceof Uint8Array?"bytes":typeof ix.data,dataLength:ix.data?.length??null});
+   const isPumpAmm=program==="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";
+   instructionDiagnostics.push({source,programId:program,dataType:ix.data instanceof Uint8Array?"bytes":typeof ix.data,dataLength:ix.data?.length??null,...(isPumpAmm?{discriminatorHex:data?.length>=8?data.subarray(0,8).toString("hex"):null,decodedLength:data?.length??null}: {})});
    const result=classifyPumpAmmInstruction(program,data);
    if(!result.candidate)continue;
    const indices=ix.accountKeyIndexes??ix.accounts??[];
