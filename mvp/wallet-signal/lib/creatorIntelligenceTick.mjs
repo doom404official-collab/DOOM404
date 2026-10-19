@@ -18,7 +18,8 @@ import { assessCreatorHistoricalCoverage } from './creatorHistoricalCoverage.mjs
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
  */
-export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fetch,maxRequests=500,maxDurationMs=90000,swapDecoder=null,indexedOriginEnabled=false,owner=randomUUID()}={}){
+export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fetch,maxRequests=500,maxDurationMs=90000,creatorBatchSize=60,swapDecoder=null,indexedOriginEnabled=false,owner=randomUUID()}={}){
+ if(!Number.isInteger(creatorBatchSize)||creatorBatchSize<1||creatorBatchSize>100)throw Error('INVALID_CREATOR_BATCH_SIZE');
  if(!store||typeof store.claim!=='function'||typeof store.get!=='function'||typeof store.save!=='function')throw Error('CREATOR_STORE_REQUIRED');
  if(!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(mint||''))throw Error('INVALID_MINT');
  const job=await store.get(mint);
@@ -53,7 +54,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
     lastTickAt:new Date().toISOString()};
    const processed=new Set(previous.creatorProcessedSignatures||[]);
    const queue=[...new Set([...(previous.creatorPendingSignatures||[]),...(state.creatorHistorySignatures||[])])].filter(sig=>!processed.has(sig));
-   const decoded=await inspectCreatorHistoricalBatch({mint,creator:creators[0],signatures:queue,rpc,maxTransactions:20,swapDecoder});
+   const decoded=await inspectCreatorHistoricalBatch({mint,creator:creators[0],signatures:queue,rpc,maxTransactions:creatorBatchSize,swapDecoder});
    const verifiedSwapSales=[...new Map([...(previous.verifiedSwapSales||[]),...decoded.verifiedSales].map(x=>[x.signature,x])).values()];
    state={...state,verifiedSwapSales,creatorSellCandidates:[...new Map([...(previous.creatorSellCandidates||[]),...decoded.sellCandidates].map(item=>[item.signature,item])).values()].slice(-1000),creatorProcessedSignatures:[...new Set([...processed,...decoded.processed])].slice(-5000),
     creatorPendingSignatures:[...new Set([...decoded.pending,...queue.filter(sig=>!decoded.processed.includes(sig)&&!decoded.pending.includes(sig))])].slice(-5000),
