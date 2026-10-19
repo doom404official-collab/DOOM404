@@ -60,6 +60,7 @@ jobs:
           node scripts/test-creator-settlement-batch-gate.mjs
           node scripts/test-creator-positive-settlement-batch.mjs
           node scripts/test-pump-fun-settlement-extractor.mjs
+          node scripts/test-pump-fun-historical-pool.mjs
           node scripts/test-pump-fun-pool-observation.mjs
           node scripts/test-pump-fun-pool-account.mjs
           node scripts/test-pump-fun-bonding-curve.mjs
