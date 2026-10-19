@@ -37,3 +37,22 @@ test("records unknown Pump AMM discriminator without inventing operation",()=>{
  assert.equal(r.candidateOperations.length,0);
  assert.equal(r.withdrawalConfirmed,false);
 });
+
+test("identifies official Pump AMM fee sweeps without calling them withdrawals",()=>{
+ const program="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";
+ for(const [hex,expected] of [["0830be07b644b7e5","sweep_protocol_fee"],["20f6bf3408c949ba","sweep_creator_fee"]]){
+  const tx={meta:{err:null},transaction:{message:{staticAccountKeys:[program],compiledInstructions:[{programIdIndex:0,accountKeyIndexes:[],data:Buffer.from(hex,"hex")}]}}};
+  const result=inspectPumpAmmParsedTransaction(tx,"pool");
+  assert.equal(result.instructionDiagnostics[0].auxiliaryOperation,expected);
+  assert.equal(result.withdrawalConfirmed,false);
+  assert.equal(result.candidateOperations.length,0);
+ }
+});
+test("marks Anchor self-CPI event tag as diagnostic only",()=>{
+ const program="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";
+ const tx={meta:{err:null,innerInstructions:[{index:0,instructions:[{programIdIndex:0,accountKeyIndexes:[],data:Buffer.from("e445a52e51cb9a1d","hex")}]}]},transaction:{message:{staticAccountKeys:[program],compiledInstructions:[]}}};
+ const result=inspectPumpAmmParsedTransaction(tx,"pool");
+ assert.equal(result.instructionDiagnostics[0].auxiliaryOperation,"anchor_event_cpi_marker");
+ assert.equal(result.withdrawalConfirmed,false);
+ assert.equal(result.candidateOperations.length,0);
+});
