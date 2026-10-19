@@ -5,12 +5,15 @@ import {summarizePoolSignatures} from "../../../lib/liquidityTransactionEvidence
 import {inspectPumpAmmParsedTransaction} from "../../../lib/pumpAmmParsedTransactionEvidence.mjs";
 import {describeLiquidityRpcFailure} from "../../../lib/liquidityRpcFailure.mjs";
 import {inspectVersionRejection} from "../../../lib/liquidityVersionProbe.mjs";
+import {calculateVaultTransactionDeltas} from "../../../lib/liquidityVaultTransactionDeltas.mjs";
 export const dynamic="force-dynamic";
 export async function POST(request){
  let payload;
  try{payload=await request.json();}catch{return NextResponse.json({error:"Invalid JSON"},{status:400});}
  let pool;
  try{pool=new PublicKey(payload?.poolAddress);if(pool.toBase58()!==payload.poolAddress)throw Error();}catch{return NextResponse.json({error:"Invalid pool address"},{status:400});}
+ const vaultAddresses=payload?.vaultAddresses??[];
+ if(!Array.isArray(vaultAddresses)||vaultAddresses.length>2||vaultAddresses.some(a=>{try{return new PublicKey(a).toBase58()!==a;}catch{return true;}}))return NextResponse.json({error:"Invalid vault addresses"},{status:400});
  try{
   const connection=createReliableConnection({timeoutMs:8000,retries:1});
   const signatures=await connection.getSignaturesForAddress(pool,{limit:50},"confirmed");
@@ -20,7 +23,9 @@ export async function POST(request){
   for(const entry of selected){
    try{
     const tx=await connection.getTransaction(entry.signature,{maxSupportedTransactionVersion:0,commitment:"confirmed"});
-    decoded.push({signature:entry.signature,...inspectPumpAmmParsedTransaction(tx,pool.toBase58())});
+    const message=tx?.transaction?.message;
+    const keys=[...(message?.staticAccountKeys??message?.accountKeys??[]),...(tx?.meta?.loadedAddresses?.writable??[]),...(tx?.meta?.loadedAddresses?.readonly??[])].map(k=>typeof k==="string"?k:k?.pubkey?.toBase58?.()??k?.toBase58?.()??String(k));
+    decoded.push({signature:entry.signature,...inspectPumpAmmParsedTransaction(tx,pool.toBase58()),vaultBalanceEvidence:calculateVaultTransactionDeltas(tx?.meta,keys,vaultAddresses)});
    }catch(error){
     decoded.push({signature:entry.signature,status:"unavailable",...describeLiquidityRpcFailure(error),versionProbe:inspectVersionRejection(error),candidateOperations:[],withdrawalConfirmed:false});
    }
