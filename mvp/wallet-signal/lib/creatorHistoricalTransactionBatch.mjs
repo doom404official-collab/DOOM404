@@ -1,16 +1,19 @@
 import { observeCreatorTransaction } from './creatorTransactionEvidence.mjs';
 import { verifyCreatorSwapSale } from './creatorSwapVerification.mjs';
+import { assessPumpFunCreatorSellTransaction } from './pumpFunCreatorSellAssessment.mjs';
 /** Decode a bounded batch of discovered signatures. Failed fetches stay pending.
  * This does not claim swap verification or archival completeness.
  */
 export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],rpc,maxTransactions=20,swapDecoder=null}={}){
  if(typeof rpc?.fetchTransaction!=='function'||!Array.isArray(signatures)||!Number.isInteger(maxTransactions)||maxTransactions<1||maxTransactions>100)throw Error('INVALID_CREATOR_BATCH');
- const observations=[],processed=[],pending=[],verifiedSales=[];
+ const observations=[],processed=[],pending=[],verifiedSales=[],sellCandidates=[];
  for(const signature of [...new Set(signatures)].slice(0,maxTransactions)){
   try{
    const tx=await rpc.fetchTransaction(signature);
    if(!tx){pending.push(signature);continue;}
    observations.push(observeCreatorTransaction({signature,transaction:tx,creator,mint}));
+   const candidate=assessPumpFunCreatorSellTransaction({mint,creator,signature,transaction:tx});
+   if(candidate.status==='SETTLEMENT_REVIEW_PENDING')sellCandidates.push({signature,status:candidate.status,saleVerified:false});
    if(swapDecoder){
     const proof=verifyCreatorSwapSale({mint,creator,signature,transaction:tx,decoder:swapDecoder});
     if(proof.status==='VERIFIED')verifiedSales.push(proof.sale);
@@ -21,5 +24,5 @@ export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],
    pending.push(signature);
   }
  }
- return {observations,processed,pending,verifiedSales,historicalCoverageComplete:false};
+ return {observations,processed,pending,verifiedSales,sellCandidates,historicalCoverageComplete:false};
 }
