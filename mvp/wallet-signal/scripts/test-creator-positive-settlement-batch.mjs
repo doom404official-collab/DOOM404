@@ -15,8 +15,8 @@ const ix={programId:PUMP_FUN_PROGRAM_ID,data:encode58(payload),accounts:[
  'global','fees',mint,derived.bondingCurve,derived.poolTokenAccount,'source-ata',creator,'system','token','rent','event',PUMP_FUN_PROGRAM_ID]};
 const tx={blockTime:1700000000,transaction:{message:{accountKeys:keys,instructions:[ix]}},meta:{err:null,
  preBalances:[1000000,0,0,0,0,0],postBalances:[1100000,0,0,0,0,0],
- preTokenBalances:[{accountIndex:1,mint,owner:creator,uiTokenAmount:{amount:'200'}},{accountIndex:2,mint,uiTokenAmount:{amount:'100'}}],
- postTokenBalances:[{accountIndex:1,mint,owner:creator,uiTokenAmount:{amount:'100'}},{accountIndex:2,mint,uiTokenAmount:{amount:'200'}}],
+ preTokenBalances:[{accountIndex:1,mint,owner:creator,uiTokenAmount:{amount:'200'}},{accountIndex:2,mint,owner:derived.bondingCurve,uiTokenAmount:{amount:'100'}}],
+ postTokenBalances:[{accountIndex:1,mint,owner:creator,uiTokenAmount:{amount:'100'}},{accountIndex:2,mint,owner:derived.bondingCurve,uiTokenAmount:{amount:'200'}}],
  innerInstructions:[{index:0,instructions:[
  {program:'spl-token',parsed:{type:'transferChecked',info:{source:'source-ata',destination:derived.poolTokenAccount,mint,tokenAmount:{amount:'100'}}}},
  {program:'system',parsed:{type:'transfer',info:{source:derived.bondingCurve,destination:creator,lamports:100000}}}
@@ -31,4 +31,7 @@ const result=await inspectCreatorHistoricalBatch({mint,creator,signatures:[signa
 assert.equal(invoked,1);
 assert.equal(result.verifiedSales.length,1);
 assert.equal(result.verifiedSales[0].soldRaw,'100');
+const automatic=await inspectCreatorHistoricalBatch({mint,creator,signatures:[signature],rpc:{fetchTransaction:async()=>tx}});
+assert.equal(automatic.verifiedSales.length,1);
+assert.equal(automatic.verifiedSales[0].soldRaw,'100');
 console.log('creator positive historical settlement batch tests passed');
