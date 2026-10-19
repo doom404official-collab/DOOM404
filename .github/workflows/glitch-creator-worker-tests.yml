@@ -72,6 +72,7 @@ jobs:
           node scripts/test-pump-fun-sell-token-transfers.mjs
           node scripts/test-pump-fun-sell-token-path.mjs
           node scripts/test-creator-source-token-account.mjs
+          node scripts/test-creator-live-source-account.mjs
           node scripts/test-creator-intelligence-tick.mjs
           node scripts/test-creator-holdings-investigation.mjs
           node scripts/test-creator-holdings-tick.mjs
