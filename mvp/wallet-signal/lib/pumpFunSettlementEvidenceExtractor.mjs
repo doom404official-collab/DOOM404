@@ -3,6 +3,7 @@ import {derivePumpFunBondingCurveAccounts} from './pumpFunBondingCurveDerivation
 import {corroborateHistoricalCreatorSellPath} from './creatorHistoricalSellPath.mjs';
 import {PUMP_FUN_PROGRAM_ID} from './pumpFunSellCandidates.mjs';
 import {verifyHistoricalPumpFunPoolOwnership} from './pumpFunHistoricalPoolOwnership.mjs';
+import {observePumpFunPoolTokenSettlement} from './pumpFunPoolTokenObservation.mjs';
 /** Extract transaction-local settlement evidence from a single sell instruction group.
  * Does not assert historical pool ownership without an independently validated account state.
  */
@@ -20,12 +21,15 @@ export function extractPumpFunSettlementEvidence({mint,creator,signature,transac
    Number.isSafeInteger(ix.parsed.info?.lamports)&&ix.parsed.info.lamports>0);
   if(payments.length!==1)continue;
   const poolOwnership=verifyHistoricalPumpFunPoolOwnership({mint,transaction});
-  const independentlyDecoded=poolOwnership.historicalOwnershipVerified===true &&
+  const poolReceipt=observePumpFunPoolTokenSettlement({transaction,mint,poolTokenAccounts:[derived.poolTokenAccount]});
+  const receiptMatches=poolReceipt.status==='POOL_TOKEN_RECEIPT_OBSERVED' &&
+   BigInt(poolReceipt.poolReceivedRaw)===BigInt(group.soldRaw);
+  const independentlyDecoded=receiptMatches && poolOwnership.historicalOwnershipVerified===true &&
    Number.isSafeInteger(transaction.blockTime)&&transaction.blockTime>0;
   return {independentlyDecoded,signature,mint,creator,programId:PUMP_FUN_PROGRAM_ID,
    instructionType:'SELL',soldRaw:group.soldRaw,creatorReceivedLamports:String(payments[0].parsed.info.lamports),
    timestamp:transaction.blockTime,decoderVersion:'pump-fun-linked-settlement-v1',
-   poolTokenReceiptVerified:poolOwnership.historicalOwnershipVerified===true,
+   poolTokenReceiptVerified:receiptMatches && poolOwnership.historicalOwnershipVerified===true,
    creatorSolReceiptVerified:true,outputAsset:'SOL',
    sourceOwnershipVerified:true,transactionInstructionLinked:true,
    historicalPoolOwnershipVerified:poolOwnership.historicalOwnershipVerified===true};
