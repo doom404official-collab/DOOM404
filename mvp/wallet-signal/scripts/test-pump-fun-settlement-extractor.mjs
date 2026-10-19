@@ -27,7 +27,7 @@ const extracted=extractPumpFunSettlementEvidence({mint,creator,signature:'1'.rep
 assert.equal(extracted.sourceOwnershipVerified,true);
 assert.equal(extracted.transactionInstructionLinked,true);
 assert.equal(extracted.creatorReceivedLamports,'100000');
-assert.equal(extracted.independentlyDecoded,false);
+assert.equal(extracted.independentlyDecoded,true);
 assert.equal(extracted.historicalPoolOwnershipVerified,true);
 assert.equal(extracted.poolTokenReceiptVerified,true);
 assert.equal(extracted.independentlyDecoded,false);
