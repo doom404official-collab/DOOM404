@@ -1,3 +1,4 @@
+import {decodeInstructionBytes} from "./liquidityInstructionBytes.mjs";
 const PUMP_AMM="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";
 const SWEEPS=new Map([["0830be07b644b7e5","sweep_protocol_fee"],["20f6bf3408c949ba","sweep_creator_fee"]]);
 const key=k=>typeof k==="string"?k:k?.pubkey?.toBase58?.()??k?.toBase58?.()??String(k);
@@ -5,13 +6,16 @@ export function extractFeeSweepAccounts(tx,poolAddress){
  const m=tx?.transaction?.message;
  const keys=[...(m?.staticAccountKeys??m?.accountKeys??[]),...(tx?.meta?.loadedAddresses?.writable??[]),...(tx?.meta?.loadedAddresses?.readonly??[])].map(key);
  const instructions=m?.compiledInstructions??m?.instructions??[];
- const records=[];
+ const sweeps=[];
  for(const ix of instructions){
   const program=ix.programId?.toBase58?.()??keys[ix.programIdIndex];
   if(program!==PUMP_AMM)continue;
-  // Decoding is handled by the shared bounded decoder.
-  const data=ix.data;
-  records.push({program,accountIndexes:ix.accountKeyIndexes??ix.accounts??[],data});
+  const data=decodeInstructionBytes(ix.data);
+  const operation=SWEEPS.get(data?.subarray(0,8).toString("hex"));
+  if(!operation)continue;
+  const indexes=ix.accountKeyIndexes??ix.accounts??[];
+  const accounts=indexes.map(i=>typeof i==="number"?keys[i]:key(i));
+  sweeps.push({operation,pool:accounts[2]??null,poolMatched:accounts[2]===poolAddress,quoteVault:accounts[7]??null,recipient:accounts[8]??null,recipientTokenAccount:accounts[9]??null,accountLayoutComplete:accounts.length>=12,settlementVerified:false});
  }
- return {poolAddress,records,accountKeys:keys,settlementVerified:false};
+ return {sweeps,settlementVerified:false};
 }
