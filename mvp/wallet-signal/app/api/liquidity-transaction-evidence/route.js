@@ -29,13 +29,13 @@ export async function POST(request){
   for(const entry of selected){
    try{
     const retrieval=await retrieveLiquidityTransaction(entry.signature,{primaryConnection:connection});
-    if(retrieval.error)throw retrieval.error;
+    if(retrieval.error){decoded.push({signature:entry.signature,status:"unavailable",...describeLiquidityRpcFailure(retrieval.error),versionProbe:inspectVersionRejection(retrieval.error),fallbackAttempted:retrieval.fallbackAttempted,fallbackSkipped:retrieval.fallbackSkipped??null,primaryErrorCode:retrieval.primaryError?describeLiquidityRpcFailure(retrieval.primaryError).errorCode:null,provider:retrieval.provider,candidateOperations:[],withdrawalConfirmed:false});continue;}
     const tx=retrieval.transaction;
     const message=tx?.transaction?.message;
     const keys=[...(message?.staticAccountKeys??message?.accountKeys??[]),...(tx?.meta?.loadedAddresses?.writable??[]),...(tx?.meta?.loadedAddresses?.readonly??[])].map(k=>typeof k==="string"?k:k?.pubkey?.toBase58?.()??k?.toBase58?.()??String(k));
     const instructionEvidence=inspectPumpAmmParsedTransaction(tx,pool.toBase58());
     const vaultBalanceEvidence=calculateVaultTransactionDeltas(tx?.meta,keys,vaultAddresses);
-    decoded.push({signature:entry.signature,retrievalProvider:retrieval.provider,fallbackUsed:retrieval.fallbackUsed,...instructionEvidence,vaultBalanceEvidence,swapDirectionEvidence:assessSwapReserveDirection(instructionEvidence.candidateOperations,vaultBalanceEvidence),ambiguityDiagnostics:diagnoseSwapAmbiguity(instructionEvidence.candidateOperations,vaultBalanceEvidence),transactionRelevance:assessPoolTransactionRelevance(instructionEvidence.candidateOperations,vaultBalanceEvidence)});
+    decoded.push({signature:entry.signature,retrievalProvider:retrieval.provider,fallbackUsed:retrieval.fallbackUsed,fallbackAttempted:retrieval.fallbackAttempted,...instructionEvidence,vaultBalanceEvidence,swapDirectionEvidence:assessSwapReserveDirection(instructionEvidence.candidateOperations,vaultBalanceEvidence),ambiguityDiagnostics:diagnoseSwapAmbiguity(instructionEvidence.candidateOperations,vaultBalanceEvidence),transactionRelevance:assessPoolTransactionRelevance(instructionEvidence.candidateOperations,vaultBalanceEvidence)});
    }catch(error){
     decoded.push({signature:entry.signature,status:"unavailable",...describeLiquidityRpcFailure(error),versionProbe:inspectVersionRejection(error),candidateOperations:[],withdrawalConfirmed:false});
    }
