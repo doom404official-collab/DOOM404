@@ -50,6 +50,7 @@ jobs:
           node scripts/test-creator-independent-recheck.mjs
           node scripts/test-creator-launch-time.mjs
           node scripts/test-creator-launch-recovery.mjs
+          node scripts/test-creator-historical-coverage.mjs
           node scripts/test-creator-selling-launch-gate.mjs
           node scripts/test-creator-initial-allocation.mjs
           node scripts/test-pump-fun-sell-candidates.mjs
