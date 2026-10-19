@@ -20,7 +20,7 @@ export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],
     sellCandidates.push({signature,status:path.status==='HISTORICAL_CREATOR_TOKEN_PATH_CORROBORATED'?'HISTORICAL_SETTLEMENT_REVIEW_PENDING':'SOURCE_OWNERSHIP_UNVERIFIED',saleVerified:false});
     if(path.status==='HISTORICAL_CREATOR_TOKEN_PATH_CORROBORATED' && typeof settlementDecoder==='function'){
      const settlement=await settlementDecoder({mint,creator,signature,transaction:tx,candidate,path});
-     const proof=verifyPumpFunCreatorSettlement({candidate:{...candidate,status:'CORROBORATED_CANDIDATE',saleVerified:false},settlement});
+     const proof=verifyPumpFunCreatorSettlement({candidate:{status:'CORROBORATED_CANDIDATE',saleVerified:false,signature,creator,mint,soldRaw:candidate.soldRaw},settlement});
      if(proof.status==='VERIFIED')verifiedSales.push(proof.sale);
     }
    }
