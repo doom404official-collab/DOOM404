@@ -58,7 +58,21 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
     creatorPendingSignatures:[...new Set([...decoded.pending,...queue.filter(sig=>!decoded.processed.includes(sig)&&!decoded.pending.includes(sig))])].slice(-5000),
     creatorTransactionObservations:[...(previous.creatorTransactionObservations||[]),...decoded.observations].slice(-1000),
     creatorSwapVerificationComplete:false,creatorHistoryComplete:false};
-   const launchTimestamp=Number(previous.launchTimestamp);
+   // Recover launch time from the independently rechecked creation transaction.
+   let verifiedLaunchTimestamp=Number(previous.launchTimestamp);
+   if(!Number.isSafeInteger(verifiedLaunchTimestamp)||verifiedLaunchTimestamp<=0){
+    const origin=previous.originRecheck;
+    if(origin?.rechecked===true&&origin.signature){
+     const creation=await rpc.fetchTransaction(origin.signature);
+     const recovered=extractCreatorLaunchTime({transaction:creation,
+      creationSignature:origin.signature,verifiedSignature:origin.signature});
+     if(recovered.status==='CREATION_TIMESTAMP_VERIFIED'){
+      verifiedLaunchTimestamp=recovered.launchTimestamp;
+      state={...state,launchTimestamp:verifiedLaunchTimestamp,launchTimeEvidence:recovered};
+     }
+    }
+   }
+   const launchTimestamp=verifiedLaunchTimestamp;
    const allocation=Number.isSafeInteger(launchTimestamp)&&launchTimestamp>0?
     assessCreatorInitialAllocation({mint,creator:creators[0],launchTimestamp,
      distributions:previous.verifiedLaunchDistributions||[],coverageComplete:previous.launchDistributionCoverageComplete===true}):null;
