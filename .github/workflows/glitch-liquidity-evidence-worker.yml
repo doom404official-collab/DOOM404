@@ -26,7 +26,7 @@ jobs:
       - name: Collect conservative pool account evidence
         working-directory: mvp/wallet-signal
         env:
-          GLITCH_PREVIEW_URL: https://doom404-wallet-signal-7lyxbcfst-doom-404.vercel.app
+          GLITCH_PREVIEW_URL: https://doom404-wallet-signal-536hb77un-doom-404.vercel.app
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           GLITCH_LIQUIDITY_MINT: ${{ inputs.mint }}
           GLITCH_EVIDENCE_OUTPUT: liquidity-evidence.json
