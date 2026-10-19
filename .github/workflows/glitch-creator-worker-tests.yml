@@ -69,6 +69,7 @@ jobs:
           node scripts/test-pump-fun-pool-receipt.mjs
           node scripts/test-pump-fun-sell-link.mjs
           node scripts/test-pump-fun-sell-inner-groups.mjs
+          node scripts/test-pump-fun-sell-token-transfers.mjs
           node scripts/test-creator-intelligence-tick.mjs
           node scripts/test-creator-holdings-investigation.mjs
           node scripts/test-creator-holdings-tick.mjs
