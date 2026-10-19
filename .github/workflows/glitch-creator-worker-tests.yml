@@ -75,6 +75,7 @@ jobs:
           node scripts/test-creator-live-source-account.mjs
           node scripts/test-creator-historical-source.mjs
           node scripts/test-creator-historical-sell-path.mjs
+          node scripts/test-creator-sell-candidate-resume.mjs
           node scripts/test-creator-intelligence-tick.mjs
           node scripts/test-creator-holdings-investigation.mjs
           node scripts/test-creator-holdings-tick.mjs
