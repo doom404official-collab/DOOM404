@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm ci --no-audit --no-fund
+      - run: npm install --no-audit --no-fund
         working-directory: mvp/wallet-signal
       - name: Inspect known fee-sweep signature
         working-directory: mvp/wallet-signal
