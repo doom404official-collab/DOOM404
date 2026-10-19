@@ -20,7 +20,9 @@ export function extractPumpFunSettlementEvidence({mint,creator,signature,transac
    Number.isSafeInteger(ix.parsed.info?.lamports)&&ix.parsed.info.lamports>0);
   if(payments.length!==1)continue;
   const poolOwnership=verifyHistoricalPumpFunPoolOwnership({mint,transaction});
-  return {independentlyDecoded:false,signature,mint,creator,programId:PUMP_FUN_PROGRAM_ID,
+  const independentlyDecoded=poolOwnership.historicalOwnershipVerified===true &&
+   Number.isSafeInteger(transaction.blockTime)&&transaction.blockTime>0;
+  return {independentlyDecoded,signature,mint,creator,programId:PUMP_FUN_PROGRAM_ID,
    instructionType:'SELL',soldRaw:group.soldRaw,creatorReceivedLamports:String(payments[0].parsed.info.lamports),
    timestamp:transaction.blockTime,decoderVersion:'pump-fun-linked-settlement-v1',
    poolTokenReceiptVerified:poolOwnership.historicalOwnershipVerified===true,
