@@ -17,8 +17,8 @@ payload.writeBigUInt64LE(100n,8);
 const keys=['source-ata',derived.poolTokenAccount,mint,derived.bondingCurve,creator,PUMP_FUN_PROGRAM_ID];
 const ix={programId:PUMP_FUN_PROGRAM_ID,data:encode58(payload),accounts:['global','fees',mint,derived.bondingCurve,derived.poolTokenAccount,'source-ata',creator,'system','token','rent','event',PUMP_FUN_PROGRAM_ID]};
 const tx={blockTime:1700000000,transaction:{message:{accountKeys:keys,instructions:[ix]}},meta:{err:null,
- preTokenBalances:[{accountIndex:0,mint,owner:creator,uiTokenAmount:{amount:'200'}}],
- postTokenBalances:[{accountIndex:0,mint,owner:creator,uiTokenAmount:{amount:'100'}}],
+ preTokenBalances:[{accountIndex:0,mint,owner:creator,uiTokenAmount:{amount:'200'}},{accountIndex:1,mint,owner:derived.bondingCurve,uiTokenAmount:{amount:'100'}}],
+ postTokenBalances:[{accountIndex:0,mint,owner:creator,uiTokenAmount:{amount:'100'}},{accountIndex:1,mint,owner:derived.bondingCurve,uiTokenAmount:{amount:'200'}}],
  innerInstructions:[{index:0,instructions:[
  {program:'spl-token',parsed:{type:'transferChecked',info:{source:'source-ata',destination:derived.poolTokenAccount,mint,tokenAmount:{amount:'100'}}}},
  {program:'system',parsed:{type:'transfer',info:{source:derived.bondingCurve,destination:creator,lamports:100000}}}
@@ -28,5 +28,7 @@ assert.equal(extracted.sourceOwnershipVerified,true);
 assert.equal(extracted.transactionInstructionLinked,true);
 assert.equal(extracted.creatorReceivedLamports,'100000');
 assert.equal(extracted.independentlyDecoded,false);
-assert.equal(extracted.historicalPoolOwnershipVerified,false);
+assert.equal(extracted.historicalPoolOwnershipVerified,true);
+assert.equal(extracted.poolTokenReceiptVerified,true);
+assert.equal(extracted.independentlyDecoded,false);
 console.log('Pump.fun settlement evidence extractor tests passed');
