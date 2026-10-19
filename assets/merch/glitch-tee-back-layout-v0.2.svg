@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3600 4500" width="3600" height="4500">
+<title>DOOM404 GLITCH TEE — mascot back layout v0.2</title><desc>Original vector cyberpunk robot in a crimson hood, with scan lines and DOOM404 lettering. Concept artwork; not supplier-approved.</desc>
+<defs><linearGradient id="hood" x2=".8" y2="1"><stop stop-color="#ff3652"/><stop offset=".45" stop-color="#c90d30"/><stop offset="1" stop-color="#510416"/></linearGradient><linearGradient id="face" x2="1" y2="1"><stop stop-color="#5b626d"/><stop offset=".6" stop-color="#161a23"/><stop offset="1" stop-color="#07080b"/></linearGradient><pattern id="scan" width="34" height="34" patternUnits="userSpaceOnUse"><path d="M0 0H34" stroke="#f6f6f7" stroke-opacity=".13" stroke-width="4"/></pattern></defs>
+<g fill="none" stroke="#e52a45" stroke-width="18" opacity=".55"><path d="M310 470H1100M310 470V850M3290 470H2500M3290 470V850M310 3380V3750H1100M3290 3380V3750H2500"/><circle cx="1800" cy="1800" r="1310" stroke-dasharray="100 58"/></g>
+<g opacity=".4" stroke="#fa3150" stroke-width="11"><path d="M420 1110H1050M2670 990H3180M390 2730H900M2800 2950H3200M480 3200H1050"/></g>
+<path d="M795 2790Q690 1570 1080 910Q1390 420 1800 430Q2240 400 2540 930Q2930 1660 2780 2790L2450 3130H1110Z" fill="url(#hood)" stroke="#ff6579" stroke-width="38"/>
+<path d="M1190 2470Q1030 1620 1310 1170Q1480 900 1810 870Q2190 900 2350 1240Q2600 1790 2410 2460L2160 2720H1430Z" fill="#090a0f" stroke="#e42c48" stroke-width="25"/>
+<path d="M1440 1320L1800 1110L2170 1330L2320 1830L2130 2300L1800 2500L1470 2290L1290 1840Z" fill="url(#face)" stroke="#747984" stroke-width="26"/>
+<path d="M1440 1320L1800 1530L2170 1330M1290 1840L1800 2020L2320 1830M1800 1530V2020M1470 2290L1800 2020L2130 2300" fill="none" stroke="#9198a4" stroke-width="19" opacity=".8"/>
+<circle cx="1800" cy="1780" r="300" fill="#10070e" stroke="#ff2346" stroke-width="45"/><circle cx="1800" cy="1780" r="225" fill="#cf0c30"/><circle cx="1800" cy="1780" r="160" fill="#080a0f" stroke="#ff8190" stroke-width="24"/><circle cx="1800" cy="1780" r="66" fill="#ff425c"/>
+<path d="M1470 2290L1270 2620L1450 2940H2150L2350 2620L2130 2300" fill="#101117" stroke="#7c8590" stroke-width="22"/><path d="M1500 2670H2100M1590 2780H2010" stroke="#f72e4d" stroke-width="20"/>
+<path d="M1020 2990L750 3400H2850L2580 2990L2290 2790L2110 3060H1490L1310 2790Z" fill="#b50929" stroke="#f24c65" stroke-width="24"/>
+<rect x="350" y="490" width="2900" height="2750" fill="url(#scan)" opacity=".6"/>
+<g font-family="Arial Black,Arial,sans-serif" text-anchor="middle" font-weight="900"><text x="1800" y="3620" font-size="400" letter-spacing="-18" fill="#f6f6f7">DOOM<tspan fill="#ff2946">404</tspan></text><text x="1800" y="3820" font-size="92" letter-spacing="26" fill="#ff4561">FIND THE GLITCH</text><text x="1800" y="4040" font-size="48" letter-spacing="18" fill="#f6f6f7">GENESIS DROP // 001</text></g>
+</svg>
