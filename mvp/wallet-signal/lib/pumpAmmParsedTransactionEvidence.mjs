@@ -1,5 +1,10 @@
 import {classifyPumpAmmInstruction} from "./pumpAmmInstructionEvidence.mjs";
 import {decodeInstructionBytes} from "./liquidityInstructionBytes.mjs";
+const AUXILIARY_PUMP_DISCRIMINATORS={
+ "0830be07b644b7e5":"sweep_protocol_fee",
+ "20f6bf3408c949ba":"sweep_creator_fee",
+ "e445a52e51cb9a1d":"anchor_event_cpi_marker"
+};
 const asKey=k=>typeof k==="string"?k:k?.pubkey?.toBase58?.()??k?.toBase58?.()??String(k);
 export function inspectPumpAmmParsedTransaction(tx,poolAddress) {
  if(!tx)return {status:"unavailable",candidateOperations:[],withdrawalConfirmed:false};
@@ -15,7 +20,9 @@ export function inspectPumpAmmParsedTransaction(tx,poolAddress) {
    const program=ix.programId?.toBase58?.()??keys[ix.programIdIndex]??"";
    const data=decodeInstructionBytes(ix.data);
    const isPumpAmm=program==="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";
-   instructionDiagnostics.push({source,programId:program,dataType:ix.data instanceof Uint8Array?"bytes":typeof ix.data,dataLength:ix.data?.length??null,...(isPumpAmm?{discriminatorHex:data?.length>=8?data.subarray(0,8).toString("hex"):null,decodedLength:data?.length??null}: {})});
+   const discriminatorHex=isPumpAmm&&data?.length>=8?data.subarray(0,8).toString("hex"):null;
+   const auxiliaryOperation=discriminatorHex?AUXILIARY_PUMP_DISCRIMINATORS[discriminatorHex]??null:null;
+   instructionDiagnostics.push({source,programId:program,dataType:ix.data instanceof Uint8Array?"bytes":typeof ix.data,dataLength:ix.data?.length??null,...(isPumpAmm?{discriminatorHex,decodedLength:data?.length??null,auxiliaryOperation}: {})});
    const result=classifyPumpAmmInstruction(program,data);
    if(!result.candidate)continue;
    const indices=ix.accountKeyIndexes??ix.accounts??[];
