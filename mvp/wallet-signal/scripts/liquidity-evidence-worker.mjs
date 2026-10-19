@@ -50,7 +50,7 @@ for(const candidate of evidence.pools.filter(p=>p.decodedPumpAmmCandidate).slice
 evidence.transactionEvidence=[];
 for(const movement of evidence.reserveHistoryComparison.pools.filter(p=>p.baseRawDelta!=="0"||p.quoteRawDelta!=="0").slice(0,4)){
  try{
-  const tx=await read("/api/liquidity-transaction-evidence",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({poolAddress:movement.pairAddress})});
+  const tx=await read("/api/liquidity-transaction-evidence",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({poolAddress:movement.pairAddress,vaultAddresses:(evidence.pools.find(p=>p.pairAddress===movement.pairAddress)?.decodedPumpAmmCandidate ? [evidence.pools.find(p=>p.pairAddress===movement.pairAddress).decodedPumpAmmCandidate.poolBaseTokenAccount,evidence.pools.find(p=>p.pairAddress===movement.pairAddress).decodedPumpAmmCandidate.poolQuoteTokenAccount] : [])})});
   evidence.transactionEvidence.push({pairAddress:movement.pairAddress,...tx});
  }catch(error){
   evidence.transactionEvidence.push({pairAddress:movement.pairAddress,status:"unavailable",error:String(error.message).slice(0,120)});
