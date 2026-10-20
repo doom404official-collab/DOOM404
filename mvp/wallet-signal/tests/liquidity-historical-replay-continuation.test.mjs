@@ -6,6 +6,11 @@ const previous={kind:"HISTORICAL_DECODER_REPLAY_EVIDENCE",pool:"pool",sourceDige
 test("continuation excludes previously completed signatures",()=>assert.deepEqual(selectReplayRemainder(plan,previous),["c"]));
 test("continuation rejects unrelated evidence",()=>{
  assert.throws(()=>selectReplayRemainder(plan,{...previous,sourceDigest:"different"}));
- assert.throws(()=>selectReplayRemainder(plan,{...previous,transactions:[{signature:"unknown"}]}));
+ assert.deepEqual(selectReplayRemainder(plan,{...previous,transactions:[{signature:"other-segment"}]}),["a","b","c"]);
  assert.throws(()=>selectReplayRemainder(plan,{...previous,authorizationVerified:true}));
+});
+
+test("continuation from previous segment excludes only overlapping signatures",()=>{
+ const previousSegment={...previous,transactions:[{signature:"outside"},{signature:"a"}]};
+ assert.deepEqual(selectReplayRemainder(plan,previousSegment),["b","c"]);
 });
