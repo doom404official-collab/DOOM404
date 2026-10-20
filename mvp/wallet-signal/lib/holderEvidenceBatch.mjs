@@ -1,5 +1,6 @@
 import {randomUUID} from "node:crypto";
 import {extractDirectHolderTransfers} from "./directHolderTransfers.mjs";
+import {extractHolderNetworkTransfers} from "./holderNetworkTransfers.mjs";
 /** Process bounded evidence records; persist results without exposing RPC credentials. */
 export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}={}){
  if(!jobId||!checkpoint||!store||typeof rpc!=="function")throw Error("INVALID_EVIDENCE_JOB");
@@ -28,6 +29,13 @@ export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}=
     status=transfers.length?"verified":"rejected";
     evidence={reason:transfers.length?"DIRECT_TRANSFER_PROVEN":"NO_DIRECT_HOLDER_TRANSFER",
      pairs:transfers.map(t=>t.participants.join("|")),kinds:[...new Set(transfers.map(t=>t.kind))],slot:tx.slot};
+    // Reuse this exact RPC response for independent network extraction. Keep the
+    // legacy validation outcome unchanged; do not promote incomplete evidence.
+    const network=extractHolderNetworkTransfers({transaction:tx,signature:item.signature});
+    evidence.networkExtraction={version:1,valid:network.valid===true,
+     unresolvedTokenTransfers:network.unresolvedTokenTransfers??0,
+     transfers:network.valid===true?network.transfers:[],
+     ...(network.valid===true?{}:{reason:network.reason??"NETWORK_EVIDENCE_UNAVAILABLE"})};
    }
   }catch{evidence={reason:"RPC_RETRYABLE_ERROR"};}
   let saved;
