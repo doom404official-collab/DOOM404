@@ -14,6 +14,7 @@ import { recheckCreatorOrigin } from './creatorIndependentOriginRecheck.mjs';
 import { extractCreatorLaunchTime } from './creatorLaunchTimeEvidence.mjs';
 import { assessCreatorInitialAllocation } from './creatorInitialAllocationEvidence.mjs';
 import { assessCreatorHistoricalCoverage } from './creatorHistoricalCoverage.mjs';
+import { summarizeCreatorAcquisitionLedger } from './creatorAcquisitionLedger.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -78,6 +79,11 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    }
    const historicalCoverage=assessCreatorHistoricalCoverage({rpcExhausted:state.creatorHistoryRpcExhausted,pendingSignatures:state.creatorPendingSignatures||[],processedSignatures:state.creatorProcessedSignatures||[],archiveVerified:previous.creatorArchiveCoverageVerified===true});
    state={...state,creatorHistoricalCoverage:historicalCoverage,creatorHistoryComplete:historicalCoverage.historyComplete};
+   const acquisitionLedger=summarizeCreatorAcquisitionLedger({mint,creator:creators[0],
+    events:previous.creatorVerifiedAcquisitionEvents||[],
+    historyComplete:state.creatorHistoryComplete===true,
+    attributionComplete:previous.creatorAcquisitionAttributionComplete===true});
+   state={...state,creatorAcquisitionLedger:acquisitionLedger};
    const launchTimestamp=verifiedLaunchTimestamp;
    const allocation=Number.isSafeInteger(launchTimestamp)&&launchTimestamp>0?
     assessCreatorInitialAllocation({mint,creator:creators[0],launchTimestamp,
