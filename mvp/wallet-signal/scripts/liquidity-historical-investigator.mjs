@@ -50,6 +50,7 @@ for(let page=0;requests<limit&&!state.complete;page++){
    catch(e){errors.push({stage:"archive",signature:item.signature,message:String(e.message)});}
   }
   if(!tx){const reason=requests>=limit?"REQUEST_BUDGET_EXHAUSTED":"RPC_TRANSACTION_UNAVAILABLE";errors.push({stage:"unresolved",signature:item.signature,reason});pending.add(item.signature);unresolvedReasons.set(item.signature,reason);break;}
+  if(tx.slot!==item.slot){errors.push({stage:"slot_mismatch",signature:item.signature,expectedSlot:item.slot,returnedSlot:tx.slot});pending.add(item.signature);unresolvedReasons.set(item.signature,"TRANSACTION_SLOT_MISMATCH");break;}
   state.events.push(...extract(tx,item.signature,item.slot,provider));
   seen.add(item.signature);pending.delete(item.signature);unresolvedReasons.delete(item.signature);
  }
