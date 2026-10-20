@@ -1,4 +1,5 @@
 import {summarizeVerifiedHolderConnections} from "./verifiedHolderConnections.mjs";
+import {summarizeHolderNetworkCheckpoint} from "./holderNetworkCheckpoint.mjs";
 import {scoreHolderIntelligence} from "./glitchAttributeEnginesV11.mjs";
 /** v1.1 holder assessment. A finished evidence queue is NOT complete archival history. */
 export function assessVerifiedHolderConcentration({checkpoint,evidenceRows=[],custodyClassificationComplete=false}={}){
@@ -47,7 +48,7 @@ export function assessVerifiedHolderConcentration({checkpoint,evidenceRows=[],cu
  const earned=Math.round(components.reduce((sum,c)=>sum+(c.score??0),0)*100)/100;
  return {...assessment,components,earned,possible,score:null,provisionalScore:null,
   status:!validSnapshot?"holder_data_incomplete":graph.evidenceComplete?"provisional_evidence_complete":"evidence_pending",
-  evidence:graph,snapshotProvenanceVerified:validSnapshot,historyComplete:false,scoreCoveragePct:possible,unscoredPoints:100-possible,
+  evidence:graph,observedNetwork:summarizeHolderNetworkCheckpoint(checkpoint,{snapshotProvenanceVerified:validSnapshot}),snapshotProvenanceVerified:validSnapshot,historyComplete:false,scoreCoveragePct:possible,unscoredPoints:100-possible,
   provisionalScoreDenominator:possible,
   note:"GLITCH v1.1: no final score until history, creator linkage and custody coverage are verified."};
 }

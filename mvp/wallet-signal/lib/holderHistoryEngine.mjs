@@ -2,6 +2,7 @@ import {collectWalletSignaturePage} from "./holderHistoryPagination.mjs";
 import {recordHistoryPage,recordDecodedTransaction,summarizeHistoryCheckpoint} from "./holderHistoryCheckpoint.mjs";
 import {nextHolderScanOrder,advanceHolderScanCursor,holderScanCoverage} from "./holderRoundRobin.mjs";
 import {extractDirectHolderTransfers} from "./directHolderTransfers.mjs";
+import {recordHolderNetworkTransaction} from "./holderNetworkCheckpoint.mjs";
 import {buildHolderConnectionGraph} from "./holderConnectionGraph.mjs";
 
 /** Shared history batch for diagnostic and future server-side background workers.
@@ -27,7 +28,8 @@ export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,page
    if(!tx)continue;
    const transfers=extractDirectHolderTransfers({transaction:tx,signature,
     holderWallets:Object.keys(checkpoint.wallets),tokenAccounts:checkpoint.holders});
-   recordDecodedTransaction(checkpoint,{signature,transfers});decodeSuccesses++;
+   recordDecodedTransaction(checkpoint,{signature,transfers});
+   recordHolderNetworkTransaction(checkpoint,{signature,transaction:tx});decodeSuccesses++;
   }
  };
  try{
