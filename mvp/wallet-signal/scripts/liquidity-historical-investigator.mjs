@@ -27,7 +27,7 @@ async function call(url,method,params){
 }
 function extract(tx,signature,slot,provider){
  const instructions=[...(tx?.transaction?.message?.instructions||[]),...(tx?.meta?.innerInstructions||[]).flatMap(x=>x.instructions||[])];
- return instructions.map(i=>decodeHistoricalCandidate(i,signature,slot,provider)).filter(Boolean).map(event=>({...event,transactionExecution:classifyHistoricalTransaction(tx),signerEvidence:inspectHistoricalSignerEvidence(tx,event),roleAssessment:historicalRoleAssessment(event,tx,pool)}));
+ return instructions.map(i=>decodeHistoricalCandidate(i,signature,slot,provider)).filter(Boolean).map(event=>({...event,transactionExecution:classifyHistoricalTransaction(tx),signerEvidence:inspectHistoricalSignerEvidence(tx,event),roleAssessment:historicalRoleAssessment(event,tx,pool),eligibleForAuthorizationReview:classifyHistoricalTransaction(tx)==="EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED"}));
 }
 for(let page=0;requests<limit&&!state.complete;page++){
  let batch;
