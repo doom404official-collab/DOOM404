@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {anchorDiscriminator,decodeHistoricalCandidate,validateHistoryCheckpoint,classifyHistoricalTransaction,PUMP_AMM_PROGRAM,HISTORY_CLASSIFICATION} from "../lib/liquidityHistoricalDecoder.mjs";
+import {anchorDiscriminator,decodeHistoricalCandidate,validateHistoryCheckpoint,classifyHistoricalTransaction,inspectHistoricalSignerEvidence,PUMP_AMM_PROGRAM,HISTORY_CLASSIFICATION} from "../lib/liquidityHistoricalDecoder.mjs";
 function base58(bytes){const alphabet="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";let n=0n;for(const b of bytes)n=n*256n+BigInt(b);let out="";while(n){out=alphabet[Number(n%58n)]+out;n/=58n;}for(const b of bytes){if(b!==0)break;out="1"+out;}return out||"1";}
 test("rejects instructions from unrelated programs",()=>{assert.equal(decodeHistoricalCandidate({programId:"other",parsed:{type:"set_coin_creator"}},"sig",1,"helius"),null)});
 test("recognizes Anchor discriminator without promoting authorization",()=>{
@@ -34,4 +34,14 @@ test("creator fee collection remains an unverified fee candidate, never an LP wi
  assert.equal(event.signerAuthorizationVerified,false);
  assert.equal(event.classification,"UNVERIFIED_CANDIDATE");
  assert.equal(event.feeSettlementNotLpWithdrawal,true);
+});
+
+test("signer observations do not establish account roles or creator authorization",()=>{
+ const event={rawInstruction:{accounts:["pool","creator"]}};
+ const tx={transaction:{message:{accountKeys:[{pubkey:"creator",signer:true},{pubkey:"pool",signer:false}]}}};
+ const evidence=inspectHistoricalSignerEvidence(tx,event);
+ assert.deepEqual(evidence.signers,["creator"]);
+ assert.equal(evidence.status,"SIGNERS_OBSERVED_ROLES_UNVERIFIED");
+ assert.equal(evidence.accountRolesVerified,false);
+ assert.equal(evidence.signerAuthorizationVerified,false);
 });
