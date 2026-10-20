@@ -1,5 +1,6 @@
 import {createSolanaRpcAdapter} from '../lib/creatorOriginRpc.mjs';
 import {inspectPumpFunBuyShadow} from '../lib/pumpFunBuyShadowValidation.mjs';
+import {PUMP_FUN_PROGRAM_ID} from '../lib/pumpFunSellCandidates.mjs';
 import {groupPumpFunBuyInstructions} from '../lib/pumpFunBuyInstructionGroups.mjs';
 const mint=process.env.CREATOR_INVESTIGATION_MINT||'98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
 const creator=process.env.CREATOR_INVESTIGATION_WALLET||'6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
@@ -14,7 +15,10 @@ for(const signature of signatures){
   if(!transaction){results.push({signature,status:'TRANSACTION_UNAVAILABLE'});continue;}
   const groups=groupPumpFunBuyInstructions({transaction});
   const shadow=inspectPumpFunBuyShadow({mint,creator,signature,transaction});
-  results.push({signature,status:shadow.status,diagnostic:shadow.diagnostic||null,recognizedBuyGroups:groups.length,
+  const outer=transaction.transaction?.message?.instructions||[];
+  const keys=transaction.transaction?.message?.accountKeys||[];
+  const pumpInstructionCount=outer.filter(ix=>{const key=Number.isInteger(ix?.programIdIndex)?keys[ix.programIdIndex]:null;return ix?.programId===PUMP_FUN_PROGRAM_ID||(typeof key==='string'?key:key?.pubkey?.toString?.())===PUMP_FUN_PROGRAM_ID;}).length;
+  results.push({signature,status:shadow.status,diagnostic:shadow.diagnostic||null,pumpInstructionCount,recognizedBuyGroups:groups.length,
    instructionCount:transaction.transaction?.message?.instructions?.length||0,transactionFailed:transaction.meta?.err!=null,
    eligibleForLivePromotion:false});
  }catch(error){results.push({signature,status:'FETCH_OR_DECODE_FAILED',errorCode:['RPC_RATE_LIMITED','RPC_AUTH_FAILED','RPC_RESPONSE_ERROR','RPC_UNSUPPORTED_VERSION'].includes(error?.message)?error.message:'DIAGNOSTIC_FAILED'});}
