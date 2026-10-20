@@ -9,7 +9,7 @@ export async function GET(request) {
  try {
   const vault = createIntelligenceVault({url:process.env.SUPABASE_URL, serviceRoleKey:process.env.SUPABASE_SERVICE_ROLE_KEY});
   const result = await resolveCachedCreator({mint,vault});
-  return NextResponse.json(result, {headers:{'Cache-Control':'no-store'}});
+  return NextResponse.json({...result,mint}, {headers:{'Cache-Control':'no-store'}});
  } catch {
   return NextResponse.json({status:'UNAVAILABLE'}, {status:503});
  }

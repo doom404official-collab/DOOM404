@@ -46,7 +46,7 @@ test("security overview does not issue unsupported verdict", () => {
   assert.match(dashboard, /g11-attribute-tabs/);
   assert.doesNotMatch(dashboard, /Token Intelligence Score:/);
   assert.match(dashboard, /Final score/);
-  assert.match(dashboard, /scoreTokenSecurity/);
+  assert.match(dashboard, /adaptDashboardEvidence/);
 });
 
 test("pool-account evidence is opt-in and never presented as LP-lock verification", () => {
@@ -59,5 +59,5 @@ test("pool-account evidence is opt-in and never presented as LP-lock verificatio
 test("creator launchpad panel distinguishes observation from verified creator", () => {
   assert.match(dashboard, /Creator Identification/);
   assert.match(dashboard, /Not independently verified/);
-  assert.match(dashboard, /creatorEvidence\?\.status==="VERIFIED"/);
+  assert.match(dashboard, /adapted.creatorVerified/);
 });
