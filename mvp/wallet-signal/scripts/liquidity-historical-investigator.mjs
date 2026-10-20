@@ -1,4 +1,4 @@
-import {decodeHistoricalCandidate,validateHistoryCheckpoint} from "../lib/liquidityHistoricalDecoder.mjs";
+import {decodeHistoricalCandidate,validateHistoryCheckpoint,classifyHistoricalTransaction} from "../lib/liquidityHistoricalDecoder.mjs";
 import {writeFile,readFile} from "node:fs/promises";
 const pool=process.env.GLITCH_LIQUIDITY_POOL;
 const rpc=process.env.HELIUS_RPC_URL;
@@ -26,7 +26,7 @@ async function call(url,method,params){
 }
 function extract(tx,signature,slot,provider){
  const instructions=[...(tx?.transaction?.message?.instructions||[]),...(tx?.meta?.innerInstructions||[]).flatMap(x=>x.instructions||[])];
- return instructions.map(i=>decodeHistoricalCandidate(i,signature,slot,provider)).filter(Boolean);
+ return instructions.map(i=>decodeHistoricalCandidate(i,signature,slot,provider)).filter(Boolean).map(event=>({...event,transactionExecution:classifyHistoricalTransaction(tx)}));
 }
 for(let page=0;requests<limit&&!state.complete;page++){
  let batch;
