@@ -2,12 +2,11 @@
 import {useState} from "react";
 import HolderBubbleMap from "./HolderBubbleMap";
 import {attributes,consolidate} from "../lib/glitchScoringV11.mjs";
-import {scoreTokenSecurity,scoreHolderIntelligence,scoreCreatorIntelligence,scoreLiquidityQuality} from "../lib/glitchAttributeEnginesV11.mjs";
+import {adaptDashboardEvidence} from "../lib/glitchDashboardEvidenceV11.mjs";
 import {summarizeHistoricalHolderPreview} from "../lib/holderHistoricalPreviewV11.mjs";
 
 const fmt=(v,suffix="")=>typeof v==="number"&&Number.isFinite(v)?v.toLocaleString("en-US",{maximumFractionDigits:2})+suffix:"Pending";
 const addr=v=>typeof v==="string"&&v? v.slice(0,6)+"…"+v.slice(-5):"Not verified";
-const label=s=>s.replaceAll("_"," ").replace(/\b\w/g,x=>x.toUpperCase());
 const row=(name,value,detail)=>({name,value,detail});
 const css=`
 .g11{width:calc(100vw - 24px);max-width:1600px;position:relative;left:50%;transform:translateX(-50%);color:#f5f3f3;background:#08090c;border:1px solid #3b2429;border-radius:18px;padding:clamp(12px,2vw,22px);margin:18px 0;font-family:Inter,system-ui,sans-serif}
@@ -33,25 +32,23 @@ const css=`
 @media(max-width:900px){.g11-attribute-tabs{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}.g11-attribute-tabs .g11-action{flex:0 0 auto;scroll-snap-align:start;white-space:nowrap}.g11-overview{grid-template-columns:1fr}.g11-insights{grid-template-columns:repeat(3,minmax(0,1fr))}.g11-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.g11-data{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.g11{width:calc(100vw - 12px);padding:9px}.g11-full{width:100vw;padding:10px}.g11-head{margin-bottom:9px}.g11 h2{font-size:23px}.g11-overview{gap:8px}.g11-panel{padding:12px}.g11-verdict .g11-big{font-size:20px;margin:5px 0}.g11-insights{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.g11-insights article{font-size:10px;padding:7px}.g11-insights strong{font-size:10px}.g11-tabs{gap:6px;margin:9px 0}.g11-tab{padding:9px;min-height:63px}.g11-tab strong{font-size:12px}.g11-data{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.g11-data article{padding:9px;min-height:108px}.g11-data strong{font-size:15px}.g11-data small{font-size:10px}.g11-kicker{font-size:10px}.g11-inspector{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.g11-inspector>article{padding:7px}.g11-inspector strong{font-size:12px;overflow-wrap:anywhere}.g11-inspector small{font-size:9px}}
 `;
-export default function GlitchV11Dashboard({result,extensions,concentration,creatorEvidence,liquidity,historicalHolders,holderSnapshotCompatible=false,verifiedHolderAssessment}){
+export default function GlitchV11Dashboard({result,extensions,concentration,creatorEvidence,liquidity,historicalHolders,holderSnapshotCompatible=false,verifiedHolderEnvelope,workerEvidence}){
  const [selected,setSelected]=useState("token_security");
  const [fullScreen,setFullScreen]=useState(false);
  const [holderView,setHolderView]=useState("overview");
  const parsed=!!result&&result.authorityDetailsStatus!=="not_parsed"&&Object.hasOwn(result,"mintAuthority")&&Object.hasOwn(result,"freezeAuthority");
- const fee=extensions?.transferFee;
- const security=scoreTokenSecurity({tokenProgram:result?.tokenProgram,authoritiesParsed:parsed,mintAuthority:result?.mintAuthority,freezeAuthority:result?.freezeAuthority,feeExtensionVerified:extensions?.verified===true,feeApplicable:fee?.status==="observed"?true:undefined,feePercent:typeof fee?.newerFee?.percentage==="number"?fee.newerFee.percentage:undefined,feeConfigAuthorityReported:fee?.configAuthorityReported===true,feeConfigAuthority:fee?.configAuthority});
- const top20=concentration?.top20TokenAccountSharePct;
- const holder=scoreHolderIntelligence({top20SharePct:typeof top20==="number"?top20:undefined});
- const creator=scoreCreatorIntelligence({creatorVerified:creatorEvidence?.status==="VERIFIED"&&!!creatorEvidence?.creator});
- const pool=scoreLiquidityQuality({});
- const scores={token_security:security,holder_intelligence:holder,creator_intelligence:creator,liquidity_quality_safety:pool};
- const historical=summarizeHistoricalHolderPreview({historical:historicalHolders,compatible:holderSnapshotCompatible});
+ const fee=extensions?.mint===result?.mint?extensions.transferFee:null;
+ const adapted=adaptDashboardEvidence({result,extensions,concentration,creatorEvidence,historicalHolders,verifiedHolderEnvelope,workerEvidence});
+ const {scores,top20}=adapted;
+ const feeNA=scores.token_security.components[0].reason==="not_applicable";
+ const verifiedHolderAssessment=adapted.matchedHolder?verifiedHolderEnvelope?.assessment:null;
+ const historical=summarizeHistoricalHolderPreview({historical:historicalHolders?.mint===result?.mint?historicalHolders:null,compatible:holderSnapshotCompatible});
  const overallAssessment=consolidate(scores);
  const overallScore=overallAssessment.score;
  const fields={
   token_security:[
-   row("Transfer Fee Schedule",fee?.status==="observed"?fmt(fee?.newerFee?.percentage,"%") :result?.tokenProgram==="spl-token"?"Not applicable":"Pending","Current configured fee; verify effective epoch and maximum fee"),
-   row("Fee Configuration Authority",result?.tokenProgram==="spl-token"?"Not applicable":fee?.configAuthorityReported?fee.configAuthority?addr(fee.configAuthority):"Revoked":"Pending","Can the fee schedule be changed?"),
+   row("Transfer Fee Schedule",feeNA?"Not applicable":fee?.status==="observed"?fmt(fee?.newerFee?.percentage,"%") :"Pending","Newer configured schedule only; effective epoch and maximum fee unverified"),
+   row("Fee Configuration Authority",feeNA?"Not applicable":fee?.configAuthorityReported?fee.configAuthority?addr(fee.configAuthority):"Revoked":"Pending","Can the fee schedule be changed?"),
    row("Mint Authority",parsed?result.mintAuthority?addr(result.mintAuthority):"Revoked":"Pending","Current mint permission"),
    row("Freeze Authority",parsed?result.freezeAuthority?addr(result.freezeAuthority):"Revoked":"Pending","Current freeze permission")
   ],
@@ -62,16 +59,16 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
    row("Holder Breadth & Independence",historical.available?fmt(historical.connectedWallets)+" connected wallets":"Pending",historical.available?"Connected wallets identified so far; independent wallet count awaits full history.":"Independent wallets not yet established")
   ],
   creator_intelligence:[
-   row("Creator Identification",creatorEvidence?.status==="VERIFIED"?addr(creatorEvidence.creator):"Not independently verified","Attribution status: "+(creatorEvidence?.status||"Unknown")),
-   row("Creator Holdings","Pending","Attributable current holdings and linked wallets"),
-   row("Creator Selling","Pending","Verified swaps in 1h, 24h and 7d; transfers are not sales"),
-   row("Previous Launches","Pending","Comparable creator launch history and outcomes")
+   row("Creator Identification",adapted.creatorVerified?addr(creatorEvidence.creator):"Not independently verified","Attribution status: "+(creatorEvidence?.status||"Unknown")),
+   row("Creator Holdings",adapted.creator?.holdings?fmt(adapted.creator.holdings.supplySharePct,"% observed"):"Pending","Wallet balance observation only; linked-wallet attribution remains unscored. Observed: "+(adapted.creator?.holdings?.observedAt||"unknown")),
+   row("Creator Selling",adapted.creatorCompatible&&adapted.creator?.selling?adapted.creator.selling.percentages.map(v=>fmt(v,"%")).join(" / "):"Pending","1h / 24h / 7d verified selling; transfers are not sales"),
+   row("Previous Launches",adapted.creator?.previousLaunchCount!=null?fmt(adapted.creator.previousLaunchCount)+" attributed launches":"Pending","Observed launch count is not a comparable-outcomes score")
   ],
   liquidity_quality_safety:[
-   row("Available Liquidity",liquidity?.reportedLiquidityUsd!=null?"$"+fmt(Number(liquidity.reportedLiquidityUsd)):"Pending","Provider-reported estimate; executable depth unverified"),
+   row("Available Liquidity",liquidity?.mint===result?.mint&&liquidity?.reportedLiquidityUsd!=null?"$"+fmt(Number(liquidity.reportedLiquidityUsd)):"Pending","Provider-reported estimate; executable depth unverified"),
    row("Liquidity-to-Market-Cap Ratio","Pending","Requires verified liquidity and valuation denominator"),
-   row("LP Security","Pending","Lock, burn, withdrawal rights and LP custody"),
-   row("Liquidity Concentration",liquidity?.poolCountReturned!=null?fmt(liquidity.poolCountReturned)+" reported pools":"Pending","Independent pool control and reserve shares unverified"),
+   row("LP Security","Pending","Lock, burn, withdrawal rights and LP custody. Persisted pool checks: "+fmt(adapted.liquidity?.checkedPoolCount)),
+   row("Liquidity Concentration",liquidity?.mint===result?.mint&&liquidity?.poolCountReturned!=null?fmt(liquidity.poolCountReturned)+" reported pools":"Pending","Independent pool control and reserve shares unverified"),
    row("Trading Impact","Pending","Executable reference sell quote and slippage"),
    row("Liquidity Stability","Pending","30-day verified reserve and withdrawal history")
   ]
@@ -92,6 +89,8 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
   {holderView!=="map"&&<div className="g11-data">{fields[current.id].map(x=><article key={x.name}><span className="g11-kicker">{x.name}</span><strong>{x.value}</strong><small>{x.detail}</small></article>)}</div>}
   {selected==="holder_intelligence"&&historical.available&&holderView==="map"&&<div className="g11-map"><h3>Connection map & evidence inspector</h3><p className="g11-muted" style={{fontSize:12}}>Historical evidence · {historical.compatible?"Snapshot reconciled":"Historical snapshot only"} · No ownership inference</p><HolderBubbleMap holders={historicalHolders.holders||[]} groups={historicalHolders.connectedGroups||[]} scanStatus={historicalHolders.scanStatus||"partial"} transactionsChecked={historicalHolders.transactionsChecked} walletHistoriesReached={historicalHolders.walletHistoriesReached} verifiedAssessment={verifiedHolderAssessment||null}/></div>}
   </div><div className="g11-inspector" aria-label="Evidence summary"><article><span className="g11-kicker">Attribute status</span><strong>{currentScore.complete?"Inputs assessed":"In progress"}</strong><small className="g11-muted">Final score pending</small></article><article><span className="g11-kicker">Evidence coverage</span><strong>{fmt(currentScore.coveragePct,"%")}</strong><small className="g11-muted">Not a risk score</small></article><article><span className="g11-kicker">Methodology</span><strong>GLITCH v1.1</strong><small className="g11-muted">Backend calculation</small></article></div></div>}
+  {currentScore&&<p className="g11-foot">Pending components: {currentScore.components.filter(c=>c.max>0&&c.points===null).map(c=>(c.reason||c.id).replaceAll("_"," ").toLowerCase()).join("; ")||"None; calibration acceptance still required"}</p>}
+  <p className="g11-foot">{selected==="creator_intelligence"?"Still needed: "+adapted.creatorMissing.join("; "):selected==="liquidity_quality_safety"?"Still needed: "+adapted.liquidityMissing.join("; "):"Final scores require complete evidence and calibration."}</p>
   <p className="g11-foot">Transfers establish observed interactions, not common ownership. Reported liquidity is not verified executable depth. Pending values are not scored as safe or unsafe.</p>
  </section>;
 }

@@ -347,6 +347,7 @@ function CreatorLookup() {
   const [holderConnections, setHolderConnections] = useState(null);
   const [holderConnectionsBusy, setHolderConnectionsBusy] = useState(false);
   const [holderConnectionsError, setHolderConnectionsError] = useState("");
+  const [workerEvidence,setWorkerEvidence] = useState(null);
   const [verifiedHolderAssessment,setVerifiedHolderAssessment] = useState(null);
   const holderReconciliation=concentration&&holderConnections
     ?reconcileHolderSnapshot(concentration.accounts||[],holderConnections.holders||[])
@@ -410,6 +411,23 @@ function CreatorLookup() {
     refreshVerified();
     const interval=setInterval(refreshVerified,30000);
     return ()=>{stopped=true;clearInterval(interval);};
+  },[result?.mint]);
+  useEffect(() => {
+    const address=result?.mint;
+    setWorkerEvidence(null);
+    if(!address)return;
+    let stopped=false;
+    const controller=new AbortController();
+    async function refresh(){
+      try{
+        const response=await fetch("/api/scoring-evidence?mint="+encodeURIComponent(address),{cache:"no-store",signal:controller.signal});
+        const data=await response.json();
+        if(!stopped)setWorkerEvidence(response.ok&&data.mint===address?data:null);
+      }catch{if(!stopped)setWorkerEvidence(null);}
+    }
+    refresh();
+    const interval=setInterval(refresh,30000);
+    return ()=>{stopped=true;controller.abort();clearInterval(interval);};
   },[result?.mint]);
   const MAX_HISTORY_BATCHES = 5;
   async function refreshLiquidity(address = mint.trim()) {
@@ -490,7 +508,7 @@ function CreatorLookup() {
           // synchronous two-transaction scan as a substitute for deep history.
           fetch("/api/holder-scan-status?mint="+encodeURIComponent(mint.trim()),{cache:"no-store"})
             .then(async response=>{const payload=await response.json();if(!response.ok)throw Error(payload.error||"Saved holder intelligence unavailable");return payload;})
-            .then(payload=>{if(payload.scan)setHolderConnections({...payload.scan,observedAt:payload.scan.updatedAt});})
+            .then(payload=>{if(payload.scan)setHolderConnections({...payload.scan,jobId:payload.jobId,observedAt:payload.scan.updatedAt});})
             .catch(e=>setHolderConnectionsError(e.message))
             .finally(()=>setHolderConnectionsBusy(false));
         } catch (concentrationFailure) { setConcentrationError(concentrationFailure.message); }
@@ -520,7 +538,7 @@ function CreatorLookup() {
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
     {busy && <p role="status" style={{ color: "#ddd" }}>Querying Solana history. Each batch checks up to 3,000 signatures; this may take up to 45 seconds.</p>}
     {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
-      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderAssessment={verifiedHolderAssessment?.jobId&&verifiedHolderAssessment.jobId===holderConnections?.jobId?verifiedHolderAssessment.assessment:null} />
+      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} workerEvidence={workerEvidence} />
       {/* Previous token evidence panels retired from the layout; raw data and scan workers remain unchanged. */}
     </div>}
   </section>;
