@@ -63,3 +63,10 @@ test("pool account presence alone cannot establish creator authorization",()=>{
  assert.equal(result.signerAuthorizationVerified,false);
  assert.equal(result.authorizationVerified,false);
 });
+
+test("failed execution cannot be promoted to historical authorization evidence",()=>{
+ const failed={meta:{err:{InstructionError:[0,"Custom"]}}};
+ assert.notEqual(classifyHistoricalTransaction(failed),"EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED");
+ const success={meta:{err:null}};
+ assert.equal(classifyHistoricalTransaction(success),"EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED");
+});
