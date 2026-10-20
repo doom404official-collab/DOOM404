@@ -41,7 +41,15 @@ test("signer observations do not establish account roles or creator authorizatio
  const tx={transaction:{message:{accountKeys:[{pubkey:"creator",signer:true},{pubkey:"pool",signer:false}]}}};
  const evidence=inspectHistoricalSignerEvidence(tx,event);
  assert.deepEqual(evidence.signers,["creator"]);
+ assert.deepEqual(evidence.signerReferencedAccounts,["creator"]);
  assert.equal(evidence.status,"SIGNERS_OBSERVED_ROLES_UNVERIFIED");
  assert.equal(evidence.accountRolesVerified,false);
+ assert.equal(evidence.signerAuthorizationVerified,false);
+});
+
+test("unrelated transaction signer is not evidence of creator instruction authority",()=>{
+ const tx={transaction:{message:{accountKeys:[{pubkey:"feePayer",signer:true},{pubkey:"creator",signer:false}]}}};
+ const evidence=inspectHistoricalSignerEvidence(tx,{rawInstruction:{accounts:["creator","pool"]}});
+ assert.deepEqual(evidence.signerReferencedAccounts,[]);
  assert.equal(evidence.signerAuthorizationVerified,false);
 });
