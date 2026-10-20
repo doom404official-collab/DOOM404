@@ -8,6 +8,7 @@ on:
         type: string
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: glitch-liquidity-history-${{ inputs.pool }}
   cancel-in-progress: false
@@ -26,14 +27,16 @@ jobs:
       - name: Restore previous checkpoint artifact
         env:
           GH_TOKEN: ${{ github.token }}
+          GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
         run: |
-          gh run list --workflow glitch-liquidity-history-investigator.yml --branch feature/glitch-liquidity-evidence-worker --limit 30 --json databaseId,event --jq '.[] | select(.event=="workflow_dispatch") | .databaseId' | while read -r run; do
+          gh run list --workflow glitch-liquidity-history-investigator.yml --branch feature/glitch-liquidity-evidence-worker --limit 30 --json databaseId,event --jq '.[] | select(.event=="workflow_dispatch") | .databaseId' > history-run-ids.txt
+          while read -r run; do
             mkdir -p previous-history
             if gh run download "$run" --name "liquidity-history-$run" --dir previous-history 2>/dev/null && test -s previous-history/liquidity-history-evidence.json; then
-              node -e 'const s=require("./previous-history/liquidity-history-evidence.json");if(s.pool!==process.env.GLITCH_LIQUIDITY_POOL||s.schemaVersion!==1)process.exit(1)' && break
+              if node -e 'const s=require("./previous-history/liquidity-history-evidence.json");if(s.pool!==process.env.GLITCH_LIQUIDITY_POOL||s.schemaVersion!==1||s.classification!=="AMOUNT_RECONCILED_AUTHORIZATION_PENDING")process.exit(1)'; then break; fi
             fi
             rm -f previous-history/liquidity-history-evidence.json
-          done
+          done < history-run-ids.txt
       - name: Investigate bounded historical signatures
         working-directory: mvp/wallet-signal
         env:
