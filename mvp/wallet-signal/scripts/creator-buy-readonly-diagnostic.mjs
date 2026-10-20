@@ -2,6 +2,7 @@ import {createSolanaRpcAdapter} from '../lib/creatorOriginRpc.mjs';
 import {inspectPumpFunBuyShadow} from '../lib/pumpFunBuyShadowValidation.mjs';
 import {derivePumpFunBondingCurveAccounts} from '../lib/pumpFunBondingCurveDerivation.mjs';
 import {verifyHistoricalPumpFunPoolOwnership} from '../lib/pumpFunHistoricalPoolOwnership.mjs';
+import {resolveTokenBalanceAccounts} from '../lib/solanaTokenBalanceAccountResolver.mjs';
 import {observePumpFunCreatorBuyReceipt} from '../lib/pumpFunCreatorBuyReceipt.mjs';
 import {corroboratePumpFunCreatorBuySettlement} from '../lib/pumpFunCreatorBuySettlement.mjs';
 import {PUMP_FUN_PROGRAM_ID} from '../lib/pumpFunSellCandidates.mjs';
@@ -30,7 +31,14 @@ for(const signature of signatures){
   const poolOwnership=verifyHistoricalPumpFunPoolOwnership({mint,transaction});
   const receipts=observePumpFunCreatorBuyReceipt({mint,creator,transaction});
   const settlementCandidates=corroboratePumpFunCreatorBuySettlement({mint,creator,transaction});
-  const settlementDiagnostics={poolDerivation:derived.status,poolOwnership:poolOwnership.status,
+  const resolved=resolveTokenBalanceAccounts({transaction});
+  const matchingPoolRows=[...resolved.pre,...resolved.post].filter(x=>x.mint===mint&&x.accountPubkey===derived.poolTokenAccount);
+  const settlementDiagnostics={poolDerivation:derived.status,
+   derivedPoolTokenAccount:derived.poolTokenAccount||null,
+   receiptSources:receipts.map(x=>x.sourceTokenAccount),
+   sourceMatchesDerivedPool:receipts.some(x=>x.sourceTokenAccount===derived.poolTokenAccount),
+   historicalPoolBalanceRows:matchingPoolRows.map(x=>({accountIndex:x.accountIndex,owner:x.owner||null})),
+   resolvedAccountCount:resolved.accountCount||0,poolOwnership:poolOwnership.status,
    poolOwnershipReason:poolOwnership.reason||null,matchingBuyerReceipts:receipts.length,
    corroboratedSettlementCandidates:settlementCandidates.length,
    buyGroupsWithInnerInstructions:groups.filter(g=>g.instructionGroupFound).length};
