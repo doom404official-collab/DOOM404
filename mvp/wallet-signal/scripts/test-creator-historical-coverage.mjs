@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {assessCreatorHistoricalCoverage} from '../lib/creatorHistoricalCoverage.mjs';
+const partial=assessCreatorHistoricalCoverage({rpcExhausted:true,pendingSignatures:['a','b'],processedSignatures:['c']});
+assert.equal(partial.rpcPaginationExhausted,true);
+assert.equal(partial.historyComplete,false);
+assert.equal(partial.pendingCount,2);
+const unverified=assessCreatorHistoricalCoverage({rpcExhausted:true,pendingSignatures:[],archiveVerified:false});
+assert.equal(unverified.historyComplete,false);
+const complete=assessCreatorHistoricalCoverage({rpcExhausted:true,pendingSignatures:[],archiveVerified:true});
+assert.equal(complete.historyComplete,true);
+console.log('creator historical coverage evidence tests passed');

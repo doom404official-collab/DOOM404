@@ -18,6 +18,7 @@ export async function scanCreatorOrigin({
   let cursor = before, pagesFetched = 0, rawSignaturesSeen = 0, failedSignaturesSkipped = 0;
   let retrieved = 0, unavailable = 0, fetchErrors = 0, exhausted = false;
   const seen = new Set(), candidates = [], verified = [], failureReasons = {};
+  const deferredSignatures = [];
   for (let page = 0; page < maxPages; page++) {
     if (Date.now() - started >= maxDurationMs) break;
     const batch = await lookupSignaturePage(mint, { before: cursor });
@@ -31,19 +32,21 @@ export async function scanCreatorOrigin({
       if (candidates.length >= maxTransactions || Date.now() - started >= maxDurationMs) { consumedEntirePage = false; break; }
       if (!entry || typeof entry.signature !== "string") { consumedEntirePage = false; break; }
       if (seen.has(entry.signature)) { consumedEntirePage = false; break; }
-      cursor = entry.signature;
-      if (entry.err != null) continue;
+      if (entry.err != null) { cursor = entry.signature; continue; }
       seen.add(entry.signature);
       candidates.push(entry.signature);
       try {
         const tx = await fetchTransaction(entry.signature);
-        if (!tx || tx.meta?.err != null) { unavailable++; continue; }
+        if (!tx || tx.meta?.err != null) { unavailable++; deferredSignatures.push(entry.signature); cursor = entry.signature; continue; }
         retrieved++;
         const proof = verifyLaunchpadCreation({ mint, signature: entry.signature, transaction: tx, decoders: pumpFunDecoders });
         if (proof.status === "VERIFIED") verified.push(...proof.decodedRoles.map(role => ({
           signature: entry.signature, creator: role.address, programId: role.programId, decoderVersion: role.decoderVersion
         })));
+        cursor = entry.signature;
       } catch (error) {
+        if (error?.message === "CREATOR_REQUEST_BUDGET_EXHAUSTED" || error?.message === "RPC_REQUEST_BUDGET_EXHAUSTED") { consumedEntirePage = false; candidates.pop(); break; }
+        deferredSignatures.push(entry.signature); cursor = entry.signature;
         fetchErrors++;
         const allowed = ["RPC_RATE_LIMITED", "RPC_AUTH_FAILED", "RPC_HTTP_ERROR", "RPC_UNSUPPORTED_VERSION", "RPC_RESPONSE_ERROR"];
         const reason = allowed.includes(error?.message) ? error.message : "TRANSACTION_FETCH_EXCEPTION";
@@ -53,7 +56,9 @@ export async function scanCreatorOrigin({
     if (!consumedEntirePage) break;
     const next = batch.nextCursor;
     if (batch.exhausted === true) { exhausted = true; break; }
-    if (!next || next !== cursor || seen.has("cursor:" + next)) throw Error("PAGINATION_STALLED");
+    // On a fully consumed page, the returned cursor SHOULD equal its last processed signature.
+    if (!next || next === before || seen.has("cursor:" + next)) throw Error("PAGINATION_STALLED");
+    if (next !== cursor) throw Error("PAGINATION_CURSOR_MISMATCH");
     seen.add("cursor:" + next);
     if (verified.length || candidates.length >= maxTransactions) break;
   }
@@ -64,7 +69,7 @@ export async function scanCreatorOrigin({
     creator: creators.length === 1 ? creators[0] : null,
     verified: creators.length === 1 ? verified : [],
     pagesFetched, rawSignaturesSeen, failedSignaturesSkipped, sampled: candidates.length, sampledSignatures: candidates,
-    retrieved, unavailable, fetchErrors, failureReasons, rpcHistoryExhausted: exhausted,
+    retrieved, unavailable, fetchErrors, failureReasons, deferredSignatures, rpcHistoryExhausted: exhausted,
     historyComplete: false, nextCursor: cursor, resumeRequired: !exhausted && creators.length === 0,
   };
 }

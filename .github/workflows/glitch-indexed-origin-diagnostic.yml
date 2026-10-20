@@ -1,0 +1,25 @@
+name: GLITCH indexed origin diagnostic
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  indexed-origin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mvp/wallet-signal/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Probe indexed origin once
+        env:
+          GLITCH_INDEXED_ORIGIN_DIAGNOSTIC: 'true'
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: node scripts/diagnose-helius-indexed-origin.mjs

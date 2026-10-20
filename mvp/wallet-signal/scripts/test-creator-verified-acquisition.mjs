@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {classifyVerifiedCreatorAcquisition} from '../lib/creatorVerifiedAcquisitionClassifier.mjs';
+const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+const creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
+const observation={mint,creator,signature:'sig',instructionIndex:0,amountRaw:'100'};
+const proof={...observation,type:'PURCHASE',timestamp:1700000000,independentlyVerified:true,instructionVerified:true,settlementVerified:true};
+assert.equal(classifyVerifiedCreatorAcquisition({mint,creator,observation,proof}).status,'VERIFIED');
+assert.equal(classifyVerifiedCreatorAcquisition({mint,creator,observation,proof:{...proof,settlementVerified:false}}).status,'UNVERIFIED');
+assert.equal(classifyVerifiedCreatorAcquisition({mint,creator,observation,proof:{...proof,amountRaw:'101'}}).status,'UNVERIFIED');
+assert.equal(classifyVerifiedCreatorAcquisition({mint,creator,observation,proof:{...proof,type:'LAUNCH_DISTRIBUTION'}}).status,'UNVERIFIED');
+console.log('creator verified acquisition classification tests passed');

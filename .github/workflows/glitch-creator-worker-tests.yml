@@ -1,0 +1,118 @@
+name: GLITCH creator worker regression checks
+on:
+  push:
+    branches:
+      - feature/creator-history-worker-500
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  creator-worker-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate and commit missing lockfile once
+        if: ${{ hashFiles('mvp/wallet-signal/package-lock.json') == '' }}
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "build: commit reproducible wallet-signal npm lockfile"
+          git push origin HEAD:feature/creator-history-worker-500
+      - name: Install from committed dependency lock
+        run: npm ci --no-audit --no-fund
+      - name: Verify creator budget, RPC, store and pagination
+        run: |
+          node scripts/test-creator-history-budget.mjs
+          node scripts/test-creator-rpc-budget.mjs
+          node scripts/test-creator-job-store.mjs
+          node scripts/test-creator-pagination-resume.mjs
+          node scripts/test-creator-pagination-full-page.mjs
+          node scripts/test-creator-successful-resume.mjs
+          node scripts/test-creator-origin-priority.mjs
+          node scripts/test-creator-zero-purchase.mjs
+          node scripts/test-creator-indexed-origin.mjs
+          node scripts/test-creator-indexed-tick.mjs
+          node scripts/test-helius-indexed-origin.mjs
+          node scripts/test-creator-indexed-once.mjs
+          node scripts/test-creator-indexed-reservation.mjs
+          node scripts/test-creator-attribution-review.mjs
+          node scripts/test-creator-independent-recheck.mjs
+          node scripts/test-creator-launch-time.mjs
+          node scripts/test-creator-launch-recovery.mjs
+          node scripts/test-creator-historical-coverage.mjs
+          node scripts/test-creator-coverage-checkpoint.mjs
+          node scripts/test-creator-batch-capacity.mjs
+          node scripts/test-creator-selling-launch-gate.mjs
+          node scripts/test-creator-initial-allocation.mjs
+          node scripts/test-creator-acquisition-ledger.mjs
+          node scripts/test-creator-acquisition-movements.mjs
+          node scripts/test-creator-acquisition-checkpoint.mjs
+          node scripts/test-creator-spl-transfers.mjs
+          node scripts/test-creator-transfer-directions.mjs
+          node scripts/test-creator-transfer-checkpoint.mjs
+          node scripts/test-creator-verified-acquisition.mjs
+          node scripts/test-creator-ledger-checkpoint.mjs
+          node scripts/test-pump-fun-sell-candidates.mjs
+          node scripts/test-pump-fun-sell-instruction.mjs
+          node scripts/test-pump-fun-buy-instruction.mjs
+          node scripts/test-pump-fun-buy-groups.mjs
+          node scripts/test-pump-fun-buy-receipt.mjs
+          node scripts/test-pump-fun-buy-settlement.mjs
+          node scripts/test-pump-fun-buy-reconciliation.mjs
+          node scripts/test-pump-fun-buy-positive.mjs
+          node scripts/test-pump-fun-buy-promotion.mjs
+          node scripts/test-pump-fun-buy-shadow.mjs
+          node scripts/test-creator-buy-shadow-checkpoint.mjs
+          node scripts/test-creator-buy-batch-integration.mjs
+          node scripts/test-creator-sell-flows.mjs
+          node scripts/test-pump-fun-creator-sell.mjs
+          node scripts/test-pump-fun-settlement.mjs
+          node scripts/test-creator-positive-settlement.mjs
+          node scripts/test-creator-settlement-batch-gate.mjs
+          node scripts/test-creator-positive-settlement-batch.mjs
+          node scripts/test-pump-fun-settlement-extractor.mjs
+          node scripts/test-pump-fun-historical-pool.mjs
+          node scripts/test-pump-fun-pool-observation.mjs
+          node scripts/test-pump-fun-pool-account.mjs
+          node scripts/test-pump-fun-bonding-curve.mjs
+          node scripts/test-pump-fun-pool-comparison.mjs
+          node scripts/test-pump-fun-pool-state.mjs
+          node scripts/test-pump-fun-live-pool.mjs
+          node scripts/test-creator-sol-receipt.mjs
+          node scripts/test-creator-pool-sol-transfers.mjs
+          node scripts/test-pump-fun-sol-payment.mjs
+          node scripts/test-pump-fun-creator-sell-assessment.mjs
+          node scripts/test-pump-fun-pool-receipt.mjs
+          node scripts/test-pump-fun-sell-link.mjs
+          node scripts/test-pump-fun-sell-inner-groups.mjs
+          node scripts/test-pump-fun-sell-token-transfers.mjs
+          node scripts/test-pump-fun-sell-token-path.mjs
+          node scripts/test-creator-source-token-account.mjs
+          node scripts/test-creator-live-source-account.mjs
+          node scripts/test-creator-historical-source.mjs
+          node scripts/test-creator-historical-sell-path.mjs
+          node scripts/test-creator-sell-candidate-resume.mjs
+          node scripts/test-creator-intelligence-tick.mjs
+          node scripts/test-creator-holdings-investigation.mjs
+          node scripts/test-creator-holdings-tick.mjs
+          node scripts/test-creator-selling-evidence.mjs
+          node scripts/test-creator-selling-tick.mjs
+          node scripts/test-creator-wallet-history.mjs
+          node scripts/test-creator-historical-batch.mjs
+          node scripts/test-creator-swap-verification.mjs
+          node scripts/test-creator-selling-persistence.mjs
+          node scripts/test-creator-previous-launches.mjs
+          node scripts/test-creator-previous-launches-tick.mjs
+          node scripts/test-creator-historical-launch-discovery.mjs
+          node scripts/test-creator-worker-error-report.mjs

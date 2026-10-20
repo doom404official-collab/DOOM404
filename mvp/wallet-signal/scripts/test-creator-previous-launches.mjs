@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {summarizePreviousLaunches} from '../lib/creatorPreviousLaunches.mjs';
+const creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
+const a=summarizePreviousLaunches({creator,launches:[{mint:'mint-a',launchCreator:creator,creationInstructionVerified:true,creationSignature:'signature-a',decoderVersion:'pump-v1',observationWindowComplete:false},{mint:'mint-b',launchCreator:creator,creationInstructionVerified:false}]});
+assert.equal(a.attributedLaunchCount,1);
+assert.deepEqual(a.unresolvedMints,['mint-b']);
+assert.equal(a.previousLaunchesScoreEligible,false);
+assert.equal(a.attributedLaunches[0].earlySelling,null);
+const empty=summarizePreviousLaunches({creator,launches:[]});
+assert.equal(empty.noPriorLaunchesVerified,false);
+assert.equal(empty.previousLaunchesScoreEligible,false);
+console.log('creator previous launches evidence tests passed');
