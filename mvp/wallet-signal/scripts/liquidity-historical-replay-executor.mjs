@@ -1,15 +1,18 @@
+import {verifyHistoricalReplaySource} from "../lib/liquidityHistoricalReplaySource.mjs";
 import {readFile,writeFile} from "node:fs/promises";
 import {decodeHistoricalCandidate,classifyHistoricalTransaction,PUMP_AMM_PROGRAM,HISTORY_CLASSIFICATION} from "../lib/liquidityHistoricalDecoder.mjs";
 import {retrieveHistoricalTransaction} from "../lib/liquidityHistoricalTransactionCompat.mjs";
 import {retryLiquidityRateLimit} from "../lib/liquidityHistoricalRateLimit.mjs";
 const pool=process.env.GLITCH_LIQUIDITY_POOL;
 const planFile=process.env.GLITCH_HISTORY_REPLAY_PLAN;
+const sourceFile=process.env.GLITCH_HISTORY_CHECKPOINT;
 const rpc=process.env.HELIUS_RPC_URL;
 const output=process.env.GLITCH_HISTORY_REPLAY_EVIDENCE||"liquidity-history-replay-evidence.json";
 const budget=Number(process.env.GLITCH_HISTORY_REPLAY_BUDGET||20);
-if(!pool||!planFile||!rpc||!Number.isSafeInteger(budget)||budget<1||budget>60)throw Error("INVALID_REPLAY_CONFIGURATION");
+if(!pool||!planFile||!sourceFile||!rpc||!Number.isSafeInteger(budget)||budget<1||budget>60)throw Error("INVALID_REPLAY_CONFIGURATION");
 const plan=JSON.parse(await readFile(planFile,"utf8"));
 if(plan.kind!=="HISTORICAL_DECODER_REPLAY_PLAN"||plan.pool!==pool||plan.originalClassification!==HISTORY_CLASSIFICATION||plan.requiresExplicitReplay!==true||!Array.isArray(plan.signaturesToReplay)||! /^[a-f0-9]{64}$/.test(plan.sourceDigest)||plan.authorizationVerified!==false||plan.finalScore!==null||plan.originalCheckpointPreserved!==true||plan.signaturesToReplay.length>5000||plan.signaturesToReplay.some(s=>typeof s!=="string"||s.length<64||s.length>90))throw Error("INVALID_REPLAY_PLAN");
+verifyHistoricalReplaySource(plan,JSON.parse(await readFile(sourceFile,"utf8")),pool);
 let requests=0;
 async function call(url,method,params){
  if(requests>=budget)throw Error("REPLAY_REQUEST_BUDGET_EXHAUSTED");
