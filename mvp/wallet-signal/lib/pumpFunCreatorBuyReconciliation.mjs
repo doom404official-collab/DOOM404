@@ -16,7 +16,7 @@ export function reconcilePumpFunCreatorBuy({mint,creator,transaction}={}){
  const keys=(transaction.transaction?.message?.accountKeys||[]).map(k=>typeof k==='string'?k:k?.pubkey?.toString?.());
  const i=keys.indexOf(creator),before=transaction.meta?.preBalances?.[i],after=transaction.meta?.postBalances?.[i];
  if(i<0||!Number.isSafeInteger(before)||!Number.isSafeInteger(after)||
-  before-after<BigInt(buy.solPaidLamports))return {status:'UNVERIFIED',reason:'BUY_SOL_DELTA_MISMATCH'};
+  BigInt(before)-BigInt(after)<BigInt(buy.solPaidLamports))return {status:'UNVERIFIED',reason:'BUY_SOL_DELTA_MISMATCH'};
  return {status:'BALANCES_CORROBORATED',instructionIndex:buy.instructionIndex,
   amountRaw:buy.amountRaw,solPaidLamports:buy.solPaidLamports,
   purchaseVerified:false,independentlyVerified:false};
