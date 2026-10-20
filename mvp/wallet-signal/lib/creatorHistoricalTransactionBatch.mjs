@@ -13,7 +13,7 @@ import { inspectPumpFunBuyShadow } from './pumpFunBuyShadowValidation.mjs';
  */
 export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],rpc,maxTransactions=20,swapDecoder=null,settlementDecoder=extractPumpFunSettlementEvidence,buySettlementDecoder=null}={}){
  if(typeof rpc?.fetchTransaction!=='function'||!Array.isArray(signatures)||!Number.isInteger(maxTransactions)||maxTransactions<1||maxTransactions>100)throw Error('INVALID_CREATOR_BATCH');
- const observations=[],processed=[],pending=[],verifiedSales=[],sellCandidates=[],acquisitionMovements=[],transferDirections=[],verifiedAcquisitionEvents=[],buyShadowResults=[],buyShadowStatusCounts={NO_VERIFIED_BUY_EVIDENCE:0,SHADOW_VERIFIED_BUY:0,SHADOW_REJECTED:0};
+ const observations=[],processed=[],pending=[],verifiedSales=[],sellCandidates=[],acquisitionMovements=[],transferDirections=[],verifiedAcquisitionEvents=[],buyShadowResults=[],buyShadowStatusCounts={NO_VERIFIED_BUY_EVIDENCE:0,SHADOW_VERIFIED_BUY:0,SHADOW_REJECTED:0},buyShadowDiagnosticCounts={};
  for(const signature of [...new Set(signatures)].slice(0,maxTransactions)){
   try{
    const tx=await rpc.fetchTransaction(signature);
@@ -23,6 +23,7 @@ export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],
    transferDirections.push(...classifyCreatorTransferDirections({mint,creator,signature,transaction:tx}));
    const shadow=inspectPumpFunBuyShadow({mint,creator,signature,transaction:tx});
    buyShadowStatusCounts[shadow.status]=(buyShadowStatusCounts[shadow.status]||0)+1;
+   if(shadow.diagnostic)buyShadowDiagnosticCounts[shadow.diagnostic]=(buyShadowDiagnosticCounts[shadow.diagnostic]||0)+1;
    if(shadow.status!=='NO_VERIFIED_BUY_EVIDENCE')buyShadowResults.push(shadow);
    if(typeof buySettlementDecoder==='function'){
     const independentSettlement=await buySettlementDecoder({mint,creator,signature,transaction:tx});
@@ -51,5 +52,5 @@ export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],
    pending.push(signature);
   }
  }
- return {observations,processed,pending,verifiedSales,sellCandidates,acquisitionMovements,transferDirections,verifiedAcquisitionEvents,buyShadowResults,buyShadowStatusCounts,historicalCoverageComplete:false};
+ return {observations,processed,pending,verifiedSales,sellCandidates,acquisitionMovements,transferDirections,verifiedAcquisitionEvents,buyShadowResults,buyShadowStatusCounts,buyShadowDiagnosticCounts,historicalCoverageComplete:false};
 }
