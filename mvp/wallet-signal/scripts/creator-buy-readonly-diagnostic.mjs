@@ -22,7 +22,8 @@ for(const signature of signatures){
   const tokenBalances=[...(transaction.meta?.preTokenBalances||[]),...(transaction.meta?.postTokenBalances||[])];
   const observedMints=[...new Set(tokenBalances.map(x=>x?.mint).filter(x=>typeof x==='string'))].slice(0,12);
   const observedOwners=[...new Set(tokenBalances.map(x=>x?.owner).filter(x=>typeof x==='string'))].slice(0,12);
-  results.push({signature,status:shadow.status,diagnostic:shadow.diagnostic||null,pumpInstructionCount,recognizedBuyGroups:groups.length,observedMints,observedOwners,
+  const buyerCandidates=observedOwners.map(owner=>({owner,preRaw:tokenBalances.filter(x=>(transaction.meta?.preTokenBalances||[]).includes(x)&&x?.owner===owner&&x?.mint===observedMints[0]).reduce((n,x)=>n+BigInt(x?.uiTokenAmount?.amount||'0'),0n).toString(),postRaw:tokenBalances.filter(x=>(transaction.meta?.postTokenBalances||[]).includes(x)&&x?.owner===owner&&x?.mint===observedMints[0]).reduce((n,x)=>n+BigInt(x?.uiTokenAmount?.amount||'0'),0n).toString()}));
+  results.push({signature,status:shadow.status,diagnostic:shadow.diagnostic||null,pumpInstructionCount,recognizedBuyGroups:groups.length,observedMints,observedOwners,buyerCandidates,
    instructionCount:transaction.transaction?.message?.instructions?.length||0,transactionFailed:transaction.meta?.err!=null,
    eligibleForLivePromotion:false});
  }catch(error){results.push({signature,status:'FETCH_OR_DECODE_FAILED',errorCode:['RPC_RATE_LIMITED','RPC_AUTH_FAILED','RPC_RESPONSE_ERROR','RPC_UNSUPPORTED_VERSION'].includes(error?.message)?error.message:'DIAGNOSTIC_FAILED'});}
