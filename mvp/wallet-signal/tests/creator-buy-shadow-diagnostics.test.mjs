@@ -23,3 +23,11 @@ test('historical batch counts excluded no-evidence shadow results',async()=>{
  assert.equal(result.buyShadowDiagnosticCounts.NO_PUMP_FUN_BUY_INSTRUCTION,1);
  assert.equal(result.verifiedAcquisitionEvents.length,0);
 });
+
+test('unrecognized Pump.fun instruction with indexed program ID is diagnosed without promotion',()=>{
+ const tx={...transaction,transaction:{message:{accountKeys:['6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P'],instructions:[{programIdIndex:0,data:'2'}]}}};
+ const result=inspectPumpFunBuyShadow({mint,creator,signature,transaction:tx});
+ assert.equal(result.status,'NO_VERIFIED_BUY_EVIDENCE');
+ assert.equal(result.diagnostic,'PUMP_FUN_INSTRUCTION_UNRECOGNIZED');
+ assert.equal(result.purchaseVerified,false);
+});
