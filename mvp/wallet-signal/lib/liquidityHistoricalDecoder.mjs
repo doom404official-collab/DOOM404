@@ -17,7 +17,7 @@ export function decodeHistoricalCandidate(instruction,signature,slot,provider){
  }
  if(!name)return null;
  // A recognized discriminator does not prove that the instruction executed successfully.
- return {signature,slot,provider,operation:name,programId:instruction.programId,rawInstruction:instruction,authorizationVerified:false,classification:"UNVERIFIED_CANDIDATE",decoderCoverage:coverage,accountRolesVerified:false,signerAuthorizationVerified:false};
+ return {signature,slot,provider,operation:name,programId:instruction.programId,rawInstruction:instruction,authorizationVerified:false,classification:"UNVERIFIED_CANDIDATE",decoderCoverage:coverage,accountRolesVerified:false,signerAuthorizationVerified:false,feeSettlementNotLpWithdrawal:name.includes("creator_fee")||name.startsWith("transfer_creator_fees")};
 }
 function decodeBase58(input){
  const alphabet="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
