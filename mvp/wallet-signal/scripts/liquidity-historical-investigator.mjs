@@ -3,7 +3,7 @@ const pool=process.env.GLITCH_LIQUIDITY_POOL;
 const rpc=process.env.HELIUS_RPC_URL;
 const fallback=process.env.ALCHEMY_RPC_URL;
 const limit=Math.min(200,Math.max(1,Number(process.env.GLITCH_HISTORY_BUDGET||60)));
-const pageSize=Math.min(1000,Math.max(1,Number(process.env.GLITCH_HISTORY_PAGE_SIZE||100)));
+const pageSize=Math.min(100,Math.max(1,Number(process.env.GLITCH_HISTORY_PAGE_SIZE||25)));
 const output=process.env.GLITCH_HISTORY_OUTPUT||"liquidity-history-evidence.json";
 if(!pool||!rpc||!/^https:\/\//.test(rpc)||!Number.isInteger(limit)||!Number.isInteger(pageSize))throw Error("INVALID_HISTORY_CONFIGURATION");
 const {PublicKey}=await import("@solana/web3.js");
@@ -12,6 +12,7 @@ let state={schemaVersion:1,pool,before:null,seen:[],events:[],pages:0,complete:f
 if(process.env.GLITCH_HISTORY_CHECKPOINT){
  const prior=JSON.parse(await readFile(process.env.GLITCH_HISTORY_CHECKPOINT,"utf8"));
  if(prior.pool!==pool||prior.schemaVersion!==1||!Array.isArray(prior.seen)||!Array.isArray(prior.events))throw Error("INVALID_CHECKPOINT");
+ if(prior.classification!=="AMOUNT_RECONCILED_AUTHORIZATION_PENDING"||prior.complete===true&&prior.errors?.some(e=>e.stage==="unresolved"))throw Error("INVALID_CHECKPOINT_CLASSIFICATION");
  state=prior;
 }
 const seen=new Set(state.seen);
@@ -25,8 +26,8 @@ async function call(url,method,params){
 function extract(tx,signature,slot,provider){
  const instructions=[...(tx?.transaction?.message?.instructions||[]),...(tx?.meta?.innerInstructions||[]).flatMap(x=>x.instructions||[])];
  const names=["set_coin_creator","migrate_pool_coin_creator","claim_creator_fee","collect_creator_fee","fee_sharing","set_creator"];
- const hits=instructions.filter(i=>names.some(n=>JSON.stringify(i.parsed||i).toLowerCase().includes(n)));
- return hits.map(i=>({signature,slot,provider,programId:i.programId||null,rawInstruction:i,authorizationVerified:false}));
+ const hits=instructions.filter(i=>i.parsed?.type&&names.includes(String(i.parsed.type).toLowerCase()));
+ return hits.map(i=>({signature,slot,provider,programId:i.programId||null,rawInstruction:i,authorizationVerified:false,classification:"UNVERIFIED_CANDIDATE",decoderCoverage:"parsed_instruction_only"}));
 }
 for(let page=0;requests<limit&&!state.complete;page++){
  let batch;
@@ -51,9 +52,9 @@ for(let page=0;requests<limit&&!state.complete;page++){
  // Do not advance cursor past unresolved signatures or unprocessed items.
  if(batch.some(x=>!seen.has(x.signature)))break;
  state.before=batch.at(-1).signature;state.pages++;
- if(batch.length<pageSize)state.complete=true;
+ // A short page is not proof of full history exhaustion; require an empty follow-up page.
 }
-state.seen=[...seen];state.requestCount=(state.requestCount||0)+requests;state.errors=[...(state.errors||[]),...errors];state.updatedAt=new Date().toISOString();state.finalScore=null;state.withdrawalVerified=false;
+state.seen=[...seen];state.requestCount=(state.requestCount||0)+requests;state.errors=[...(state.errors||[]),...errors];state.updatedAt=new Date().toISOString();state.finalScore=null;state.withdrawalVerified=false;state.authorizationVerified=false;
 await writeFile(output,JSON.stringify(state,null,2));
 console.log(JSON.stringify({status:state.complete?"history_exhausted":errors.length?"partial":"checkpointed",requests,signaturesProcessed:seen.size,candidateEvents:state.events.length,errors:errors.length,classification:state.classification}));
 if(errors.length)process.exitCode=1;
