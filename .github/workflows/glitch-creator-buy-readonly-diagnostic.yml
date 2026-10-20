@@ -6,6 +6,14 @@ on:
         description: 'Comma-separated finalized transaction signatures (1-5)'
         required: true
         type: string
+      mint:
+        description: 'Token mint for this diagnostic (leave empty for tracked token)'
+        required: false
+        type: string
+      buyer:
+        description: 'Buyer wallet for this diagnostic (leave empty for tracked creator)'
+        required: false
+        type: string
 permissions:
   contents: read
 jobs:
@@ -30,4 +38,6 @@ jobs:
         env:
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
           CREATOR_DIAGNOSTIC_SIGNATURES: ${{ inputs.signatures }}
+          CREATOR_INVESTIGATION_MINT: ${{ inputs.mint }}
+          CREATOR_INVESTIGATION_WALLET: ${{ inputs.buyer }}
         run: node scripts/creator-buy-readonly-diagnostic.mjs
