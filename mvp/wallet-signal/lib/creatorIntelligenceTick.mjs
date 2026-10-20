@@ -56,7 +56,8 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    const queue=[...new Set([...(previous.creatorPendingSignatures||[]),...(state.creatorHistorySignatures||[])])].filter(sig=>!processed.has(sig));
    const decoded=await inspectCreatorHistoricalBatch({mint,creator:creators[0],signatures:queue,rpc,maxTransactions:creatorBatchSize,swapDecoder});
    const verifiedSwapSales=[...new Map([...(previous.verifiedSwapSales||[]),...decoded.verifiedSales].map(x=>[x.signature,x])).values()];
-   state={...state,verifiedSwapSales,creatorSellCandidates:[...new Map([...(previous.creatorSellCandidates||[]),...decoded.sellCandidates].map(item=>[item.signature,item])).values()].slice(-1000),creatorProcessedSignatures:[...new Set([...processed,...decoded.processed])].slice(-5000),
+   state={...state,verifiedSwapSales,creatorSellCandidates:[...new Map([...(previous.creatorSellCandidates||[]),...decoded.sellCandidates].map(item=>[item.signature,item])).values()].slice(-1000),
+    creatorAcquisitionMovements:[...new Map([...(previous.creatorAcquisitionMovements||[]),...decoded.acquisitionMovements].map(item=>[item.signature+':'+item.tokenAccount,item])).values()].slice(-5000),creatorProcessedSignatures:[...new Set([...processed,...decoded.processed])].slice(-5000),
     creatorPendingSignatures:[...new Set([...decoded.pending,...queue.filter(sig=>!decoded.processed.includes(sig)&&!decoded.pending.includes(sig))])].slice(-5000),
     creatorTransactionObservations:[...(previous.creatorTransactionObservations||[]),...decoded.observations].slice(-1000),
     creatorSwapVerificationComplete:false,creatorHistoryComplete:false};
