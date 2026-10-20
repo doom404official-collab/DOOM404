@@ -1,3 +1,4 @@
+import {decodeHistoricalCandidate,validateHistoryCheckpoint} from "../lib/liquidityHistoricalDecoder.mjs";
 import {writeFile,readFile} from "node:fs/promises";
 const pool=process.env.GLITCH_LIQUIDITY_POOL;
 const rpc=process.env.HELIUS_RPC_URL;
@@ -11,8 +12,7 @@ if(new PublicKey(pool).toBase58()!==pool)throw Error("INVALID_POOL");
 let state={schemaVersion:1,pool,before:null,seen:[],events:[],pages:0,complete:false,classification:"AMOUNT_RECONCILED_AUTHORIZATION_PENDING"};
 if(process.env.GLITCH_HISTORY_CHECKPOINT){
  const prior=JSON.parse(await readFile(process.env.GLITCH_HISTORY_CHECKPOINT,"utf8"));
- if(prior.pool!==pool||prior.schemaVersion!==1||!Array.isArray(prior.seen)||!Array.isArray(prior.events))throw Error("INVALID_CHECKPOINT");
- if(prior.classification!=="AMOUNT_RECONCILED_AUTHORIZATION_PENDING"||prior.complete===true&&prior.errors?.some(e=>e.stage==="unresolved"))throw Error("INVALID_CHECKPOINT_CLASSIFICATION");
+ validateHistoryCheckpoint(prior,pool);
  state=prior;
 }
 const seen=new Set(state.seen);
@@ -26,9 +26,7 @@ async function call(url,method,params){
 }
 function extract(tx,signature,slot,provider){
  const instructions=[...(tx?.transaction?.message?.instructions||[]),...(tx?.meta?.innerInstructions||[]).flatMap(x=>x.instructions||[])];
- const names=["set_coin_creator","migrate_pool_coin_creator","claim_creator_fee","collect_creator_fee","fee_sharing","set_creator"];
- const hits=instructions.filter(i=>i.parsed?.type&&names.includes(String(i.parsed.type).toLowerCase()));
- return hits.map(i=>({signature,slot,provider,programId:i.programId||null,rawInstruction:i,authorizationVerified:false,classification:"UNVERIFIED_CANDIDATE",decoderCoverage:"parsed_instruction_only"}));
+ return instructions.map(i=>decodeHistoricalCandidate(i,signature,slot,provider)).filter(Boolean);
 }
 for(let page=0;requests<limit&&!state.complete;page++){
  let batch;
