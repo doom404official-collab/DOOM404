@@ -37,4 +37,18 @@ assert.equal(promotePumpFunCreatorBuy({mint,creator,signature,transaction:tx,
 const extracted=extractIndependentPumpFunBuySettlement({mint,creator,signature,transaction:tx});
 assert.equal(extracted?.independentlyVerified,true);
 assert.equal(promotePumpFunCreatorBuy({mint,creator,signature,transaction:tx,independentSettlement:extracted}).status,'VERIFIED');
+const wrongPool={...tx,meta:{...tx.meta,innerInstructions:[{index:0,instructions:[
+ {program:'spl-token',parsed:{type:'transferChecked',info:{source:'unrelated',destination:'buyer-ata',mint,tokenAmount:{amount:'100'}}}},
+ {program:'system',parsed:{type:'transfer',info:{source:creator,destination:derived.bondingCurve,lamports:100000}}}
+ ]}]}};
+assert.equal(extractIndependentPumpFunBuySettlement({mint,creator,signature,transaction:wrongPool}),null);
+const unrelatedPayment={...tx,meta:{...tx.meta,innerInstructions:[{index:0,instructions:[
+ {program:'spl-token',parsed:{type:'transferChecked',info:{source:derived.poolTokenAccount,destination:'buyer-ata',mint,tokenAmount:{amount:'100'}}}},
+ {program:'system',parsed:{type:'transfer',info:{source:creator,destination:'unrelated',lamports:100000}}}
+ ]}]}};
+assert.equal(extractIndependentPumpFunBuySettlement({mint,creator,signature,transaction:unrelatedPayment}),null);
+const duplicatePayment={...tx,meta:{...tx.meta,innerInstructions:[{index:0,instructions:[
+ ...tx.meta.innerInstructions[0].instructions,tx.meta.innerInstructions[0].instructions[1]
+ ]}]}};
+assert.equal(extractIndependentPumpFunBuySettlement({mint,creator,signature,transaction:duplicatePayment}),null);
 console.log('Pump.fun creator buy promotion gate tests passed');
