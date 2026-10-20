@@ -2,7 +2,8 @@
  * Never merges into a leased checkpoint or promotes a score.
  */
 export function summarizeExternalHolderNetworkEvidence({checkpoint,evidenceRows=[]}={}){
- if(!checkpoint||!checkpoint.signatures||!Array.isArray(evidenceRows))throw Error("INVALID_EXTERNAL_NETWORK_INPUT");
+ if(!checkpoint||typeof checkpoint!=="object"||!Array.isArray(evidenceRows))throw Error("INVALID_EXTERNAL_NETWORK_INPUT");
+ if(!checkpoint.signatures||typeof checkpoint.signatures!=="object")return {status:"unavailable",reason:"NETWORK_SIGNATURE_CHECKPOINT_MISSING",checkpointModified:false,scorePromoted:false};
  const retained=checkpoint.networkEvidence?.processed??{};
  const seen=new Set(),counts={rows:0,alreadyInCheckpoint:0,eligibleForReview:0,invalid:0,unresolved:0,notChecked:0,duplicateRows:0,transferRecords:0};
  for(const row of evidenceRows){
