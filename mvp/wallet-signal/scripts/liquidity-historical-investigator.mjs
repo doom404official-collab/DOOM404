@@ -29,7 +29,7 @@ async function call(url,method,params){
  requests++;
  const response=await fetch(url,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method,params}),signal:AbortSignal.timeout(20000)});
  if(!response.ok)throw Error("RPC_HTTP_"+response.status);
- const body=await response.json();if(body.error)throw Error("RPC_"+body.error.code);return body.result;
+ const body=await response.json();if(body.error){const detail=String(body.error.message||"").slice(0,240);throw Error("RPC_"+body.error.code+": "+detail);}return body.result;
 }
 function extract(tx,signature,slot,provider){
  const instructions=[...(tx?.transaction?.message?.instructions||[]),...(tx?.meta?.innerInstructions||[]).flatMap(x=>x.instructions||[])];
