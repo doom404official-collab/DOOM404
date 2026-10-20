@@ -16,6 +16,7 @@ export function decodeHistoricalCandidate(instruction,signature,slot,provider){
    if(bytes.length>=8){name=candidates.get(Buffer.from(bytes.subarray(0,8)).toString("hex"))||null;coverage="anchor_discriminator_only";}
  }
  if(!name)return null;
+ // A recognized discriminator does not prove that the instruction executed successfully.
  return {signature,slot,provider,operation:name,programId:instruction.programId,rawInstruction:instruction,authorizationVerified:false,classification:"UNVERIFIED_CANDIDATE",decoderCoverage:coverage,accountRolesVerified:false,signerAuthorizationVerified:false};
 }
 function decodeBase58(input){
@@ -26,6 +27,11 @@ function decodeBase58(input){
  while(num>0n){values.unshift(Number(num&255n));num>>=8n;}
  for(const char of input){if(char!=="1")break;values.unshift(0);}
  return Uint8Array.from(values);
+}
+export function classifyHistoricalTransaction(tx){
+ if(!tx||!tx.meta)return "TRANSACTION_META_UNAVAILABLE";
+ if(tx.meta.err!==null&&tx.meta.err!==undefined)return "FAILED_TRANSACTION";
+ return "EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED";
 }
 export function validateHistoryCheckpoint(prior,pool){
  if(!prior||prior.schemaVersion!==1||prior.pool!==pool||prior.classification!==HISTORY_CLASSIFICATION||!Array.isArray(prior.seen)||!Array.isArray(prior.events)||!Array.isArray(prior.pendingSignatures||[]))throw Error("INVALID_HISTORY_CHECKPOINT");
