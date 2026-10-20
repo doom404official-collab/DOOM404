@@ -1,4 +1,5 @@
 import {decodeHistoricalCandidate,validateHistoryCheckpoint,classifyHistoricalTransaction,inspectHistoricalSignerEvidence,historicalRoleAssessment} from "../lib/liquidityHistoricalDecoder.mjs";
+import {retrieveHistoricalTransaction} from "../lib/liquidityHistoricalTransactionCompat.mjs";
 import {writeFile,readFile} from "node:fs/promises";
 const pool=process.env.GLITCH_LIQUIDITY_POOL;
 const rpc=process.env.HELIUS_RPC_URL;
@@ -46,10 +47,10 @@ for(let page=0;requests<limit&&!state.complete;page++){
   if(attemptedThisRun.has(item.signature)){errors.push({stage:"retry_guard",signature:item.signature});break;}
   attemptedThisRun.add(item.signature);
   let tx=null,provider="helius";
-  try{tx=await call(rpc,"getTransaction",[item.signature,{encoding:"jsonParsed",maxSupportedTransactionVersion:0}]);}
+  try{tx=await retrieveHistoricalTransaction(call,rpc,item.signature);}
   catch(e){errors.push({stage:"transaction",signature:item.signature,message:String(e.message)});}
   if(!tx&&fallback&&requests<limit){
-   try{tx=await call(fallback,"getTransaction",[item.signature,{encoding:"jsonParsed",maxSupportedTransactionVersion:0}]);provider="alchemy";}
+   try{tx=await retrieveHistoricalTransaction(call,fallback,item.signature);provider="alchemy";}
    catch(e){errors.push({stage:"archive",signature:item.signature,message:String(e.message)});}
   }
   if(!tx){const reason=requests>=limit?"REQUEST_BUDGET_EXHAUSTED":"RPC_TRANSACTION_UNAVAILABLE";errors.push({stage:"unresolved",signature:item.signature,reason});pending.add(item.signature);unresolvedReasons.set(item.signature,reason);break;}
