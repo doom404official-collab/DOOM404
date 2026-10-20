@@ -28,6 +28,13 @@ function decodeBase58(input){
  for(const char of input){if(char!=="1")break;values.unshift(0);}
  return Uint8Array.from(values);
 }
+export function inspectHistoricalSignerEvidence(tx,event){
+ const keys=tx?.transaction?.message?.accountKeys;
+ if(!Array.isArray(keys)||!event)return {status:"SIGNER_EVIDENCE_UNAVAILABLE",signers:[],accountRolesVerified:false,signerAuthorizationVerified:false};
+ const signers=keys.filter(k=>typeof k==="object"&&k.signer===true).map(k=>k.pubkey).filter(k=>typeof k==="string");
+ const referenced=(event.rawInstruction?.accounts||[]).map(a=>typeof a==="string"?a:a?.pubkey).filter(Boolean);
+ return {status:referenced.length?"SIGNERS_OBSERVED_ROLES_UNVERIFIED":"INSTRUCTION_ACCOUNTS_UNAVAILABLE",signers,referencedAccounts:referenced,accountRolesVerified:false,signerAuthorizationVerified:false};
+}
 export function classifyHistoricalTransaction(tx){
  if(!tx||!tx.meta)return "TRANSACTION_META_UNAVAILABLE";
  if(tx.meta.err!==null&&tx.meta.err!==undefined)return "FAILED_TRANSACTION";
