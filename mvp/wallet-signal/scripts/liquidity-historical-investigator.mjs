@@ -1,4 +1,5 @@
 import {decodeHistoricalCandidate,validateHistoryCheckpoint,classifyHistoricalTransaction,inspectHistoricalSignerEvidence,historicalRoleAssessment} from "../lib/liquidityHistoricalDecoder.mjs";
+import {retryLiquidityRateLimit} from "../lib/liquidityHistoricalRateLimit.mjs";
 import {retrieveHistoricalTransaction} from "../lib/liquidityHistoricalTransactionCompat.mjs";
 import {writeFile,readFile} from "node:fs/promises";
 const pool=process.env.GLITCH_LIQUIDITY_POOL;
@@ -37,7 +38,7 @@ function extract(tx,signature,slot,provider){
 }
 for(let page=0;requests<limit&&!state.complete;page++){
  let batch;
- try{batch=await call(rpc,"getSignaturesForAddress",[pool,{limit:pageSize,...(state.before?{before:state.before}:{})}]);}
+ try{batch=await retryLiquidityRateLimit(()=>call(rpc,"getSignaturesForAddress",[pool,{limit:pageSize,...(state.before?{before:state.before}:{})}]));}
  catch(e){errors.push({stage:"signatures",message:String(e.message)});break;}
  if(!Array.isArray(batch)){errors.push({stage:"signatures",message:"INVALID_RESPONSE"});break;}
  if(batch.length===0){state.complete=pending.size===0;break;}
@@ -47,7 +48,7 @@ for(let page=0;requests<limit&&!state.complete;page++){
   if(attemptedThisRun.has(item.signature)){errors.push({stage:"retry_guard",signature:item.signature});break;}
   attemptedThisRun.add(item.signature);
   let tx=null,provider="helius";
-  try{tx=await retrieveHistoricalTransaction(call,rpc,item.signature);}
+  try{tx=await retryLiquidityRateLimit(()=>retrieveHistoricalTransaction(call,rpc,item.signature));}
   catch(e){errors.push({stage:"transaction",signature:item.signature,message:String(e.message)});}
   if(!tx&&fallback&&requests<limit){
    try{tx=await retrieveHistoricalTransaction(call,fallback,item.signature);provider="alchemy";}
