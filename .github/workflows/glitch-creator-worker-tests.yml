@@ -72,6 +72,7 @@ jobs:
           node scripts/test-pump-fun-buy-reconciliation.mjs
           node scripts/test-pump-fun-buy-positive.mjs
           node scripts/test-pump-fun-buy-promotion.mjs
+          node scripts/test-pump-fun-buy-shadow.mjs
           node scripts/test-creator-buy-batch-integration.mjs
           node scripts/test-creator-sell-flows.mjs
           node scripts/test-pump-fun-creator-sell.mjs
