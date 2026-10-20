@@ -16,3 +16,14 @@ test("unknown errors cannot be misclassified as version incompatibility",()=>{
  assert.equal(isUnsupportedTransactionVersion("RPC_-32004"),false);
  assert.equal(isUnsupportedTransactionVersion("unsupported transaction version"),true);
 });
+
+test("RPC error containing version incompatibility is retried",async()=>{
+ const versions=[];
+ const call=async(_url,_method,params)=>{
+  versions.push(params[1].maxSupportedTransactionVersion);
+  if(versions.length===1)throw Error("RPC_-32015: Transaction version (1) is not supported by the requesting client. Please try the request again with maxSupportedTransactionVersion: 1");
+  return {slot:458811200};
+ };
+ assert.deepEqual(await retrieveHistoricalTransaction(call,"https://rpc.invalid","signature"),{slot:458811200});
+ assert.deepEqual(versions,[0,1]);
+});
