@@ -19,7 +19,10 @@ for(const signature of signatures){
   const outer=transaction.transaction?.message?.instructions||[];
   const keys=transaction.transaction?.message?.accountKeys||[];
   const pumpInstructionCount=outer.filter(ix=>{const key=Number.isInteger(ix?.programIdIndex)?keys[ix.programIdIndex]:null;return ix?.programId===PUMP_FUN_PROGRAM_ID||(typeof key==='string'?key:key?.pubkey?.toString?.())===PUMP_FUN_PROGRAM_ID;}).length;
-  results.push({signature,status:shadow.status,diagnostic:shadow.diagnostic||null,pumpInstructionCount,recognizedBuyGroups:groups.length,
+  const tokenBalances=[...(transaction.meta?.preTokenBalances||[]),...(transaction.meta?.postTokenBalances||[])];
+  const observedMints=[...new Set(tokenBalances.map(x=>x?.mint).filter(x=>typeof x==='string'))].slice(0,12);
+  const observedOwners=[...new Set(tokenBalances.map(x=>x?.owner).filter(x=>typeof x==='string'))].slice(0,12);
+  results.push({signature,status:shadow.status,diagnostic:shadow.diagnostic||null,pumpInstructionCount,recognizedBuyGroups:groups.length,observedMints,observedOwners,
    instructionCount:transaction.transaction?.message?.instructions?.length||0,transactionFailed:transaction.meta?.err!=null,
    eligibleForLivePromotion:false});
  }catch(error){results.push({signature,status:'FETCH_OR_DECODE_FAILED',errorCode:['RPC_RATE_LIMITED','RPC_AUTH_FAILED','RPC_RESPONSE_ERROR','RPC_UNSUPPORTED_VERSION'].includes(error?.message)?error.message:'DIAGNOSTIC_FAILED'});}
