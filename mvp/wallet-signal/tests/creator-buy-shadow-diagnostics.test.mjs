@@ -31,3 +31,11 @@ test('unrecognized Pump.fun instruction with indexed program ID is diagnosed wit
  assert.equal(result.diagnostic,'PUMP_FUN_INSTRUCTION_UNRECOGNIZED');
  assert.equal(result.purchaseVerified,false);
 });
+
+test('explicit Pump.fun instruction with unrecognized payload stays diagnostic only',()=>{
+ const tx={...transaction,transaction:{message:{accountKeys:[],instructions:[{programId:'6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P',data:'2'}]}}};
+ const result=inspectPumpFunBuyShadow({mint,creator,signature,transaction:tx});
+ assert.equal(result.status,'NO_VERIFIED_BUY_EVIDENCE');
+ assert.equal(result.diagnostic,'PUMP_FUN_INSTRUCTION_UNRECOGNIZED');
+ assert.equal(result.purchaseVerified,false);
+});
