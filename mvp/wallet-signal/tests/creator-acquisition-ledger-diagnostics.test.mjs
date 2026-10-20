@@ -28,3 +28,11 @@ test('incomplete history cannot become score eligible',()=>{
  assert.equal(result.purchasedRaw,'100');
  assert.equal(result.scoreEligible,false);
 });
+
+test('malformed null event fails closed without crashing other evidence',()=>{
+ const result=run([null,base]);
+ assert.equal(result.acceptedCount,1);
+ assert.equal(result.rejected.length,1);
+ assert.equal(result.rejected[0].detail,'INVALID_INSTRUCTION_IDENTITY');
+ assert.equal(result.scoreEligible,false);
+});
