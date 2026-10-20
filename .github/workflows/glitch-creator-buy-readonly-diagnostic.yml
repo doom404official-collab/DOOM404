@@ -1,0 +1,33 @@
+name: GLITCH creator buy read-only diagnostic
+on:
+  workflow_dispatch:
+    inputs:
+      signatures:
+        description: 'Comma-separated finalized transaction signatures (1-5)'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/creator-history-worker-500
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mvp/wallet-signal/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Inspect historical transactions without writing
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          CREATOR_DIAGNOSTIC_SIGNATURES: ${{ inputs.signatures }}
+        run: node scripts/creator-buy-readonly-diagnostic.mjs
