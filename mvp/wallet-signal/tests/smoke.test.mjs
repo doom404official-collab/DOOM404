@@ -30,11 +30,11 @@ test("market-data claims remain explicitly limited", () => {
   assert.match(poolEvidence, /lpLocksVerified: false/);
 });
 test("fee inspection never treats unparsed fields as verified zero", () => {
-  assert.match(extensions, /olderFee: normalizeFee/);
-  assert.match(extensions, /newerFee: normalizeFee/);
+  assert.match(extensions, /olderFee: normalizeTransferFee/);
+  assert.match(extensions, /newerFee: normalizeTransferFee/);
   assert.match(extensions, /configAuthorityReported/);
   assert.match(extensions, /withdrawalAuthorityReported/);
-  assert.match(extensions, /maximumFee === undefined/);
+  assert.match(extensions, /tokenTransferFeeEvidence/);
 });
 test("token accounts are not claimed as unique holders", () => {
   assert.match(concentration, /uniqueOwnersResolved: false/);

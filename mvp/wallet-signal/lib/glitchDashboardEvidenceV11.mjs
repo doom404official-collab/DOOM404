@@ -1,4 +1,5 @@
 import {scoreTokenSecurity,scoreHolderIntelligence,scoreCreatorIntelligence,scoreLiquidityQuality} from './glitchAttributeEnginesV11.mjs';
+import {resolveEpochFee,consistentEpochContext} from './tokenTransferFeeEvidence.mjs';
 import {attributes} from './glitchScoringV11.mjs';
 import {reconcileHolderSnapshot} from './reconcileHolderSnapshot.mjs';
 const finite=(v,max=100)=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=max;
@@ -12,11 +13,13 @@ export function adaptDashboardEvidence({result,extensions,concentration,creatorE
  const mint=result?.mint;
  const same=x=>Boolean(mint&&x?.mint===mint);
  const parsed=!!mint&&result.authorityDetailsStatus!=='not_parsed'&&Object.hasOwn(result,'mintAuthority')&&Object.hasOwn(result,'freezeAuthority');
- const ext=same(extensions)?extensions:null,fee=ext?.transferFee;
+ const ext=same(extensions)&&extensions?.verified===true&&evidenceFresh(extensions.observedAt,now)?extensions:null,fee=ext?.transferFee;
+ const context=ext?.epochContext;
+ const epochVerified=context?.commitment==='confirmed'&&consistentEpochContext({epoch:context.epoch,absoluteSlot:context.beforeSlot},{epoch:context.epoch,absoluteSlot:context.afterSlot},context.accountSlot);
+ const effectiveFee=fee?.status==='observed'&&epochVerified?resolveEpochFee({...fee,epoch:context.epoch}):null;
  const security=scoreTokenSecurity({tokenProgram:result?.tokenProgram,authoritiesParsed:parsed,mintAuthority:result?.mintAuthority,freezeAuthority:result?.freezeAuthority,
   feeExtensionVerified:ext?.verified===true,feeApplicable:fee?.status==='observed'?true:fee?.status==='not_observed'?false:undefined,
-  // Activation epoch isn't verified by the present endpoint. Never treat the
-  // newer configured schedule as proof of the currently effective fee.
+  // Resolved schedule is evidence, not verified transfer behavior or a cap-adjusted score.
   feeConfigAuthorityReported:ext?.verified===true&&fee?.configAuthorityReported===true,feeConfigAuthority:fee?.configAuthority});
  const top20=same(concentration)&&finite(concentration.top20TokenAccountSharePct)?concentration.top20TokenAccountSharePct:undefined;
  let holder=scoreHolderIntelligence({top20SharePct:top20});
@@ -43,6 +46,6 @@ export function adaptDashboardEvidence({result,extensions,concentration,creatorE
  const creatorScore=scoreCreatorIntelligence({creatorVerified,creatorHistoryComplete:!!selling,soldPct1h:selling?.[0],soldPct24h:selling?.[1],soldPct7d:selling?.[2]});
  const liquidityScore=scoreLiquidityQuality({}); // Stage-1 producer explicitly has no verified scoring inputs.
  return {scores:{token_security:security,holder_intelligence:holder,creator_intelligence:creatorScore,liquidity_quality_safety:liquidityScore},
-  top20,creatorVerified,matchedHolder,creator:creatorVerified&&same(creator)&&creator.creator===creatorEvidence.creator?creator:null,liquidity:same(liquidity)?liquidity:null,
+  fee, effectiveFee, top20,creatorVerified,matchedHolder,creator:creatorVerified&&same(creator)&&creator.creator===creatorEvidence.creator?creator:null,liquidity:same(liquidity)?liquidity:null,
   creatorCompatible,creatorMissing:creator?.missing||['Persisted creator evidence unavailable'],liquidityMissing:liquidity?.missing||['Persisted liquidity evidence unavailable']};
 }

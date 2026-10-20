@@ -37,9 +37,8 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
  const [fullScreen,setFullScreen]=useState(false);
  const [holderView,setHolderView]=useState("overview");
  const parsed=!!result&&result.authorityDetailsStatus!=="not_parsed"&&Object.hasOwn(result,"mintAuthority")&&Object.hasOwn(result,"freezeAuthority");
- const fee=extensions?.mint===result?.mint?extensions.transferFee:null;
  const adapted=adaptDashboardEvidence({result,extensions,concentration,creatorEvidence,historicalHolders,verifiedHolderEnvelope,workerEvidence});
- const {scores,top20}=adapted;
+ const {scores,top20,fee,effectiveFee}=adapted;
  const feeNA=scores.token_security.components[0].reason==="not_applicable";
  const verifiedHolderAssessment=adapted.matchedHolder?verifiedHolderEnvelope?.assessment:null;
  const historical=summarizeHistoricalHolderPreview({historical:historicalHolders?.mint===result?.mint?historicalHolders:null,compatible:holderSnapshotCompatible});
@@ -47,7 +46,7 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
  const overallScore=overallAssessment.score;
  const fields={
   token_security:[
-   row("Transfer Fee Schedule",feeNA?"Not applicable":fee?.status==="observed"?fmt(fee?.newerFee?.percentage,"%") :"Pending","Newer configured schedule only; effective epoch and maximum fee unverified"),
+   row("Transfer Fee Schedule",feeNA?"Not applicable":effectiveFee?fmt(effectiveFee.percentage,"%") :"Pending",effectiveFee?`Observed epoch ${effectiveFee.observedEpoch}; maximum ${effectiveFee.maximumFeeRaw} raw token units. Amount-dependent fee rounds up and is capped. Transfer behavior not verified; scoring pending.`:"Awaiting fresh, epoch-resolved fee evidence"),
    row("Fee Configuration Authority",feeNA?"Not applicable":fee?.configAuthorityReported?fee.configAuthority?addr(fee.configAuthority):"Revoked":"Pending","Can the fee schedule be changed?"),
    row("Mint Authority",parsed?result.mintAuthority?addr(result.mintAuthority):"Revoked":"Pending","Current mint permission"),
    row("Freeze Authority",parsed?result.freezeAuthority?addr(result.freezeAuthority):"Revoked":"Pending","Current freeze permission")
