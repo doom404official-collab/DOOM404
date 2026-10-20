@@ -1,5 +1,9 @@
 import {createSolanaRpcAdapter} from '../lib/creatorOriginRpc.mjs';
 import {inspectPumpFunBuyShadow} from '../lib/pumpFunBuyShadowValidation.mjs';
+import {derivePumpFunBondingCurveAccounts} from '../lib/pumpFunBondingCurveDerivation.mjs';
+import {verifyHistoricalPumpFunPoolOwnership} from '../lib/pumpFunHistoricalPoolOwnership.mjs';
+import {observePumpFunCreatorBuyReceipt} from '../lib/pumpFunCreatorBuyReceipt.mjs';
+import {corroboratePumpFunCreatorBuySettlement} from '../lib/pumpFunCreatorBuySettlement.mjs';
 import {PUMP_FUN_PROGRAM_ID} from '../lib/pumpFunSellCandidates.mjs';
 import {groupPumpFunBuyInstructions} from '../lib/pumpFunBuyInstructionGroups.mjs';
 const mint=process.env.CREATOR_INVESTIGATION_MINT||'98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
@@ -22,8 +26,16 @@ for(const signature of signatures){
   const tokenBalances=[...(transaction.meta?.preTokenBalances||[]),...(transaction.meta?.postTokenBalances||[])];
   const observedMints=[...new Set(tokenBalances.map(x=>x?.mint).filter(x=>typeof x==='string'))].slice(0,12);
   const observedOwners=[...new Set(tokenBalances.map(x=>x?.owner).filter(x=>typeof x==='string'))].slice(0,12);
+  const derived=derivePumpFunBondingCurveAccounts({mint});
+  const poolOwnership=verifyHistoricalPumpFunPoolOwnership({mint,transaction});
+  const receipts=observePumpFunCreatorBuyReceipt({mint,creator,transaction});
+  const settlementCandidates=corroboratePumpFunCreatorBuySettlement({mint,creator,transaction});
+  const settlementDiagnostics={poolDerivation:derived.status,poolOwnership:poolOwnership.status,
+   poolOwnershipReason:poolOwnership.reason||null,matchingBuyerReceipts:receipts.length,
+   corroboratedSettlementCandidates:settlementCandidates.length,
+   buyGroupsWithInnerInstructions:groups.filter(g=>g.instructionGroupFound).length};
   const buyerCandidates=observedOwners.map(owner=>({owner,preRaw:tokenBalances.filter(x=>(transaction.meta?.preTokenBalances||[]).includes(x)&&x?.owner===owner&&x?.mint===observedMints[0]).reduce((n,x)=>n+BigInt(x?.uiTokenAmount?.amount||'0'),0n).toString(),postRaw:tokenBalances.filter(x=>(transaction.meta?.postTokenBalances||[]).includes(x)&&x?.owner===owner&&x?.mint===observedMints[0]).reduce((n,x)=>n+BigInt(x?.uiTokenAmount?.amount||'0'),0n).toString()}));
-  results.push({signature,status:shadow.status,diagnostic:shadow.diagnostic||null,pumpInstructionCount,recognizedBuyGroups:groups.length,observedMints,observedOwners,buyerCandidates,
+  results.push({signature,status:shadow.status,diagnostic:shadow.diagnostic||null,pumpInstructionCount,recognizedBuyGroups:groups.length,observedMints,observedOwners,buyerCandidates,settlementDiagnostics,
    instructionCount:transaction.transaction?.message?.instructions?.length||0,transactionFailed:transaction.meta?.err!=null,
    eligibleForLivePromotion:false});
  }catch(error){results.push({signature,status:'FETCH_OR_DECODE_FAILED',errorCode:['RPC_RATE_LIMITED','RPC_AUTH_FAILED','RPC_RESPONSE_ERROR','RPC_UNSUPPORTED_VERSION'].includes(error?.message)?error.message:'DIAGNOSTIC_FAILED'});}
