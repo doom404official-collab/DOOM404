@@ -84,3 +84,27 @@ test("checkpoint rejects events already promoted to verified authorization",()=>
  assert.equal(validateHistoryCheckpoint(state,"pool"),state);
  assert.throws(()=>validateHistoryCheckpoint({...state,events:[{...state.events[0],authorizationVerified:true}]},"pool"),/UNSAFE/);
 });
+
+// Official program address: https://github.com/pump-fun/pump-public-docs/blob/main/idl/pump_amm.json
+// Real transaction fixture independently retrieved from Solana public RPC on 2026-10-20.
+test("historical decoder uses official Pump AMM identity present in a real transaction",async()=>{
+ const {readFile}=await import("node:fs/promises");
+ const fixture=JSON.parse(await readFile(new URL("./fixtures/liquidity-pump-program-identity.json",import.meta.url),"utf8"));
+ const officialProgram="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";
+ assert.equal(PUMP_AMM_PROGRAM,officialProgram);
+ assert.ok(fixture.instructions.length>0);
+ assert.ok(fixture.instructions.every(i=>i.programId===PUMP_AMM_PROGRAM));
+ // The real fixture proves program identity, not a creator update or fee authorization.
+});
+
+test("official-program candidate is recognized but old typo and unrelated programs are rejected",()=>{
+ // Synthetic recognized operation, not a claim that the real fixture contained it.
+ const instruction={programId:"pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",data:base58(Buffer.from(anchorDiscriminator("admin_set_coin_creator"),"hex")),accounts:["pool","signer"]};
+ const event=decodeHistoricalCandidate(instruction,"synthetic-signature",123,"fixture");
+ assert.ok(event);assert.equal(event.operation,"admin_set_coin_creator");
+ assert.equal(event.classification,"UNVERIFIED_CANDIDATE");
+ assert.equal(event.authorizationVerified,false);assert.equal(event.accountRolesVerified,false);assert.equal(event.signerAuthorizationVerified,false);
+ for(const programId of ["pAMMBay6oceH9fJKBRHGP5D4bD4sWpmqffYFZJ9xg","11111111111111111111111111111111"]){
+  assert.equal(decodeHistoricalCandidate({...instruction,programId},"synthetic-signature",123,"fixture"),null);
+ }
+});
