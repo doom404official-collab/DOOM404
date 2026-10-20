@@ -43,7 +43,7 @@ test('holder assessment needs mint job time and snapshot identity match',()=>{
  assert.equal(adaptDashboardEvidence(numeric).scores.holder_intelligence.components[2].points,null);
 });
 test('fee newer schedule remains pending; verified extension absence is N/A',()=>{
- const args={...base,result:{...base.result,tokenProgram:'spl-token-2022'},extensions:{mint,verified:true,transferFee:{status:'observed',newerFee:{percentage:0},configAuthorityReported:true,configAuthority:null}}};
+ const args={...base,result:{...base.result,tokenProgram:'spl-token-2022'},extensions:{mint,verified:true,observedAt:updatedAt,transferFee:{status:'observed',newerFee:{percentage:0},configAuthorityReported:true,configAuthority:null}}};
  assert.equal(adaptDashboardEvidence(args).scores.token_security.components[0].points,null);
  args.extensions.transferFee.status='not_observed';assert.equal(adaptDashboardEvidence(args).scores.token_security.components[0].reason,'not_applicable');
  args.extensions.mint='other';assert.equal(adaptDashboardEvidence(args).scores.token_security.components[0].reason,undefined);
