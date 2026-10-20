@@ -22,6 +22,7 @@ const seen=new Set(state.seen);
 const pending=new Set(state.pendingSignatures||[]);
 const unresolvedReasons=new Map(Object.entries(state.unresolvedReasons||{}));
 let requests=0,errors=[];
+const attemptedThisRun=new Set();
 async function call(url,method,params){
  if(requests>=limit)throw Error("HISTORY_REQUEST_BUDGET_EXHAUSTED");
  requests++;
@@ -42,6 +43,8 @@ for(let page=0;requests<limit&&!state.complete;page++){
  for(const item of batch){
   if(requests>=limit)break;
   if(seen.has(item.signature))continue;
+  if(attemptedThisRun.has(item.signature)){errors.push({stage:"retry_guard",signature:item.signature});break;}
+  attemptedThisRun.add(item.signature);
   let tx=null,provider="helius";
   try{tx=await call(rpc,"getTransaction",[item.signature,{encoding:"jsonParsed",maxSupportedTransactionVersion:0}]);}
   catch(e){errors.push({stage:"transaction",signature:item.signature,message:String(e.message)});}
