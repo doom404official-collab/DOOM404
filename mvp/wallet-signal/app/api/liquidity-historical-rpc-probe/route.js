@@ -3,7 +3,7 @@ import {PublicKey} from "@solana/web3.js";
 import {probeHistoricalAccountRpc} from "../../../lib/liquidityHistoricalRpcProbe.mjs";
 export const dynamic="force-dynamic";
 export async function POST(request){
- const token=process.env.GLITCH_HOLDER_SCAN_INTERNAL_TOKEN;
+ const token=process.env.GLITCH_LIQUIDITY_PROBE_TOKEN;
  if(!token||request.headers.get("x-glitch-internal-token")!==token)return NextResponse.json({error:"authentication_required"},{status:401});
  let payload;try{payload=await request.json()}catch{return NextResponse.json({error:"invalid_json"},{status:400})}
  const slot=payload?.slot;
