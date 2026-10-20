@@ -51,5 +51,9 @@ export function classifyHistoricalTransaction(tx){
 export function validateHistoryCheckpoint(prior,pool){
  if(!prior||prior.schemaVersion!==1||prior.pool!==pool||prior.classification!==HISTORY_CLASSIFICATION||!Array.isArray(prior.seen)||!Array.isArray(prior.events)||!Array.isArray(prior.pendingSignatures||[]))throw Error("INVALID_HISTORY_CHECKPOINT");
  if(prior.complete&&((prior.pendingSignatures||[]).length>0))throw Error("INVALID_COMPLETE_HISTORY_CHECKPOINT");
+ if(prior.before!==null&&prior.before!==undefined&&typeof prior.before!=="string")throw Error("INVALID_HISTORY_CURSOR");
+ if(new Set(prior.seen).size!==prior.seen.length)throw Error("DUPLICATE_HISTORY_SIGNATURES");
+ if((prior.pendingSignatures||[]).some(sig=>prior.seen.includes(sig)))throw Error("PENDING_SIGNATURE_ALREADY_SEEN");
+ if(prior.events.some(e=>e.authorizationVerified===true||e.classification!=="UNVERIFIED_CANDIDATE"))throw Error("UNSAFE_HISTORY_EVENT_PROMOTION");
  return prior;
 }
