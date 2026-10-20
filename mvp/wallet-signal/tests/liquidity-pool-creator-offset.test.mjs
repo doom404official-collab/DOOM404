@@ -9,7 +9,7 @@ test("IDL field-order derivation independently establishes coin_creator offset 2
  assert.equal(offsets.coin_creator,211);
  assert.equal(offsets.base_mint,43);
  assert.equal(offsets.quote_mint,75);
- const b=Buffer.alloc(260);Buffer.from([241,154,109,4,17,177,109,188]).copy(b);
+ const b=Buffer.alloc(287);Buffer.from([241,154,109,4,17,177,109,188]).copy(b);
  const expected=new PublicKey("HGBJMtxiFXSkZRk838n5mmHwvRtribAUdCAT1gyoYzSd");
  expected.toBuffer().copy(b,offsets.coin_creator);
  const result=decodeArchivedPumpAccount({owner:PROGRAM,data:[b.toString("base64"),"base64"]},"pump_amm_pool");
