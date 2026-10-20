@@ -6,6 +6,7 @@ export function assessCreatorInitialAllocation({mint,creator,launchTimestamp,dis
  if(!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(mint||'')||
  !/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(creator||'')||
  !Number.isSafeInteger(launchTimestamp)||launchTimestamp<=0||!Array.isArray(distributions))throw Error('INVALID_INITIAL_ALLOCATION_INPUT');
+ coverageComplete=coverageComplete===true;
  const seen=new Set();let total=0n;const evidence=[];
  for(const x of distributions){
   if(!x||x.mint!==mint||x.recipient!==creator||x.verifiedLaunchDistribution!==true||

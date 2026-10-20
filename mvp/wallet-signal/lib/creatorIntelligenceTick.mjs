@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { CREATOR_RETENTION_LIMIT, assertCreatorRetention, blockCreatorRetention } from './creatorRetentionIntegrity.mjs';
 import { createCreatorHistoryBudget } from './creatorHistoryBudget.mjs';
 import { createSolanaRpcAdapter } from './creatorOriginRpc.mjs';
 import { scanCreatorOrigin } from './creatorOriginPagedScan.mjs';
@@ -25,7 +26,10 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  if(!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(mint||''))throw Error('INVALID_MINT');
  const job=await store.get(mint);
  if(!job)throw Error('CREATOR_JOB_NOT_ENQUEUED');
- if(job.status==='complete')return {status:'complete',requests:0};
+ if(job.status==='complete'){
+  try{assertCreatorRetention(job.state||{}, {legacy:true});return {status:'complete',requests:0};}
+  catch(error){if(error?.code!=='CREATOR_RETENTION_BLOCKED')throw error;}
+ }
  if(job.status==='failed')return {status:'failed',requests:0};
  if(!['identification','holdings','selling','previous_launches'].includes(job.stage))return {status:'awaiting_stage_implementation',stage:job.stage,requests:0};
  if(await store.claim(mint,owner,180)!==true)return {status:'busy',requests:0};
@@ -38,6 +42,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  let state={...previous,lastError:null};
  let stage=claimed.stage,status='partial',accountedRequests=0;
  try {
+  assertCreatorRetention(previous, {legacy:true});
   if(stage==='previous_launches'){
    const creators=[...new Set((previous.originEvidence||[]).map(e=>e.creator))];
    if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
@@ -48,23 +53,30 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
   }else if(stage==='selling'){
    const creators=[...new Set((previous.originEvidence||[]).map(e=>e.creator))];
    if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
-   const history=await discoverCreatorWalletHistory({creator:creators[0],rpc,before:previous.creatorHistoryCursor||null,maxPages:3,maxSignatures:300});
+   const existingProcessed=new Set(previous.creatorProcessedSignatures||[]);
+   const outstanding=[...new Set([...(previous.creatorPendingSignatures||[]),...(previous.creatorHistorySignatures||[])])].filter(sig=>!existingProcessed.has(sig));
+   // Drain backlog before discovering another bounded page. Never discard pending work.
+   const history=outstanding.length>CREATOR_RETENTION_LIMIT-300?
+    {nextCursor:previous.creatorHistoryCursor||null,signatures:[],rpcHistoryExhausted:previous.creatorHistoryRpcExhausted===true}:
+    await discoverCreatorWalletHistory({creator:creators[0],rpc,before:previous.creatorHistoryCursor||null,maxPages:3,maxSignatures:300});
    state={...previous,lastError:null,creatorHistoryCursor:history.nextCursor,
     creatorHistorySignatures:[...new Set([...(previous.creatorHistorySignatures||[]),...history.signatures])].slice(-2000),
     creatorHistoryRpcExhausted:history.rpcHistoryExhausted,creatorHistoryComplete:false,
     lastTickAt:new Date().toISOString()};
    const processed=new Set(previous.creatorProcessedSignatures||[]);
-   const queue=[...new Set([...(previous.creatorPendingSignatures||[]),...(state.creatorHistorySignatures||[])])].filter(sig=>!processed.has(sig));
+   const queue=[...new Set([...outstanding,...history.signatures])].filter(sig=>!processed.has(sig));
    const decoded=await inspectCreatorHistoricalBatch({mint,creator:creators[0],signatures:queue,rpc,maxTransactions:creatorBatchSize,swapDecoder,buySettlementDecoder});
-   const creatorVerifiedAcquisitionEvents=[...new Map([...(previous.creatorVerifiedAcquisitionEvents||[]),...decoded.verifiedAcquisitionEvents].map(item=>[item.signature+':'+item.instructionIndex+':'+String(item.innerInstructionIndex??'outer'),item])).values()].slice(-5000);
+   const creatorVerifiedAcquisitionEvents=[...new Map([...(previous.creatorVerifiedAcquisitionEvents||[]),...decoded.verifiedAcquisitionEvents].map(item=>[item.signature+':'+item.instructionIndex+':'+String(item.innerInstructionIndex??'outer'),item])).values()];
    const verifiedSwapSales=[...new Map([...(previous.verifiedSwapSales||[]),...decoded.verifiedSales].map(x=>[x.signature,x])).values()];
    state={...state,verifiedSwapSales,creatorVerifiedAcquisitionEvents,
     creatorBuyShadowResults:[...new Map([...(previous.creatorBuyShadowResults||[]),...decoded.buyShadowResults].map(item=>[item.signature,item])).values()].slice(-1000),creatorSellCandidates:[...new Map([...(previous.creatorSellCandidates||[]),...decoded.sellCandidates].map(item=>[item.signature,item])).values()].slice(-1000),
-    creatorAcquisitionMovements:[...new Map([...(previous.creatorAcquisitionMovements||[]),...decoded.acquisitionMovements].map(item=>[item.signature+':'+item.tokenAccount,item])).values()].slice(-5000),
-    creatorTransferDirections:[...new Map([...(previous.creatorTransferDirections||[]),...decoded.transferDirections].map(item=>[item.signature+':'+item.instructionIndex+':'+String(item.innerInstructionIndex??'outer'),item])).values()].slice(-5000),creatorProcessedSignatures:[...new Set([...processed,...decoded.processed])].slice(-5000),
-    creatorPendingSignatures:[...new Set([...decoded.pending,...queue.filter(sig=>!decoded.processed.includes(sig)&&!decoded.pending.includes(sig))])].slice(-5000),
+    creatorAcquisitionMovements:[...new Map([...(previous.creatorAcquisitionMovements||[]),...decoded.acquisitionMovements].map(item=>[item.signature+':'+item.tokenAccount,item])).values()],
+    creatorTransferDirections:[...new Map([...(previous.creatorTransferDirections||[]),...decoded.transferDirections].map(item=>[item.signature+':'+item.instructionIndex+':'+String(item.innerInstructionIndex??'outer'),item])).values()],creatorProcessedSignatures:[...new Set([...processed,...decoded.processed])],
+    creatorPendingSignatures:[...new Set([...decoded.pending,...queue.filter(sig=>!decoded.processed.includes(sig)&&!decoded.pending.includes(sig))])],
     creatorTransactionObservations:[...(previous.creatorTransactionObservations||[]),...decoded.observations].slice(-1000),
     creatorSwapVerificationComplete:false,creatorHistoryComplete:false};
+   assertCreatorRetention(state);
+   state.creatorRetentionVersion=1;
    // Recover launch time from the independently rechecked creation transaction.
    let verifiedLaunchTimestamp=Number(previous.launchTimestamp);
    if(!Number.isSafeInteger(verifiedLaunchTimestamp)||verifiedLaunchTimestamp<=0){
@@ -154,8 +166,13 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
   else state.identificationStatus='INCOMPLETE';
   }
  }catch(error){
+  if(error?.code==='CREATOR_RETENTION_BLOCKED'){
+   // Roll back this entire batch, including the discovery cursor. Recovery requires
+   // an explicit replay/restored checkpoint; subsequent ticks must not clear this flag.
+   state=blockCreatorRetention(previous,error.reason);
+  }
   const safeReasons=new Set(['CREATOR_REQUEST_BUDGET_EXHAUSTED','RPC_REQUEST_BUDGET_EXHAUSTED','PAGINATION_STALLED','RPC_RATE_LIMITED','RPC_HTTP_ERROR','RPC_RESPONSE_ERROR','RPC_AUTH_FAILED','INVALID_SIGNATURE_PAGE','INVALID_SIGNATURE_RESPONSE','CREATOR_IDENTITY_UNRESOLVED','HOLDINGS_EVIDENCE_INCOMPLETE']);
-  const errorCode=safeReasons.has(error?.message)?error.message:'CREATOR_TICK_ERROR';
+  const errorCode=error?.code==='CREATOR_RETENTION_BLOCKED'?'CREATOR_RETENTION_BLOCKED':safeReasons.has(error?.message)?error.message:'CREATOR_TICK_ERROR';
   state={...state,lastError:errorCode,lastTickAt:new Date().toISOString()};
   status='partial';
  }
