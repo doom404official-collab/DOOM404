@@ -62,7 +62,7 @@ for(let page=0;requests<limit&&!state.complete;page++){
  state.before=batch.at(-1).signature;state.pages++;
  // A short page is not proof of full history exhaustion; require an empty follow-up page.
 }
-state.seen=[...seen];state.pendingSignatures=[...pending];state.unresolvedReasons=Object.fromEntries(unresolvedReasons);state.requestCount=(state.requestCount||0)+requests;state.errors=[...(state.errors||[]),...errors];state.updatedAt=new Date().toISOString();state.finalScore=null;state.withdrawalVerified=false;state.authorizationVerified=false;state.historyCoverageVerified=state.complete&&pending.size===0;state.stopReason=state.complete?"HISTORY_EXHAUSTED":requests>=limit?"REQUEST_BUDGET_EXHAUSTED":errors.length?"RETRIEVAL_INCOMPLETE":"CHECKPOINTED";
+state.seen=[...seen];state.pendingSignatures=[...pending];state.unresolvedReasons=Object.fromEntries(unresolvedReasons);state.requestCount=(state.requestCount||0)+requests;state.errors=[...(state.errors||[]),...errors];state.updatedAt=new Date().toISOString();state.finalScore=null;state.withdrawalVerified=false;state.authorizationVerified=false;state.historyCoverageVerified=state.complete&&pending.size===0;state.pendingSignatureCount=pending.size;state.signaturesAttemptedThisRun=attemptedThisRun.size;state.stopReason=state.complete?"HISTORY_EXHAUSTED":requests>=limit?"REQUEST_BUDGET_EXHAUSTED":errors.length?"RETRIEVAL_INCOMPLETE":"CHECKPOINTED";
 await writeFile(output,JSON.stringify(state,null,2));
 console.log(JSON.stringify({status:state.complete?"history_exhausted":errors.length?"partial":"checkpointed",requests,signaturesProcessed:seen.size,candidateEvents:state.events.length,errors:errors.length,classification:state.classification}));
 if(errors.length)process.exitCode=1;
