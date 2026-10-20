@@ -33,4 +33,5 @@ test("creator fee collection remains an unverified fee candidate, never an LP wi
  assert.equal(event.accountRolesVerified,false);
  assert.equal(event.signerAuthorizationVerified,false);
  assert.equal(event.classification,"UNVERIFIED_CANDIDATE");
+ assert.equal(event.feeSettlementNotLpWithdrawal,true);
 });
