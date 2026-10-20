@@ -1,3 +1,4 @@
+import {selectReplayRemainder} from "../lib/liquidityHistoricalReplayContinuation.mjs";
 import {verifyHistoricalReplaySource} from "../lib/liquidityHistoricalReplaySource.mjs";
 import {readFile,writeFile} from "node:fs/promises";
 import {decodeHistoricalCandidate,classifyHistoricalTransaction,PUMP_AMM_PROGRAM,HISTORY_CLASSIFICATION} from "../lib/liquidityHistoricalDecoder.mjs";
@@ -13,6 +14,9 @@ if(!pool||!planFile||!sourceFile||!rpc||!Number.isSafeInteger(budget)||budget<1|
 const plan=JSON.parse(await readFile(planFile,"utf8"));
 if(plan.kind!=="HISTORICAL_DECODER_REPLAY_PLAN"||plan.pool!==pool||plan.originalClassification!==HISTORY_CLASSIFICATION||plan.requiresExplicitReplay!==true||!Array.isArray(plan.signaturesToReplay)||! /^[a-f0-9]{64}$/.test(plan.sourceDigest)||plan.authorizationVerified!==false||plan.finalScore!==null||plan.originalCheckpointPreserved!==true||plan.signaturesToReplay.length>5000||plan.signaturesToReplay.some(s=>typeof s!=="string"||s.length<64||s.length>90))throw Error("INVALID_REPLAY_PLAN");
 verifyHistoricalReplaySource(plan,JSON.parse(await readFile(sourceFile,"utf8")),pool);
+const previousFile=process.env.GLITCH_HISTORY_PREVIOUS_REPLAY;
+const previous=previousFile?JSON.parse(await readFile(previousFile,"utf8")):null;
+const signatures=previous?selectReplayRemainder(plan,previous):[...new Set(plan.signaturesToReplay)];
 let requests=0;
 async function call(url,method,params){
  if(requests>=budget)throw Error("REPLAY_REQUEST_BUDGET_EXHAUSTED");
@@ -24,7 +28,7 @@ async function call(url,method,params){
  return body.result;
 }
 const report={schemaVersion:1,kind:"HISTORICAL_DECODER_REPLAY_EVIDENCE",pool,sourceDigest:plan.sourceDigest,originalCheckpointPreserved:true,classification:HISTORY_CLASSIFICATION,authorizationVerified:false,finalScore:null,transactions:[],unresolved:[]};
-for(const signature of [...new Set(plan.signaturesToReplay)]){
+for(const signature of signatures){
  if(requests>=budget)break;
  try{
   const tx=await retryLiquidityRateLimit(()=>retrieveHistoricalTransaction(call,rpc,signature));
@@ -34,7 +38,7 @@ for(const signature of [...new Set(plan.signaturesToReplay)]){
   report.transactions.push({signature,slot:tx.slot,execution:classifyHistoricalTransaction(tx),programId:PUMP_AMM_PROGRAM,candidates});
  }catch(error){report.unresolved.push({signature,reason:String(error.message).slice(0,160)});break;}
 }
-report.requests=requests;report.remaining=plan.signaturesToReplay.length-report.transactions.length;report.status=report.unresolved.length?"PARTIAL_UNRESOLVED":report.remaining?"REQUEST_BUDGET_REACHED":"REPLAY_BATCH_COMPLETE";
+report.requests=requests;report.remaining=signatures.length-report.transactions.length;report.previouslyCompleted=previous?.transactions?.length||0;report.status=report.unresolved.length?"PARTIAL_UNRESOLVED":report.remaining?"REQUEST_BUDGET_REACHED":"REPLAY_BATCH_COMPLETE";
 await writeFile(output,JSON.stringify(report,null,2));
 console.log(JSON.stringify({status:report.status,requests,processed:report.transactions.length,unresolved:report.unresolved.length,candidates:report.transactions.reduce((n,t)=>n+t.candidates.length,0),classification:HISTORY_CLASSIFICATION}));
 if(report.unresolved.length)process.exitCode=1;
