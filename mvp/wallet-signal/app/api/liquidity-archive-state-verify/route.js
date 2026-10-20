@@ -19,7 +19,7 @@ export async function POST(request){
    if(!response.ok||json.error){results.push({role:target.role,status:"PROVIDER_ERROR",errorCode:json.error?.code??null});continue;}
    const contextSlot=json.result?.context?.slot;
    const decoded=decodeArchivedPumpAccount(json.result?.value,target.role);
-   results.push({role:target.role,status:decoded.status,contextSlot,requestedSlot:slot,recipientMatch:target.role==="pump_amm_pool"?decoded.coinCreator==="HGBJMtxiFXSkZRk838n5mmHwvRtribAUdCAT1gyoYzSd":decoded.protocolFeeRecipients?.includes("7VtfL8fvgNfhz17qKRMjzQEXgbdpnHHHQRh54R9jP2RJ")??false,accountOwnerAndLayoutValidated:decoded.status==="DECODED",historicalStateVerified:false});
+   results.push({role:target.role,status:decoded.status,contextSlot,requestedSlot:slot,decodedCoinCreator:target.role==="pump_amm_pool"?decoded.coinCreator??null:undefined,expectedCreatorFeeRecipient:target.role==="pump_amm_pool"?"HGBJMtxiFXSkZRk838n5mmHwvRtribAUdCAT1gyoYzSd":undefined,recipientMatch:target.role==="pump_amm_pool"?decoded.coinCreator==="HGBJMtxiFXSkZRk838n5mmHwvRtribAUdCAT1gyoYzSd":decoded.protocolFeeRecipients?.includes("7VtfL8fvgNfhz17qKRMjzQEXgbdpnHHHQRh54R9jP2RJ")??false,accountOwnerAndLayoutValidated:decoded.status==="DECODED",historicalStateVerified:false});
   }catch{results.push({role:target.role,status:"REQUEST_FAILED",historicalStateVerified:false});}
  }
  return NextResponse.json({provider:"alchemy",slot,results,historicalStateVerified:false,authorizationVerified:false,warning:"Context slot and decoded bytes alone are not independently authenticated historical state proof."},{headers:{"Cache-Control":"no-store"}});
