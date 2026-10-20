@@ -10,6 +10,7 @@ import { comparePoolInventories } from "../lib/liquidityPoolContinuity.mjs";
 import { comparePoolVaultSnapshots } from "../lib/liquidityHistoricalComparison.mjs";
 import { previousFailedLiquiditySignatures } from "../lib/liquidityFailedSignatureHistory.mjs";
 import { summarizeLiquidityRetryCoverage } from "../lib/liquidityRetryCoverage.mjs";
+import { validateLiquidityPoolBatch, selectPreviousLiquidityCheckpoint } from "../lib/liquidityWorkerEvidenceGuards.mjs";
 const base = process.env.GLITCH_PREVIEW_URL?.replace(/\/$/, "");
 const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
 const mint = process.env.GLITCH_LIQUIDITY_MINT;
@@ -26,13 +27,16 @@ async function read(path,options={}) {
 const report=await read("/api/token-liquidity?mint="+encodeURIComponent(mint));
 if(!Array.isArray(report.pools))throw Error("Missing pool inventory");
 const addresses=[...new Set(report.pools.map(p=>p.pairAddress).filter(Boolean))].slice(0,30);
-const previous=await readLiquidityCheckpoint(mint,{url:process.env.SUPABASE_URL,serviceRoleKey:process.env.SUPABASE_SERVICE_ROLE_KEY});
+const previousRead=await readLiquidityCheckpoint(mint,{url:process.env.SUPABASE_URL,serviceRoleKey:process.env.SUPABASE_SERVICE_ROLE_KEY});
 const evidence={schemaVersion:1,mint,observedAt:new Date().toISOString(),source:"Solana RPC via GLITCH pool-account-evidence",providerReportedPools:report.poolCountReturned,poolInventoryComplete:false,verifiedDepth:false,lpSecurityVerified:false,finalScore:null,pools:[],batchErrors:[]};
+const previousSelection=selectPreviousLiquidityCheckpoint(previousRead,mint,evidence.observedAt);
+const previous=previousSelection.checkpoint;
+evidence.previousCheckpointDiagnostic=previousSelection.reason;
 for(let i=0;i<addresses.length;i+=5){
  const batchAddresses=addresses.slice(i,i+5);
  try {
   const batch=await read("/api/pool-account-evidence",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mint,poolAddresses:batchAddresses})});
-  if(batch.mint!==mint||!Array.isArray(batch.pools)||batch.pools.length!==batchAddresses.length)throw Error("Unexpected pool evidence response");
+  validateLiquidityPoolBatch(batch,mint,batchAddresses);
   evidence.pools.push(...batch.pools);
  }catch(error){evidence.batchErrors.push({startIndex:i,count:batchAddresses.length,error:String(error.message).slice(0,160)});}
 }
@@ -61,7 +65,7 @@ for(const movement of evidence.reserveHistoryComparison.pools.filter(p=>p.baseRa
 evidence.decodedPumpAmmCandidates=evidence.pools.filter(p=>p.decodedPumpAmmCandidate).map(p=>({pairAddress:p.pairAddress,...p.decodedPumpAmmCandidate}));
 evidence.status=evidence.batchErrors.length?"partial":"account_checks_completed";
 evidence.checked=evidence.pools.length;
-evidence.accountExists=evidence.pools.filter(p=>p.accountExists).length;
+evidence.accountExists=evidence.pools.filter(p=>p.accountExists===true).length;
 validateLiquidityCheckpoint(evidence);
 await writeFile(process.env.GLITCH_EVIDENCE_OUTPUT||"liquidity-evidence.json",JSON.stringify(evidence,null,2));
 if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
