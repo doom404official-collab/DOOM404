@@ -1,12 +1,10 @@
 import {readFile,writeFile} from "node:fs/promises";
-import {validateHistoryCheckpoint,HISTORY_CLASSIFICATION} from "../lib/liquidityHistoricalDecoder.mjs";
+import {buildHistoricalReplayPlan} from "../lib/liquidityHistoricalReplayPlan.mjs";
 const source=process.env.GLITCH_HISTORY_CHECKPOINT;
 const output=process.env.GLITCH_HISTORY_REPLAY_OUTPUT||"liquidity-history-replay-plan.json";
 const pool=process.env.GLITCH_LIQUIDITY_POOL;
 if(!source||!pool)throw Error("REPLAY_SOURCE_AND_POOL_REQUIRED");
 const original=JSON.parse(await readFile(source,"utf8"));
-validateHistoryCheckpoint(original,pool);
-const unique=[...new Set(original.seen)];
-const plan={schemaVersion:1,kind:"HISTORICAL_DECODER_REPLAY_PLAN",pool,sourceCheckpoint:source,sourceUpdatedAt:original.updatedAt||null,originalClassification:HISTORY_CLASSIFICATION,originalSeenCount:unique.length,signaturesToReplay:unique,originalEventCount:original.events.length,requiresExplicitReplay:true,authorizationVerified:false,finalScore:null,originalCheckpointPreserved:true};
+const plan=buildHistoricalReplayPlan(original,{pool,maxSignatures:Number(process.env.GLITCH_REPLAY_PLAN_LIMIT||500)});
 await writeFile(output,JSON.stringify(plan,null,2));
-console.log(JSON.stringify({status:"replay_plan_only",signatures:unique.length,classification:HISTORY_CLASSIFICATION,originalCheckpointPreserved:true}));
+console.log(JSON.stringify({status:"replay_plan_only",signatures:plan.signaturesToReplay.length,remaining:plan.remainingReplayCount,originalCheckpointPreserved:true}));
