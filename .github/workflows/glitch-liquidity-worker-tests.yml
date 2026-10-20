@@ -1,0 +1,70 @@
+name: GLITCH liquidity worker tests
+on:
+  pull_request:
+    paths:
+      - 'mvp/wallet-signal/scripts/liquidity-evidence-worker.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-evidence-worker.test.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-checkpoint-store.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityCheckpointStore.mjs'
+      - 'mvp/wallet-signal/lib/liquidityEvidenceCheckpoint.mjs'
+      - 'mvp/wallet-signal/lib/liquidityWorkerEvidenceGuards.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-worker-evidence-guards.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityProtocolClassification.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-protocol-classification.test.mjs'
+      - 'mvp/wallet-signal/lib/pumpAmmPoolState.mjs'
+      - 'mvp/wallet-signal/tests/pump-amm-pool-state.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityVaultEvidence.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-vault-evidence.test.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-vault-diagnostics.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityPoolAuthority.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-pool-authority.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityLpMintEvidence.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-lp-mint-evidence.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityLpHolderEvidence.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-lp-holder-evidence.test.mjs'
+      - 'mvp/wallet-signal/app/api/lp-holder-evidence/route.js'
+      - 'mvp/wallet-signal/lib/liquidityPoolContinuity.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-pool-continuity.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityCheckpointReader.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-checkpoint-reader.test.mjs'
+      - 'mvp/wallet-signal/lib/liquiditySnapshotArchive.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-snapshot-archive.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityHistoricalComparison.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-historical-comparison.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityTransactionEvidence.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-transaction-evidence.test.mjs'
+      - 'mvp/wallet-signal/lib/pumpAmmInstructionEvidence.mjs'
+      - 'mvp/wallet-signal/tests/pump-amm-instruction-evidence.test.mjs'
+      - 'mvp/wallet-signal/lib/pumpAmmParsedTransactionEvidence.mjs'
+      - 'mvp/wallet-signal/tests/pump-amm-parsed-transaction-evidence.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityInstructionBytes.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-instruction-bytes.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityVaultTransactionDeltas.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-vault-transaction-deltas.test.mjs'
+      - 'mvp/wallet-signal/lib/liquiditySwapDirection.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-swap-direction.test.mjs'
+      - 'mvp/wallet-signal/app/api/liquidity-transaction-evidence/route.js'
+      - 'mvp/wallet-signal/lib/pumpAmmWithdrawalEvidence.mjs'
+      - 'mvp/wallet-signal/tests/pump-amm-withdrawal-evidence.test.mjs'
+      - 'mvp/wallet-signal/app/api/pool-account-evidence/route.js'
+      - '.github/workflows/glitch-liquidity-evidence-worker.yml'
+      - '.github/workflows/glitch-liquidity-worker-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install application dependencies
+        working-directory: mvp/wallet-signal
+        run: npm install --no-audit --no-fund
+      - name: Validate worker and workflow contracts
+        run: node --test mvp/wallet-signal/tests/liquidity-worker-evidence-guards.test.mjs mvp/wallet-signal/tests/liquidity-evidence-worker.test.mjs mvp/wallet-signal/tests/liquidity-checkpoint-store.test.mjs mvp/wallet-signal/tests/liquidity-protocol-classification.test.mjs mvp/wallet-signal/tests/pump-amm-pool-state.test.mjs mvp/wallet-signal/tests/liquidity-vault-evidence.test.mjs mvp/wallet-signal/tests/liquidity-vault-diagnostics.test.mjs mvp/wallet-signal/tests/liquidity-pool-authority.test.mjs mvp/wallet-signal/tests/liquidity-lp-mint-evidence.test.mjs mvp/wallet-signal/tests/liquidity-lp-holder-evidence.test.mjs mvp/wallet-signal/tests/pump-amm-withdrawal-evidence.test.mjs mvp/wallet-signal/tests/liquidity-pool-continuity.test.mjs mvp/wallet-signal/tests/liquidity-checkpoint-reader.test.mjs mvp/wallet-signal/tests/liquidity-snapshot-archive.test.mjs mvp/wallet-signal/tests/liquidity-historical-comparison.test.mjs mvp/wallet-signal/tests/liquidity-transaction-evidence.test.mjs mvp/wallet-signal/tests/pump-amm-instruction-evidence.test.mjs mvp/wallet-signal/tests/pump-amm-parsed-transaction-evidence.test.mjs mvp/wallet-signal/tests/liquidity-instruction-bytes.test.mjs mvp/wallet-signal/tests/liquidity-vault-transaction-deltas.test.mjs mvp/wallet-signal/tests/liquidity-swap-direction.test.mjs
+      - name: Validate worker syntax
+        run: node --check mvp/wallet-signal/scripts/liquidity-evidence-worker.mjs

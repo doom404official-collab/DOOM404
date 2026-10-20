@@ -1,0 +1,10 @@
+import {readFile,writeFile} from "node:fs/promises";
+import {buildHistoricalReplayPlan} from "../lib/liquidityHistoricalReplayPlan.mjs";
+const source=process.env.GLITCH_HISTORY_CHECKPOINT;
+const output=process.env.GLITCH_HISTORY_REPLAY_OUTPUT||"liquidity-history-replay-plan.json";
+const pool=process.env.GLITCH_LIQUIDITY_POOL;
+if(!source||!pool)throw Error("REPLAY_SOURCE_AND_POOL_REQUIRED");
+const original=JSON.parse(await readFile(source,"utf8"));
+const plan=buildHistoricalReplayPlan(original,{pool,maxSignatures:Number(process.env.GLITCH_REPLAY_PLAN_LIMIT||500)});
+await writeFile(output,JSON.stringify(plan,null,2));
+console.log(JSON.stringify({status:"replay_plan_only",signatures:plan.signaturesToReplay.length,remaining:plan.remainingReplayCount,originalCheckpointPreserved:true}));

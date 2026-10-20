@@ -1,0 +1,29 @@
+name: GLITCH liquidity archive state
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect Alchemy historical accounts
+        working-directory: mvp/wallet-signal
+        env:
+          GLITCH_ARCHIVE_PREVIEW_URL: https://doom404-wallet-signal-opv7qntcs-doom-404.vercel.app
+          GLITCH_LIQUIDITY_PROBE_TOKEN: ${{ secrets.GLITCH_LIQUIDITY_PROBE_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: node scripts/liquidity-archive-state-worker.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: liquidity-archive-state-evidence
+          path: mvp/wallet-signal/liquidity-archive-state-evidence.json
+          if-no-files-found: ignore
+          retention-days: 30

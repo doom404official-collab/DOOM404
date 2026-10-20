@@ -1,0 +1,15 @@
+import {writeFile} from "node:fs/promises";
+const base=process.env.GLITCH_ARCHIVE_PREVIEW_URL?.replace(/\/$/,"");
+const token=process.env.GLITCH_LIQUIDITY_PROBE_TOKEN;
+const bypass=process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+if(!base||!/^https:\/\/[^/]+\.vercel\.app$/.test(base))throw Error("INVALID_PREVIEW_URL");
+if(!token)throw Error("MISSING_GLITCH_LIQUIDITY_PROBE_TOKEN_GITHUB_SECRET");
+if(!bypass)throw Error("MISSING_VERCEL_AUTOMATION_BYPASS_SECRET");
+const response=await fetch(base+"/api/liquidity-archive-state-verify",{method:"POST",headers:{"Content-Type":"application/json","x-glitch-internal-token":token,"x-vercel-protection-bypass":bypass},body:"{}",signal:AbortSignal.timeout(30000)});
+if(!response.ok)throw Error("ARCHIVE_VERIFICATION_HTTP_"+response.status);
+const result=await response.json();
+if(result.provider!=="alchemy"||result.slot!==458811200||!Array.isArray(result.results)||result.results.length!==2)throw Error("ARCHIVE_VERIFICATION_INVALID_RESPONSE");
+const allowed=new Set(["pump_amm_pool","pump_amm_global_config"]);
+if(result.results.some(x=>!allowed.has(x.role)))throw Error("ARCHIVE_VERIFICATION_UNEXPECTED_ROLE");
+await writeFile("liquidity-archive-state-evidence.json",JSON.stringify({observedAt:new Date().toISOString(),...result},null,2));
+console.log(JSON.stringify({provider:result.provider,slot:result.slot,results:result.results.map(x=>({role:x.role,status:x.status,contextSlot:x.contextSlot,recipientMatch:x.recipientMatch,decodedCoinCreator:x.decodedCoinCreator??null,holderRewardEnabled:x.holderRewardEnabled??null,creatorFeeBps:x.creatorFeeBps??null,canEditCreatorFee:x.canEditCreatorFee??null,protocolFeesRaw:x.protocolFeesRaw??null,creatorFeesRaw:x.creatorFeesRaw??null,expectedCreatorFeeRecipient:x.expectedCreatorFeeRecipient??null,accountOwnerAndLayoutValidated:x.accountOwnerAndLayoutValidated})),timeline:result.timeline??[],historicalStateVerified:result.historicalStateVerified,authorizationVerified:result.authorizationVerified}));
