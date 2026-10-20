@@ -16,7 +16,7 @@ jobs:
       - name: Inspect Alchemy historical accounts
         working-directory: mvp/wallet-signal
         env:
-          GLITCH_ARCHIVE_PREVIEW_URL: https://doom404-wallet-signal-gensttbag-doom-404.vercel.app
+          GLITCH_ARCHIVE_PREVIEW_URL: https://doom404-wallet-signal-abx4qr3z1-doom-404.vercel.app
           GLITCH_LIQUIDITY_PROBE_TOKEN: ${{ secrets.GLITCH_LIQUIDITY_PROBE_TOKEN }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: node scripts/liquidity-archive-state-worker.mjs
