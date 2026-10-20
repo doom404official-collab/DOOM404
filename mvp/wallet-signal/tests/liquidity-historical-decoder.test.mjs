@@ -78,3 +78,9 @@ test("checkpoint restoration rejects unsafe authorization promotion and duplicat
  assert.throws(()=>validateHistoryCheckpoint({...state,pendingSignatures:["a"]},"pool"),/PENDING/);
  assert.throws(()=>validateHistoryCheckpoint({...state,events:[{classification:"VERIFIED",authorizationVerified:true}]},"pool"),/UNSAFE/);
 });
+
+test("checkpoint rejects events already promoted to verified authorization",()=>{
+ const state={schemaVersion:1,pool:"pool",before:null,seen:["sig"],pendingSignatures:[],events:[{signature:"sig",classification:"UNVERIFIED_CANDIDATE",authorizationVerified:false}],classification:HISTORY_CLASSIFICATION,complete:false};
+ assert.equal(validateHistoryCheckpoint(state,"pool"),state);
+ assert.throws(()=>validateHistoryCheckpoint({...state,events:[{...state.events[0],authorizationVerified:true}]},"pool"),/UNSAFE/);
+});
