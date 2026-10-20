@@ -10,5 +10,5 @@ export function decodeArchivedPumpAccount(value,role){
  if(!disc||b.length<min||!b.subarray(0,8).equals(disc))return {status:"INVALID_ACCOUNT_LAYOUT"};
  const pubkey=offset=>new PublicKey(b.subarray(offset,offset+32)).toBase58();
  if(role==="pump_amm_pool")return {status:"DECODED",role,coinCreator:pubkey(211),baseMint:pubkey(43),quoteMint:pubkey(75)};
- return {status:"DECODED",role,protocolFeeRecipients:Array.from({length:8},(_,i)=>pubkey(65+i*32))};
+ return {status:"DECODED",role,protocolFeeRecipients:Array.from({length:8},(_,i)=>pubkey(57+i*32))};
 }
