@@ -70,3 +70,11 @@ test("failed execution cannot be promoted to historical authorization evidence",
  const success={meta:{err:null}};
  assert.equal(classifyHistoricalTransaction(success),"EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED");
 });
+
+test("checkpoint restoration rejects unsafe authorization promotion and duplicate signatures",()=>{
+ const state={schemaVersion:1,pool:"pool",before:"cursor",seen:["a"],pendingSignatures:[],events:[],classification:HISTORY_CLASSIFICATION,complete:false};
+ assert.equal(validateHistoryCheckpoint(state,"pool"),state);
+ assert.throws(()=>validateHistoryCheckpoint({...state,seen:["a","a"]},"pool"),/DUPLICATE/);
+ assert.throws(()=>validateHistoryCheckpoint({...state,pendingSignatures:["a"]},"pool"),/PENDING/);
+ assert.throws(()=>validateHistoryCheckpoint({...state,events:[{classification:"VERIFIED",authorizationVerified:true}]},"pool"),/UNSAFE/);
+});
