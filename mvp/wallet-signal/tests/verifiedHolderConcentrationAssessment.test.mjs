@@ -60,3 +60,13 @@ test('exact full supply does not fail from floating point summation',()=>{
  const r=assess(h,{supplyRaw:'1000000',largestAccountsSlot:100,supplySlot:100,ownerSlots:Array(20).fill(100)});
  assert.equal(r.components[0].score,0);assert.equal(r.snapshotProvenanceVerified,true);assert.equal(r.scoreCoveragePct,35);
 });
+
+test("external network extraction is visible but never promotes a score",()=>{
+ const sig="2".repeat(88);
+ const cp={...checkpoint,signatures:{[sig]:"checked"}};
+ const r=assessVerifiedHolderConcentration({checkpoint:cp,evidenceRows:[{signature:sig,status:"verified",evidence:{networkExtraction:{version:1,valid:true,unresolvedTokenTransfers:0,transfers:[]}}}]});
+ assert.equal(r.externalNetworkEvidence.eligibleForReview,1);
+ assert.equal(r.externalNetworkEvidence.checkpointModified,false);
+ assert.equal(r.externalNetworkEvidence.scorePromoted,false);
+ assert.equal(r.score,null);
+});
