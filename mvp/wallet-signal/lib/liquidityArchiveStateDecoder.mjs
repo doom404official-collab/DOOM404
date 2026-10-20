@@ -9,6 +9,6 @@ export function decodeArchivedPumpAccount(value,role){
  const min=role==="pump_amm_pool"?287:role==="pump_amm_global_config"?8+32+8+8+1+8*32:Infinity;
  if(!disc||b.length<min||!b.subarray(0,8).equals(disc))return {status:"INVALID_ACCOUNT_LAYOUT"};
  const pubkey=offset=>new PublicKey(b.subarray(offset,offset+32)).toBase58();
- if(role==="pump_amm_pool")return {status:"DECODED",role,coinCreator:pubkey(211),baseMint:pubkey(43),quoteMint:pubkey(75),isHolderReward:b[270]===1,creatorFeeBps:b.readBigUInt64LE(261).toString(),canEditCreatorFee:b[269]===1};
+ if(role==="pump_amm_pool")return {status:"DECODED",role,coinCreator:pubkey(211),baseMint:pubkey(43),quoteMint:pubkey(75),isHolderReward:b[270]===1,creatorFeeBps:b.readBigUInt64LE(261).toString(),canEditCreatorFee:b[269]===1,protocolFeesRaw:b.readBigUInt64LE(271).toString(),creatorFeesRaw:b.readBigUInt64LE(279).toString()};
  return {status:"DECODED",role,protocolFeeRecipients:Array.from({length:8},(_,i)=>pubkey(57+i*32))};
 }
