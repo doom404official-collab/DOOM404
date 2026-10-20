@@ -15,7 +15,7 @@ export function extractFeeSweepAccounts(tx,poolAddress){
   if(!operation)continue;
   const indexes=ix.accountKeyIndexes??ix.accounts??[];
   const accounts=indexes.map(i=>typeof i==="number"?keys[i]:key(i));
-  sweeps.push({operation,outerInstructionIndex,pool:accounts[2]??null,poolMatched:accounts[2]===poolAddress,quoteMint:accounts[3]??null,quoteTokenProgram:accounts[4]??null,quoteVault:accounts[5]??null,recipient:accounts[6]??null,recipientTokenAccount:accounts[7]??null,accountLayoutComplete:accounts.length>=12,settlementVerified:false});
+  sweeps.push({operation,outerInstructionIndex,globalConfigAddress:accounts[1]??null,pool:accounts[2]??null,poolMatched:accounts[2]===poolAddress,quoteMint:accounts[3]??null,quoteTokenProgram:accounts[4]??null,quoteVault:accounts[5]??null,recipient:accounts[6]??null,recipientTokenAccount:accounts[7]??null,accountLayoutComplete:accounts.length>=12,settlementVerified:false});
  }
  return {sweeps,settlementVerified:false};
 }
