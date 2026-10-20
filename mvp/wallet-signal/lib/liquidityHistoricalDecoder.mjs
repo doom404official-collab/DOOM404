@@ -1,7 +1,7 @@
 import {createHash} from "node:crypto";
 export const HISTORY_CLASSIFICATION="AMOUNT_RECONCILED_AUTHORIZATION_PENDING";
 export const PUMP_AMM_PROGRAM="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmqffYFZJ9xg";
-export const HISTORICAL_NAMES=["set_coin_creator","migrate_pool_coin_creator","claim_creator_fee","collect_creator_fee","fee_sharing","set_creator"];
+export const HISTORICAL_NAMES=["set_coin_creator","migrate_pool_coin_creator","admin_set_coin_creator","admin_cto_pool","collect_coin_creator_fee","transfer_creator_fees_to_pump","transfer_creator_fees_to_pump_v2"];
 export function anchorDiscriminator(name){return createHash("sha256").update("global:"+name).digest().subarray(0,8).toString("hex");}
 const candidates=new Map(HISTORICAL_NAMES.map(n=>[anchorDiscriminator(n),n]));
 export function decodeHistoricalCandidate(instruction,signature,slot,provider){
@@ -16,7 +16,7 @@ export function decodeHistoricalCandidate(instruction,signature,slot,provider){
    if(bytes.length>=8){name=candidates.get(Buffer.from(bytes.subarray(0,8)).toString("hex"))||null;coverage="anchor_discriminator_only";}
  }
  if(!name)return null;
- return {signature,slot,provider,operation:name,programId:instruction.programId,rawInstruction:instruction,authorizationVerified:false,classification:"UNVERIFIED_CANDIDATE",decoderCoverage:coverage};
+ return {signature,slot,provider,operation:name,programId:instruction.programId,rawInstruction:instruction,authorizationVerified:false,classification:"UNVERIFIED_CANDIDATE",decoderCoverage:coverage,accountRolesVerified:false,signerAuthorizationVerified:false};
 }
 function decodeBase58(input){
  const alphabet="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
