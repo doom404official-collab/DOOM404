@@ -1,6 +1,6 @@
 import {createHash} from "node:crypto";
 export const HISTORY_CLASSIFICATION="AMOUNT_RECONCILED_AUTHORIZATION_PENDING";
-export const PUMP_AMM_PROGRAM="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmqffYFZJ9xg";
+export const PUMP_AMM_PROGRAM="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";
 export const HISTORICAL_NAMES=["set_coin_creator","migrate_pool_coin_creator","admin_set_coin_creator","admin_cto_pool","collect_coin_creator_fee","transfer_creator_fees_to_pump","transfer_creator_fees_to_pump_v2"];
 export function anchorDiscriminator(name){return createHash("sha256").update("global:"+name).digest().subarray(0,8).toString("hex");}
 const candidates=new Map(HISTORICAL_NAMES.map(n=>[anchorDiscriminator(n),n]));
