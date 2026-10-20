@@ -9,7 +9,7 @@ const output=process.env.GLITCH_HISTORY_REPLAY_EVIDENCE||"liquidity-history-repl
 const budget=Number(process.env.GLITCH_HISTORY_REPLAY_BUDGET||20);
 if(!pool||!planFile||!rpc||!Number.isSafeInteger(budget)||budget<1||budget>60)throw Error("INVALID_REPLAY_CONFIGURATION");
 const plan=JSON.parse(await readFile(planFile,"utf8"));
-if(plan.kind!=="HISTORICAL_DECODER_REPLAY_PLAN"||plan.pool!==pool||plan.originalClassification!==HISTORY_CLASSIFICATION||plan.requiresExplicitReplay!==true||!Array.isArray(plan.signaturesToReplay)||typeof plan.sourceDigest!=="string")throw Error("INVALID_REPLAY_PLAN");
+if(plan.kind!=="HISTORICAL_DECODER_REPLAY_PLAN"||plan.pool!==pool||plan.originalClassification!==HISTORY_CLASSIFICATION||plan.requiresExplicitReplay!==true||!Array.isArray(plan.signaturesToReplay)||! /^[a-f0-9]{64}$/.test(plan.sourceDigest)||plan.authorizationVerified!==false||plan.finalScore!==null||plan.originalCheckpointPreserved!==true||plan.signaturesToReplay.length>5000||plan.signaturesToReplay.some(s=>typeof s!=="string"||s.length<64||s.length>90))throw Error("INVALID_REPLAY_PLAN");
 let requests=0;
 async function call(url,method,params){
  if(requests>=budget)throw Error("REPLAY_REQUEST_BUDGET_EXHAUSTED");
