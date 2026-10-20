@@ -31,11 +31,17 @@ export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}=
      pairs:transfers.map(t=>t.participants.join("|")),kinds:[...new Set(transfers.map(t=>t.kind))],slot:tx.slot};
     // Reuse this exact RPC response for independent network extraction. Keep the
     // legacy validation outcome unchanged; do not promote incomplete evidence.
-    const network=extractHolderNetworkTransfers({transaction:tx,signature:item.signature});
-    evidence.networkExtraction={version:1,valid:network.valid===true,
-     unresolvedTokenTransfers:network.unresolvedTokenTransfers??0,
-     transfers:network.valid===true?network.transfers:[],
-     ...(network.valid===true?{}:{reason:network.reason??"NETWORK_EVIDENCE_UNAVAILABLE"})};
+    try{
+     const network=extractHolderNetworkTransfers({transaction:tx,signature:item.signature});
+     evidence.networkExtraction={version:1,valid:network.valid===true,
+      unresolvedTokenTransfers:network.unresolvedTokenTransfers??0,
+      transfers:network.valid===true?network.transfers:[],
+      ...(network.valid===true?{}:{reason:network.reason??"NETWORK_EVIDENCE_UNAVAILABLE"})};
+    }catch{
+     // Optional network extraction must never invalidate proven legacy evidence.
+     evidence.networkExtraction={version:1,valid:false,unresolvedTokenTransfers:0,
+      transfers:[],reason:"NETWORK_EXTRACTION_ERROR"};
+    }
    }
   }catch{evidence={reason:"RPC_RETRYABLE_ERROR"};}
   let saved;
