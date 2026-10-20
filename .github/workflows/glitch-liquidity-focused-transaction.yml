@@ -18,7 +18,7 @@ jobs:
       - name: Inspect known fee-sweep signature
         working-directory: mvp/wallet-signal
         env:
-          GLITCH_PREVIEW_URL: https://doom404-wallet-signal-c0irv8n9z-doom-404.vercel.app
+          GLITCH_PREVIEW_URL: https://doom404-wallet-signal-peypoc847-doom-404.vercel.app
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           GLITCH_LIQUIDITY_SIGNATURE: 61NV8BsnCRB6AnXUeFqRvLB1VysGivC4Ha9TxQZBE7pZQWee8dYsr9F2a4b21AvoCuUV8kKFmZNVdiPY3dkQQ449
           GLITCH_LIQUIDITY_POOL: 6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA
