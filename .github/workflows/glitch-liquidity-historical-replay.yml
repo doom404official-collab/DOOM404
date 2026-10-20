@@ -6,6 +6,16 @@ on:
         description: Pump AMM pool address
         required: true
         type: string
+      replay_offset:
+        description: Start index within preserved checkpoint signatures
+        required: false
+        default: '0'
+        type: string
+      previous_replay_run_id:
+        description: Optional previous replay run ID for deduplication
+        required: false
+        default: ''
+        type: string
       source_run_id:
         description: Existing historical investigation run ID containing the preserved checkpoint
         required: true
@@ -37,12 +47,23 @@ jobs:
           mkdir -p previous-history
           gh run download "$SOURCE_RUN_ID" --name "liquidity-history-$SOURCE_RUN_ID" --dir previous-history
           test -s previous-history/liquidity-history-evidence.json
+      - name: Restore optional previous replay evidence
+        if: inputs.previous_replay_run_id != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIOUS_RUN_ID: ${{ inputs.previous_replay_run_id }}
+        run: |
+          case "$PREVIOUS_RUN_ID" in *[!0-9]*|'') echo "Invalid previous replay run ID"; exit 1;; esac
+          mkdir -p previous-replay
+          gh run download "$PREVIOUS_RUN_ID" --name "liquidity-replay-$PREVIOUS_RUN_ID" --dir previous-replay
+          test -s previous-replay/liquidity-history-replay-evidence.json
       - name: Generate bounded replay plan
         working-directory: mvp/wallet-signal
         env:
           GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
           GLITCH_HISTORY_CHECKPOINT: ${{ github.workspace }}/previous-history/liquidity-history-evidence.json
           GLITCH_REPLAY_PLAN_LIMIT: '20'
+          GLITCH_REPLAY_PLAN_OFFSET: ${{ inputs.replay_offset }}
         run: node scripts/liquidity-historical-replay-plan.mjs
       - name: Execute read-only replay
         working-directory: mvp/wallet-signal
@@ -52,6 +73,7 @@ jobs:
           GLITCH_HISTORY_CHECKPOINT: ${{ github.workspace }}/previous-history/liquidity-history-evidence.json
           GLITCH_HISTORY_REPLAY_PLAN: liquidity-history-replay-plan.json
           GLITCH_HISTORY_REPLAY_BUDGET: '20'
+          GLITCH_HISTORY_PREVIOUS_REPLAY: ${{ inputs.previous_replay_run_id != '' && format('{0}/previous-replay/liquidity-history-replay-evidence.json', github.workspace) || '' }}
         run: node scripts/liquidity-historical-replay-executor.mjs
       - name: Preserve replay artifacts
         if: always()
