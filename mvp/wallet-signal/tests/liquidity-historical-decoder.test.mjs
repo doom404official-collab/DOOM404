@@ -24,3 +24,13 @@ test("failed transactions cannot establish executed authorization",()=>{
  assert.equal(classifyHistoricalTransaction({meta:{err:null}}),"EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED");
  assert.equal(classifyHistoricalTransaction({}),"TRANSACTION_META_UNAVAILABLE");
 });
+
+test("creator fee collection remains an unverified fee candidate, never an LP withdrawal",()=>{
+ const data=base58(Buffer.from(anchorDiscriminator("collect_coin_creator_fee"),"hex"));
+ const event=decodeHistoricalCandidate({programId:PUMP_AMM_PROGRAM,data},"sig",458811200,"helius");
+ assert.equal(event.operation,"collect_coin_creator_fee");
+ assert.equal(event.authorizationVerified,false);
+ assert.equal(event.accountRolesVerified,false);
+ assert.equal(event.signerAuthorizationVerified,false);
+ assert.equal(event.classification,"UNVERIFIED_CANDIDATE");
+});
