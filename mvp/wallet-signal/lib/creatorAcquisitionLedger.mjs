@@ -21,7 +21,7 @@ export function summarizeCreatorAcquisitionLedger({mint,creator,events=[],histor
  for(const e of events){
   const id=e&&typeof e.signature==='string'&&Number.isInteger(e.instructionIndex)&&e.instructionIndex>=0?
    e.signature+':'+e.instructionIndex+':'+String(e.innerInstructionIndex??'outer'):null;
-  if(!id||!TYPES.has(e.type)||e.mint!==mint||e.creator!==creator||
+  if(!id||!e||!TYPES.has(e.type)||e.mint!==mint||e.creator!==creator||
    e.independentlyVerified!==true||e.instructionVerified!==true||
    !Number.isSafeInteger(e.timestamp)||e.timestamp<=0||
    !/^[0-9]+$/.test(String(e.amountRaw))||BigInt(e.amountRaw)<=0n||
