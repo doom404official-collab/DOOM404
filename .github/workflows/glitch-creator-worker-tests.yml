@@ -70,6 +70,7 @@ jobs:
           node scripts/test-pump-fun-buy-receipt.mjs
           node scripts/test-pump-fun-buy-settlement.mjs
           node scripts/test-pump-fun-buy-reconciliation.mjs
+          node scripts/test-pump-fun-buy-positive.mjs
           node scripts/test-creator-sell-flows.mjs
           node scripts/test-pump-fun-creator-sell.mjs
           node scripts/test-pump-fun-settlement.mjs
