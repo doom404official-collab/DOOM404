@@ -4,17 +4,19 @@ import { assessPumpFunCreatorSellTransaction } from './pumpFunCreatorSellAssessm
 import { corroborateHistoricalCreatorSellPath } from './creatorHistoricalSellPath.mjs';
 import { verifyPumpFunCreatorSettlement } from './pumpFunCreatorSettlement.mjs';
 import { extractPumpFunSettlementEvidence } from './pumpFunSettlementEvidenceExtractor.mjs';
+import { observeCreatorAcquisitionMovements } from './creatorAcquisitionMovements.mjs';
 /** Decode a bounded batch of discovered signatures. Failed fetches stay pending.
  * This does not claim swap verification or archival completeness.
  */
 export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],rpc,maxTransactions=20,swapDecoder=null,settlementDecoder=extractPumpFunSettlementEvidence}={}){
  if(typeof rpc?.fetchTransaction!=='function'||!Array.isArray(signatures)||!Number.isInteger(maxTransactions)||maxTransactions<1||maxTransactions>100)throw Error('INVALID_CREATOR_BATCH');
- const observations=[],processed=[],pending=[],verifiedSales=[],sellCandidates=[];
+ const observations=[],processed=[],pending=[],verifiedSales=[],sellCandidates=[],acquisitionMovements=[];
  for(const signature of [...new Set(signatures)].slice(0,maxTransactions)){
   try{
    const tx=await rpc.fetchTransaction(signature);
    if(!tx){pending.push(signature);continue;}
    observations.push(observeCreatorTransaction({signature,transaction:tx,creator,mint}));
+   acquisitionMovements.push(...observeCreatorAcquisitionMovements({mint,creator,signature,transaction:tx}).movements);
    const candidate=assessPumpFunCreatorSellTransaction({mint,creator,signature,transaction:tx});
    if(candidate.status==='SETTLEMENT_REVIEW_PENDING'){
     const path=corroborateHistoricalCreatorSellPath({mint,creator,transaction:tx});
@@ -37,5 +39,5 @@ export async function inspectCreatorHistoricalBatch({mint,creator,signatures=[],
    pending.push(signature);
   }
  }
- return {observations,processed,pending,verifiedSales,sellCandidates,historicalCoverageComplete:false};
+ return {observations,processed,pending,verifiedSales,sellCandidates,acquisitionMovements,historicalCoverageComplete:false};
 }
