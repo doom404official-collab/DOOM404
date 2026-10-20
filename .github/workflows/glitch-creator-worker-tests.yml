@@ -56,6 +56,7 @@ jobs:
           node scripts/test-creator-selling-launch-gate.mjs
           node scripts/test-creator-initial-allocation.mjs
           node scripts/test-creator-acquisition-ledger.mjs
+          node scripts/test-creator-acquisition-movements.mjs
           node scripts/test-pump-fun-sell-candidates.mjs
           node scripts/test-pump-fun-sell-instruction.mjs
           node scripts/test-creator-sell-flows.mjs
