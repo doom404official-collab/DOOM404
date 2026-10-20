@@ -9,8 +9,9 @@ export async function POST(request){
  const slot=payload?.slot;
  const addresses=payload?.accounts;
  if(!Number.isSafeInteger(slot)||slot<=0||!Array.isArray(addresses)||addresses.length!==2||addresses.some(a=>{try{return new PublicKey(a).toBase58()!==a}catch{return true}}))return NextResponse.json({error:"invalid_probe_parameters"},{status:400});
- const rpcUrl=process.env.HELIUS_RPC_URL;
+ const provider=payload?.provider==="alchemy"?"alchemy":"helius";
+ const rpcUrl=provider==="alchemy"?process.env.ALCHEMY_SOLANA_ARCHIVE_RPC_URL:process.env.HELIUS_RPC_URL;
  const results=[];
  for(const account of addresses)results.push({account,...await probeHistoricalAccountRpc({rpcUrl,account,slot})});
- return NextResponse.json({provider:"helius",requestedSlot:slot,results,historicalStateVerified:false,authorizationVerified:false},{headers:{"Cache-Control":"no-store"}});
+ return NextResponse.json({provider,requestedSlot:slot,results,historicalStateVerified:false,authorizationVerified:false},{headers:{"Cache-Control":"no-store"}});
 }
