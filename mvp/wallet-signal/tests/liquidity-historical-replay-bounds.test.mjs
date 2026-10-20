@@ -18,3 +18,12 @@ test("replay planning rejects mismatched pool and invalid limits",()=>{
  assert.throws(()=>buildHistoricalReplayPlan(checkpoint,{pool:"other"}));
  assert.throws(()=>buildHistoricalReplayPlan(checkpoint,{pool:"pool",maxSignatures:0}));
 });
+
+test("offset replay selects only unreplayed second segment",()=>{
+ const state={schemaVersion:1,pool:"pool",seen:["a","b","c","d"],events:[],pendingSignatures:[],classification:HISTORY_CLASSIFICATION,complete:false};
+ const plan=buildHistoricalReplayPlan(state,{pool:"pool",maxSignatures:2,offset:2});
+ assert.deepEqual(plan.signaturesToReplay,["c","d"]);
+ assert.equal(plan.remainingReplayCount,0);
+ assert.equal(plan.replayOffset,2);
+ assert.throws(()=>buildHistoricalReplayPlan(state,{pool:"pool",offset:-1}));
+});
