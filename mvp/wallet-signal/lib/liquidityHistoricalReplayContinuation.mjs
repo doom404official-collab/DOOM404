@@ -3,6 +3,7 @@ export function selectReplayRemainder(plan,previous){
  if(previous.classification!=="AMOUNT_RECONCILED_AUTHORIZATION_PENDING"||previous.authorizationVerified!==false||previous.finalScore!==null)throw Error("UNSAFE_REPLAY_CONTINUATION");
  const completed=new Set((previous.transactions||[]).map(t=>t.signature));
  const eligible=new Set(plan.signaturesToReplay);
- if([...completed].some(s=>!eligible.has(s)))throw Error("REPLAY_COMPLETION_NOT_IN_PLAN");
+ // Completed signatures from another segment of the same checkpoint are valid.
+ // Only intersecting signatures are excluded from this segment.
  return plan.signaturesToReplay.filter(s=>!completed.has(s));
 }
