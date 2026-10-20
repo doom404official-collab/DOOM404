@@ -36,6 +36,13 @@ export function inspectHistoricalSignerEvidence(tx,event){
  const signerReferencedAccounts=referenced.filter(a=>signers.includes(a));
  return {status:referenced.length?"SIGNERS_OBSERVED_ROLES_UNVERIFIED":"INSTRUCTION_ACCOUNTS_UNAVAILABLE",signers,referencedAccounts:referenced,signerReferencedAccounts,accountRolesVerified:false,signerAuthorizationVerified:false};
 }
+export function historicalRoleAssessment(event,tx,expectedPool){
+ const accounts=event?.rawInstruction?.accounts;
+ const referenced=Array.isArray(accounts)?accounts.map(a=>typeof a==="string"?a:a?.pubkey).filter(Boolean):[];
+ const poolReferenced=typeof expectedPool==="string"&&referenced.includes(expectedPool);
+ const signerEvidence=inspectHistoricalSignerEvidence(tx,event);
+ return {status:"ACCOUNT_LAYOUT_NOT_INDEPENDENTLY_VERIFIED",poolReferenced,signerReferencedAccounts:signerEvidence.signerReferencedAccounts||[],accountRolesVerified:false,signerAuthorizationVerified:false,authorizationVerified:false};
+}
 export function classifyHistoricalTransaction(tx){
  if(!tx||!tx.meta)return "TRANSACTION_META_UNAVAILABLE";
  if(tx.meta.err!==null&&tx.meta.err!==undefined)return "FAILED_TRANSACTION";
