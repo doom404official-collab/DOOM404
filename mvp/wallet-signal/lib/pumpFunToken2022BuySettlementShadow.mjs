@@ -1,0 +1,35 @@
+import {PublicKey} from '@solana/web3.js';
+import {groupPumpFunBuyInstructions} from './pumpFunBuyInstructionGroups.mjs';
+import {derivePumpFunBondingCurveAccounts} from './pumpFunBondingCurveDerivation.mjs';
+import {resolveTokenBalanceAccounts} from './solanaTokenBalanceAccountResolver.mjs';
+const TOKEN_2022='TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb';
+const ATA='ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL';
+const fail=reason=>({status:'UNVERIFIED',reason,eligibleForLivePromotion:false});
+/** Read-only evidence review. Never returns a promotable settlement proof. */
+export function inspectToken2022PumpFunBuySettlement({mint,buyer,transaction}={}){
+ if(!transaction||transaction.meta?.err!=null)return fail('INVALID_TRANSACTION');
+ const groups=groupPumpFunBuyInstructions({transaction});
+ if(groups.length!==1||!groups[0].instructionGroupFound)return fail('BUY_GROUP_NOT_UNIQUE');
+ const group=groups[0],outer=transaction.transaction?.message?.instructions||[];
+ const accounts=outer[group.instructionIndex]?.accounts||[];
+ const keys=(transaction.transaction?.message?.accountKeys||[]).map(k=>typeof k==='string'?k:k?.pubkey?.toString?.());
+ const address=a=>typeof a==='string'?a:Number.isInteger(a)?keys[a]:a?.pubkey?.toString?.();
+ const a=accounts.map(address);
+ if(a[2]!==mint||a[6]!==buyer||a[8]!==TOKEN_2022)return fail('INSTRUCTION_ACCOUNTS_MISMATCH');
+ const derived=derivePumpFunBondingCurveAccounts({mint});
+ if(derived.status!=='DERIVED'||a[3]!==derived.bondingCurve)return fail('BONDING_CURVE_MISMATCH');
+ let pool;
+ try{pool=PublicKey.findProgramAddressSync([new PublicKey(derived.bondingCurve).toBuffer(),new PublicKey(TOKEN_2022).toBuffer(),new PublicKey(mint).toBuffer()],new PublicKey(ATA))[0].toBase58();}catch{return fail('POOL_DERIVATION_FAILED');}
+ if(a[4]!==pool)return fail('POOL_TOKEN_ACCOUNT_MISMATCH');
+ const resolved=resolveTokenBalanceAccounts({transaction});
+ const rows=[...resolved.pre,...resolved.post].filter(x=>x.accountPubkey===pool&&x.mint===mint);
+ if(rows.length<2||rows.some(x=>x.owner!==derived.bondingCurve))return fail('HISTORICAL_POOL_OWNERSHIP_UNVERIFIED');
+ const transfers=group.innerInstructions.filter(ix=>['spl-token-2022'].includes(ix?.program)&&['transfer','transferChecked'].includes(ix?.parsed?.type)&&ix.parsed.info?.source===pool);
+ if(transfers.length!==1)return fail('TOKEN_TRANSFER_NOT_UNIQUE');
+ const payments=group.innerInstructions.filter(ix=>ix?.program==='system'&&ix?.parsed?.type==='transfer'&&ix.parsed.info?.source===buyer);
+ if(!payments.length||payments.some(ix=>!Number.isSafeInteger(ix.parsed.info?.lamports)||ix.parsed.info.lamports<=0))return fail('BUYER_PAYMENT_EVIDENCE_MISSING');
+ const total=payments.reduce((n,ix)=>n+BigInt(ix.parsed.info.lamports),0n);
+ const fee=transaction.meta?.fee;
+ if(!Number.isSafeInteger(fee)||fee<0)return fail('TRANSACTION_FEE_UNVERIFIED');
+ return {status:'EVIDENCE_OBSERVED_UNVERIFIED',instructionIndex:group.instructionIndex,token2022PoolAccount:pool,observedBuyerPaymentLamports:total.toString(),transactionFeeLamports:String(fee),paymentCount:payments.length,eligibleForLivePromotion:false,settlementVerified:false,independentlyVerified:false};
+}
