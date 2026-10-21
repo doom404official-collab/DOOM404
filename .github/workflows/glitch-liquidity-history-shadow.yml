@@ -39,4 +39,12 @@ jobs:
         working-directory: mvp/wallet-signal
         env:
           GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
-        run: node scripts/liquidity-automatic-history-gate.mjs ../../shadow-source/liquidity-history-evidence.json
+        run: node scripts/liquidity-history-shadow-report.mjs ../../shadow-source/liquidity-history-evidence.json liquidity-history-shadow-report.json
+      - name: Preserve shadow decision
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquidity-history-shadow-${{ github.run_id }}
+          path: mvp/wallet-signal/liquidity-history-shadow-report.json
+          retention-days: 30
+          if-no-files-found: ignore
