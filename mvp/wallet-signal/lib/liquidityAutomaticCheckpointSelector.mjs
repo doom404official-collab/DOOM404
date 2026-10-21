@@ -14,11 +14,13 @@ export function selectLiquidityContinuationCheckpoint(candidates,pool){
  valid.sort((a,b)=>b.runId-a.runId);
  const latest=valid[0];
  if(rejected.some(item=>item.runId>latest.runId))throw Error("NEWER_CHECKPOINT_INVALID_MANUAL_REVIEW_REQUIRED");
- if(valid.length>1){
-  const previous=valid[1].state;
-  const current=latest.state;
+ for(let i=0;i<valid.length-1;i++){
+  const current=valid[i].state;
+  const previous=valid[i+1].state;
   if(current.seen.length<previous.seen.length||previous.seen.some(s=>!current.seen.includes(s)))throw Error("CHECKPOINT_LINEAGE_REGRESSION");
-  if(current.requestCount<previous.requestCount)throw Error("CHECKPOINT_REQUEST_COUNT_REGRESSION");
+  if((current.requestCount||0)<(previous.requestCount||0))throw Error("CHECKPOINT_REQUEST_COUNT_REGRESSION");
+  if(current.reconciliation?.sourceDigest!==previous.reconciliation?.sourceDigest)throw Error("CHECKPOINT_RECONCILIATION_SOURCE_DRIFT");
+  if(current.before===null&&!current.complete)throw Error("CHECKPOINT_CURSOR_MISSING");
  }
  return {runId:latest.runId,state:latest.state,action:latest.decision.action};
 }
