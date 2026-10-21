@@ -30,3 +30,10 @@ test('Token-2022 program identity is not inferred from a display label',()=>{
  assert.equal(result.status,'UNVERIFIED');
  assert.equal(result.eligibleForLivePromotion,false);
 });
+
+test('missing buyer and pool balance evidence cannot be treated as verified settlement',()=>{
+ const transaction={meta:{err:null,innerInstructions:[],preTokenBalances:[],postTokenBalances:[]},transaction:{message:{instructions:[],accountKeys:[]}}};
+ const result=inspectToken2022PumpFunBuySettlement({mint,buyer,transaction});
+ assert.equal(result.status,'UNVERIFIED');
+ assert.equal(result.eligibleForLivePromotion,false);
+});
