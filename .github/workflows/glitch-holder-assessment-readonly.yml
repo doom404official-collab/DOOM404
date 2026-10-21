@@ -1,0 +1,40 @@
+name: GLITCH holder assessment read-only verification
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Verify authenticated specific-job assessment without RPC
+        env:
+          GLITCH_HOLDER_SCAN_INTERNAL_TOKEN: ${{ secrets.GLITCH_HOLDER_SCAN_INTERNAL_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          python3 - <<'PY'
+          import os,json,urllib.request,urllib.parse,urllib.error
+          host="doom404-wallet-signal-git-feature-glitch-assess-3d8131-doom-404.vercel.app"
+          mint="98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump"
+          job="d07c0256-b472-4089-a237-99ed5e5c8cc4"
+          token=os.environ.get("GLITCH_HOLDER_SCAN_INTERNAL_TOKEN")
+          bypass=os.environ.get("VERCEL_AUTOMATION_BYPASS_SECRET")
+          if not token or not bypass:raise SystemExit("Required secrets unavailable")
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args):raise RuntimeError("Authenticated redirect refused")
+          opener=urllib.request.build_opener(NoRedirect)
+          url="https://"+host+"/api/holder-assessment?"+urllib.parse.urlencode({"mint":mint,"jobId":job})
+          req=urllib.request.Request(url,headers={"x-glitch-internal-token":token,"x-vercel-protection-bypass":bypass},method="GET")
+          with opener.open(req,timeout=55) as response:
+              if response.status!=200:raise SystemExit("Assessment HTTP failure")
+              result=json.load(response)
+          if result.get("jobId")!=job or result.get("mint")!=mint:raise SystemExit("Job identity mismatch")
+          assessment=result.get("assessment") or {}
+          inventory=assessment.get("externalNetworkEvidence") or {}
+          if inventory.get("checkpointModified") is not False or inventory.get("scorePromoted") is not False or assessment.get("score") is not None:
+              raise SystemExit("Read-only or score-withholding contract violated")
+          print(json.dumps({"http":200,"jobId":job,"scanStatus":result.get("scanStatus"),
+            "assessmentStatus":assessment.get("status"),"score":assessment.get("score"),
+            "externalNetworkEvidence":inventory}))
+          PY
