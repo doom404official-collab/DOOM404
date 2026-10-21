@@ -86,6 +86,21 @@ jobs:
           path: liquidity-history-evidence.json
           retention-days: 30
           if-no-files-found: error
+      - name: Validate partial recovery evidence
+        id: recovery
+        if: failure() && steps.investigate.outcome == 'failure'
+        working-directory: mvp/wallet-signal
+        env:
+          GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
+        run: node scripts/liquidity-prepare-partial-recovery.mjs ../../selected-checkpoint.json ../../liquidity-history-evidence.json ../../liquidity-history-partial-recovery.json
+      - name: Preserve isolated partial recovery
+        if: failure() && steps.recovery.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquidity-history-partial-${{ github.run_id }}
+          path: liquidity-history-partial-recovery.json
+          retention-days: 30
+          if-no-files-found: error
       - name: Prepare sanitized failure diagnostic
         id: diagnostics
         if: failure() && steps.investigate.outcome == 'failure'
