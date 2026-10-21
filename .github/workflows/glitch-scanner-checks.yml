@@ -30,3 +30,37 @@ jobs:
         run: npm run build
         env:
           NEXT_TELEMETRY_DISABLED: '1'
+
+  disposable-holder-merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: glitch_test
+          POSTGRES_PASSWORD: disposable_test_only
+          POSTGRES_DB: glitch_controlled_merge_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U glitch_test -d glitch_controlled_merge_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify PostgreSQL client is available
+        run: psql --version
+      - name: Run synthetic atomic holder merge acceptance tests
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: '5432'
+          PGDATABASE: glitch_controlled_merge_test
+          PGUSER: glitch_test
+          PGPASSWORD: disposable_test_only
+        run: python3 mvp/wallet-signal/tests/fixtures/holder-atomic-merge/run-disposable-tests.py
