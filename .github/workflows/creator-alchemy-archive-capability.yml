@@ -1,4 +1,5 @@
 name: Creator Alchemy archive capability
+# Development-only push trigger refresh after repository secret configuration.
 on:
   push:
     branches: [feature/creator-history-worker-500]
