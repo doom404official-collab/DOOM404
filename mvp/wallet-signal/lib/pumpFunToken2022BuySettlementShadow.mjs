@@ -22,8 +22,9 @@ export function inspectToken2022PumpFunBuySettlement({mint,buyer,transaction}={}
  try{pool=PublicKey.findProgramAddressSync([new PublicKey(derived.bondingCurve).toBuffer(),new PublicKey(TOKEN_2022).toBuffer(),new PublicKey(mint).toBuffer()],new PublicKey(ATA))[0].toBase58();}catch{return fail('POOL_DERIVATION_FAILED');}
  if(a[4]!==pool)return fail('POOL_TOKEN_ACCOUNT_MISMATCH');
  const resolved=resolveTokenBalanceAccounts({transaction});
- const rows=[...resolved.pre,...resolved.post].filter(x=>x.accountPubkey===pool&&x.mint===mint);
- if(rows.length<2||rows.some(x=>x.owner!==derived.bondingCurve))return fail('HISTORICAL_POOL_OWNERSHIP_UNVERIFIED');
+ const prePoolRows=resolved.pre.filter(x=>x.accountPubkey===pool&&x.mint===mint);
+ const postPoolRows=resolved.post.filter(x=>x.accountPubkey===pool&&x.mint===mint);
+ if(prePoolRows.length!==1||postPoolRows.length!==1||[...prePoolRows,...postPoolRows].some(x=>x.owner!==derived.bondingCurve))return fail('HISTORICAL_POOL_OWNERSHIP_UNVERIFIED');
  const transfers=group.innerInstructions.filter(ix=>ix?.programId===TOKEN_2022&&['transfer','transferChecked'].includes(ix?.parsed?.type)&&ix.parsed.info?.source===pool);
  if(transfers.length!==1)return fail('TOKEN_TRANSFER_NOT_UNIQUE');
  const tokenInfo=transfers[0]?.parsed?.info;
