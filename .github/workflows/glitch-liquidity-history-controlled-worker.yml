@@ -51,6 +51,7 @@ jobs:
           jq -s '.' discovery-records.jsonl > discovery-records.json
           test "$(jq length discovery-records.json)" -gt 0
       - name: Validate and select checkpoint
+        id: select
         working-directory: mvp/wallet-signal
         env:
           GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
@@ -58,7 +59,9 @@ jobs:
           node scripts/liquidity-validate-artifact-discovery.mjs ../../discovery-records.json ../../checkpoint-manifest.json
           node scripts/liquidity-select-checkpoint.mjs ../../checkpoint-manifest.json ../../selected-checkpoint.json
           node scripts/liquidity-automatic-history-gate.mjs ../../selected-checkpoint.json
+          node -e 'const s=require("../../selected-checkpoint.json");console.log("action="+(s.complete?"STOP_HISTORY_EXHAUSTED":"CONTINUE_BOUNDED"))' >> "$GITHUB_OUTPUT"
       - name: Run bounded Helius investigation
+        if: steps.select.outputs.action == 'CONTINUE_BOUNDED'
         working-directory: mvp/wallet-signal
         env:
           GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
@@ -69,11 +72,13 @@ jobs:
           GLITCH_HISTORY_OUTPUT: ${{ github.workspace }}/liquidity-history-evidence.json
         run: node scripts/liquidity-historical-investigator.mjs
       - name: Validate successor before preservation
+        if: steps.select.outputs.action == 'CONTINUE_BOUNDED'
         working-directory: mvp/wallet-signal
         env:
           GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
         run: node scripts/liquidity-validate-successor.mjs ../../selected-checkpoint.json ../../liquidity-history-evidence.json
       - name: Preserve validated checkpoint
+        if: steps.select.outputs.action == 'CONTINUE_BOUNDED'
         uses: actions/upload-artifact@v4
         with:
           name: liquidity-history-${{ github.run_id }}
