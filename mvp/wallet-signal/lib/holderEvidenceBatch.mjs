@@ -36,6 +36,7 @@ export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}=
      evidence.networkExtraction={version:1,valid:network.valid===true,
       unresolvedTokenTransfers:network.unresolvedTokenTransfers??0,
       unresolvedReasons:network.unresolvedReasons??{},
+      unresolvedAccounts:network.unresolvedAccounts??[],
       transfers:network.valid===true?network.transfers:[],
       ...(network.valid===true?{}:{reason:network.reason??"NETWORK_EVIDENCE_UNAVAILABLE"})};
     }catch{
