@@ -1,0 +1,64 @@
+name: GLITCH token owner history bounded continuation
+on:
+  workflow_dispatch:
+    inputs:
+      before:
+        description: 'Optional saved signature cursor from previous run; leave empty for first run'
+        required: false
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: glitch-token-owner-6DgMfb-history
+  cancel-in-progress: false
+jobs:
+  history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Read historical account pages without modifying evidence
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          BEFORE_SIGNATURE: ${{ inputs.before }}
+        run: |
+          python3 - <<'PY'
+          import os,json,urllib.request,time
+          account="6DgMfbDmjbGT9knSgztDg7Fg813mwjw2Bz5ieBztqDju"
+          rpc=os.environ.get("HELIUS_RPC_URL","")
+          if not rpc.startswith("https://"):raise SystemExit("RPC_NOT_CONFIGURED")
+          cursor=os.environ.get("BEFORE_SIGNATURE","").strip() or None
+          if cursor and (not 64<=len(cursor)<=88 or not all(c in "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz" for c in cursor)):raise SystemExit("INVALID_CURSOR")
+          target=450097547
+          output={"account":account,"targetOldestSlot":target,"startCursor":cursor,"pages":[],"requests":0,"ownershipVerified":False,"scorePromoted":False}
+          for page in range(5):
+            params=[account,{"limit":1000,"commitment":"confirmed",**({"before":cursor} if cursor else {})}]
+            body=json.dumps({"jsonrpc":"2.0","id":page+1,"method":"getSignaturesForAddress","params":params}).encode()
+            req=urllib.request.Request(rpc,data=body,headers={"Content-Type":"application/json"},method="POST")
+            with urllib.request.urlopen(req,timeout=45) as response:result=json.load(response)
+            output["requests"]+=1
+            if result.get("error"):
+              output["status"]="PROVIDER_ERROR";output["errorCode"]=result["error"].get("code");break
+            rows=result.get("result")
+            if not isinstance(rows,list):output["status"]="INVALID_PAGE";break
+            if not rows:output["status"]="HISTORY_EXHAUSTED";break
+            last=rows[-1]
+            next_cursor=last.get("signature")
+            if not next_cursor or next_cursor==cursor:output["status"]="PAGINATION_STALLED";break
+            cursor=next_cursor
+            output["pages"].append({"count":len(rows),"newestSlot":rows[0].get("slot"),"oldestSlot":last.get("slot")})
+            if last.get("slot",10**15)<=target:
+              output["status"]="TARGET_SLOT_REACHED";break
+            if len(rows)<1000:
+              output["status"]="PROVIDER_PAGE_EXHAUSTED";break
+            time.sleep(0.25)
+          else:output["status"]="REQUEST_BUDGET_REACHED"
+          output["nextCursor"]=cursor
+          with open("owner-history-checkpoint.json","w") as f:json.dump(output,f,indent=2)
+          print(json.dumps({k:v for k,v in output.items() if k!="startCursor"}))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: owner-history-checkpoint
+          path: owner-history-checkpoint.json
+          retention-days: 30
