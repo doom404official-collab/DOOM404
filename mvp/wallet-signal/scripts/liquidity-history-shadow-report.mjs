@@ -1,0 +1,10 @@
+import {readFile,writeFile} from "node:fs/promises";
+import {assessAutomaticHistoryCheckpoint} from "../lib/liquidityAutomaticHistoryGate.mjs";
+const source=process.argv[2],output=process.argv[3],pool=process.env.GLITCH_LIQUIDITY_POOL;
+if(!source||!output||!pool)throw Error("SHADOW_SOURCE_OUTPUT_POOL_REQUIRED");
+const state=JSON.parse(await readFile(source,"utf8"));
+const decision=assessAutomaticHistoryCheckpoint(state,pool);
+const report={schemaVersion:1,kind:"LIQUIDITY_HISTORY_SHADOW_DECISION",pool,action:decision.action,classification:decision.classification,checkpointSeen:state.seen.length,checkpointPending:state.pendingSignatures?.length||0,sourceReconciliation:state.reconciliation?.sourceDigest||null,rpcRequests:0,authorizationVerified:false,finalScore:null,productionModified:false};
+await writeFile(output,JSON.stringify(report,null,2));
+console.log(JSON.stringify(report));
+if(decision.action.startsWith("PAUSE"))process.exitCode=2;
