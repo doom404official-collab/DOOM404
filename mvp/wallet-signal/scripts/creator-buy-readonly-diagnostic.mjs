@@ -52,6 +52,10 @@ for(const signature of signatures){
   settlementDiagnostics.token2022PoolAccount=token2022PoolAccount;
   settlementDiagnostics.token2022PoolMatchesReceiptSource=receipts.some(x=>x.sourceTokenAccount===token2022PoolAccount);
   settlementDiagnostics.curveMatchesHistoricalSourceOwner=receiptSourceBalances.some(x=>x.owner===derived.bondingCurve);
+  const paymentTransfers=groups.flatMap(g=>g.innerInstructions.filter(ix=>ix?.program==='system'&&ix?.parsed?.type==='transfer').map(ix=>({instructionIndex:g.instructionIndex,source:ix.parsed.info?.source||null,destination:ix.parsed.info?.destination||null,lamports:ix.parsed.info?.lamports??null})));
+  settlementDiagnostics.sameGroupSystemPayments=paymentTransfers;
+  settlementDiagnostics.transactionFeeLamports=transaction.meta?.fee??null;
+  settlementDiagnostics.paymentFromBuyerCount=paymentTransfers.filter(x=>x.source===creator).length;
   const buyerCandidates=observedOwners.map(owner=>({owner,preRaw:tokenBalances.filter(x=>(transaction.meta?.preTokenBalances||[]).includes(x)&&x?.owner===owner&&x?.mint===observedMints[0]).reduce((n,x)=>n+BigInt(x?.uiTokenAmount?.amount||'0'),0n).toString(),postRaw:tokenBalances.filter(x=>(transaction.meta?.postTokenBalances||[]).includes(x)&&x?.owner===owner&&x?.mint===observedMints[0]).reduce((n,x)=>n+BigInt(x?.uiTokenAmount?.amount||'0'),0n).toString()}));
   results.push({signature,status:shadow.status,diagnostic:shadow.diagnostic||null,pumpInstructionCount,recognizedBuyGroups:groups.length,observedMints,observedOwners,buyerCandidates,settlementDiagnostics,buyInstructionAccounts,receiptSourceBalances,
    instructionCount:transaction.transaction?.message?.instructions?.length||0,transactionFailed:transaction.meta?.err!=null,
