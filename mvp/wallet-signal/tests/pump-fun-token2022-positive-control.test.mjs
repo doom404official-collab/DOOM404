@@ -25,6 +25,7 @@ const review=t=>inspect({mint,buyer,transaction:t});
 test('sanitized real-transaction-shaped positive control remains non-promotable',()=>{
  const r=review(fixture());assert.equal(r.status,'EVIDENCE_OBSERVED_UNVERIFIED');
  assert.equal(r.eligibleForLivePromotion,false);assert.equal(r.settlementVerified,false);assert.equal(r.independentlyVerified,false);
+ assert.equal(r.feeRecipientRolesVerified,false);assert.equal(r.feeRoutingStatus,'UNVERIFIED');
 });
 test('incorrect historical pool ownership fails closed',()=>{const t=fixture();t.meta.preTokenBalances[0].owner=buyer;assert.equal(review(t).reason,'HISTORICAL_POOL_OWNERSHIP_UNVERIFIED');});
 test('duplicate pool transfer fails closed',()=>{const t=fixture();t.meta.innerInstructions[0].instructions.push(structuredClone(t.meta.innerInstructions[0].instructions[0]));assert.equal(review(t).reason,'TOKEN_TRANSFER_NOT_UNIQUE');});
