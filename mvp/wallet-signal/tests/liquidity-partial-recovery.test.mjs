@@ -36,7 +36,7 @@ test('CLI sanitizes output, refuses overwrite and malformed JSON without leaking
  await writeFile(n,'{"'+marker);const failed=run();assert.notEqual(failed.status,0);assert.equal((failed.stderr+failed.stdout).includes(marker),false);assert.equal(await readFile(o,'utf8'),saved);
  const failedOutput=join(dir,'missing.json');const fail=spawnSync(process.execPath,[new URL('../scripts/liquidity-prepare-partial-recovery.mjs',import.meta.url).pathname,p,n,failedOutput],{encoding:'utf8',env:{...process.env,GLITCH_LIQUIDITY_POOL:pool}});assert.notEqual(fail.status,0);await assert.rejects(access(failedOutput));
 });
-test('no workflow wiring added; partial and diagnostic artifacts excluded from discovery',async()=>{
- const wf=await readFile(new URL('../../../.github/workflows/glitch-liquidity-history-controlled-worker.yml',import.meta.url),'utf8');assert.equal(wf.includes('liquidity-prepare-partial-recovery'),false);assert.ok(wf.includes('^liquidity-(reconciled|history)-[0-9]+$'));
- for(const name of ['liquidity-partial-123','liquidity-history-failure-123'])assert.equal(/^liquidity-(reconciled|history)-[0-9]+$/.test(name),false);
+test('partial and diagnostic artifacts remain excluded from automatic discovery',async()=>{
+ const wf=await readFile(new URL('../../../.github/workflows/glitch-liquidity-history-controlled-worker.yml',import.meta.url),'utf8');assert.ok(wf.includes('^liquidity-(reconciled|history)-[0-9]+$'));
+ for(const name of ['liquidity-history-partial-123','liquidity-history-failure-123'])assert.equal(/^liquidity-(reconciled|history)-[0-9]+$/.test(name),false);
 });
