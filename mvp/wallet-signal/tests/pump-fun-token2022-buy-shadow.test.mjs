@@ -23,3 +23,10 @@ test('failed on-chain transaction cannot produce a settlement observation',()=>{
  assert.equal(r.reason,'INVALID_TRANSACTION');
  assert.equal(r.eligibleForLivePromotion,false);
 });
+
+test('Token-2022 program identity is not inferred from a display label',()=>{
+ const transaction={meta:{err:null,innerInstructions:[]},transaction:{message:{instructions:[],accountKeys:[]}}};
+ const result=inspectToken2022PumpFunBuySettlement({mint,buyer,transaction});
+ assert.equal(result.status,'UNVERIFIED');
+ assert.equal(result.eligibleForLivePromotion,false);
+});
