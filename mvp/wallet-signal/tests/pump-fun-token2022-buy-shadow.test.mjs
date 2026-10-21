@@ -37,3 +37,10 @@ test('missing buyer and pool balance evidence cannot be treated as verified sett
  assert.equal(result.status,'UNVERIFIED');
  assert.equal(result.eligibleForLivePromotion,false);
 });
+
+test('shadow reviewer never emits promotable settlement flags',()=>{
+ const r=inspectToken2022PumpFunBuySettlement({mint,buyer,transaction:null});
+ assert.notEqual(r.eligibleForLivePromotion,true);
+ assert.notEqual(r.settlementVerified,true);
+ assert.notEqual(r.independentlyVerified,true);
+});
