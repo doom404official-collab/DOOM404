@@ -1,0 +1,53 @@
+name: GLITCH pending liquidity evidence recovery
+on:
+  workflow_dispatch:
+    inputs:
+      pool:
+        required: true
+        type: string
+      source_run_id:
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  recovery:
+    if: github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: glitch-pending-recovery-${{ inputs.pool }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+        working-directory: mvp/wallet-signal
+      - name: Restore checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+        run: |
+          case "$SOURCE_RUN_ID" in *[!0-9]*|'') exit 1;; esac
+          mkdir -p previous-history
+          gh run download "$SOURCE_RUN_ID" --name "liquidity-history-$SOURCE_RUN_ID" --dir previous-history
+          test -s previous-history/liquidity-history-evidence.json
+      - name: Recover pending signatures
+        working-directory: mvp/wallet-signal
+        env:
+          GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
+          GLITCH_HISTORY_CHECKPOINT: ${{ github.workspace }}/previous-history/liquidity-history-evidence.json
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          GLITCH_PENDING_REQUEST_BUDGET: '12'
+        run: node scripts/liquidity-pending-signature-recovery.mjs
+      - name: Preserve evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquidity-pending-${{ github.run_id }}
+          path: mvp/wallet-signal/liquidity-pending-recovery-evidence.json
+          retention-days: 30
+# Deployment-skip validation: second preview check after both Vercel project settings updated.
