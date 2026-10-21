@@ -1,4 +1,7 @@
 /** Read-only reconciliation of a frozen holder ranking and historical job.
+ * This compares wallet membership only, not snapshot provenance. Matching
+ * wallets do not establish slot, supply, rank, account, balance, or retained
+ * network-evidence identity. Attachment requires a separate provenance review.
  * Wallet identity mismatch is never automatically migrated.
  */
 export function reconcileFrozenHolderRanking({snapshot,checkpoint}={}){
@@ -14,6 +17,8 @@ export function reconcileFrozenHolderRanking({snapshot,checkpoint}={}){
  return {snapshotId:snapshot.id,jobMint:checkpoint.mint,matchingWallets:[...ranked].filter(w=>active.has(w)).length,
   snapshotOnly,checkpointOnly,excludedCheckpointWallets:checkpointOnly.filter(w=>excluded.has(w)),
   reconciliationRequired:snapshotOnly.length>0||checkpointOnly.length>0,
-  safeToAttachSnapshot:snapshotOnly.length===0&&checkpointOnly.length===0,
+  walletSetMatches:snapshotOnly.length===0&&checkpointOnly.length===0,
+  safeToAttachSnapshot:false,snapshotProvenanceVerified:false,
+  attachmentBlockReason:snapshotOnly.length||checkpointOnly.length?"HOLDER_WALLET_SET_MISMATCH":"SNAPSHOT_PROVENANCE_UNVERIFIED",
   checkpointModified:false,historyReset:false,scorePromoted:false};
 }
