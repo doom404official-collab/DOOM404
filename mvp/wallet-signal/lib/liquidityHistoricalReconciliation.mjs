@@ -17,6 +17,8 @@ export function reconcileLiquidityHistory(original,replays,recovery,pool){
   }
  }
  if(seen.size!==original.seen.length)throw Error("INCOMPLETE_REPLAY_COVERAGE");
+ // A prior bounded replay may record a budget-exhausted signature; a later replay must cover it.
+ for(const artifact of replays)for(const entry of artifact.unresolved){if(!seen.has(entry.signature))throw Error("UNRESOLVED_REPLAY_SIGNATURE");}
  if(!recovery||recovery.kind!=="LIQUIDITY_PENDING_SIGNATURE_RECOVERY"||recovery.pool!==pool||recovery.sourceDigest!==expectedRecoveryDigest||recovery.classification!==HISTORY_CLASSIFICATION||recovery.authorizationVerified!==false||recovery.finalScore!==null||!Array.isArray(recovery.transactions)||recovery.unresolved?.length)throw Error("INVALID_PENDING_RECOVERY");
  const pending=new Set(original.pendingSignatures||[]);
  const recovered=new Set();
