@@ -2,6 +2,10 @@ name: GLITCH liquidity historical investigation
 on:
   workflow_dispatch:
     inputs:
+      checkpoint_run_id:
+        description: Required run ID containing reconciled 34-signature checkpoint artifact
+        required: true
+        type: string
       pool:
         description: Pump AMM pool address
         required: true
@@ -24,19 +28,20 @@ jobs:
           node-version: '22'
       - run: npm install --no-audit --no-fund
         working-directory: mvp/wallet-signal
-      - name: Restore previous checkpoint artifact
+      - name: Restore explicit reconciled checkpoint
         env:
           GH_TOKEN: ${{ github.token }}
-          GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
+          CHECKPOINT_RUN_ID: ${{ inputs.checkpoint_run_id }}
         run: |
-          gh run list --workflow glitch-liquidity-history-investigator.yml --branch feature/glitch-liquidity-evidence-worker --limit 30 --json databaseId,event --jq '.[] | select(.event=="workflow_dispatch") | .databaseId' > history-run-ids.txt
-          while read -r run; do
-            mkdir -p previous-history
-            if gh run download "$run" --name "liquidity-history-$run" --dir previous-history 2>/dev/null && test -s previous-history/liquidity-history-evidence.json; then
-              if node -e 'const s=require("./previous-history/liquidity-history-evidence.json");if(s.pool!==process.env.GLITCH_LIQUIDITY_POOL||s.schemaVersion!==1||s.classification!=="AMOUNT_RECONCILED_AUTHORIZATION_PENDING")process.exit(1)'; then break; fi
-            fi
-            rm -f previous-history/liquidity-history-evidence.json
-          done < history-run-ids.txt
+          case "$CHECKPOINT_RUN_ID" in *[!0-9]*|'') echo "Invalid checkpoint run ID"; exit 1;; esac
+          mkdir -p previous-history
+          gh run download "$CHECKPOINT_RUN_ID" --name "liquidity-reconciled-$CHECKPOINT_RUN_ID" --dir previous-history
+          test -s previous-history/liquidity-history-evidence.json
+      - name: Validate reconciled checkpoint
+        working-directory: mvp/wallet-signal
+        env:
+          GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
+        run: node scripts/liquidity-validate-continuation.mjs "${{ github.workspace }}/previous-history/liquidity-history-evidence.json"
       - name: Investigate bounded historical signatures
         working-directory: mvp/wallet-signal
         env:
@@ -46,7 +51,6 @@ jobs:
           GLITCH_HISTORY_BUDGET: '60'
           GLITCH_HISTORY_CHECKPOINT: ${{ github.workspace }}/previous-history/liquidity-history-evidence.json
         run: |
-          if [ ! -s "$GLITCH_HISTORY_CHECKPOINT" ]; then unset GLITCH_HISTORY_CHECKPOINT; fi
           node scripts/liquidity-historical-investigator.mjs
       - name: Archive checkpoint and evidence
         if: always()
