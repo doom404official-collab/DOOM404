@@ -1,0 +1,50 @@
+name: GLITCH liquidity automatic history shadow
+on:
+  workflow_dispatch:
+    inputs:
+      pool:
+        required: true
+        type: string
+      checkpoint_run_id:
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: glitch-liquidity-history-shadow-${{ inputs.pool }}
+  cancel-in-progress: false
+jobs:
+  shadow:
+    if: github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+        working-directory: mvp/wallet-signal
+      - name: Restore explicit reconciled checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.checkpoint_run_id }}
+        run: |
+          case "$RUN_ID" in *[!0-9]*|'') exit 1;; esac
+          mkdir -p shadow-source
+          gh run download "$RUN_ID" --name "liquidity-reconciled-$RUN_ID" --dir shadow-source
+          test -s shadow-source/liquidity-history-evidence.json
+      - name: Evaluate checkpoint without RPC
+        working-directory: mvp/wallet-signal
+        env:
+          GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
+        run: node scripts/liquidity-history-shadow-report.mjs ../../shadow-source/liquidity-history-evidence.json liquidity-history-shadow-report.json
+      - name: Preserve shadow decision
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquidity-history-shadow-${{ github.run_id }}
+          path: mvp/wallet-signal/liquidity-history-shadow-report.json
+          retention-days: 30
+          if-no-files-found: ignore
