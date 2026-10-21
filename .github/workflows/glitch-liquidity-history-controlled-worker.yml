@@ -61,6 +61,7 @@ jobs:
           node scripts/liquidity-automatic-history-gate.mjs ../../selected-checkpoint.json
           node -e 'const fs=require("node:fs");const s=JSON.parse(fs.readFileSync("../../selected-checkpoint.json","utf8"));const a=s.complete?"STOP_HISTORY_EXHAUSTED":"CONTINUE_BOUNDED";fs.appendFileSync(process.env.GITHUB_OUTPUT,"action="+a+"\n")'
       - name: Run bounded Helius investigation
+        id: investigate
         if: steps.select.outputs.action == 'CONTINUE_BOUNDED'
         working-directory: mvp/wallet-signal
         env:
@@ -83,5 +84,18 @@ jobs:
         with:
           name: liquidity-history-${{ github.run_id }}
           path: liquidity-history-evidence.json
+          retention-days: 30
+          if-no-files-found: error
+      - name: Prepare sanitized failure diagnostic
+        id: diagnostics
+        if: failure() && steps.investigate.outcome == 'failure'
+        working-directory: mvp/wallet-signal
+        run: node scripts/liquidity-preserve-failure-diagnostic.mjs ../../liquidity-history-evidence.json ../../liquidity-history-failure-diagnostic.json
+      - name: Preserve failure diagnostic only
+        if: failure() && steps.diagnostics.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquidity-history-failure-${{ github.run_id }}
+          path: liquidity-history-failure-diagnostic.json
           retention-days: 30
           if-no-files-found: error
