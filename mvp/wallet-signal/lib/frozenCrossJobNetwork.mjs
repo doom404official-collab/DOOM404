@@ -12,10 +12,14 @@ export function summarizeFrozenCrossJobNetwork({snapshot,jobs=[]}={}){
   return {wallet:h.wallet,amountRaw,sharePct:Number(BigInt(amountRaw)*1000000n/supply)/10000};
  });
  if(new Set(holders.map(h=>h.wallet)).size!==20||holders.some(h=>excluded.has(h.wallet)))throw Error("INVALID_ELIGIBLE_HOLDER_SET");
- const transfers=new Map(),sourceJobs=new Set();
+ const transfers=new Map(),sourceJobs=new Set(),unresolvedSignatures=new Set(),processedSignatures=new Set();
  for(const job of jobs){
   if(job.mint!==snapshot.mint||!job.checkpoint?.networkEvidence)throw Error("GRAPH_SOURCE_MISMATCH");
   sourceJobs.add(job.id);
+  for(const [signature,p] of Object.entries(job.checkpoint.networkEvidence.processed??{})){
+   processedSignatures.add(signature);
+   if(p?.valid!==true||p?.unresolvedTokenTransfers!==0)unresolvedSignatures.add(signature);
+  }
   for(const t of job.checkpoint.networkEvidence.transfers??[]){
    if(!t?.signature||!t.from||!t.to)throw Error("GRAPH_TRANSFER_INVALID");
    const key=[t.signature,t.from,t.to,t.assetType,t.mint??"",t.amountRaw].join("|");
@@ -24,6 +28,6 @@ export function summarizeFrozenCrossJobNetwork({snapshot,jobs=[]}={}){
  }
  const observed=scoreTop20Network({holders,transfers:[...transfers.values()],supplyRaw:snapshot.supply_raw,infrastructureWallets:[...excluded]});
  return {snapshotId:snapshot.id,sourceJobCount:sourceJobs.size,uniqueTransferRecords:transfers.size,
-  observed,historyComplete:false,finalScore:null,checkpointModified:false,scorePromoted:false,
+  observed,coverage:{uniqueProcessedSignatures:processedSignatures.size,uniqueUnresolvedSignatures:unresolvedSignatures.size,unresolvedEvidencePresent:unresolvedSignatures.size>0},historyComplete:false,finalScore:null,checkpointModified:false,scorePromoted:false,
   warning:"Cross-job observed evidence is not snapshot-time ownership proof or complete wallet history."};
 }
