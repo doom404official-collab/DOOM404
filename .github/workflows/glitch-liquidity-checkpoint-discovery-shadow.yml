@@ -39,7 +39,7 @@ jobs:
             [ "$conclusion" = "success" ] || continue
             mkdir -p "checkpoint-artifacts/$run"
             gh run download "$run" --name "$name" --dir "checkpoint-artifacts/$run"
-            file="checkpoint-artifacts/$run/liquidity-history-evidence.json"
+            file="$GITHUB_WORKSPACE/checkpoint-artifacts/$run/liquidity-history-evidence.json"
             test -s "$file"
             jq -nc --argjson runId "$run" --arg branch "$branch" --arg conclusion "$conclusion" --arg prefix "$prefix" --arg artifactName "$name" --arg path "$file" '{runId:$runId,branch:$branch,conclusion:$conclusion,prefix:$prefix,artifactName:$artifactName,path:$path}' >> discovery-records.jsonl
           done < artifact-candidates.tsv
