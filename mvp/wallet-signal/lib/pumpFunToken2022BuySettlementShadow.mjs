@@ -29,7 +29,11 @@ export function inspectToken2022PumpFunBuySettlement({mint,buyer,transaction}={}
  const tokenInfo=transfers[0]?.parsed?.info;
  if(!tokenInfo?.destination||!resolved.post.some(x=>x.accountPubkey===tokenInfo.destination&&x.owner===buyer&&x.mint===mint))return fail('BUYER_RECEIPT_OWNERSHIP_UNVERIFIED');
  const amount=String(tokenInfo.tokenAmount?.amount??tokenInfo.amount??'');
- if(!/^[0-9]+$/.test(amount)||BigInt(amount)<=0n)return fail('TOKEN_TRANSFER_AMOUNT_UNVERIFIED');
+ if(!/^[0-9]+$/.test(amount)||BigInt(amount)<=0n||tokenInfo.mint!==mint)return fail('TOKEN_TRANSFER_AMOUNT_UNVERIFIED');
+ const balance=(items,account)=>items.filter(x=>x.accountPubkey===account&&x.mint===mint).reduce((n,x)=>n+BigInt(x.uiTokenAmount?.amount||'0'),0n);
+ const buyerBefore=balance(resolved.pre,tokenInfo.destination),buyerAfter=balance(resolved.post,tokenInfo.destination);
+ const poolBefore=balance(resolved.pre,pool),poolAfter=balance(resolved.post,pool);
+ if(buyerAfter-buyerBefore!==BigInt(amount)||poolBefore-poolAfter!==BigInt(amount))return fail('TOKEN_BALANCES_NOT_RECONCILED');
  const payments=group.innerInstructions.filter(ix=>ix?.program==='system'&&ix?.parsed?.type==='transfer'&&ix.parsed.info?.source===buyer);
  if(!payments.length||payments.some(ix=>!Number.isSafeInteger(ix.parsed.info?.lamports)||ix.parsed.info.lamports<=0))return fail('BUYER_PAYMENT_EVIDENCE_MISSING');
  if(payments.filter(ix=>ix.parsed.info.destination===derived.bondingCurve).length!==1)return fail('CURVE_PAYMENT_NOT_UNIQUE');
