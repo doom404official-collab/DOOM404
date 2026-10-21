@@ -7,6 +7,8 @@ on:
       - 'mvp/wallet-signal/tests/pump-fun-token2022-positive-control.test.mjs'
       - 'mvp/wallet-signal/tests/creator-buy-shadow-diagnostics.test.mjs'
       - 'mvp/wallet-signal/lib/pumpFunToken2022BuySettlementShadow.mjs'
+      - 'mvp/wallet-signal/lib/pumpFunBondingCurveFeeAuthorizationShadow.mjs'
+      - 'mvp/wallet-signal/tests/pump-fun-bonding-curve-fee-authorization-shadow.test.mjs'
       - '.github/workflows/creator-token2022-regression.yml'
   workflow_dispatch:
 permissions:
@@ -32,7 +34,7 @@ jobs:
           cache-dependency-path: mvp/wallet-signal/package-lock.json
       - run: npm ci --no-audit --no-fund
       - name: Focused Token-2022 positive and adversarial controls
-        run: node --test tests/pump-fun-token2022-positive-control.test.mjs tests/creator-buy-shadow-diagnostics.test.mjs
+        run: node --test tests/pump-fun-token2022-positive-control.test.mjs tests/creator-buy-shadow-diagnostics.test.mjs tests/pump-fun-bonding-curve-fee-authorization-shadow.test.mjs
       - name: Full application tests
         run: npm run test:smoke
       - name: Application build
