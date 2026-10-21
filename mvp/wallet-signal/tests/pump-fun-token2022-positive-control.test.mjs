@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {PublicKey} from '@solana/web3.js';
 import {inspectToken2022PumpFunBuySettlement as inspect} from '../lib/pumpFunToken2022BuySettlementShadow.mjs';
 const mint='79iierYMVj263HYVtXWz3eCJosUpAvhkERCT6kGipump';
 const buyer='9KRxX586FycrWYvAn61hZhcGDqfEGKQKhmQUBM2qLmda';
@@ -31,3 +30,8 @@ test('incorrect historical pool ownership fails closed',()=>{const t=fixture();t
 test('duplicate pool transfer fails closed',()=>{const t=fixture();t.meta.innerInstructions[0].instructions.push(structuredClone(t.meta.innerInstructions[0].instructions[0]));assert.equal(review(t).reason,'TOKEN_TRANSFER_NOT_UNIQUE');});
 test('token delta mismatch fails closed',()=>{const t=fixture();t.meta.postTokenBalances[1].uiTokenAmount.amount='5146550613008';assert.equal(review(t).reason,'TOKEN_BALANCES_NOT_RECONCILED');});
 test('unrelated buyer SOL debit fails closed',()=>{const t=fixture();t.meta.postBalances[6]-=1;assert.equal(review(t).reason,'BUYER_SOL_BALANCE_NOT_RECONCILED');});
+
+test('missing historical pre-pool row fails closed',()=>{const t=fixture();t.meta.preTokenBalances.shift();assert.equal(review(t).reason,'HISTORICAL_POOL_OWNERSHIP_UNVERIFIED');});
+test('duplicate historical pool row fails closed',()=>{const t=fixture();t.meta.postTokenBalances.push(structuredClone(t.meta.postTokenBalances[0]));assert.equal(review(t).reason,'HISTORICAL_POOL_OWNERSHIP_UNVERIFIED');});
+test('wrong Token-2022 transfer program fails closed',()=>{const t=fixture();t.meta.innerInstructions[0].instructions[0].programId='TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';assert.equal(review(t).reason,'TOKEN_TRANSFER_NOT_UNIQUE');});
+test('wrong buyer account ownership fails closed',()=>{const t=fixture();t.meta.postTokenBalances[1].owner=curve;assert.equal(review(t).reason,'BUYER_RECEIPT_OWNERSHIP_UNVERIFIED');});
