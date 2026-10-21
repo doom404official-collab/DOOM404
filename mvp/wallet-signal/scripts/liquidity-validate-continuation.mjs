@@ -1,0 +1,10 @@
+import {readFile} from "node:fs/promises";
+import {validateHistoryCheckpoint,HISTORY_CLASSIFICATION} from "../lib/liquidityHistoricalDecoder.mjs";
+const source=process.argv[2];
+const pool=process.env.GLITCH_LIQUIDITY_POOL;
+if(!source||!pool)throw Error("CHECKPOINT_AND_POOL_REQUIRED");
+const state=JSON.parse(await readFile(source,"utf8"));
+validateHistoryCheckpoint(state,pool);
+if(state.complete||state.historyCoverageVerified!==false||state.authorizationVerified!==false||state.finalScore!==null)throw Error("UNSAFE_CONTINUATION_CHECKPOINT");
+if(state.pendingSignatures?.length||state.seen.length!==34||state.reconciliation?.verifiedDistinct!==34||state.reconciliation?.recoveredPending!==2||!state.before)throw Error("INCOMPLETE_RECONCILIATION_OR_CURSOR");
+console.log(JSON.stringify({status:"CONTINUATION_CHECKPOINT_VALIDATED",seen:state.seen.length,pending:0,cursorPresent:true,classification:HISTORY_CLASSIFICATION,complete:false}));
