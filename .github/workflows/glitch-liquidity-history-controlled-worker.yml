@@ -1,0 +1,87 @@
+name: GLITCH liquidity history controlled worker
+on:
+  workflow_dispatch:
+    inputs:
+      pool:
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: glitch-liquidity-history-worker
+  cancel-in-progress: false
+jobs:
+  investigate:
+    if: github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --no-audit --no-fund
+        working-directory: mvp/wallet-signal
+      - name: Discover and restore verified checkpoint artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p checkpoint-artifacts
+          gh api "repos/${{ github.repository }}/actions/artifacts?per_page=100" --jq '.artifacts[] | select(.expired==false and (.name|test("^liquidity-(reconciled|history)-[0-9]+$"))) | [.workflow_run.id,.name] | @tsv' > artifact-candidates.tsv
+          test -s artifact-candidates.tsv
+          count=$(wc -l < artifact-candidates.tsv)
+          if [ "$count" -gt 12 ]; then echo "Artifact lineage limit exceeded; manual review required"; exit 1; fi
+          : > discovery-records.jsonl
+          while IFS=$'\t' read -r run name; do
+            case "$run" in *[!0-9]*|'') exit 1;; esac
+            prefix="${name%-"$run"}"
+            [ "$name" = "$prefix-$run" ] || exit 1
+            branch=$(gh api "repos/${{ github.repository }}/actions/runs/$run" --jq '.head_branch')
+            conclusion=$(gh api "repos/${{ github.repository }}/actions/runs/$run" --jq '.conclusion')
+            [ "$branch" = "feature/glitch-liquidity-evidence-worker" ] || continue
+            [ "$conclusion" = "success" ] || continue
+            mkdir -p "checkpoint-artifacts/$run"
+            gh run download "$run" --name "$name" --dir "checkpoint-artifacts/$run"
+            file="$GITHUB_WORKSPACE/checkpoint-artifacts/$run/liquidity-history-evidence.json"
+            test -s "$file"
+            jq -nc --argjson runId "$run" --arg branch "$branch" --arg conclusion "$conclusion" --arg prefix "$prefix" --arg artifactName "$name" --arg path "$file" '{runId:$runId,branch:$branch,conclusion:$conclusion,prefix:$prefix,artifactName:$artifactName,path:$path}' >> discovery-records.jsonl
+          done < artifact-candidates.tsv
+          jq -s '.' discovery-records.jsonl > discovery-records.json
+          test "$(jq length discovery-records.json)" -gt 0
+      - name: Validate and select checkpoint
+        id: select
+        working-directory: mvp/wallet-signal
+        env:
+          GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
+        run: |
+          node scripts/liquidity-validate-artifact-discovery.mjs ../../discovery-records.json ../../checkpoint-manifest.json
+          node scripts/liquidity-select-checkpoint.mjs ../../checkpoint-manifest.json ../../selected-checkpoint.json
+          node scripts/liquidity-automatic-history-gate.mjs ../../selected-checkpoint.json
+          node -e 'const fs=require("node:fs");const s=JSON.parse(fs.readFileSync("../../selected-checkpoint.json","utf8"));const a=s.complete?"STOP_HISTORY_EXHAUSTED":"CONTINUE_BOUNDED";fs.appendFileSync(process.env.GITHUB_OUTPUT,"action="+a+"\n")'
+      - name: Run bounded Helius investigation
+        if: steps.select.outputs.action == 'CONTINUE_BOUNDED'
+        working-directory: mvp/wallet-signal
+        env:
+          GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          ALCHEMY_RPC_URL: ${{ secrets.ALCHEMY_RPC_URL }}
+          GLITCH_HISTORY_BUDGET: '60'
+          GLITCH_HISTORY_CHECKPOINT: ${{ github.workspace }}/selected-checkpoint.json
+          GLITCH_HISTORY_OUTPUT: ${{ github.workspace }}/liquidity-history-evidence.json
+        run: node scripts/liquidity-historical-investigator.mjs
+      - name: Validate successor before preservation
+        if: steps.select.outputs.action == 'CONTINUE_BOUNDED' && success()
+        working-directory: mvp/wallet-signal
+        env:
+          GLITCH_LIQUIDITY_POOL: ${{ inputs.pool }}
+        run: node scripts/liquidity-validate-successor.mjs ../../selected-checkpoint.json ../../liquidity-history-evidence.json
+      - name: Preserve validated checkpoint
+        if: steps.select.outputs.action == 'CONTINUE_BOUNDED' && success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquidity-history-${{ github.run_id }}
+          path: liquidity-history-evidence.json
+          retention-days: 30
+          if-no-files-found: error
