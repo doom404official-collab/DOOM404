@@ -14,6 +14,24 @@ def run(sql,ok=True):
 reset='TRUNCATE glitch_holder_evidence_validation,glitch_holder_scan_jobs; INSERT INTO glitch_holder_scan_jobs SELECT * FROM test_jobs_baseline; INSERT INTO glitch_holder_evidence_validation SELECT * FROM test_evidence_baseline;'
 merge=(D/'synthetic-merge.sql').read_text()
 run((D/'disposable-setup.sql').read_text())
+full_fixture_sql=merge
+full_fixture_match=re.search(r'm jsonb := (\$manifest_[a-f0-9]+\$)(.*?)\1::jsonb',full_fixture_sql,re.S)
+assert full_fixture_match
+full_fixture_manifest=json.loads(full_fixture_match.group(2))
+def sql_json(value):return "'"+json.dumps(value,separators=(',',':')).replace("'","''")+"'::jsonb"
+def hash_json(value):
+ return run("SELECT encode(sha256(convert_to(("+sql_json(value)+")::text,'UTF8')),'hex');").stdout.strip()
+def compact_manifest(m):
+ c=copy.deepcopy(m)
+ c['jobSha256']=hash_json(m['job'])
+ c['evidenceHashes']={r['signature']:hash_json(r) for r in m['evidenceRows']}
+ c['preparedCheckpointSha256']=hash_json(m['preparedCheckpoint'])
+ c['job']={k:m['job'][k] for k in ['id','mint','version']}
+ del c['preparedCheckpoint']
+ return c
+def render_compact_manifest(c):
+ return full_fixture_sql[:full_fixture_match.start(2)]+json.dumps(c,separators=(',',':'))+full_fixture_sql[full_fixture_match.end(2):]
+merge=render_compact_manifest(compact_manifest(full_fixture_manifest))
 def source_same():
  return run('SELECT (SELECT to_jsonb(j) FROM glitch_holder_scan_jobs j)=(SELECT to_jsonb(j) FROM test_jobs_baseline j);').stdout.strip()=='t'
 run(merge)
@@ -83,9 +101,9 @@ print('PASS evidence writer blocked while merge holds source locks')
 # Additional independently requested gates. Modify only disposable source/manifests.
 manifest_match=re.search(r'm jsonb := (\$manifest_[a-f0-9]+\$)(.*?)\1::jsonb',merge,re.S)
 assert manifest_match, 'Expected exactly one executable JSON manifest'
-base_manifest=json.loads(manifest_match.group(2))
+base_manifest=copy.deepcopy(full_fixture_manifest)
 def manifest_sql(m):
- return merge[:manifest_match.start(2)]+json.dumps(m,separators=(',',':'))+merge[manifest_match.end(2):]
+ return render_compact_manifest(compact_manifest(m))
 def current_job():
  return json.loads(run('SELECT to_jsonb(j)::text FROM glitch_holder_scan_jobs j;').stdout)
 def snapshot():
@@ -178,5 +196,13 @@ m=copy.deepcopy(base_manifest);m['job']=current_job();prepare_manifest(m)
 before=snapshot();p=run(manifest_sql(m),False)
 assert p.returncode and 'MERGE_PREPARED_DIFF_INVALID' in p.stderr and snapshot()==before
 print('PASS processed retention ceiling rejected before claim')
-print('Twenty-two disposable acceptance checks passed. Live execution manifest and permissions remain separate.')
+for field in ['jobSha256','preparedCheckpointSha256','evidenceHashes']:
+ run(reset)
+ c=compact_manifest(base_manifest)
+ if field=='evidenceHashes':c[field][base_manifest['evidenceRows'][0]['signature']]='0'*64
+ else:c[field]='0'*64
+ before=snapshot();p=run(render_compact_manifest(c),False)
+ assert p.returncode and snapshot()==before,field
+ print('PASS canonical hash mismatch '+field)
+print('Twenty-five disposable acceptance checks passed. Live execution manifest and permissions remain separate.')
 

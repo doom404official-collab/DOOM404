@@ -37,7 +37,7 @@ BEGIN
     WHERE id = (m#>>'{job,id}')::uuid FOR UPDATE NOWAIT;
   -- Canonical JSONB equality pins every current job field, including summary,
   -- checkpoint, version, status, lease metadata and timestamps.
-  IF to_jsonb(j) IS DISTINCT FROM m->'job' THEN RAISE EXCEPTION 'MERGE_JOB_CHANGED'; END IF;
+  IF encode(sha256(convert_to(to_jsonb(j)::text,'UTF8')),'hex') IS DISTINCT FROM m->>'jobSha256' THEN RAISE EXCEPTION 'MERGE_JOB_CHANGED'; END IF;
   IF j.checkpoint#>>'{networkEvidence,snapshotIdentity}' IS DISTINCT FROM m->>'snapshotIdentity'
      OR j.checkpoint#>'{networkEvidence,retentionLimited}' IS DISTINCT FROM 'false'::jsonb
      OR j.checkpoint#>'{networkEvidence,version}' IS DISTINCT FROM '1'::jsonb
@@ -54,7 +54,8 @@ BEGIN
     SELECT to_jsonb(e) INTO STRICT actual_evidence
       FROM public.glitch_holder_evidence_validation e
       WHERE e.job_id=j.id AND e.signature=sig FOR UPDATE NOWAIT;
-    IF actual_evidence IS DISTINCT FROM item OR item->>'status' IS DISTINCT FROM 'verified'
+    IF encode(sha256(convert_to(actual_evidence::text,'UTF8')),'hex') IS DISTINCT FROM m->'evidenceHashes'->>sig
+       OR actual_evidence IS DISTINCT FROM item OR item->>'status' IS DISTINCT FROM 'verified'
        OR item#>'{evidence,networkExtraction,version}' IS DISTINCT FROM '1'::jsonb
        OR item#>'{evidence,networkExtraction,valid}' IS DISTINCT FROM 'true'::jsonb
        OR item#>'{evidence,networkExtraction,unresolvedTokenTransfers}' IS DISTINCT FROM '0'::jsonb
@@ -73,7 +74,7 @@ BEGIN
     next_checkpoint := jsonb_set(next_checkpoint, '{networkEvidence,transfers}',
       (next_checkpoint#>'{networkEvidence,transfers}') || (item#>'{evidence,networkExtraction,transfers}'));
   END LOOP;
-  IF n<>3 OR added<>12 OR next_checkpoint IS DISTINCT FROM m->'preparedCheckpoint'
+  IF n<>3 OR added<>12 OR encode(sha256(convert_to(next_checkpoint::text,'UTF8')),'hex') IS DISTINCT FROM m->>'preparedCheckpointSha256'
      OR (SELECT count(*) FROM jsonb_object_keys(next_checkpoint#>'{networkEvidence,processed}'))>20000
      OR jsonb_array_length(next_checkpoint#>'{networkEvidence,transfers}')>20000
   THEN RAISE EXCEPTION 'MERGE_PREPARED_DIFF_INVALID'; END IF;
