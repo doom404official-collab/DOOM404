@@ -36,5 +36,10 @@ export function inspectToken2022PumpFunBuySettlement({mint,buyer,transaction}={}
  const total=payments.reduce((n,ix)=>n+BigInt(ix.parsed.info.lamports),0n);
  const fee=transaction.meta?.fee;
  if(!Number.isSafeInteger(fee)||fee<0)return fail('TRANSACTION_FEE_UNVERIFIED');
+ const keyIndex=keys.indexOf(buyer);
+ const before=transaction.meta?.preBalances?.[keyIndex],after=transaction.meta?.postBalances?.[keyIndex];
+ if(keyIndex<0||!Number.isSafeInteger(before)||!Number.isSafeInteger(after)||before<after)return fail('BUYER_SOL_BALANCE_UNVERIFIED');
+ const observedDebit=BigInt(before)-BigInt(after);
+ if(observedDebit!==total+BigInt(fee))return fail('BUYER_SOL_BALANCE_NOT_RECONCILED');
  return {status:'EVIDENCE_OBSERVED_UNVERIFIED',instructionIndex:group.instructionIndex,token2022PoolAccount:pool,observedBuyerPaymentLamports:total.toString(),transactionFeeLamports:String(fee),paymentCount:payments.length,eligibleForLivePromotion:false,settlementVerified:false,independentlyVerified:false};
 }
