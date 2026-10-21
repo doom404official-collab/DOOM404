@@ -24,7 +24,7 @@ export function inspectToken2022PumpFunBuySettlement({mint,buyer,transaction}={}
  const resolved=resolveTokenBalanceAccounts({transaction});
  const rows=[...resolved.pre,...resolved.post].filter(x=>x.accountPubkey===pool&&x.mint===mint);
  if(rows.length<2||rows.some(x=>x.owner!==derived.bondingCurve))return fail('HISTORICAL_POOL_OWNERSHIP_UNVERIFIED');
- const transfers=group.innerInstructions.filter(ix=>['spl-token-2022'].includes(ix?.program)&&['transfer','transferChecked'].includes(ix?.parsed?.type)&&ix.parsed.info?.source===pool);
+ const transfers=group.innerInstructions.filter(ix=>ix?.programId===TOKEN_2022&&['transfer','transferChecked'].includes(ix?.parsed?.type)&&ix.parsed.info?.source===pool);
  if(transfers.length!==1)return fail('TOKEN_TRANSFER_NOT_UNIQUE');
  const tokenInfo=transfers[0]?.parsed?.info;
  if(!tokenInfo?.destination||!resolved.post.some(x=>x.accountPubkey===tokenInfo.destination&&x.owner===buyer&&x.mint===mint))return fail('BUYER_RECEIPT_OWNERSHIP_UNVERIFIED');
