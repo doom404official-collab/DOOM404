@@ -1,0 +1,54 @@
+name: GLITCH controlled network evidence merge
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: glitch-holder-investigation
+  cancel-in-progress: false
+jobs:
+  merge:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/glitch-assessment-sprint1
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Merge exactly three verified signatures using atomic lease
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        working-directory: mvp/wallet-signal
+        run: |
+          node --input-type=module <<'JS'
+          import {createHolderJobStore} from './lib/holderJobStore.mjs';
+          import {createHolderEvidenceStore} from './lib/holderEvidenceStore.mjs';
+          import {commitExternalNetworkEvidence} from './lib/commitExternalNetworkEvidence.mjs';
+          const jobId='d07c0256-b472-4089-a237-99ed5e5c8cc4';
+          const expectedMint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+          const allowedSignatures=[
+           '2wrXV5pM48JE4ioD5cusk3S3cq1GTR4G8UbKbSKqyHTwEhhk4BJwRnAxrs8h5WgRMZXL7mhuRFH9hYCJYHDce4af',
+           '34VZbUf1z9VDA6RLpDJx169qXMzGxoPAR8Pwo4EpUV8PjGaaCbgukkvnyNnHHxbiXe3trtJzzDVWY363KVcgCGDo',
+           '3HnBUrUjjG3yxMubsrrnN5dMPJtSrhM5WajYopUbCgKBFo5rtvZdf5LChJRJ4wR4Ua8XsnkKMG9d48AQYDDUPLhf'
+          ];
+          const store=createHolderJobStore(),evidenceStore=createHolderEvidenceStore();
+          const before=await store.getById(jobId);
+          if(!before||before.mint!==expectedMint)throw Error('JOB_IDENTITY_MISMATCH');
+          const result=await commitExternalNetworkEvidence({jobId,expectedMint,allowedSignatures,limit:3,jobStore:store,evidenceStore});
+          console.log(JSON.stringify({step:'merge',...result}));
+          if(result.status!=='committed'||result.addedSignatures!==3||result.addedTransfers!==12||result.scorePromoted!==false)throw Error('MERGE_NOT_CONFIRMED');
+          const after=await store.getById(jobId);
+          if(!after||after.version!==result.version||after.mint!==expectedMint)throw Error('POST_COMMIT_VERSION_MISMATCH');
+          const net=after.checkpoint?.networkEvidence;
+          for(const sig of allowedSignatures){
+           if(net?.processed?.[sig]?.valid!==true)throw Error('MISSING_COMMITTED_SIGNATURE');
+           if(net.transfers.filter(t=>t.signature===sig).length!==net.processed[sig].transferCount)throw Error('TRANSFER_COUNT_MISMATCH');
+          }
+          if(after.summary?.score!==before.summary?.score)throw Error('SCORE_CHANGED');
+          console.log(JSON.stringify({step:'verified',jobId,version:after.version,addedSignatures:3,addedTransfers:12,scorePromoted:false}));
+          JS
