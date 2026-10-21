@@ -15,3 +15,11 @@ test('transaction without recognized buy group fails closed',()=>{
  assert.equal(r.reason,'BUY_GROUP_NOT_UNIQUE');
  assert.equal(r.eligibleForLivePromotion,false);
 });
+
+test('failed on-chain transaction cannot produce a settlement observation',()=>{
+ const transaction={meta:{err:{InstructionError:[0,'Custom']}},transaction:{message:{instructions:[],accountKeys:[]}}};
+ const r=inspectToken2022PumpFunBuySettlement({mint,buyer,transaction});
+ assert.equal(r.status,'UNVERIFIED');
+ assert.equal(r.reason,'INVALID_TRANSACTION');
+ assert.equal(r.eligibleForLivePromotion,false);
+});
