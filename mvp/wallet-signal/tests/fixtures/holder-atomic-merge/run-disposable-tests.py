@@ -1,7 +1,7 @@
 """Requires a NEW, EMPTY local PostgreSQL database named glitch_controlled_merge_test.
 Never point at production. Standard PG env auth only; no credentials are created.
 """
-import os,pathlib,subprocess,concurrent.futures,time
+import os,pathlib,subprocess,concurrent.futures,time,json,re,copy
 D=pathlib.Path(__file__).parent
 assert os.environ.get('PGDATABASE')=='glitch_controlled_merge_test', 'Disposable database name required'
 host=os.environ.get('PGHOST','')
@@ -79,4 +79,104 @@ with concurrent.futures.ThreadPoolExecutor(1) as pool:
 assert run("SELECT bool_and(status='verified') FROM glitch_holder_evidence_validation;").stdout.strip()=='t'
 assert run('SELECT version FROM glitch_holder_scan_jobs;').stdout.strip()=='42'
 print('PASS evidence writer blocked while merge holds source locks')
-print('Thirteen disposable acceptance checks passed. Additional manifest/readback review remains separate.')
+
+# Additional independently requested gates. Modify only disposable source/manifests.
+manifest_match=re.search(r'm jsonb := (\$manifest_[a-f0-9]+\$)(.*?)\1::jsonb',merge,re.S)
+assert manifest_match, 'Expected exactly one executable JSON manifest'
+base_manifest=json.loads(manifest_match.group(2))
+def manifest_sql(m):
+ return merge[:manifest_match.start(2)]+json.dumps(m,separators=(',',':'))+merge[manifest_match.end(2):]
+def current_job():
+ return json.loads(run('SELECT to_jsonb(j)::text FROM glitch_holder_scan_jobs j;').stdout)
+def snapshot():
+ return run("SELECT jsonb_build_object('job',(SELECT to_jsonb(j) FROM glitch_holder_scan_jobs j),'evidence',(SELECT jsonb_agg(to_jsonb(e) ORDER BY signature) FROM glitch_holder_evidence_validation e))::text;").stdout
+
+def sql_json(value):return "'"+json.dumps(value,separators=(',',':')).replace("'","''")+"'::jsonb"
+def prepare_manifest(m):
+ cp=copy.deepcopy(m['job']['checkpoint'])
+ for row in m['evidenceRows']:
+  transfers=row['evidence']['networkExtraction']['transfers']
+  cp['networkEvidence']['processed'][row['signature']]={'valid':True,'unresolvedTokenTransfers':0,'transferCount':len(transfers)}
+  cp['networkEvidence']['transfers'].extend(copy.deepcopy(transfers))
+ m['preparedCheckpoint']=cp
+ return m
+
+run(reset)
+run(f"SELECT public.glitch_claim_holder_scan('{id}','{other}',90);")
+m=copy.deepcopy(base_manifest);m['job']=current_job()
+before=snapshot();p=run(manifest_sql(m),False)
+assert p.returncode and 'MERGE_CLAIM_FAILED' in p.stderr and snapshot()==before
+print('PASS pinned active lease fails claim with complete preservation')
+
+run(reset)
+run(f"SELECT public.glitch_claim_holder_scan('{id}','{worker}',90);")
+run("UPDATE glitch_holder_scan_jobs SET lease_expires_at=clock_timestamp()-interval '1 second';")
+run(f"SELECT public.glitch_claim_holder_scan('{id}','{other}',90);")
+before=snapshot()
+for old_version in [41,42]:
+ run(f"SELECT public.glitch_commit_holder_scan('{id}','{worker}',{old_version},checkpoint,summary,'partial') FROM test_jobs_baseline;")
+ assert snapshot()==before
+assert current_job()['lease_owner']==other and current_job()['version']==42
+print('PASS replaced worker cannot commit even with current version')
+
+run(reset);run("DELETE FROM glitch_holder_evidence_validation WHERE signature LIKE '444%';")
+before=snapshot();p=run(merge,False)
+assert p.returncode and 'query returned no rows' in p.stderr and snapshot()==before
+print('PASS missing evidence row rolls back without mutation')
+
+run(reset)
+run("UPDATE glitch_holder_evidence_validation SET evidence=jsonb_set(evidence,'{networkExtraction,transfers,0,amountRaw}',to_jsonb('999'::text)) WHERE signature LIKE '444%';")
+before=snapshot();p=run(merge,False)
+assert p.returncode and 'MERGE_EVIDENCE_CHANGED_OR_INVALID' in p.stderr and snapshot()==before
+print('PASS changed evidence content fails full-row pin')
+
+run(reset)
+fourth=copy.deepcopy(base_manifest['evidenceRows'][0]);fourth['signature']='8'*88
+for transfer in fourth['evidence']['networkExtraction']['transfers']:transfer['signature']=fourth['signature']
+run('INSERT INTO glitch_holder_evidence_validation SELECT * FROM jsonb_populate_record(NULL::glitch_holder_evidence_validation,'+sql_json(fourth)+');')
+fourth_sql="SELECT to_jsonb(e)::text FROM glitch_holder_evidence_validation e WHERE signature LIKE '888%';"
+before=run(fourth_sql).stdout
+run(merge)
+assert run(fourth_sql).stdout==before
+assert not ('8'*88 in current_job()['checkpoint']['networkEvidence']['processed'])
+assert len(current_job()['checkpoint']['networkEvidence']['transfers'])==12
+print('PASS eligible fourth evidence row completely untouched')
+
+run(reset)
+def commit_then_lose_response():
+ run(merge)
+ raise ConnectionError('Simulated successful commit with response lost')
+try:commit_then_lose_response()
+except ConnectionError:pass
+# No second write or retry: establish outcome using a new independent connection.
+observed=current_job();expected=base_manifest
+assert observed['checkpoint']==expected['preparedCheckpoint']
+assert observed['summary']==expected['job']['summary']
+assert observed['version']==expected['job']['version']+2 and observed['status']=='partial'
+assert observed['lease_owner'] is None and observed['lease_expires_at'] is None
+assert {k:v for k,v in observed.items() if k not in ['checkpoint','status','version','lease_owner','lease_expires_at','updated_at']}=={k:v for k,v in expected['job'].items() if k not in ['checkpoint','status','version','lease_owner','lease_expires_at','updated_at']}
+assert run('SELECT (SELECT jsonb_agg(to_jsonb(e) ORDER BY signature) FROM glitch_holder_evidence_validation e)=(SELECT jsonb_agg(to_jsonb(e) ORDER BY signature) FROM test_evidence_baseline e);').stdout.strip()=='t'
+print('PASS lost-response outcome established by exact readback without retry')
+
+run(reset)
+m=copy.deepcopy(base_manifest);m['snapshotIdentity']='wrong-reviewed-snapshot'
+before=snapshot();p=run(manifest_sql(m),False)
+assert p.returncode and 'MERGE_CHECKPOINT_INVALID' in p.stderr and snapshot()==before
+print('PASS snapshot-identity mismatch rejected')
+
+run(reset)
+run("UPDATE glitch_holder_scan_jobs SET checkpoint=jsonb_set(checkpoint,'{networkEvidence,retentionLimited}','true'::jsonb);")
+m=copy.deepcopy(base_manifest);m['job']=current_job();prepare_manifest(m)
+before=snapshot();p=run(manifest_sql(m),False)
+assert p.returncode and 'MERGE_CHECKPOINT_INVALID' in p.stderr and snapshot()==before
+print('PASS retention-limited source rejected before claim')
+
+run(reset)
+# Pin an otherwise consistent source whose next merge would exceed retention.
+run("UPDATE glitch_holder_scan_jobs SET checkpoint=jsonb_set(checkpoint,'{networkEvidence,processed}',(SELECT jsonb_object_agg('test-retained-'||n,jsonb_build_object('valid',true,'unresolvedTokenTransfers',0,'transferCount',0)) FROM generate_series(1,19998) n));")
+m=copy.deepcopy(base_manifest);m['job']=current_job();prepare_manifest(m)
+before=snapshot();p=run(manifest_sql(m),False)
+assert p.returncode and 'MERGE_PREPARED_DIFF_INVALID' in p.stderr and snapshot()==before
+print('PASS processed retention ceiling rejected before claim')
+print('Twenty-two disposable acceptance checks passed. Live execution manifest and permissions remain separate.')
+
