@@ -8,6 +8,6 @@ export function assessCreatorHistoricalCoverage({rpcExhausted=false,pendingSigna
  return {rpcPaginationExhausted:rpcExhausted===true,archiveVerified:archiveVerified===true,
   processedCount:processed.size,pendingCount:pending.size,transactionsComplete,
   historyComplete:transactionsComplete&&rpcExhausted===true&&archiveVerified===true,
-  status:pending.size?'TRANSACTIONS_PENDING':!archiveVerified?'ARCHIVE_COVERAGE_UNVERIFIED':
-   rpcExhausted?'HISTORY_COMPLETE':'PAGINATION_INCOMPLETE'};
+  status:pending.size?'TRANSACTIONS_PENDING':archiveVerified!==true?'ARCHIVE_COVERAGE_UNVERIFIED':
+   rpcExhausted===true?'HISTORY_COMPLETE':'PAGINATION_INCOMPLETE'};
 }
