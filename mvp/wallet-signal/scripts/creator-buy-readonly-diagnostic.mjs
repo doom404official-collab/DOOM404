@@ -6,6 +6,7 @@ import {verifyHistoricalPumpFunPoolOwnership} from '../lib/pumpFunHistoricalPool
 import {resolveTokenBalanceAccounts} from '../lib/solanaTokenBalanceAccountResolver.mjs';
 import {observePumpFunCreatorBuyReceipt} from '../lib/pumpFunCreatorBuyReceipt.mjs';
 import {corroboratePumpFunCreatorBuySettlement} from '../lib/pumpFunCreatorBuySettlement.mjs';
+import {inspectToken2022PumpFunBuySettlement} from '../lib/pumpFunToken2022BuySettlementShadow.mjs';
 import {PUMP_FUN_PROGRAM_ID} from '../lib/pumpFunSellCandidates.mjs';
 import {groupPumpFunBuyInstructions} from '../lib/pumpFunBuyInstructionGroups.mjs';
 const mint=process.env.CREATOR_INVESTIGATION_MINT||'98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
@@ -34,7 +35,8 @@ for(const signature of signatures){
   const settlementCandidates=corroboratePumpFunCreatorBuySettlement({mint,creator,transaction});
   const resolved=resolveTokenBalanceAccounts({transaction});
   const matchingPoolRows=[...resolved.pre,...resolved.post].filter(x=>x.mint===mint&&x.accountPubkey===derived.poolTokenAccount);
-  const settlementDiagnostics={poolDerivation:derived.status,
+  const token2022Review=inspectToken2022PumpFunBuySettlement({mint,buyer:creator,transaction});
+  const settlementDiagnostics={token2022Review,poolDerivation:derived.status,
    derivedPoolTokenAccount:derived.poolTokenAccount||null,
    receiptSources:receipts.map(x=>x.sourceTokenAccount),
    sourceMatchesDerivedPool:receipts.some(x=>x.sourceTokenAccount===derived.poolTokenAccount),
