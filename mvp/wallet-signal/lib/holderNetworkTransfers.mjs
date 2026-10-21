@@ -23,6 +23,15 @@ export function extractHolderNetworkTransfers({transaction:tx,signature}={}){
  const instructions=[...(tx.transaction.message?.instructions??[]),...(tx.meta.innerInstructions??[]).flatMap(x=>x.instructions??[])];
  const transfers=new Map();let unresolvedTokenTransfers=0;
  const unresolvedReasons={};
+ const unresolvedAccounts=[];
+ const capture=(reason,info,programId)=>{
+  if(unresolvedAccounts.length>=20)return;
+  unresolvedAccounts.push({reason,signature,slot:tx.slot,
+   sourceTokenAccount:address(info?.source)?info.source:null,
+   destinationTokenAccount:address(info?.destination)?info.destination:null,
+   mint:address(info?.mint)?info.mint:null,
+   programId:programId??null});
+ };
  const unresolved=reason=>{unresolvedTokenTransfers++;unresolvedReasons[reason]=(unresolvedReasons[reason]??0)+1;};
  // End-state owner metadata cannot resolve transfer-time ownership across an
  // owner change (including changing away and back within the same transaction).
@@ -48,7 +57,8 @@ export function extractHolderNetworkTransfers({transaction:tx,signature}={}){
    const source=owners.get(info.source),destination=owners.get(info.destination);
    if(conflicts.has(info.source)||conflicts.has(info.destination)||!source||!destination||source.mint!==destination.mint||
     (p.type==='transferChecked'&&info.mint!==source.mint)){
-    unresolved(conflicts.has(info.source)||conflicts.has(info.destination)?"OWNER_CONFLICT":!source||!destination?"OWNER_METADATA_MISSING":source.mint!==destination.mint?"TOKEN_MINT_MISMATCH":"CHECKED_MINT_MISMATCH");continue;}
+    const reason=conflicts.has(info.source)||conflicts.has(info.destination)?"OWNER_CONFLICT":!source||!destination?"OWNER_METADATA_MISSING":source.mint!==destination.mint?"TOKEN_MINT_MISMATCH":"CHECKED_MINT_MISMATCH";
+    unresolved(reason);capture(reason,info,ix.programId);continue;}
    from=source.owner;to=destination.owner;mint=source.mint;
   }else {unresolved("UNCLASSIFIED_TRANSFER");continue;}
   if(!uint(amount)||!address(from)||!address(to)){unresolved("UNCLASSIFIED_TRANSFER");continue;}
@@ -56,6 +66,6 @@ export function extractHolderNetworkTransfers({transaction:tx,signature}={}){
   const edge={signature,slot:tx.slot,from,to,assetType,mint,amountRaw:String(amount),verifiedOnChain:true,transferVerified:true};
   transfers.set([signature,from,to,assetType,mint??'',edge.amountRaw].join('|'),edge);
  }
- return {valid:true,transfers:[...transfers.values()],unresolvedTokenTransfers,unresolvedReasons};
+ return {valid:true,transfers:[...transfers.values()],unresolvedTokenTransfers,unresolvedReasons,unresolvedAccounts};
 }
 export {address as validNetworkAddress,signatureValid as validNetworkSignature};
