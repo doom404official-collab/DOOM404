@@ -50,3 +50,4 @@ jobs:
           name: liquidity-pending-${{ github.run_id }}
           path: mvp/wallet-signal/liquidity-pending-recovery-evidence.json
           retention-days: 30
+# Deployment-skip validation: workflow-only change; no execution or application changes.
