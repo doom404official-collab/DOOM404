@@ -64,7 +64,7 @@ BEGIN
     THEN RAISE EXCEPTION 'MERGE_EVIDENCE_CHANGED_OR_INVALID'; END IF;
     n := n+1;
     IF jsonb_array_length(item#>'{evidence,networkExtraction,transfers}') <>
-       CASE n WHEN 1 THEN 7 WHEN 2 THEN 1 WHEN 3 THEN 4 END
+       (CASE n WHEN 1 THEN 7 WHEN 2 THEN 1 WHEN 3 THEN 4 END)
     THEN RAISE EXCEPTION 'MERGE_TRANSFER_COUNT_CHANGED'; END IF;
     added := added + jsonb_array_length(item#>'{evidence,networkExtraction,transfers}');
     next_checkpoint := jsonb_set(next_checkpoint, ARRAY['networkEvidence','processed',sig],
