@@ -1,0 +1,79 @@
+name: GLITCH token owner counterpart audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: glitch-token-owner-6DgMfb-history
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Validate transaction-local token account counterpart ownership
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: |
+          python3 - <<'PY'
+          import os,json,urllib.request
+          rpc=os.environ.get("HELIUS_RPC_URL","")
+          if not rpc.startswith("https://"):raise SystemExit("RPC_NOT_CONFIGURED")
+          main="6DgMfbDmjbGT9knSgztDg7Fg813mwjw2Bz5ieBztqDju"
+          expectedOwner="GHceWgs54Ye6iQCdk2orLgvSweaNsNa57qxaJBjAg7gA"
+          targets=[
+           ("37WZYkLnwzcPmYdoydTRhYAoUAcFGwHYem3QGt6exoSqt8H2SCZZuB5uUZg3Dd9NyTjYr62nhaxT2VbMELDKocA6",450097547),
+           ("38AcrSYXmT32uPCupZdDfhp47mJCZgmBzitKHVZU83Xqa4MN8LcVuUpTzhQJhRZv48jexEbphL5b7WNYbjqNqMu",451211747)]
+          report={"status":"OBSERVED_ONLY","ownershipVerified":False,"scorePromoted":False,"rpcRequests":0,"transactions":[]}
+          for idx,(sig,slot) in enumerate(targets):
+            body=json.dumps({"jsonrpc":"2.0","id":idx+1,"method":"getTransaction","params":[sig,{"encoding":"jsonParsed","commitment":"confirmed","maxSupportedTransactionVersion":1}]}).encode()
+            req=urllib.request.Request(rpc,data=body,headers={"Content-Type":"application/json"},method="POST")
+            with urllib.request.urlopen(req,timeout=45) as response:res=json.load(response)
+            report["rpcRequests"]+=1
+            tx=res.get("result")
+            if res.get("error") or not tx or tx.get("slot")!=slot or tx.get("meta",{}).get("err") is not None:raise RuntimeError("TRANSACTION_UNVERIFIED")
+            msg=tx["transaction"]["message"]
+            keys=[k if isinstance(k,str) else k.get("pubkey") for k in msg.get("accountKeys",[])]
+            balances={}
+            for phase in ("preTokenBalances","postTokenBalances"):
+              for b in tx["meta"].get(phase,[]):
+                i=b.get("accountIndex")
+                if isinstance(i,int) and i<len(keys):
+                  addr=keys[i]
+                  if b.get("owner") and b.get("mint"):balances.setdefault(addr,[]).append({"phase":phase,"owner":b["owner"],"mint":b["mint"]})
+            inner={x["index"]:x.get("instructions",[]) for x in tx["meta"].get("innerInstructions",[])}
+            ordered=[]
+            for oi,outer in enumerate(msg.get("instructions",[])):
+              for ii,ix in enumerate([outer]+inner.get(oi,[])):
+                p=ix.get("parsed") if isinstance(ix,dict) else None
+                if not isinstance(p,dict):continue
+                info=p.get("info") or {}
+                ordered.append({"index":oi,"inner":ii,"type":p.get("type"),"program":ix.get("programId"),"info":info})
+            initialized={}
+            for ix in ordered:
+              info=ix["info"]
+              if ix["type"] in ("initializeAccount","initializeAccount2","initializeAccount3") and info.get("account"):
+                initialized[info["account"]]={"owner":info.get("owner"),"mint":info.get("mint"),"position":[ix["index"],ix["inner"]]}
+            transfers=[]
+            for ix in ordered:
+              if ix["type"] not in ("transfer","transferChecked") or ix["program"] not in ("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA","TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"):continue
+              info=ix["info"]
+              src,dst=info.get("source"),info.get("destination")
+              if main not in (src,dst):continue
+              def evidence(account):
+                init=initialized.get(account)
+                if init and init["position"]<[ix["index"],ix["inner"]]:return {"owner":init["owner"],"source":"same_transaction_initialization"}
+                values=balances.get(account,[])
+                if values and len({(v["owner"],v["mint"]) for v in values})==1:return {"owner":values[0]["owner"],"source":"token_balance_metadata"}
+                return {"owner":None,"source":"unresolved"}
+              transfers.append({"sourceAccount":src,"destinationAccount":dst,"sourceOwner":evidence(src),"destinationOwner":evidence(dst),"position":[ix["index"],ix["inner"]]})
+            report["transactions"].append({"signaturePrefix":sig[:14],"slot":slot,"mainAccountOwner":initialized.get(main,{}).get("owner"),"mainOwnerMatches":initialized.get(main,{}).get("owner")==expectedOwner,"transfers":transfers})
+          with open("token-owner-counterparts.json","w") as f:json.dump(report,f,indent=2)
+          print(json.dumps(report))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: token-owner-counterparts
+          path: token-owner-counterparts.json
+          retention-days: 30
