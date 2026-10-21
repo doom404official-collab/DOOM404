@@ -25,6 +25,8 @@ export async function POST(request){
   return NextResponse.json(result,{headers:{"Cache-Control":"no-store"}});
  }catch(error){
   console.error("GLITCH_NETWORK_MERGE_FAILED",{code:String(error?.message??"UNKNOWN").slice(0,80)});
-  return NextResponse.json({status:"rejected",checkpointModified:false,scorePromoted:false},{status:409});
+  // A failed response does not prove the atomic commit failed. Never retry blindly.
+  return NextResponse.json({status:"outcome_unknown",checkpointModified:null,scorePromoted:false,
+   reconciliationRequired:true,retryAllowed:false},{status:503,headers:{"Cache-Control":"no-store"}});
  }
 }
