@@ -13,19 +13,21 @@ export function reconcileLiquidityHistory(original,replays,recovery,pool){
    if(!original.seen.includes(tx.signature)||seen.has(tx.signature))throw Error("REPLAY_SIGNATURE_MISMATCH_OR_DUPLICATE");
    if(tx.execution!=="EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED")throw Error("UNVERIFIED_REPLAY_EXECUTION");
    seen.add(tx.signature);
-   events.push(...(tx.candidates||[]));
+   if(!Array.isArray(tx.candidates))throw Error("INVALID_TRANSACTION_CANDIDATES");
+   events.push(...tx.candidates);
   }
  }
  if(seen.size!==original.seen.length)throw Error("INCOMPLETE_REPLAY_COVERAGE");
  // A prior bounded replay may record a budget-exhausted signature; a later replay must cover it.
  for(const artifact of replays)for(const entry of artifact.unresolved){if(!seen.has(entry.signature))throw Error("UNRESOLVED_REPLAY_SIGNATURE");}
- if(!recovery||recovery.kind!=="LIQUIDITY_PENDING_SIGNATURE_RECOVERY"||recovery.pool!==pool||recovery.sourceDigest!==expectedRecoveryDigest||recovery.classification!==HISTORY_CLASSIFICATION||recovery.authorizationVerified!==false||recovery.finalScore!==null||!Array.isArray(recovery.transactions)||recovery.unresolved?.length)throw Error("INVALID_PENDING_RECOVERY");
+ if(!recovery||recovery.kind!=="LIQUIDITY_PENDING_SIGNATURE_RECOVERY"||recovery.pool!==pool||recovery.sourceDigest!==expectedRecoveryDigest||recovery.classification!==HISTORY_CLASSIFICATION||recovery.authorizationVerified!==false||recovery.finalScore!==null||!Array.isArray(recovery.transactions)||!Array.isArray(recovery.unresolved)||recovery.unresolved.length)throw Error("INVALID_PENDING_RECOVERY");
  const pending=new Set(original.pendingSignatures||[]);
  const recovered=new Set();
  for(const tx of recovery.transactions){
   if(!pending.has(tx.signature)||seen.has(tx.signature)||recovered.has(tx.signature))throw Error("PENDING_SIGNATURE_MISMATCH_OR_DUPLICATE");
   if(tx.execution!=="EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED")throw Error("UNVERIFIED_PENDING_EXECUTION");
-  recovered.add(tx.signature);events.push(...(tx.candidates||[]));
+  if(!Array.isArray(tx.candidates))throw Error("INVALID_TRANSACTION_CANDIDATES");
+  recovered.add(tx.signature);events.push(...tx.candidates);
  }
  if(recovered.size!==pending.size)throw Error("INCOMPLETE_PENDING_RECOVERY");
  if(events.some(e=>e.authorizationVerified===true||e.classification!=="UNVERIFIED_CANDIDATE"))throw Error("UNSAFE_EVENT_PROMOTION");
