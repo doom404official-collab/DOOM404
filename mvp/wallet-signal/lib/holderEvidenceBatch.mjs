@@ -35,6 +35,7 @@ export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}=
      const network=extractHolderNetworkTransfers({transaction:tx,signature:item.signature});
      evidence.networkExtraction={version:1,valid:network.valid===true,
       unresolvedTokenTransfers:network.unresolvedTokenTransfers??0,
+      unresolvedReasons:network.unresolvedReasons??{},
       transfers:network.valid===true?network.transfers:[],
       ...(network.valid===true?{}:{reason:network.reason??"NETWORK_EVIDENCE_UNAVAILABLE"})};
     }catch{
