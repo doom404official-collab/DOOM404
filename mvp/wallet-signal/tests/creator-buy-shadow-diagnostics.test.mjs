@@ -39,3 +39,14 @@ test('explicit Pump.fun instruction with unrecognized payload stays diagnostic o
  assert.equal(result.diagnostic,'PUMP_FUN_INSTRUCTION_UNRECOGNIZED');
  assert.equal(result.purchaseVerified,false);
 });
+
+test('non-promotable Token-2022 shadow evidence cannot enter historical acquisition ledger',async()=>{
+ const nonPromotable={status:'EVIDENCE_OBSERVED_UNVERIFIED',eligibleForLivePromotion:false,settlementVerified:false,independentlyVerified:false};
+ const result=await inspectCreatorHistoricalBatch({
+  mint,creator,signatures:[signature],maxTransactions:1,
+  rpc:{fetchTransaction:async()=>transaction},
+  buySettlementDecoder:async()=>nonPromotable
+ });
+ assert.deepEqual(result.processed,[signature]);
+ assert.deepEqual(result.verifiedAcquisitionEvents,[]);
+});
