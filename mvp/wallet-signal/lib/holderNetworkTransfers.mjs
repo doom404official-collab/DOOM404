@@ -22,6 +22,8 @@ export function extractHolderNetworkTransfers({transaction:tx,signature}={}){
  }
  const instructions=[...(tx.transaction.message?.instructions??[]),...(tx.meta.innerInstructions??[]).flatMap(x=>x.instructions??[])];
  const transfers=new Map();let unresolvedTokenTransfers=0;
+ const unresolvedReasons={};
+ const unresolved=reason=>{unresolvedTokenTransfers++;unresolvedReasons[reason]=(unresolvedReasons[reason]??0)+1;};
  // End-state owner metadata cannot resolve transfer-time ownership across an
  // owner change (including changing away and back within the same transaction).
  for(const ix of instructions)if((ix?.programId===programs.SPL||ix?.programId===programs.TOKEN_2022)&&ix?.parsed?.type==='setAuthority'&&ix.parsed.info?.authorityType==='accountOwner')conflicts.add(ix.parsed.info.account);
@@ -29,30 +31,31 @@ export function extractHolderNetworkTransfers({transaction:tx,signature}={}){
   const p=ix?.parsed,info=p?.info;
   const known=Object.values(programs).includes(ix?.programId);
   if(!known)continue;
-  if(!p||typeof p.type!=='string'){unresolvedTokenTransfers++;continue;}
+  if(!p||typeof p.type!=='string'){unresolved("UNPARSED_INSTRUCTION");continue;}
   if(!['transfer','transferChecked'].includes(p.type)){
-   if(/transfer/i.test(p.type))unresolvedTokenTransfers++;
+   if(/transfer/i.test(p.type))unresolved("UNSUPPORTED_TRANSFER_TYPE");
    continue;
   }
-  if(!info){unresolvedTokenTransfers++;continue;}
+  if(!info){unresolved("TRANSFER_INFO_MISSING");continue;}
   let assetType,from,to,mint=null,amount;
   if(ix.programId===programs.SOL&&ix.program==='system'&&p.type==='transfer'){
    assetType='SOL';from=info.source;to=info.destination;amount=info.lamports;
   }else if(ix.programId===programs.SPL||ix.programId===programs.TOKEN_2022){
    assetType=ix.programId===programs.SPL?'SPL':'TOKEN_2022';
    amount=p.type==='transferChecked'?info.tokenAmount?.amount:info.amount;
-   if(!uint(amount)){unresolvedTokenTransfers++;continue;}
+   if(!uint(amount)){unresolved("TRANSFER_AMOUNT_INVALID");continue;}
    if(!positive(amount))continue;
    const source=owners.get(info.source),destination=owners.get(info.destination);
    if(conflicts.has(info.source)||conflicts.has(info.destination)||!source||!destination||source.mint!==destination.mint||
-    (p.type==='transferChecked'&&info.mint!==source.mint)){unresolvedTokenTransfers++;continue;}
+    (p.type==='transferChecked'&&info.mint!==source.mint)){
+    unresolved(conflicts.has(info.source)||conflicts.has(info.destination)?"OWNER_CONFLICT":!source||!destination?"OWNER_METADATA_MISSING":source.mint!==destination.mint?"TOKEN_MINT_MISMATCH":"CHECKED_MINT_MISMATCH");continue;}
    from=source.owner;to=destination.owner;mint=source.mint;
-  }else {unresolvedTokenTransfers++;continue;}
-  if(!uint(amount)||!address(from)||!address(to)){unresolvedTokenTransfers++;continue;}
+  }else {unresolved("UNCLASSIFIED_TRANSFER");continue;}
+  if(!uint(amount)||!address(from)||!address(to)){unresolved("UNCLASSIFIED_TRANSFER");continue;}
   if(from===to||!positive(amount))continue;
   const edge={signature,slot:tx.slot,from,to,assetType,mint,amountRaw:String(amount),verifiedOnChain:true,transferVerified:true};
   transfers.set([signature,from,to,assetType,mint??'',edge.amountRaw].join('|'),edge);
  }
- return {valid:true,transfers:[...transfers.values()],unresolvedTokenTransfers};
+ return {valid:true,transfers:[...transfers.values()],unresolvedTokenTransfers,unresolvedReasons};
 }
 export {address as validNetworkAddress,signatureValid as validNetworkSignature};
