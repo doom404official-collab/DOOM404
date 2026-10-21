@@ -7,5 +7,6 @@ const original=JSON.parse(await readFile(originalPath,"utf8"));
 const replays=await Promise.all(rest.slice(0,4).map(async p=>JSON.parse(await readFile(p,"utf8"))));
 const recovery=JSON.parse(await readFile(rest[4],"utf8"));
 const result=reconcileLiquidityHistory(original,replays,recovery,original.pool);
+if(result.reconciliation.verifiedDistinct!==34||result.reconciliation.originalSeen!==32||result.reconciliation.recoveredPending!==2)throw Error("UNEXPECTED_HISTORICAL_SOURCE_COUNTS");
 await writeFile(rest[5],JSON.stringify(result,null,2));
 console.log(JSON.stringify({status:"RECONCILED_CHECKPOINT_PREPARED",...result.reconciliation,classification:result.classification,complete:result.complete,score:result.finalScore}));
