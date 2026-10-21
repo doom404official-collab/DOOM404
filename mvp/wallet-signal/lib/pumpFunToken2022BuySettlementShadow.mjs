@@ -38,6 +38,8 @@ export function inspectToken2022PumpFunBuySettlement({mint,buyer,transaction}={}
  const payments=group.innerInstructions.filter(ix=>ix?.program==='system'&&ix?.parsed?.type==='transfer'&&ix.parsed.info?.source===buyer);
  if(!payments.length||payments.some(ix=>!Number.isSafeInteger(ix.parsed.info?.lamports)||ix.parsed.info.lamports<=0))return fail('BUYER_PAYMENT_EVIDENCE_MISSING');
  if(payments.filter(ix=>ix.parsed.info.destination===derived.bondingCurve).length!==1)return fail('CURVE_PAYMENT_NOT_UNIQUE');
+ const allowedAccounts=new Set(a.filter(x=>typeof x==='string'));
+ if(payments.some(ix=>!allowedAccounts.has(ix.parsed.info.destination)))return fail('PAYMENT_DESTINATION_NOT_IN_BUY_ACCOUNTS');
  const total=payments.reduce((n,ix)=>n+BigInt(ix.parsed.info.lamports),0n);
  const fee=transaction.meta?.fee;
  if(!Number.isSafeInteger(fee)||fee<0)return fail('TRANSACTION_FEE_UNVERIFIED');
