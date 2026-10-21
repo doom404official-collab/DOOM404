@@ -1,0 +1,39 @@
+name: Creator Token-2022 shadow regression
+on:
+  push:
+    branches:
+      - feature/creator-history-worker-500
+    paths:
+      - 'mvp/wallet-signal/tests/pump-fun-token2022-positive-control.test.mjs'
+      - 'mvp/wallet-signal/tests/creator-buy-shadow-diagnostics.test.mjs'
+      - 'mvp/wallet-signal/lib/pumpFunToken2022BuySettlementShadow.mjs'
+      - '.github/workflows/creator-token2022-regression.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: creator-token2022-shadow-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mvp/wallet-signal/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Focused Token-2022 positive and adversarial controls
+        run: node --test tests/pump-fun-token2022-positive-control.test.mjs tests/creator-buy-shadow-diagnostics.test.mjs
+      - name: Full application tests
+        run: npm run test:smoke
+      - name: Application build
+        run: npm run build
