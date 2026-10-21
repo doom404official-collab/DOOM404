@@ -14,11 +14,11 @@ function b58(bytes){let n=BigInt('0x'+bytes.toString('hex'));let out='';while(n)
 function fixture(){
  const payload=Buffer.alloc(24);createHash('sha256').update('global:buy').digest().copy(payload,0,0,8);
  payload.writeBigUInt64LE(436388216800n,8);payload.writeBigUInt64LE(200000000n,16);
- const accounts=['4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf','G5UZAVbAf46s7cKWoyKu8kYTip9DGTpbLZ2qa9Aq69dP',mint,curve,pool,recipient,buyer,'11111111111111111111111111111111',token,'5YxQFdt3Tr9zJLvkFccqXVUwhdTWJQc1fFg2YPbxvxeD'];
+ const accounts=['4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf','G5UZAVbAf46s7cKWoyKu8kYTip9DGTpbLZ2qa9Aq69dP',mint,curve,pool,recipient,buyer,'11111111111111111111111111111111',token,'7GzekxcKjxGUqw7tR6Ay8GWkupvFAN6VR1Yugui1xVfD','Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1',pump,'Hq2wp8uJ9jCPsYgNHex8RtqdvMPfVGoYwjvF1ATiwn2Y','9B8nVZQNqLVkzsvCJhczZ21jYFED4mtKVj4NxwLA75gy','8Wf5TiAheLUqBrKXeYg2JtAFFMWtKdG2BSFgqUcPVwTt','pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ','8vhNS4We6SELZPLnheRQb33spovYZ6HQ6HoffY8PDpSM','5YxQFdt3Tr9zJLvkFccqXVUwhdTWJQc1fFg2YPbxvxeD'];
  const amount='436388216800';
  const row=(index,owner,n)=>({accountIndex:index,mint,owner,uiTokenAmount:{amount:String(n)}});
- const keys=[...accounts,pump,'5YxQFdt3Tr9zJLvkFccqXVUwhdTWJQc1fFg2YPbxvxeD'];
- const payments=[473704,157901250,750031,750031].map((lamports,i)=>({program:'system',parsed:{type:'transfer',info:{source:buyer,destination:[accounts[1],curve,'5YxQFdt3Tr9zJLvkFccqXVUwhdTWJQc1fFg2YPbxvxeD',accounts[1]][i],lamports}}}));
+ const keys=[...accounts];
+ const payments=[473704,157901250,750031,750031].map((lamports,i)=>({program:'system',parsed:{type:'transfer',info:{source:buyer,destination:[accounts[9],curve,accounts[17],accounts[1]][i],lamports}}}));
  return {meta:{err:null,fee:70000,preBalances:keys.map(k=>k===buyer?1000000000:0),postBalances:keys.map(k=>k===buyer?840054984:0),preTokenBalances:[row(4,curve,225484591635612n),row(5,buyer,4710162396209n)],postTokenBalances:[row(4,curve,225048203418812n),row(5,buyer,5146550613009n)],innerInstructions:[{index:3,instructions:[{program:'spl-token',programId:token,parsed:{type:'transferChecked',info:{source:pool,destination:recipient,mint,tokenAmount:{amount}}}},...payments]}]},transaction:{message:{accountKeys:keys,instructions:[{programId:'ComputeBudget111111111111111111111111111111',data:'2'},{programId:'ComputeBudget111111111111111111111111111111',data:'2'},{programId:'ComputeBudget111111111111111111111111111111',data:'2'},{programId:pump,data:b58(payload),accounts}]}}};
 }
 const review=t=>inspect({mint,buyer,transaction:t});
