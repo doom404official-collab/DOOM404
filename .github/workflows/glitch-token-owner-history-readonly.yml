@@ -1,0 +1,47 @@
+name: GLITCH historical token owner diagnostic
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  investigate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Inspect two historical transactions and bounded account history
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: |
+          python3 - <<'PY'
+          import os,json,urllib.request,urllib.parse
+          rpc=os.environ.get("HELIUS_RPC_URL","")
+          if not rpc.startswith("https://"):raise SystemExit("Missing Helius RPC secret")
+          account="6DgMfbDmjbGT9knSgztDg7Fg813mwjw2Bz5ieBztqDju"
+          signatures=[
+            "37WZYkLnwzcPmYdoydTRhYAoUAcFGwHYem3QGt6exoSqt8H2SCZZuB5uUZg3Dd9NyTjYr62nhaxT2VbMELDKocA6",
+            "38AcrSYXmT32uPCupZdDfhp47mJCZgmBzitKHVZU83Xqa4MN8LcVuUpTzhQJhRZv48jexEbphL5b7WNYbjqNqMu"
+          ]
+          requests=0
+          def call(method,params):
+            global requests
+            requests+=1
+            if requests>5:raise SystemExit("RPC_BUDGET_EXCEEDED")
+            payload=json.dumps({"jsonrpc":"2.0","id":requests,"method":method,"params":params}).encode()
+            req=urllib.request.Request(rpc,data=payload,headers={"Content-Type":"application/json"},method="POST")
+            with urllib.request.urlopen(req,timeout=50) as response:data=json.load(response)
+            if "error" in data:raise RuntimeError("RPC_"+str(data["error"].get("code")))
+            return data.get("result")
+          def parsed_instructions(tx):
+            if not tx:return []
+            msg=tx.get("transaction",{}).get("message",{})
+            return msg.get("instructions",[])+[ix for group in tx.get("meta",{}).get("innerInstructions",[]) for ix in group.get("instructions",[])]
+          for sig in signatures:
+            tx=call("getTransaction",[sig,{"encoding":"jsonParsed","commitment":"confirmed","maxSupportedTransactionVersion":1}])
+            if not tx:print(json.dumps({"signaturePrefix":sig[:14],"status":"TRANSACTION_UNAVAILABLE"}));continue
+            keys=[k if isinstance(k,str) else k.get("pubkey") for k in tx["transaction"]["message"].get("accountKeys",[])]
+            balances=[{"phase":phase,"owner":b.get("owner"),"mint":b.get("mint")} for phase in ("preTokenBalances","postTokenBalances") for b in tx.get("meta",{}).get(phase,[]) if isinstance(b.get("accountIndex"),int) and b["accountIndex"]<len(keys) and keys[b["accountIndex"]]==account]
+            owner_changes=[{"type":i.get("parsed",{}).get("type"),"authorityType":i.get("parsed",{}).get("info",{}).get("authorityType")} for i in parsed_instructions(tx) if isinstance(i.get("parsed"),dict) and i["parsed"].get("type")=="setAuthority" and i["parsed"].get("info",{}).get("account")==account]
+            print(json.dumps({"signaturePrefix":sig[:14],"slot":tx.get("slot"),"tokenBalanceOwnership":balances,"accountOwnerChanges":owner_changes,"status":"OBSERVED_ONLY"}))
+          history=call("getSignaturesForAddress",[account,{"limit":100,"commitment":"confirmed"}]) or []
+          print(json.dumps({"accountHistorySample":len(history),"sampleOldestSlot":history[-1].get("slot") if history else None,"historicalInitializationVerified":False,"ownershipAtAffectedSlotsVerified":False,"rpcRequests":requests,"scorePromoted":False}))
+          PY
