@@ -26,8 +26,13 @@ export function inspectToken2022PumpFunBuySettlement({mint,buyer,transaction}={}
  if(rows.length<2||rows.some(x=>x.owner!==derived.bondingCurve))return fail('HISTORICAL_POOL_OWNERSHIP_UNVERIFIED');
  const transfers=group.innerInstructions.filter(ix=>['spl-token-2022'].includes(ix?.program)&&['transfer','transferChecked'].includes(ix?.parsed?.type)&&ix.parsed.info?.source===pool);
  if(transfers.length!==1)return fail('TOKEN_TRANSFER_NOT_UNIQUE');
+ const tokenInfo=transfers[0]?.parsed?.info;
+ if(!tokenInfo?.destination||!resolved.post.some(x=>x.accountPubkey===tokenInfo.destination&&x.owner===buyer&&x.mint===mint))return fail('BUYER_RECEIPT_OWNERSHIP_UNVERIFIED');
+ const amount=String(tokenInfo.tokenAmount?.amount??tokenInfo.amount??'');
+ if(!/^[0-9]+$/.test(amount)||BigInt(amount)<=0n)return fail('TOKEN_TRANSFER_AMOUNT_UNVERIFIED');
  const payments=group.innerInstructions.filter(ix=>ix?.program==='system'&&ix?.parsed?.type==='transfer'&&ix.parsed.info?.source===buyer);
  if(!payments.length||payments.some(ix=>!Number.isSafeInteger(ix.parsed.info?.lamports)||ix.parsed.info.lamports<=0))return fail('BUYER_PAYMENT_EVIDENCE_MISSING');
+ if(payments.filter(ix=>ix.parsed.info.destination===derived.bondingCurve).length!==1)return fail('CURVE_PAYMENT_NOT_UNIQUE');
  const total=payments.reduce((n,ix)=>n+BigInt(ix.parsed.info.lamports),0n);
  const fee=transaction.meta?.fee;
  if(!Number.isSafeInteger(fee)||fee<0)return fail('TRANSACTION_FEE_UNVERIFIED');
