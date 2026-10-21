@@ -1,3 +1,4 @@
+import {PublicKey} from '@solana/web3.js';
 import {createSolanaRpcAdapter} from '../lib/creatorOriginRpc.mjs';
 import {inspectPumpFunBuyShadow} from '../lib/pumpFunBuyShadowValidation.mjs';
 import {derivePumpFunBondingCurveAccounts} from '../lib/pumpFunBondingCurveDerivation.mjs';
@@ -44,6 +45,13 @@ for(const signature of signatures){
    buyGroupsWithInnerInstructions:groups.filter(g=>g.instructionGroupFound).length};
   const buyInstructionAccounts=groups.map(g=>{const ix=outer[g.instructionIndex];return {instructionIndex:g.instructionIndex,accounts:(ix?.accounts||[]).map((a,i)=>({position:i,address:typeof a==='string'?a:(Number.isInteger(a)?(typeof keys[a]==='string'?keys[a]:keys[a]?.pubkey?.toString?.()):a?.pubkey?.toString?.())||null})).slice(0,32)};});
   const receiptSourceBalances=[...resolved.pre,...resolved.post].filter(x=>receipts.some(y=>y.sourceTokenAccount===x.accountPubkey)).map(x=>({accountIndex:x.accountIndex,accountPubkey:x.accountPubkey,owner:x.owner||null,mint:x.mint||null}));
+  const token2022='TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb';
+  const ataProgram=new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+  const token2022PoolAccount=derived.status==='DERIVED'?PublicKey.findProgramAddressSync([
+   new PublicKey(derived.bondingCurve).toBuffer(),new PublicKey(token2022).toBuffer(),new PublicKey(mint).toBuffer()],ataProgram)[0].toBase58():null;
+  settlementDiagnostics.token2022PoolAccount=token2022PoolAccount;
+  settlementDiagnostics.token2022PoolMatchesReceiptSource=receipts.some(x=>x.sourceTokenAccount===token2022PoolAccount);
+  settlementDiagnostics.curveMatchesHistoricalSourceOwner=receiptSourceBalances.some(x=>x.owner===derived.bondingCurve);
   const buyerCandidates=observedOwners.map(owner=>({owner,preRaw:tokenBalances.filter(x=>(transaction.meta?.preTokenBalances||[]).includes(x)&&x?.owner===owner&&x?.mint===observedMints[0]).reduce((n,x)=>n+BigInt(x?.uiTokenAmount?.amount||'0'),0n).toString(),postRaw:tokenBalances.filter(x=>(transaction.meta?.postTokenBalances||[]).includes(x)&&x?.owner===owner&&x?.mint===observedMints[0]).reduce((n,x)=>n+BigInt(x?.uiTokenAmount?.amount||'0'),0n).toString()}));
   results.push({signature,status:shadow.status,diagnostic:shadow.diagnostic||null,pumpInstructionCount,recognizedBuyGroups:groups.length,observedMints,observedOwners,buyerCandidates,settlementDiagnostics,buyInstructionAccounts,receiptSourceBalances,
    instructionCount:transaction.transaction?.message?.instructions?.length||0,transactionFailed:transaction.meta?.err!=null,
