@@ -44,3 +44,18 @@ test('CLI never overwrites input evidence or an existing output, including alias
   const data=JSON.parse(await readFile(output,'utf8')); assert.equal(data.reconciliation.verifiedDistinct,34);assert.equal(data.complete,false);assert.equal(data.finalScore,null);
  } finally {await rm(dir,{recursive:true,force:true});}
 });
+
+test('reconciled checkpoint refreshes pending metadata without claiming history completion',()=>{
+ const f=fixture();f.original.pendingSignatureCount=2;f.original.stopReason='RETRIEVAL_INCOMPLETE';
+ f.recovery.sourceDigest=hash(f.original);
+ const before=JSON.stringify(f.original);
+ const result=reconcileLiquidityHistory(f.original,f.replays,f.recovery,f.pool);
+ assert.deepEqual(result.pendingSignatures,[]);assert.equal(result.pendingSignatureCount,0);
+ assert.equal(result.stopReason,'CHECKPOINTED');
+ assert.equal(result.reconciliation.reconciliationStatus,'PENDING_SIGNATURES_RECONCILED_HISTORY_UNVERIFIED');
+ assert.equal(result.reconciliation.originalPendingSignatureCount,2);
+ assert.equal(result.reconciliation.originalStopReason,'RETRIEVAL_INCOMPLETE');
+ assert.equal(result.complete,false);assert.equal(result.historyCoverageVerified,false);
+ assert.equal(result.reconciliation.historyExhausted,false);assert.equal(result.authorizationVerified,false);assert.equal(result.finalScore,null);
+ assert.equal(JSON.stringify(f.original),before);
+});

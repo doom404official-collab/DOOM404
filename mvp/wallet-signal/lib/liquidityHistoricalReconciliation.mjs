@@ -31,7 +31,7 @@ export function reconcileLiquidityHistory(original,replays,recovery,pool){
  }
  if(recovered.size!==pending.size)throw Error("INCOMPLETE_PENDING_RECOVERY");
  if(events.some(e=>e.authorizationVerified===true||e.classification!=="UNVERIFIED_CANDIDATE"))throw Error("UNSAFE_EVENT_PROMOTION");
- const result={...original,seen:[...original.seen,...recovery.transactions.map(t=>t.signature)],pendingSignatures:[],unresolvedReasons:{},events:[...original.events,...events],complete:false,historyCoverageVerified:false,authorizationVerified:false,withdrawalVerified:false,finalScore:null,classification:HISTORY_CLASSIFICATION,reconciliation:{sourceDigest:expectedRecoveryDigest,replayDigest:expectedReplayDigest,originalSeen:original.seen.length,recoveredPending:recovered.size,verifiedDistinct:seen.size+recovered.size,candidateCount:events.length,historyExhausted:false}};
+ const result={...original,seen:[...original.seen,...recovery.transactions.map(t=>t.signature)],pendingSignatures:[],pendingSignatureCount:0,stopReason:"CHECKPOINTED",unresolvedReasons:{},events:[...original.events,...events],complete:false,historyCoverageVerified:false,authorizationVerified:false,withdrawalVerified:false,finalScore:null,classification:HISTORY_CLASSIFICATION,reconciliation:{reconciliationStatus:"PENDING_SIGNATURES_RECONCILED_HISTORY_UNVERIFIED",originalPendingSignatureCount:original.pendingSignatureCount??null,originalStopReason:original.stopReason??null,sourceDigest:expectedRecoveryDigest,replayDigest:expectedReplayDigest,originalSeen:original.seen.length,recoveredPending:recovered.size,verifiedDistinct:seen.size+recovered.size,candidateCount:events.length,historyExhausted:false}};
  validateHistoryCheckpoint(result,pool);
  return result;
 }
