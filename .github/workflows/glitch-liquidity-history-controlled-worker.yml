@@ -59,7 +59,7 @@ jobs:
           node scripts/liquidity-validate-artifact-discovery.mjs ../../discovery-records.json ../../checkpoint-manifest.json
           node scripts/liquidity-select-checkpoint.mjs ../../checkpoint-manifest.json ../../selected-checkpoint.json
           node scripts/liquidity-automatic-history-gate.mjs ../../selected-checkpoint.json
-          node -e 'const fs=require("node:fs");const s=JSON.parse(fs.readFileSync("../../selected-checkpoint.json","utf8"));const a=s.complete?"STOP_HISTORY_EXHAUSTED":"CONTINUE_BOUNDED";fs.appendFileSync(process.env.GITHUB_OUTPUT,"action="+a+"\\n")'
+          node -e 'const fs=require("node:fs");const s=JSON.parse(fs.readFileSync("../../selected-checkpoint.json","utf8"));const a=s.complete?"STOP_HISTORY_EXHAUSTED":"CONTINUE_BOUNDED";fs.appendFileSync(process.env.GITHUB_OUTPUT,"action="+a+"\n")'
       - name: Run bounded Helius investigation
         if: steps.select.outputs.action == 'CONTINUE_BOUNDED'
         working-directory: mvp/wallet-signal
