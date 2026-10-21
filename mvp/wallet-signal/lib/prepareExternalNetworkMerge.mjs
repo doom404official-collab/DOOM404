@@ -14,6 +14,7 @@ export function prepareExternalNetworkMerge({checkpoint,evidenceRows=[]}={}){
   if(!validNetworkSignature(signature)||seen.has(signature))throw Error("NETWORK_MERGE_SIGNATURE_INVALID");
   seen.add(signature);
   if(checkpoint.signatures?.[signature]!=="checked"||Object.hasOwn(source.processed,signature))continue;
+  if(row?.status!=="verified")continue;
   if(ex?.version!==1||ex.valid!==true||ex.unresolvedTokenTransfers!==0||!Array.isArray(ex.transfers))
    continue;
   for(const t of ex.transfers){
