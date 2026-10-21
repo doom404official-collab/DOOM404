@@ -1,0 +1,35 @@
+name: Creator historical fee evidence probe
+on:
+  push:
+    branches: [feature/creator-history-worker-500]
+    paths:
+      - '.github/workflows/creator-historical-fee-probe.yml'
+      - 'mvp/wallet-signal/scripts/creator-historical-fee-evidence-probe.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: creator-historical-fee-probe-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mvp/wallet-signal/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Historical transaction slot and fee evidence inventory
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          CREATOR_DIAGNOSTIC_SIGNATURES: 5T5aw2vCUK2azevfDxW4k1wNVLosZqGNGGWNMjnWC3JCknH8LLkmEAUanCbvQUwscmP9AShbtAFh9biM2168mZf1
+        run: node scripts/creator-historical-fee-evidence-probe.mjs
