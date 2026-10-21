@@ -1,0 +1,31 @@
+name: Creator Alchemy archive capability
+on:
+  push:
+    branches: [feature/creator-history-worker-500]
+    paths:
+      - '.github/workflows/creator-alchemy-archive-capability.yml'
+      - 'mvp/wallet-signal/scripts/creator-alchemy-archive-capability-probe.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: creator-alchemy-archive-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Probe historical account-state support
+        env:
+          ALCHEMY_RPC_URL: ${{ secrets.ALCHEMY_RPC_URL }}
+        run: node scripts/creator-alchemy-archive-capability-probe.mjs
