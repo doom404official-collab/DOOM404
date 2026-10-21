@@ -22,3 +22,22 @@ test("uncalibrated evidence never yields final overall score",()=>{
  const results={};for(const a of attributes)results[a.id]={score:100,complete:true,calibrated:false};
  assert.equal(consolidate(results).score,null);
 });
+test("result metadata cannot override canonical attribute IDs or equal weights",()=>{
+ const values=[80,60,40,20];
+ for(const override of [100,0,-25,NaN,Infinity,"25",null]){
+  const results=Object.fromEntries(attributes.map((a,i)=>[a.id,{id:"forged",weight:override,score:values[i],complete:true,calibrated:true}]));
+  const result=consolidate(results);
+  assert.equal(result.score,50);
+  assert.equal(result.status,"complete");
+  assert.deepEqual(result.checks.map(c=>({id:c.id,weight:c.weight})),attributes.map(a=>({id:a.id,weight:a.weight})));
+ }
+});
+test("canonical weights do not bypass missing, invalid, or uncalibrated evidence",()=>{
+ for(const invalid of [{complete:false},{calibrated:false},{score:null},{score:NaN},{score:Infinity},{score:-1},{score:101},{score:"100"}]){
+  const results=Object.fromEntries(attributes.map(a=>[a.id,{score:100,complete:true,calibrated:true}]));
+  results.token_security={...results.token_security,...invalid,id:"liquidity_quality_safety",weight:0};
+  const result=consolidate(results);
+  assert.equal(result.score,null);
+  assert.equal(result.status,"incomplete");
+ }
+});
