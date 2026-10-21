@@ -35,3 +35,7 @@ test('missing historical pre-pool row fails closed',()=>{const t=fixture();t.met
 test('duplicate historical pool row fails closed',()=>{const t=fixture();t.meta.postTokenBalances.push(structuredClone(t.meta.postTokenBalances[0]));assert.equal(review(t).reason,'HISTORICAL_POOL_OWNERSHIP_UNVERIFIED');});
 test('wrong Token-2022 transfer program fails closed',()=>{const t=fixture();t.meta.innerInstructions[0].instructions[0].programId='TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';assert.equal(review(t).reason,'TOKEN_TRANSFER_NOT_UNIQUE');});
 test('wrong buyer account ownership fails closed',()=>{const t=fixture();t.meta.postTokenBalances[1].owner=curve;assert.equal(review(t).reason,'BUYER_RECEIPT_OWNERSHIP_UNVERIFIED');});
+
+test('missing buyer SOL balance data fails closed',()=>{const t=fixture();t.meta.postBalances=[];assert.equal(review(t).reason,'BUYER_SOL_BALANCE_UNVERIFIED');});
+test('duplicate bonding-curve payment fails closed',()=>{const t=fixture();const payment=structuredClone(t.meta.innerInstructions[0].instructions[2]);t.meta.innerInstructions[0].instructions.push(payment);assert.equal(review(t).reason,'CURVE_PAYMENT_NOT_UNIQUE');});
+test('token mint mismatch fails closed',()=>{const t=fixture();t.meta.innerInstructions[0].instructions[0].parsed.info.mint='11111111111111111111111111111111';assert.equal(review(t).reason,'TOKEN_TRANSFER_AMOUNT_UNVERIFIED');});
