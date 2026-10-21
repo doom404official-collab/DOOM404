@@ -42,8 +42,10 @@ for(const signature of signatures){
    poolOwnershipReason:poolOwnership.reason||null,matchingBuyerReceipts:receipts.length,
    corroboratedSettlementCandidates:settlementCandidates.length,
    buyGroupsWithInnerInstructions:groups.filter(g=>g.instructionGroupFound).length};
+  const buyInstructionAccounts=groups.map(g=>{const ix=outer[g.instructionIndex];return {instructionIndex:g.instructionIndex,accounts:(ix?.accounts||[]).map((a,i)=>({position:i,address:typeof a==='string'?a:(Number.isInteger(a)?(typeof keys[a]==='string'?keys[a]:keys[a]?.pubkey?.toString?.()):a?.pubkey?.toString?.())||null})).slice(0,32)};});
+  const receiptSourceBalances=[...resolved.pre,...resolved.post].filter(x=>receipts.some(y=>y.sourceTokenAccount===x.accountPubkey)).map(x=>({accountIndex:x.accountIndex,accountPubkey:x.accountPubkey,owner:x.owner||null,mint:x.mint||null}));
   const buyerCandidates=observedOwners.map(owner=>({owner,preRaw:tokenBalances.filter(x=>(transaction.meta?.preTokenBalances||[]).includes(x)&&x?.owner===owner&&x?.mint===observedMints[0]).reduce((n,x)=>n+BigInt(x?.uiTokenAmount?.amount||'0'),0n).toString(),postRaw:tokenBalances.filter(x=>(transaction.meta?.postTokenBalances||[]).includes(x)&&x?.owner===owner&&x?.mint===observedMints[0]).reduce((n,x)=>n+BigInt(x?.uiTokenAmount?.amount||'0'),0n).toString()}));
-  results.push({signature,status:shadow.status,diagnostic:shadow.diagnostic||null,pumpInstructionCount,recognizedBuyGroups:groups.length,observedMints,observedOwners,buyerCandidates,settlementDiagnostics,
+  results.push({signature,status:shadow.status,diagnostic:shadow.diagnostic||null,pumpInstructionCount,recognizedBuyGroups:groups.length,observedMints,observedOwners,buyerCandidates,settlementDiagnostics,buyInstructionAccounts,receiptSourceBalances,
    instructionCount:transaction.transaction?.message?.instructions?.length||0,transactionFailed:transaction.meta?.err!=null,
    eligibleForLivePromotion:false});
  }catch(error){results.push({signature,status:'FETCH_OR_DECODE_FAILED',errorCode:['RPC_RATE_LIMITED','RPC_AUTH_FAILED','RPC_RESPONSE_ERROR','RPC_UNSUPPORTED_VERSION'].includes(error?.message)?error.message:'DIAGNOSTIC_FAILED'});}
