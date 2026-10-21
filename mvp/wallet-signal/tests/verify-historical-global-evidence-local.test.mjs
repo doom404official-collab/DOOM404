@@ -21,3 +21,7 @@ test('rejects wrong historical context slot',()=>{const x=account(Buffer.alloc(1
 test('rejects missing account data',()=>{const r=run({result:{context:{slot},value:null}});assert.notEqual(r.status,0);assert.match(r.stderr,/ACCOUNT_DATA_UNAVAILABLE/);});
 test('rejects wrong length',()=>{const r=run(account(Buffer.alloc(10).toString('base64')));assert.notEqual(r.status,0);assert.match(r.stderr,/ACCOUNT_LENGTH_MISMATCH/);});
 test('rejects 1045 bytes with incorrect digest',()=>{const r=run(account(Buffer.alloc(1045).toString('base64')));assert.notEqual(r.status,0);assert.match(r.stderr,/HISTORICAL_HASH_MISMATCH/);assert.doesNotMatch(r.stdout,/CANDIDATE_DECODED_UNVERIFIED/);});
+
+test('rejects invalid base64 characters before hashing',()=>{const r=run(account('!'.repeat(1396)));assert.notEqual(r.status,0);assert.match(r.stderr,/ACCOUNT_BASE64_INVALID/);});
+test('rejects noncanonical base64 before hashing',()=>{const r=run(account('Zh=='));assert.notEqual(r.status,0);assert.match(r.stderr,/ACCOUNT_BASE64_NONCANONICAL/);});
+test('rejects missing base64 payload before hashing',()=>{const r=run(account(''));assert.notEqual(r.status,0);assert.match(r.stderr,/ACCOUNT_BASE64_INVALID/);});
