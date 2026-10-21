@@ -1,0 +1,63 @@
+name: GLITCH token owner lifecycle audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: glitch-token-owner-6DgMfb-history
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Inspect ordered lifecycle in two known transactions
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: |
+          python3 - <<'PY'
+          import os,json,urllib.request
+          endpoint=os.environ.get("HELIUS_RPC_URL","")
+          if not endpoint.startswith("https://"):raise SystemExit("RPC_MISSING")
+          account="6DgMfbDmjbGT9knSgztDg7Fg813mwjw2Bz5ieBztqDju"
+          sigs=[
+            "37WZYkLnwzcPmYdoydTRhYAoUAcFGwHYem3QGt6exoSqt8H2SCZZuB5uUZg3Dd9NyTjYr62nhaxT2VbMELDKocA6",
+            "38AcrSYXmT32uPCupZdDfhp47mJCZgmBzitKHVZU83Xqa4MN8LcVuUpTzhQJhRZv48jexEbphL5b7WNYbjqNqMu"]
+          expected=[450097547,451211747]
+          output={"account":account,"ownershipVerified":False,"scorePromoted":False,"rpcRequests":0,"transactions":[]}
+          for n,(sig,slot) in enumerate(zip(sigs,expected),1):
+            body=json.dumps({"jsonrpc":"2.0","id":n,"method":"getTransaction","params":[sig,{"encoding":"jsonParsed","commitment":"confirmed","maxSupportedTransactionVersion":1}]}).encode()
+            req=urllib.request.Request(endpoint,data=body,headers={"Content-Type":"application/json"},method="POST")
+            with urllib.request.urlopen(req,timeout=45) as response:data=json.load(response)
+            output["rpcRequests"]+=1
+            if data.get("error"):raise RuntimeError("RPC_ERROR_"+str(data["error"].get("code")))
+            tx=data.get("result")
+            if not tx or tx.get("slot")!=slot or tx.get("meta",{}).get("err") is not None:raise RuntimeError("TARGET_TRANSACTION_NOT_VERIFIED")
+            msg=tx["transaction"]["message"]
+            inner={g["index"]:g.get("instructions",[]) for g in tx.get("meta",{}).get("innerInstructions",[])}
+            relevant=[]
+            for index,outer in enumerate(msg.get("instructions",[])):
+              for subindex,ix in enumerate([outer]+inner.get(index,[])):
+                parsed=ix.get("parsed") if isinstance(ix,dict) else None
+                if not isinstance(parsed,dict):continue
+                info=parsed.get("info") or {}
+                if account not in [v for v in info.values() if isinstance(v,str)]:
+                  continue
+                kind=parsed.get("type","")
+                if kind in ("initializeAccount","initializeAccount2","initializeAccount3","initializeImmutableOwner","setAuthority","closeAccount","createAccount","createAccountWithSeed","transfer","transferChecked","syncNative"):
+                  relevant.append({"outerIndex":index,"innerPosition":subindex,"type":kind,"programId":ix.get("programId"),
+                    "owner":info.get("owner"),"newAuthority":info.get("newAuthority"),"authorityType":info.get("authorityType"),
+                    "account":info.get("account"),"source":info.get("source"),"destination":info.get("destination"),"mint":info.get("mint")})
+            output["transactions"].append({"signature":sig,"slot":slot,"orderedInstructions":relevant,
+              "initializations":sum(i["type"] in ("initializeAccount","initializeAccount2","initializeAccount3") for i in relevant),
+              "closures":sum(i["type"]=="closeAccount" for i in relevant),
+              "ownerChanges":sum(i["type"]=="setAuthority" and i.get("authorityType")=="accountOwner" for i in relevant)})
+          with open("token-owner-lifecycle.json","w") as f:json.dump(output,f,indent=2)
+          print(json.dumps(output))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: token-owner-lifecycle
+          path: token-owner-lifecycle.json
+          retention-days: 30
