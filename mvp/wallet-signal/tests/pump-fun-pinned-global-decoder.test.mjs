@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {decodePinnedGlobalCandidate} from '../lib/pumpFunPinnedGlobalDecoder.mjs';
+import {expectedPinnedGlobalBytes} from '../lib/pumpFunPinnedGlobalSchema.mjs';
+const make=()=>{const bytes=Buffer.alloc(expectedPinnedGlobalBytes());createHash('sha256').update('account:Global').digest().copy(bytes,0,0,8);return bytes;};
+test('wrong length rejected without authorization',()=>{const r=decodePinnedGlobalCandidate(make().subarray(0,100));assert.equal(r.status,'CANDIDATE_REJECTED');assert.equal(r.feeRecipientRolesVerified,false);});
+test('wrong discriminator rejected',()=>{const bytes=make();bytes[0]^=1;assert.equal(decodePinnedGlobalCandidate(bytes).reason,'GLOBAL_DISCRIMINATOR_MISMATCH');});
+test('candidate with complete field coverage is never historical authorization',()=>{const r=decodePinnedGlobalCandidate(make());assert.equal(r.status,'CANDIDATE_DECODED_UNVERIFIED');assert.equal(r.layoutVersionVerified,false);assert.equal(r.historicalStateVerified,false);assert.equal(r.feeRecipientRolesVerified,false);assert.equal(r.eligibleForLivePromotion,false);assert.equal(r.accountDataBytes,1045);});
+test('invalid boolean encoding rejected',()=>{const bytes=make();bytes[8]=2;assert.equal(decodePinnedGlobalCandidate(bytes).reason,'INVALID_FIELD_ENCODING');});
