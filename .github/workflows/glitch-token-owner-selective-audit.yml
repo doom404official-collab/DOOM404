@@ -1,0 +1,65 @@
+name: GLITCH token owner selective instruction audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: glitch-token-owner-6DgMfb-history
+  cancel-in-progress: false
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Select and decode bounded historical authority candidates
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: |
+          python3 - <<'PY'
+          import json,os,urllib.request
+          rpc=os.environ.get("HELIUS_RPC_URL","")
+          if not rpc.startswith("https://"):raise SystemExit("RPC_NOT_CONFIGURED")
+          account="6DgMfbDmjbGT9knSgztDg7Fg813mwjw2Bz5ieBztqDju"
+          targets=[450097547,451211747]
+          requests=0
+          def call(method,params):
+            global requests
+            if requests>=8:raise RuntimeError("RPC_BUDGET_EXHAUSTED")
+            requests+=1
+            req=urllib.request.Request(rpc,data=json.dumps({"jsonrpc":"2.0","id":requests,"method":method,"params":params}).encode(),headers={"Content-Type":"application/json"},method="POST")
+            with urllib.request.urlopen(req,timeout=45) as response:obj=json.load(response)
+            if "error" in obj:raise RuntimeError("RPC_ERROR_"+str(obj["error"].get("code")))
+            return obj.get("result")
+          rows=call("getSignaturesForAddress",[account,{"limit":1000,"commitment":"confirmed"}]) or []
+          if not rows or rows[-1].get("slot",10**15)>min(targets):raise RuntimeError("HISTORICAL_RANGE_NOT_REACHED")
+          # Only inspect the oldest page signature and the nearest signatures around each target.
+          picks={}
+          for item in rows[-2:]:picks[item["signature"]]=item.get("slot")
+          for target in targets:
+            for item in sorted(rows,key=lambda x:abs(x.get("slot",10**15)-target))[:2]:
+              picks[item["signature"]]=item.get("slot")
+          result={"account":account,"range":{"newestSlot":rows[0]["slot"],"oldestSlot":rows[-1]["slot"],"signatures":len(rows)},"candidates":[],"ownershipVerified":False,"scorePromoted":False}
+          for sig,slot in list(picks.items())[:7]:
+            tx=call("getTransaction",[sig,{"encoding":"jsonParsed","commitment":"confirmed","maxSupportedTransactionVersion":1}])
+            if not tx:
+              result["candidates"].append({"signature":sig,"slot":slot,"status":"UNAVAILABLE"});continue
+            msg=tx.get("transaction",{}).get("message",{})
+            ins=msg.get("instructions",[])+[i for group in tx.get("meta",{}).get("innerInstructions",[]) for i in group.get("instructions",[])]
+            relevant=[]
+            for ix in ins:
+              p=ix.get("parsed") if isinstance(ix,dict) else None
+              if not isinstance(p,dict):continue
+              info=p.get("info") or {}
+              if account in (info.get("account"),info.get("newAccount"),info.get("source"),info.get("destination"),info.get("associatedAccount")) and (p.get("type","").lower().startswith("initialize") or p.get("type")=="setAuthority" or p.get("type")=="create"):
+                relevant.append({"type":p.get("type"),"programId":ix.get("programId"),"info":info})
+            result["candidates"].append({"signature":sig,"slot":tx.get("slot"),"status":"OBSERVED_ONLY","relevantInstructions":relevant[:20]})
+          result["rpcRequests"]=requests
+          with open("token-owner-selective-audit.json","w") as out:json.dump(result,out,indent=2)
+          print(json.dumps({"status":"SELECTIVE_AUDIT_COMPLETE","rpcRequests":requests,"candidates":result["candidates"],"ownershipVerified":False,"scorePromoted":False}))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: token-owner-selective-audit
+          path: token-owner-selective-audit.json
+          retention-days: 30
