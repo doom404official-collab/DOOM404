@@ -1,0 +1,10 @@
+import {readFile,writeFile} from "node:fs/promises";
+import {validateLiquidityPartialRecovery} from "../lib/liquidityPartialRecovery.mjs";
+const [priorPath,nextPath,output]=process.argv.slice(2);
+const pool=process.env.GLITCH_LIQUIDITY_POOL;
+if(!priorPath||!nextPath||!output||!pool)throw Error("PARTIAL_RECOVERY_INPUTS_REQUIRED");
+const prior=JSON.parse(await readFile(priorPath,"utf8"));
+const next=JSON.parse(await readFile(nextPath,"utf8"));
+const summary=validateLiquidityPartialRecovery(prior,next,pool);
+await writeFile(output,JSON.stringify(next,null,2),{flag:"wx"});
+console.log(JSON.stringify(summary));
