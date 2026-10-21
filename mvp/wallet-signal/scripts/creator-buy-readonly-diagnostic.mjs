@@ -36,7 +36,7 @@ for(const signature of signatures){
   const resolved=resolveTokenBalanceAccounts({transaction});
   const matchingPoolRows=[...resolved.pre,...resolved.post].filter(x=>x.mint===mint&&x.accountPubkey===derived.poolTokenAccount);
   const token2022Review=inspectToken2022PumpFunBuySettlement({mint,buyer:creator,transaction});
-  const settlementDiagnostics={token2022Review,poolDerivation:derived.status,
+  const settlementDiagnostics={token2022Review,transactionSlot:Number.isSafeInteger(transaction.slot)?transaction.slot:null,historicalFeeConfigurationStatus:'NOT_RETRIEVED',poolDerivation:derived.status,
    derivedPoolTokenAccount:derived.poolTokenAccount||null,
    receiptSources:receipts.map(x=>x.sourceTokenAccount),
    sourceMatchesDerivedPool:receipts.some(x=>x.sourceTokenAccount===derived.poolTokenAccount),
