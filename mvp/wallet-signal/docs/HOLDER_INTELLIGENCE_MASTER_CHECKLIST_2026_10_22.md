@@ -17,7 +17,7 @@ Scope: frozen Snapshot #2, TOP20_NETWORK_V1, test mint 98kfF7rmsg1QDUEoCqNE7g7M1
 | H03 | Resumable worker and lease controls | IN_PROGRESS | Both live jobs complete or explicit documented bounded cutoff, safe restart/concurrency proven |
 | H04 | Historical discovery and decoding | IN_PROGRESS | All discovered eligible signatures resolved; archive coverage separately proven or explicitly bounded |
 | H05 | Transfer ownership evidence | IN_PROGRESS | Exact transfer-time owner, mint, account lifecycle, ordering and dedup established |
-| H06 | Pool/infrastructure classification | BLOCKED | Historical Pump AMM owner/discriminator/vault mapping verified at relevant slots |
+| H06 | Pool/infrastructure classification | BLOCKED | Historical Pump AMM owner/discriminator/vault mapping verified at relevant slots; 21 stored liquidity snapshots checked and none affirms historicalStateVerified=true |
 | H07 | Diab diagnostic | DONE | CPI and vault observations accepted for slot 458818672; zero inner instructions, both vaults owned by pool, unchanged pre/post balances; does not prove historical pool state |
 | H08 | Verified graph and exclusion sensitivity | BLOCKED | Read-only recomputation, infrastructure exclusions, pair/cluster and coverage reconciliation |
 | H09 | Final network and consolidated score | BLOCKED | Independent validation, calibration and authorized promotion |
@@ -31,6 +31,13 @@ Scope: frozen Snapshot #2, TOP20_NETWORK_V1, test mint 98kfF7rmsg1QDUEoCqNE7g7M1
 - Supabase jobs c670f393-31b0-470c-a01f-cb2b813a1219 and d07c0256-b472-4089-a237-99ed5e5c8cc4 remain running at last query (2026-10-22 04:20 UTC).
 - Snapshot #2 1379bcb43b07be4b783dd4aa67bcabab50cc363cf36c4ca31c943204ccda0153: pool candidate 6e3j... rank 1, GHce... rank 15; excluded_wallets only incinerator.
 - Liquidity evidence snapshot 21 decoded candidate pool and vaults, but protocolVerified=false and historical state not authenticated.
+
+## H06 archival-evidence audit (2026-10-22)
+- Read-only SQL inspected all 21 liquidity_evidence_snapshots for the test mint, including nested JSON-path flags.
+- No stored snapshot contains historicalStateVerified=true or authorizationVerified=true.
+- Existing getAccountInfo with nonstandard slot parameter cannot prove historical state; do not repeat this probe as historical proof.
+- No archive-state workflow run appeared in the most recent 100 GitHub Actions runs searched; this is not an exhaustive historical workflow search.
+- H06 remains blocked pending a documented exact historical-state provider or independent transaction-time account witness. Do not claim H06 complete from present-day decoded pool data.
 
 ## Next action — no duplication
 1. H07 CLOSED. Do not rerun Diab CPI or vault observation without contradictory evidence.
