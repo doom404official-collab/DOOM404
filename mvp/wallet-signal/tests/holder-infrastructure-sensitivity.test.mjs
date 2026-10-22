@@ -19,3 +19,13 @@ test("sensitivity excludes pool without modifying snapshot or promoting",()=>{
 test("rejects pool absent from frozen ranking",()=>{
  assert.throws(()=>compareHolderInfrastructureExclusion({snapshot,transfers:[],pool:"Other"}),/POOL_NOT_ELIGIBLE/);
 });
+
+test("verified direct pool edge is excluded from the observed scenario",()=>{
+ const source="GHceWgs54Ye6iQCdk2orLgvSweaNsNa57qxaJBjAg7gA";
+ const transfer={signature:"37WZYkLnwzcPmYdoydTRhYAoUAcFGwHYem3QGt6exoSqt8H2SCZZuB5uUZg3Dd9NyTjYr62nhaxT2VbMELDKocA6",from:pool,to:source,assetType:"SOL",amountRaw:"100",slot:450097547,verifiedOnChain:true,transferVerified:true};
+ const result=compareHolderInfrastructureExclusion({snapshot,transfers:[transfer],pool});
+ assert.equal(result.baseline.evidence.directPairs,1);
+ assert.equal(result.excluded.evidence.directPairs,0);
+ assert.equal(result.excluded.evidence.connectedHolderCount,0);
+ assert.equal(result.scorePromoted,false);
+});
