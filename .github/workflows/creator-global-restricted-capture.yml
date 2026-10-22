@@ -1,0 +1,44 @@
+name: Creator historical Global capture (manual restricted)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: creator-global-restricted-capture
+  cancel-in-progress: false
+jobs:
+  capture:
+    if: github.ref == 'refs/heads/feature/creator-history-worker-500'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: creator-historical-capture
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mvp/wallet-signal/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Offline negative controls
+        run: node --test tests/capture-historical-global-evidence-local.test.mjs tests/verify-historical-global-evidence-local.test.mjs tests/pump-fun-pinned-global-decoder.test.mjs
+      - name: Read-only capture and verification
+        env:
+          ALCHEMY_RPC_URL: ${{ secrets.ALCHEMY_RPC_URL }}
+        run: |
+          set -euo pipefail
+          umask 077
+          test -n "${ALCHEMY_RPC_URL:-}" || { echo 'ARCHIVE_SECRET_MISSING'; exit 1; }
+          mkdir -p "$RUNNER_TEMP/glitch-global"
+          export GLITCH_RESTRICTED_CAPTURE="$RUNNER_TEMP/glitch-global/capture.json"
+          export GLITCH_RESTRICTED_REPORT="$RUNNER_TEMP/glitch-global/decoded.json"
+          trap 'rm -f "$GLITCH_RESTRICTED_CAPTURE" "$GLITCH_RESTRICTED_REPORT"' EXIT
+          node scripts/capture-historical-global-evidence-local.mjs
+          node scripts/verify-historical-global-evidence-local.mjs "$GLITCH_RESTRICTED_CAPTURE"
+          echo 'HISTORICAL_GLOBAL_CAPTURE_VERIFIED_LOCALLY'
