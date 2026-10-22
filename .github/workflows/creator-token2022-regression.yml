@@ -23,6 +23,8 @@ on:
       - 'mvp/wallet-signal/lib/creatorHistoricalPrivateRetention.mjs'
       - 'mvp/wallet-signal/tests/creator-historical-private-retention.test.mjs'
       - 'mvp/wallet-signal/tests/creator-historical-private-retention-transport.test.mjs'
+      - 'mvp/wallet-signal/lib/creatorSupabaseEvidenceTransport.mjs'
+      - 'mvp/wallet-signal/tests/creator-supabase-evidence-transport.test.mjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -47,7 +49,7 @@ jobs:
           cache-dependency-path: mvp/wallet-signal/package-lock.json
       - run: npm ci --no-audit --no-fund
       - name: Focused Token-2022 positive and adversarial controls
-        run: node --test tests/pump-fun-token2022-positive-control.test.mjs tests/creator-buy-shadow-diagnostics.test.mjs tests/pump-fun-bonding-curve-fee-authorization-shadow.test.mjs tests/pump-fun-pinned-global-schema.test.mjs tests/pump-fun-pinned-global-decoder.test.mjs tests/verify-historical-global-evidence-local.test.mjs tests/capture-historical-global-evidence-local.test.mjs tests/creator-historical-retention-preflight.test.mjs tests/creator-historical-private-retention.test.mjs tests/creator-historical-private-retention-transport.test.mjs
+        run: node --test tests/pump-fun-token2022-positive-control.test.mjs tests/creator-buy-shadow-diagnostics.test.mjs tests/pump-fun-bonding-curve-fee-authorization-shadow.test.mjs tests/pump-fun-pinned-global-schema.test.mjs tests/pump-fun-pinned-global-decoder.test.mjs tests/verify-historical-global-evidence-local.test.mjs tests/capture-historical-global-evidence-local.test.mjs tests/creator-historical-retention-preflight.test.mjs tests/creator-historical-private-retention.test.mjs tests/creator-historical-private-retention-transport.test.mjs tests/creator-supabase-evidence-transport.test.mjs
       - name: Full application tests
         run: npm run test:smoke
       - name: Application build
