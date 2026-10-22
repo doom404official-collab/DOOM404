@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {prepareHistoricalGlobalRetention} from '../lib/creatorHistoricalRetentionPreflight.mjs';
+const slot=442809233;
+const address='4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf';
+const owner='6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
+const fixture=()=>({capture:{accountAddress:address,requestedSlot:slot,method:'getAccountInfo'},result:{context:{slot},value:{owner,data:[Buffer.alloc(1045).toString('base64'),'base64']}}});
+test('missing capture rejected',()=>assert.equal(prepareHistoricalGlobalRetention({}).reason,'CAPTURE_PROVENANCE_MISMATCH'));
+test('wrong account rejected',()=>{const x=fixture();x.capture.accountAddress='wrong';assert.equal(prepareHistoricalGlobalRetention(x).reason,'CAPTURE_PROVENANCE_MISMATCH');});
+test('wrong context slot rejected',()=>{const x=fixture();x.result.context.slot++;assert.equal(prepareHistoricalGlobalRetention(x).reason,'CAPTURE_PROVENANCE_MISMATCH');});
+test('wrong owner rejected',()=>{const x=fixture();x.result.value.owner='wrong';assert.equal(prepareHistoricalGlobalRetention(x).reason,'ACCOUNT_EVIDENCE_MISMATCH');});
+test('wrong hash rejected',()=>assert.equal(prepareHistoricalGlobalRetention(fixture()).reason,'ACCOUNT_EVIDENCE_MISMATCH'));
