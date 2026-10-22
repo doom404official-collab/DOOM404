@@ -7,9 +7,12 @@ import {decodePinnedGlobalCandidate} from '../lib/pumpFunPinnedGlobalDecoder.mjs
 const expectedHash='9aa57beb2b897cc175a536f170ddb25c0c8bed8ed6620c7087d8a7fb834f7d30';
 const expectedSlot=442809233;
 const expectedOwner='6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
+const expectedGlobal='4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf';
 const file=process.argv[2];
 if(!file)throw Error('Expected a local archival RPC JSON response file');
 const response=JSON.parse(readFileSync(file,'utf8'));
+// Account identity must be supplied by a trusted capture envelope, not inferred from RPC value.
+if(response?.capture?.accountAddress!==expectedGlobal||response?.capture?.requestedSlot!==expectedSlot||response?.capture?.method!=='getAccountInfo')throw Error('CAPTURE_IDENTITY_UNVERIFIED');
 if(response.error||response.result?.context?.slot!==expectedSlot)throw Error('HISTORICAL_CONTEXT_UNVERIFIED');
 const account=response.result?.value;
 if(!account||!Array.isArray(account.data)||account.data[1]!=='base64')throw Error('ACCOUNT_DATA_UNAVAILABLE');
