@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {authorizeCreatorEvidenceUpload} from '../lib/creatorSignedUploadCoordinator.mjs';
+const now=1000000,commit='reviewed';
+const base=()=>({commit,branch:'refs/heads/feature/creator-history-worker-500',workflow:'creator-global-restricted-capture.yml',bucket:'creator-historical-evidence',objectKey:'global/442809233/4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf/9aa57beb2b897cc175a536f170ddb25c0c8bed8ed6620c7087d8a7fb834f7d30.json',overwrite:false,expiresAtMs:now+60000,singleUse:true,used:false});
+const deps=()=>({approvedCommit:commit,nowMs:now,claimOnce:async()=>true,issueSignedUpload:async()=>true});
+test('wrong commit blocks claim',async()=>{const r=base();r.commit='wrong';let calls=0;const o={...deps(),claimOnce:async()=>{calls++;return true;}};assert.equal((await authorizeCreatorEvidenceUpload(r,o)).authorized,false);assert.equal(calls,0);});
+test('missing issuer rejected',async()=>{const o=deps();delete o.issueSignedUpload;assert.equal((await authorizeCreatorEvidenceUpload(base(),o)).reason,'ISSUER_DEPENDENCIES_UNAVAILABLE');});
+test('duplicate claim blocks issuance',async()=>{let calls=0;const o={...deps(),claimOnce:async()=>false,issueSignedUpload:async()=>{calls++;return true;}};assert.equal((await authorizeCreatorEvidenceUpload(base(),o)).reason,'REPLAY_OR_CLAIM_FAILED');assert.equal(calls,0);});
+test('issuer exception fails closed',async()=>{const o={...deps(),issueSignedUpload:async()=>{throw Error('offline');}};assert.equal((await authorizeCreatorEvidenceUpload(base(),o)).reason,'SIGNED_ISSUANCE_FAILED');});
+test('successful mock never promotes score',async()=>{const r=await authorizeCreatorEvidenceUpload(base(),deps());assert.equal(r.status,'SIGNED_ISSUANCE_CONFIRMED');assert.equal(r.eligibleForLivePromotion,false);});
