@@ -46,6 +46,14 @@ Scope: frozen Snapshot #2, TOP20_NETWORK_V1, test mint 98kfF7rmsg1QDUEoCqNE7g7M1
 - Returned context slots equal requested slots and account bytes hashes differ; probe still explicitly reports historicalStateVerified=false pending independent provider provenance acceptance.
 - H06 now IN_PROGRESS, not blocked on account retrieval. Next: instruction-level role reconciliation, then read-only infrastructure-exclusion sensitivity. No score promotion.
 
+## H06 transfer-to-vault reconciliation (2026-10-22)
+- Reused existing counterpart audit 39628746349 and Alchemy historical vault audit 39734447423; no duplicate RPC.
+- At slots 450097547 and 451211747, 78nPA3tUEH4b2jZjH1JKdqXjykYWzA7Az37CeKj1tTcg is the pool's historical quote vault (WSOL), token-account authority 6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA.
+- Transfers between 6DgMfbDmjbGT9knSgztDg7Fg813mwjw2Bz5ieBztqDju (owner GHceWgs54Ye6iQCdk2orLgvSweaNsNa57qxaJBjAg7gA) and the quote vault are pool-vault-mediated observations, not proof of common beneficial ownership.
+- Do not classify these transfers as verified swaps, deposits, withdrawals or fee settlements without transaction instruction grouping and settlement corroboration.
+- The other three counterpart transfers are not resolved as holder-to-holder links by this vault mapping.
+- H06 next: read-only exclusion sensitivity for rank #1 with and without pool-node paths; preserve frozen ranking and existing score. Confirm provider historical provenance before declaring historicalStateVerified=true.
+
 ## Next action — no duplication
 1. H07 CLOSED. Do not rerun Diab CPI or vault observation without contradictory evidence.
 2. H06: inspect existing historical pool-state evidence and provider semantics; seek authenticated account state at slots 450097547, 451211747 and 457305617, or record a documented archival limitation.
