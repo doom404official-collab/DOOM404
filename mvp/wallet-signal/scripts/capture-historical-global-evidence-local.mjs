@@ -14,6 +14,7 @@ const request={jsonrpc:'2.0',id:1,method:'getAccountInfo',params:[accountAddress
 const response=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(request),signal:AbortSignal.timeout(20000)});
 if(!response.ok)throw Error('ARCHIVE_HTTP_ERROR_'+response.status);
 const data=await response.json();
+if(data?.jsonrpc!=='2.0'||data?.id!==request.id||data?.error)throw Error('ARCHIVE_RPC_ENVELOPE_INVALID');
 const diagnosis=inspectCreatorArchiveAccountResponse({data,slot});
 if(diagnosis.status!=='SLOT_MATCHED_ACCOUNT_RESPONSE'||!diagnosis.accountHeaderMatches||diagnosis.accountDataBytes!==1045||diagnosis.accountDataSha256!==expectedHash)throw Error('HISTORICAL_ACCOUNT_EVIDENCE_MISMATCH');
 const capture={capture:{method:request.method,accountAddress,requestedSlot:slot,commitment:'finalized',capturedAt:new Date().toISOString(),rpcProvider:'alchemy',requestSha256:createHash('sha256').update(JSON.stringify(request)).digest('hex')},result:data.result};
