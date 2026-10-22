@@ -17,7 +17,7 @@ Scope: frozen Snapshot #2, TOP20_NETWORK_V1, test mint 98kfF7rmsg1QDUEoCqNE7g7M1
 | H03 | Resumable worker and lease controls | IN_PROGRESS | Both live jobs complete or explicit documented bounded cutoff, safe restart/concurrency proven |
 | H04 | Historical discovery and decoding | IN_PROGRESS | All discovered eligible signatures resolved; archive coverage separately proven or explicitly bounded |
 | H05 | Transfer ownership evidence | IN_PROGRESS | Exact transfer-time owner, mint, account lifecycle, ordering and dedup established |
-| H06 | Pool/infrastructure classification | IN_PROGRESS | Alchemy exact-slot pool and two vault account observations match at slots 450097547, 451211747, 457305617; transaction-role reconciliation and read-only exclusion sensitivity outstanding |
+| H06 | Pool/infrastructure classification | DONE | Evidence-based infrastructure classification accepted for 6e3j...NWarA at observed historical slots; scoring exclusion NOT promoted; exact fee-recipient authorization remains separate |
 | H07 | Diab diagnostic | DONE | CPI and vault observations accepted for slot 458818672; zero inner instructions, both vaults owned by pool, unchanged pre/post balances; does not prove historical pool state |
 | H08 | Verified graph and exclusion sensitivity | BLOCKED | Read-only recomputation, infrastructure exclusions, pair/cluster and coverage reconciliation |
 | H09 | Final network and consolidated score | BLOCKED | Independent validation, calibration and authorized promotion |
@@ -78,3 +78,12 @@ Scope: frozen Snapshot #2, TOP20_NETWORK_V1, test mint 98kfF7rmsg1QDUEoCqNE7g7M1
 
 ## Baseline
 Observed score 8.97/35, connected holders 14, unique transfers 14112 are previously reported baseline, not independently recomputed in this checklist. Frozen Snapshot #2 and TOP20_NETWORK_V1 remain unchanged.
+
+## H06 classification acceptance — 2026-10-22
+- Decision scope: `HISTORICALLY_CORROBORATED_PUMP_AMM_INFRASTRUCTURE` for address 6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA at observed slots 450097547, 451211747 and frozen slot 457305617. This is an evidence classification, NOT an official exclusion or score change.
+- Account evidence: archive runs 39730887081 and 39734447423; historical Pump AMM program owner, pool discriminator, base/quote mint, LP mint, both vaults and token authorities match at each examined slot. Provenance caveat: probe field `historicalStateVerified:false` must be retained; Alchemy exact-slot archive semantics and matching historical hashes provide corroboration, not independently certified cryptographic state proofs.
+- Transaction evidence: counterpart roles run 39740757340 and Pump AMM parent discriminator run 39742090414 establish successful `buy_exact_quote_in` at outer instruction 6, with three observed WSOL distributions under that instruction. Exact protocol/creator/referral fee categorization and historical recipient authorization remain unresolved and are NOT prerequisites for identifying the pool account as infrastructure.
+- Observed exclusion sensitivity: application-scorer parity run 39737554344 reproduces baseline 9.93/35 versus excluded 14.04/35 on 23,963 deduplicated transfers; `historyComplete:false`, `scorePromoted:false`, `snapshotModified:false`. Earlier 8.97/35 is from a different checkpoint.
+- Policy boundary: frozen top-20 ranking remains unchanged. Whether to exclude the pool while retaining a 19-eligible-holder set, or use a separately versioned replacement-holder policy, is a future H08/H09 approval decision. No automatic promotion.
+- H06 DONE for infrastructure identification only. H08 remains blocked pending versioned graph policy acceptance and complete/defensibly bounded history; H09 remains blocked pending calibration, final scoring and approval. No further H06 RPC audits absent contradictory evidence.
+
