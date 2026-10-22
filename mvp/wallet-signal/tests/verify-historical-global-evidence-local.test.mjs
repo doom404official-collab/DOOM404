@@ -15,7 +15,8 @@ function run(payload){
  }finally{rmSync(dir,{recursive:true,force:true});}
 }
 const slot=442809233;
-const account=data=>({result:{context:{slot},value:{data:[data,'base64']}}});
+const owner='6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
+const account=data=>({result:{context:{slot},value:{owner,data:[data,'base64']}}});
 test('rejects RPC errors',()=>{const r=run({error:{code:-32000,message:'unavailable'}});assert.notEqual(r.status,0);assert.match(r.stderr,/HISTORICAL_CONTEXT_UNVERIFIED/);});
 test('rejects wrong historical context slot',()=>{const x=account(Buffer.alloc(1045).toString('base64'));x.result.context.slot++;const r=run(x);assert.notEqual(r.status,0);assert.match(r.stderr,/HISTORICAL_CONTEXT_UNVERIFIED/);});
 test('rejects missing account data',()=>{const r=run({result:{context:{slot},value:null}});assert.notEqual(r.status,0);assert.match(r.stderr,/ACCOUNT_DATA_UNAVAILABLE/);});
@@ -25,3 +26,5 @@ test('rejects 1045 bytes with incorrect digest',()=>{const r=run(account(Buffer.
 test('rejects invalid base64 characters before hashing',()=>{const r=run(account('!'.repeat(1396)));assert.notEqual(r.status,0);assert.match(r.stderr,/ACCOUNT_BASE64_INVALID/);});
 test('rejects noncanonical base64 before hashing',()=>{const r=run(account('Zh=='));assert.notEqual(r.status,0);assert.match(r.stderr,/ACCOUNT_BASE64_NONCANONICAL/);});
 test('rejects missing base64 payload before hashing',()=>{const r=run(account(''));assert.notEqual(r.status,0);assert.match(r.stderr,/ACCOUNT_BASE64_INVALID/);});
+
+test('rejects incorrect owning program before hashing',()=>{const x=account(Buffer.alloc(1045).toString('base64'));x.result.value.owner='11111111111111111111111111111111';const r=run(x);assert.notEqual(r.status,0);assert.match(r.stderr,/ACCOUNT_OWNER_MISMATCH/);});
