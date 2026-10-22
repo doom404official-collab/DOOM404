@@ -1,0 +1,19 @@
+name: GLITCH Liquidity PR46 offline validation
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/glitch-liquidity-history-controlled-worker.yml'
+      - '.github/workflows/glitch-liquidity-pr46-offline-tests.yml'
+      - 'mvp/wallet-signal/tests/liquidity-pr46-workflow-contract.test.mjs'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test mvp/wallet-signal/tests/liquidity-pr46-workflow-contract.test.mjs
