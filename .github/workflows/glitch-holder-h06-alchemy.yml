@@ -1,0 +1,24 @@
+name: GLITCH H06 Alchemy historical pool audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: glitch-holder-h06-alchemy-readonly
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/glitch-assessment-sprint1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read-only historical pool probe
+        working-directory: mvp/wallet-signal
+        env:
+          ALCHEMY_SOLANA_ARCHIVE_RPC_URL: ${{ secrets.ALCHEMY_SOLANA_ARCHIVE_RPC_URL }}
+        run: node scripts/holder-h06-alchemy-readonly.mjs
