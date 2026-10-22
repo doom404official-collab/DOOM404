@@ -30,8 +30,12 @@ DO $$ BEGIN
  IF (SELECT count(*) FROM creator_private.signed_upload_claims) <> 1 THEN RAISE EXCEPTION 'REPLAY_NOT_BLOCKED'; END IF;
 END $$;
 -- Unauthorized role must have no schema access or DML.
-SELECT has_schema_privilege('creator_unauthorized','creator_private','USAGE') AS unauthorized_schema_usage,
-       has_table_privilege('creator_unauthorized','creator_private.signed_upload_claims','INSERT') AS unauthorized_insert,
-       has_table_privilege('creator_upload_issuer','creator_private.signed_upload_claims','SELECT') AS issuer_select,
-       has_table_privilege('creator_upload_issuer','creator_private.signed_upload_claims','UPDATE') AS issuer_update,
-       has_table_privilege('creator_upload_issuer','creator_private.signed_upload_claims','DELETE') AS issuer_delete;
+DO $ BEGIN
+ IF has_schema_privilege('creator_unauthorized','creator_private','USAGE') OR
+    has_table_privilege('creator_unauthorized','creator_private.signed_upload_claims','INSERT') OR
+    has_table_privilege('creator_upload_issuer','creator_private.signed_upload_claims','SELECT') OR
+    has_table_privilege('creator_upload_issuer','creator_private.signed_upload_claims','UPDATE') OR
+    has_table_privilege('creator_upload_issuer','creator_private.signed_upload_claims','DELETE') THEN
+   RAISE EXCEPTION 'PRIVILEGE_BOUNDARY_FAILED';
+ END IF;
+END $;
