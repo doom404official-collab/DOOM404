@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {verifyCreatorWorkflowIdentity} from '../lib/creatorWorkflowOidcBoundary.mjs';
+const sha='a'.repeat(40);
+const claims=()=>({iss:'https://token.actions.githubusercontent.com',aud:'doom404-creator-evidence-issuer',repository:'doom404official-collab/DOOM404',ref:'refs/heads/feature/creator-history-worker-500',sha,workflow_ref:'doom404official-collab/DOOM404/.github/workflows/creator-global-restricted-capture.yml@refs/heads/feature/creator-history-worker-500',run_id:'123456',jti:'unique-replay-identifier'});
+const check=c=>verifyCreatorWorkflowIdentity('synthetic',{approvedSha:sha,verifyOidc:async()=>c});
+test('verified claims are not an issued token',async()=>{const r=await check(claims());assert.equal(r.verified,true);assert.equal(r.eligibleForLivePromotion,false);});
+test('wrong audience rejected',async()=>{const c=claims();c.aud='wrong';assert.equal((await check(c)).reason,'OIDC_ISSUER_OR_AUDIENCE_MISMATCH');});
+test('wrong commit rejected',async()=>{const c=claims();c.sha='b'.repeat(40);assert.equal((await check(c)).reason,'WORKFLOW_SOURCE_MISMATCH');});
+test('wrong workflow rejected',async()=>{const c=claims();c.workflow_ref='other';assert.equal((await check(c)).reason,'WORKFLOW_IDENTITY_MISMATCH');});
+test('missing verifier rejected',async()=>{assert.equal((await verifyCreatorWorkflowIdentity('synthetic',{approvedSha:sha})).reason,'TRUST_CONFIG_MISSING');});
+test('verifier error rejected',async()=>{const r=await verifyCreatorWorkflowIdentity('synthetic',{approvedSha:sha,verifyOidc:async()=>{throw Error('invalid');}});assert.equal(r.reason,'OIDC_VERIFICATION_FAILED');});
