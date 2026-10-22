@@ -6,6 +6,7 @@ import {decodePinnedGlobalCandidate} from '../lib/pumpFunPinnedGlobalDecoder.mjs
 // Never commit the input or resulting report to the repository.
 const expectedHash='9aa57beb2b897cc175a536f170ddb25c0c8bed8ed6620c7087d8a7fb834f7d30';
 const expectedSlot=442809233;
+const expectedOwner='6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
 const file=process.argv[2];
 if(!file)throw Error('Expected a local archival RPC JSON response file');
 const response=JSON.parse(readFileSync(file,'utf8'));
@@ -14,6 +15,7 @@ const account=response.result?.value;
 if(!account||!Array.isArray(account.data)||account.data[1]!=='base64')throw Error('ACCOUNT_DATA_UNAVAILABLE');
 const encoded=account.data[0];
 if(typeof encoded!=='string'||encoded.length===0||encoded.length%4!==0||!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))throw Error('ACCOUNT_BASE64_INVALID');
+if(account.owner!==expectedOwner)throw Error('ACCOUNT_OWNER_MISMATCH');
 const bytes=Buffer.from(encoded,'base64');
 if(bytes.toString('base64')!==encoded)throw Error('ACCOUNT_BASE64_NONCANONICAL');
 if(bytes.length!==1045)throw Error('ACCOUNT_LENGTH_MISMATCH');
