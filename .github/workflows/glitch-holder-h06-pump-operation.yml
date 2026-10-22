@@ -1,0 +1,21 @@
+name: GLITCH H06 Pump operation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/glitch-assessment-sprint1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect known Pump AMM operation
+        working-directory: mvp/wallet-signal
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: node scripts/holder-h06-pump-operation.mjs
