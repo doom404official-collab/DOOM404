@@ -8,6 +8,8 @@ on:
       - 'mvp/wallet-signal/tests/liquidity-auto-worker-orchestrator.test.mjs'
       - 'mvp/wallet-signal/lib/liquidityAutoWorkerEvidenceGate.mjs'
       - 'mvp/wallet-signal/tests/liquidity-auto-worker-evidence.test.mjs'
+      - 'mvp/wallet-signal/lib/liquidityAutoWorkerSimulation.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-auto-worker-simulation.test.mjs'
       - '.github/workflows/glitch-liquidity-lq08-auto-worker-offline.yml'
 permissions:
   contents: read
@@ -23,4 +25,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test mvp/wallet-signal/tests/liquidity-auto-worker-decision.test.mjs mvp/wallet-signal/tests/liquidity-auto-worker-orchestrator.test.mjs mvp/wallet-signal/tests/liquidity-auto-worker-evidence.test.mjs
+      - run: node --test mvp/wallet-signal/tests/liquidity-auto-worker-decision.test.mjs mvp/wallet-signal/tests/liquidity-auto-worker-orchestrator.test.mjs mvp/wallet-signal/tests/liquidity-auto-worker-evidence.test.mjs mvp/wallet-signal/tests/liquidity-auto-worker-simulation.test.mjs
