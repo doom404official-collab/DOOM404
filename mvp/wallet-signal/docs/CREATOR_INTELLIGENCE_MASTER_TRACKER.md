@@ -15,7 +15,7 @@ Single source of truth. Do not infer completion from code existence, synthetic t
 - [x] CI-03 Supabase private bucket created; storage objects/buckets RLS on, no public object policies observed. Bucket: creator-historical-evidence. Security caveat: service role bypasses RLS.
 - [x] CI-04 Offline retention preflight and negative tests committed. Evidence: lib/creatorHistoricalRetentionPreflight.mjs; tests/creator-historical-retention-preflight.test.mjs. CI run result must be verified separately.
 - [ ] CI-05 Confirm exact GitHub environment protection is saved, secret exact name and Alchemy archival entitlement. UI screenshots show branch restriction and repository secret name truncated; no direct environment API confirmation.
-- [ ] CI-06 PARTIAL: private retention transport-injected helper committed (d797615), three negative no-I/O tests committed (d25d63c), CI registered (639b5a2). Mocked positive and readback-mismatch transport tests now committed (7e5063d), CI registration (d881d7b). Remaining: exact-head passing CI, real Supabase-specific transport, and an end-to-end positive fixture derived from independently verified historical bytes. Do not mark DONE before these pass.
+- [ ] CI-06 PARTIAL: private retention transport-injected helper committed (d797615), three negative no-I/O tests committed (d25d63c), CI registered (639b5a2). Mocked positive and readback-mismatch transport tests now committed (7e5063d), CI registration (d881d7b). Supabase transport added (1bce138), five mocked transport tests (ff448e7), CI registered (d672bd1). Remaining: exact-head passing CI, independent transport security review, and end-to-end verified historical evidence readback. Do not mark DONE before these pass.
 - [ ] CI-07 Establish key scope, retention policy, object access audit and encryption expectations. Never print secrets or upload raw evidence publicly.
 - [ ] CI-08 Integrate secure retention with manual workflow and validate exact-head CI. Keep capture step disabled until all gates pass.
 - [ ] CI-09 One bounded archive capture, preserve raw bytes, verify historical request provenance, owner, discriminator, length and SHA-256. No claim yet.
@@ -34,4 +34,4 @@ Single source of truth. Do not infer completion from code existence, synthetic t
 - [ ] CI-18 Obtain separate explicit authorization before any main merge, production go-live, or scoring activation.
 
 ## Immediate next action
-CI-06 only: verify exact-head CI, then review Supabase-specific transport and evidence immutability; real historical positive fixture awaits archival capture. Do not dispatch capture or change score.
+CI-06 only: verify exact-head CI and security review of Supabase transport, then resolve remaining historical positive-fixture dependency. No capture activation. Do not dispatch capture or change score.
