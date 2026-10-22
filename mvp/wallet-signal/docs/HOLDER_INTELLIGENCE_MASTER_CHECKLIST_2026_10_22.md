@@ -35,9 +35,9 @@ Scope: frozen Snapshot #2, TOP20_NETWORK_V1, test mint 98kfF7rmsg1QDUEoCqNE7g7M1
 ## H06 archival-evidence audit (2026-10-22)
 - Read-only SQL inspected all 21 liquidity_evidence_snapshots for the test mint, including nested JSON-path flags.
 - No stored snapshot contains historicalStateVerified=true or authorizationVerified=true.
-- Existing getAccountInfo with nonstandard slot parameter cannot prove historical state; do not repeat this probe as historical proof.
+- Alchemy Solana Account Archive officially supports getAccountInfo with historical slot on paid plans (pay-as-you-go / enterprise), unlike ordinary Solana RPC. Validate the configured endpoint's entitlement and exact-slot response before accepting proof; never treat a generic RPC response as archival proof.
 - No archive-state workflow run appeared in the most recent 100 GitHub Actions runs searched; this is not an exhaustive historical workflow search.
-- H06 remains blocked pending a documented exact historical-state provider or independent transaction-time account witness. Do not claim H06 complete from present-day decoded pool data.
+- Documented historical-state provider IDENTIFIED: Alchemy Solana Account Archive (https://www.alchemy.com/docs/solana/account-archive). H06 still blocked until account-specific entitlement, historical pool bytes, owner/discriminator, and vault provenance are validated. Do not claim H06 complete from present-day decoded pool data.
 
 ## Next action — no duplication
 1. H07 CLOSED. Do not rerun Diab CPI or vault observation without contradictory evidence.
