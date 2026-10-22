@@ -18,11 +18,14 @@ export async function storePreparedEvidence(evidence,transport){
   return {status:'REJECTED',reason:'PREPARED_EVIDENCE_INVALID'};
  if(!transport||typeof transport.upload!=='function'||typeof transport.read!=='function')
   return {status:'REJECTED',reason:'TRANSPORT_REQUIRED'};
- const uploaded=await transport.upload(evidence.objectKey,evidence.payload,{overwrite:false});
+ // Snapshot accepted evidence before asynchronous transport can mutate caller data.
+ const objectKey=evidence.objectKey,payloadSha256=evidence.payloadSha256;
+ const payload=Buffer.from(evidence.payload),payloadLength=payload.length;
+ const uploaded=await transport.upload(objectKey,Buffer.from(payload),{overwrite:false});
  if(uploaded!==true)return {status:'REJECTED',reason:'UPLOAD_NOT_CONFIRMED'};
- const returned=await transport.read(evidence.objectKey);
- if(!Buffer.isBuffer(returned)||returned.length!==evidence.payload.length||
- createHash('sha256').update(returned).digest('hex')!==evidence.payloadSha256)
+ const returned=await transport.read(objectKey);
+ if(!Buffer.isBuffer(returned)||returned.length!==payloadLength||
+ createHash('sha256').update(returned).digest('hex')!==payloadSha256)
   return {status:'REJECTED',reason:'READBACK_MISMATCH'};
- return {status:'READBACK_VERIFIED',objectKey:evidence.objectKey,payloadSha256:evidence.payloadSha256,eligibleForLivePromotion:false};
+ return {status:'READBACK_VERIFIED',objectKey,payloadSha256,eligibleForLivePromotion:false};
 }
