@@ -16,11 +16,14 @@ alter table creator_private.signed_upload_claims enable row level security;
 -- Explicitly prohibit claim expiration before creation.
 alter table creator_private.signed_upload_claims add constraint signed_upload_claims_expiry_after_claim check (expires_at > claimed_at);
 revoke all on creator_private.signed_upload_claims from public, anon, authenticated;
--- Issuer must atomically INSERT with ON CONFLICT DO NOTHING and require exactly one row returned.
+-- Issuer must atomically INSERT with ON CONFLICT DO NOTHING and require affected-row count = 1.
+-- PostgreSQL RETURNING requires SELECT privilege on returned columns; avoid RETURNING
+-- in the insert-only role design unless an explicitly scoped SELECT grant is reviewed.
 -- Claims are never automatically deleted on expiry: replay remains blocked across restarts.
 -- No SECURITY DEFINER function and no client-side table access.
 
--- Proposed issuer SQL: INSERT ... ON CONFLICT (claim_id) DO NOTHING RETURNING claim_id;
+-- Proposed issuer SQL: INSERT ... ON CONFLICT (claim_id) DO NOTHING;
+-- Trusted issuer checks driver rowCount = 1 (first claim) or 0 (duplicate).
 -- A successful claim requires exactly one returned row; no DELETE/UPDATE grants to issuer.
 -- RLS on private schema is defense-in-depth; role privilege review is mandatory.
 
@@ -33,3 +36,13 @@ revoke all on creator_private.signed_upload_claims from public, anon, authentica
 -- and therefore cannot demonstrate least-privilege authorization.
 -- Verify duplicate INSERT behavior and privilege denials using a controlled
 -- integration test, not merely an in-memory concurrency simulation.
+
+-- PROPOSED LEAST-PRIVILEGE ROLE AND POLICY (still draft; do not execute):
+-- CREATE ROLE creator_upload_issuer NOLOGIN;
+-- GRANT USAGE ON SCHEMA creator_private TO creator_upload_issuer;
+-- GRANT INSERT ON creator_private.signed_upload_claims TO creator_upload_issuer;
+-- CREATE POLICY creator_upload_issuer_insert ON creator_private.signed_upload_claims
+--   FOR INSERT TO creator_upload_issuer WITH CHECK (expires_at > claimed_at);
+-- An authenticated server role-assumption path is not designed yet; do not
+-- grant creator_upload_issuer to anon, authenticated or service_role.
+-- Validate RLS and role permissions with SET ROLE in an isolated test database.
