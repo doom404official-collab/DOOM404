@@ -22,3 +22,6 @@ Missing environment protection, missing secret, failed tests, unavailable manual
 
 ## Post-run evidence
 Record the run URL, exact commit SHA, test results and sanitized diagnostic status. To support recipient reconciliation, a separately approved secure retention mechanism is required; no public GitHub artifact should contain raw account bytes or recipient report.
+
+## Provider semantics independently checked (2026-10-22)
+Alchemy Solana Account Archive documents `getAccountInfo(pubkey,{slot:S})` as finalized account state as of slot S, available on paid plans. This is an Alchemy extension, not ordinary Solana RPC semantics. Reference: https://www.alchemy.com/docs/solana/account-archive . The configured endpoint entitlement and historical response remain unverified; do not enable capture on this documentation alone.
