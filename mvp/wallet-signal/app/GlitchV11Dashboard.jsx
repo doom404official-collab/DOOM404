@@ -1,4 +1,5 @@
 "use client";
+import {mintAuthorityEvidence} from "../lib/mintAuthorityEvidence.mjs";
 import {useState} from "react";
 import HolderBubbleMap from "./HolderBubbleMap";
 import {attributes,consolidate} from "../lib/glitchScoringV11.mjs";
@@ -36,7 +37,8 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
  const [selected,setSelected]=useState("token_security");
  const [fullScreen,setFullScreen]=useState(false);
  const [holderView,setHolderView]=useState("overview");
- const parsed=!!result&&result.authorityDetailsStatus!=="not_parsed"&&Object.hasOwn(result,"mintAuthority")&&Object.hasOwn(result,"freezeAuthority");
+ const authorities=mintAuthorityEvidence(result,{parsed:!!result?.mint&&result.authorityDetailsStatus!=="not_parsed"});
+ const parsed=authorities.authorityDetailsStatus==="available";
  const adapted=adaptDashboardEvidence({result,extensions,concentration,creatorEvidence,historicalHolders,verifiedHolderEnvelope,workerEvidence});
  const {scores,top20,fee,effectiveFee}=adapted;
  const feeNA=scores.token_security.components[0].reason==="not_applicable";
@@ -47,9 +49,9 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
  const fields={
   token_security:[
    row("Transfer Fee Schedule",feeNA?"Not applicable":effectiveFee?fmt(effectiveFee.percentage,"%") :"Pending",effectiveFee?`Observed epoch ${effectiveFee.observedEpoch}; maximum ${effectiveFee.maximumFeeRaw} raw token units. Amount-dependent fee rounds up and is capped. Transfer behavior not verified; scoring pending.`:"Awaiting fresh, epoch-resolved fee evidence"),
-   row("Fee Configuration Authority",feeNA?"Not applicable":fee?.configAuthorityReported?fee.configAuthority?addr(fee.configAuthority):"Revoked":"Pending","Can the fee schedule be changed?"),
-   row("Mint Authority",parsed?result.mintAuthority?addr(result.mintAuthority):"Revoked":"Pending","Current mint permission"),
-   row("Freeze Authority",parsed?result.freezeAuthority?addr(result.freezeAuthority):"Revoked":"Pending","Current freeze permission")
+   row("Fee Configuration Authority",feeNA?"Not applicable":fee?.configAuthorityReported===true?fee.configAuthority?addr(fee.configAuthority):"Revoked":"Pending","Can the fee schedule be changed?"),
+   row("Mint Authority",parsed?authorities.mintAuthority===null?"Revoked":addr(authorities.mintAuthority):"Pending","Current mint permission"),
+   row("Freeze Authority",parsed?authorities.freezeAuthority===null?"Revoked":addr(authorities.freezeAuthority):"Pending","Current freeze permission")
   ],
   holder_intelligence:[
    row("Top-20 Holder Concentration",fmt(top20,"%"),"Share of mint supply; owner classification may be incomplete"),
