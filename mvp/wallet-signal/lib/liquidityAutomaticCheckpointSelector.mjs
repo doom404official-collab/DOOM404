@@ -7,6 +7,7 @@ export function selectLiquidityContinuationCheckpoint(candidates,pool){
   if(!Number.isSafeInteger(item?.runId)||item.runId<=0||!item?.state)continue;
   try{
    const decision=assessAutomaticHistoryCheckpoint(item.state,pool);
+   if(decision.action==='PAUSE_UNRESOLVED_SIGNATURES')throw Error('UNRESOLVED_PARTIAL_CHECKPOINT_NOT_SELECTABLE');
    valid.push({...item,decision});
   }catch(error){rejected.push({runId:item.runId,reason:String(error.message)});continue;}
  }
