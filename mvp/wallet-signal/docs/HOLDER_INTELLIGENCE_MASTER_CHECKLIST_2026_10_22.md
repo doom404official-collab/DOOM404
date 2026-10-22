@@ -54,6 +54,13 @@ Scope: frozen Snapshot #2, TOP20_NETWORK_V1, test mint 98kfF7rmsg1QDUEoCqNE7g7M1
 - The other three counterpart transfers are not resolved as holder-to-holder links by this vault mapping.
 - H06 next: read-only exclusion sensitivity for rank #1 with and without pool-node paths; preserve frozen ranking and existing score. Confirm provider historical provenance before declaring historicalStateVerified=true.
 
+## H06 read-only sensitivity (2026-10-22)
+- Supabase two-job evidence at checked checkpoint: 30,415 transfer records, 23,963 deduplicated by signature/from/to/assetType/mint/amountRaw; 4,695 undirected wallet pairs; 8 high-degree hubs (>100 peers).
+- Frozen Snapshot #2 baseline: observed network score 9.93/35; 13 connected holders; 19 direct pairs; 9 repeated pairs; largest cluster 22.33%; penalties direct 10, repeated 5, indirect 0.5, concentration 9.57.
+- Pool-excluded sensitivity (6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA): observed score 14.04/35; 12 connected holders; 12 direct pairs; 7 repeated pairs; largest cluster 16.25%; penalties direct 8, repeated 5, indirect 1, concentration 6.96.
+- Delta +4.11 score points, -1 connected holder, -6.08 percentage points largest cluster. Computed read-only from aggregated deduplicated pairs and frozen holder balances; independent script-output parity still required before acceptance. Historical coverage incomplete.
+- Previously reported 8.97/35 belongs to an earlier evidence checkpoint, not the current comparison baseline. No score promotion or snapshot mutation.
+
 ## Next action — no duplication
 1. H07 CLOSED. Do not rerun Diab CPI or vault observation without contradictory evidence.
 2. H06: inspect existing historical pool-state evidence and provider semantics; seek authenticated account state at slots 450097547, 451211747 and 457305617, or record a documented archival limitation.
