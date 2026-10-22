@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/creator-postgres-replay-test.yml'
       - 'mvp/wallet-signal/sql/creator_signed_upload_claims_ci_fixture.sql'
+      - 'mvp/wallet-signal/scripts/test-creator-postgres-concurrency.sh'
   workflow_dispatch:
 permissions:
   contents: read
@@ -34,3 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           psql -h localhost -U postgres -d creator_ci -v ON_ERROR_STOP=1 -f mvp/wallet-signal/sql/creator_signed_upload_claims_ci_fixture.sql
+      - name: Concurrent claim and rollback verification
+        env:
+          PGPASSWORD: ci-only
+        run: bash mvp/wallet-signal/scripts/test-creator-postgres-concurrency.sh
