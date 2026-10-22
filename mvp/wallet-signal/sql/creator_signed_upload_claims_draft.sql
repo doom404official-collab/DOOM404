@@ -24,7 +24,7 @@ revoke all on creator_private.signed_upload_claims from public, anon, authentica
 
 -- Proposed issuer SQL: INSERT ... ON CONFLICT (claim_id) DO NOTHING;
 -- Trusted issuer checks driver rowCount = 1 (first claim) or 0 (duplicate).
--- A successful claim requires exactly one returned row; no DELETE/UPDATE grants to issuer.
+-- A successful claim requires affected-row count = 1; no DELETE/UPDATE grants to issuer.
 -- RLS on private schema is defense-in-depth; role privilege review is mandatory.
 
 -- SECURITY REVIEW NOTE: RLS is enabled without an issuer INSERT policy.
