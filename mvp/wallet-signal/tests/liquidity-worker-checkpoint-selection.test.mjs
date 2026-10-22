@@ -28,7 +28,7 @@ test('signature, request and source lineage regressions are rejected',()=>{
 });
 test('diagnostics and partial evidence cannot be selected',()=>{
  const base=state();
- for(const unsafe of [{kind:'LIQUIDITY_HISTORY_FAILURE_DIAGNOSTIC',completedSignatures:base.seen},{...base,pendingSignatures:[sig(888)],pendingSignatureCount:1,unresolvedReasons:{[sig(888)]:'RPC_TRANSACTION_UNAVAILABLE'}},{...base,finalScore:1},{...base,historyCoverageVerified:true}]){
-  assert.throws(()=>select([item(100,base),item(101,unsafe)],pool),/NEWER_CHECKPOINT_INVALID/);
+ for(const [label,unsafe] of [['diagnostic',{kind:'LIQUIDITY_HISTORY_FAILURE_DIAGNOSTIC',completedSignatures:base.seen}],['pending',{...base,pendingSignatures:[sig(888)],pendingSignatureCount:1,unresolvedReasons:{[sig(888)]:'RPC_TRANSACTION_UNAVAILABLE'}}],['scored',{...base,finalScore:1}],['coverage',{...base,historyCoverageVerified:true}]]){
+  assert.throws(()=>select([item(100,base),item(101,unsafe)],pool),/NEWER_CHECKPOINT_INVALID/,label);
  }
 });
