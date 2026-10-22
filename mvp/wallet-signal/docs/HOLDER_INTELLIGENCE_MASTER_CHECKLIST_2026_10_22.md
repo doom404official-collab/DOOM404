@@ -17,7 +17,7 @@ Scope: frozen Snapshot #2, TOP20_NETWORK_V1, test mint 98kfF7rmsg1QDUEoCqNE7g7M1
 | H03 | Resumable worker and lease controls | IN_PROGRESS | Both live jobs complete or explicit documented bounded cutoff, safe restart/concurrency proven |
 | H04 | Historical discovery and decoding | IN_PROGRESS | All discovered eligible signatures resolved; archive coverage separately proven or explicitly bounded |
 | H05 | Transfer ownership evidence | IN_PROGRESS | Exact transfer-time owner, mint, account lifecycle, ordering and dedup established |
-| H06 | Pool/infrastructure classification | BLOCKED | Historical Pump AMM owner/discriminator/vault mapping verified at relevant slots; 21 stored liquidity snapshots checked and none affirms historicalStateVerified=true |
+| H06 | Pool/infrastructure classification | IN_PROGRESS | Alchemy exact-slot pool and two vault account observations match at slots 450097547, 451211747, 457305617; transaction-role reconciliation and read-only exclusion sensitivity outstanding |
 | H07 | Diab diagnostic | DONE | CPI and vault observations accepted for slot 458818672; zero inner instructions, both vaults owned by pool, unchanged pre/post balances; does not prove historical pool state |
 | H08 | Verified graph and exclusion sensitivity | BLOCKED | Read-only recomputation, infrastructure exclusions, pair/cluster and coverage reconciliation |
 | H09 | Final network and consolidated score | BLOCKED | Independent validation, calibration and authorized promotion |
@@ -38,6 +38,13 @@ Scope: frozen Snapshot #2, TOP20_NETWORK_V1, test mint 98kfF7rmsg1QDUEoCqNE7g7M1
 - Alchemy Solana Account Archive officially supports getAccountInfo with historical slot on paid plans (pay-as-you-go / enterprise), unlike ordinary Solana RPC. Validate the configured endpoint's entitlement and exact-slot response before accepting proof; never treat a generic RPC response as archival proof.
 - No archive-state workflow run appeared in the most recent 100 GitHub Actions runs searched; this is not an exhaustive historical workflow search.
 - Documented historical-state provider IDENTIFIED: Alchemy Solana Account Archive (https://www.alchemy.com/docs/solana/account-archive). H06 still blocked until account-specific entitlement, historical pool bytes, owner/discriminator, and vault provenance are validated. Do not claim H06 complete from present-day decoded pool data.
+
+## H06 historical vault evidence (2026-10-22)
+- GitHub Actions 39734447423 succeeded: 3 historical slots x pool/base vault/quote vault = 9 account reads.
+- Pool owner and discriminator match Pump AMM at all three slots; base/quote mints, LP mint and vault mapping stable.
+- Historical base vault Token-2022 and quote vault SPL owner/mint/authority corroborated at all slots.
+- Returned context slots equal requested slots and account bytes hashes differ; probe still explicitly reports historicalStateVerified=false pending independent provider provenance acceptance.
+- H06 now IN_PROGRESS, not blocked on account retrieval. Next: instruction-level role reconciliation, then read-only infrastructure-exclusion sensitivity. No score promotion.
 
 ## Next action — no duplication
 1. H07 CLOSED. Do not rerun Diab CPI or vault observation without contradictory evidence.
