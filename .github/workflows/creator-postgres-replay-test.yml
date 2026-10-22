@@ -1,0 +1,36 @@
+name: Creator isolated PostgreSQL replay validation
+on:
+  push:
+    branches: [feature/creator-history-worker-500]
+    paths:
+      - '.github/workflows/creator-postgres-replay-test.yml'
+      - 'mvp/wallet-signal/sql/creator_signed_upload_claims_ci_fixture.sql'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: ci-only
+          POSTGRES_DB: creator_ci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres -d creator_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate replay and issuer privileges in disposable PostgreSQL
+        env:
+          PGPASSWORD: ci-only
+        run: |
+          set -euo pipefail
+          psql -h localhost -U postgres -d creator_ci -v ON_ERROR_STOP=1 -f mvp/wallet-signal/sql/creator_signed_upload_claims_ci_fixture.sql
