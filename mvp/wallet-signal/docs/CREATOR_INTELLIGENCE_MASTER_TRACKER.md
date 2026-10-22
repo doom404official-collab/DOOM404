@@ -15,7 +15,7 @@ Single source of truth. Do not infer completion from code existence, synthetic t
 - [x] CI-03 Supabase private bucket created; storage objects/buckets RLS on, no public object policies observed. Bucket: creator-historical-evidence. Security caveat: service role bypasses RLS.
 - [x] CI-04 Offline retention preflight and negative tests committed. Evidence: lib/creatorHistoricalRetentionPreflight.mjs; tests/creator-historical-retention-preflight.test.mjs. CI run result must be verified separately.
 - [ ] CI-05 Confirm exact GitHub environment protection is saved, secret exact name and Alchemy archival entitlement. UI screenshots show branch restriction and repository secret name truncated; no direct environment API confirmation.
-- [ ] CI-06 Implement ONE private upload + no-overwrite + readback-hash module and offline mocked tests. BLOCKED: previous create_file attempts were rejected; do not repeat identical writes. Review design and choose alternate isolated patch path.
+- [ ] CI-06 PARTIAL: private retention transport-injected helper committed (d797615), three negative no-I/O tests committed (d25d63c), CI registered (639b5a2). Remaining: valid positive fixture, mocked upload/readback mismatch tests, reviewed Supabase-specific transport and exact-head passing CI. Do not mark DONE before these pass.
 - [ ] CI-07 Establish key scope, retention policy, object access audit and encryption expectations. Never print secrets or upload raw evidence publicly.
 - [ ] CI-08 Integrate secure retention with manual workflow and validate exact-head CI. Keep capture step disabled until all gates pass.
 - [ ] CI-09 One bounded archive capture, preserve raw bytes, verify historical request provenance, owner, discriminator, length and SHA-256. No claim yet.
@@ -34,4 +34,4 @@ Single source of truth. Do not infer completion from code existence, synthetic t
 - [ ] CI-18 Obtain separate explicit authorization before any main merge, production go-live, or scoring activation.
 
 ## Immediate next action
-CI-06 only: implement a small offline-injectable retention helper, test without credentials, review. Do not dispatch capture or change score.
+CI-06 only: add valid positive fixture and mocked upload/readback tests, verify CI, then review Supabase transport. Do not dispatch capture or change score.
