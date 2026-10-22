@@ -6,6 +6,7 @@ export function selectLiquidityContinuationCheckpoint(candidates,pool){
  for(const item of candidates){
   if(!Number.isSafeInteger(item?.runId)||item.runId<=0||!item?.state)continue;
   try{
+   if(item.state.complete!==true && item.state.historyCoverageVerified!==false)throw Error('UNVERIFIED_HISTORY_COVERAGE_CLAIM');
    const decision=assessAutomaticHistoryCheckpoint(item.state,pool);
    if(decision.action==='PAUSE_UNRESOLVED_SIGNATURES')throw Error('UNRESOLVED_PARTIAL_CHECKPOINT_NOT_SELECTABLE');
    valid.push({...item,decision});
