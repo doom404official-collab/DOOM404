@@ -1,0 +1,14 @@
+import {observeDiabVaults} from "../lib/diabVaultObservation.mjs";
+import {writeFile} from "node:fs/promises";
+const endpoint=process.env.HELIUS_RPC_URL;
+if(!endpoint?.startsWith("https://"))throw Error("RPC_NOT_CONFIGURED");
+const signature="46WKG3FP4Lp9JnFhz8y9ZdyS232DSm4yWPhr5gEnjN7HU9gwxDZFzoviZZasNNcsy8JCz8DmPMjDqt6cwNXvRXbB";
+const pool="6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA";
+const vaults=["F1Gw5qjivGuLcTsUBeq7ztzE4mi9uaDm7vQdz9sB9mp8","78nPA3tUEH4b2jZjH1JKdqXjykYWzA7Az37CeKj1tTcg"];
+const response=await fetch(endpoint,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method:"getTransaction",params:[signature,{encoding:"jsonParsed",commitment:"confirmed",maxSupportedTransactionVersion:1}]}),signal:AbortSignal.timeout(35000)});
+if(!response.ok)throw Error("RPC_HTTP_"+response.status);
+const data=await response.json();
+if(data.error||!data.result||data.result.meta?.err!==null||data.result.slot!==458818672)throw Error("TARGET_TRANSACTION_UNVERIFIED");
+const result={signature,...observeDiabVaults(data.result,{pool,vaults})};
+await writeFile("diab-vault-readonly.json",JSON.stringify(result,null,2));
+console.log(JSON.stringify(result));
