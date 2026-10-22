@@ -35,6 +35,8 @@ export async function POST(request){
    return payload.result;
   };
   const result=await processHolderScanJob({store,jobId:candidate.id,rpc,maxRequests:20,leaseSeconds:90});
-  return NextResponse.json({status:result.status,requestCount:result.requestCount??0},{headers:{"Cache-Control":"no-store"}});
+  // Selected identity describes this attempt, including claim/lease conflicts; it is not proof of a commit.
+  return NextResponse.json({status:result.status,requestCount:result.requestCount??0,
+   jobId:candidate.id,holderSetHash:candidate.holder_set_hash??null},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({error:"Scheduler tick unavailable"},{status:503});}
 }

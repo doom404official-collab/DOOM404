@@ -37,7 +37,7 @@ export function createHolderJobStore({url=process.env.SUPABASE_URL,key=process.e
   async getNextRunnable(){
    const now=new Date().toISOString();
    const filter="or=(lease_owner.is.null,lease_expires_at.lte."+encodeURIComponent(now)+")";
-   const rows=await request(table+"?select=id,mint,status,updated_at,lease_owner,lease_expires_at&status=in.(queued,partial,running)&"+filter+"&order=updated_at.asc&limit=1");
+   const rows=await request(table+"?select=id,mint,holder_set_hash,status,updated_at,lease_owner,lease_expires_at&status=in.(queued,partial,running)&"+filter+"&order=updated_at.asc&limit=1");
    // Database filters active leases; atomic claim still resolves concurrent races.
    return rows?.[0]||null;
   },

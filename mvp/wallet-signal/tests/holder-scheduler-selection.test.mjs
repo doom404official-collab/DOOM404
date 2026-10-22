@@ -9,6 +9,8 @@ test("scheduler asks database for lease-eligible oldest job",async()=>{
  assert.match(requested,/lease_owner\.is\.null/);
  assert.match(requested,/lease_expires_at\.lte/);
  assert.match(requested,/limit=1/);
+ assert.match(requested,/select=id,mint,holder_set_hash,status,updated_at,lease_owner,lease_expires_at/);
+ assert.match(requested,/order=updated_at.asc/);
 });
 test("scheduler returns null when database finds no eligible jobs",async()=>{
  const fetchImpl=async()=>({ok:true,status:200,json:async()=>[]});

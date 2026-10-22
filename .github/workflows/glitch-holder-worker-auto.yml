@@ -72,13 +72,14 @@ jobs:
               result=request("/api/holder-scan-tick",{},
                   {"x-glitch-worker-token":worker})
               print(json.dumps({"step":"tick","batch":batch+1,
-                  "status":result.get("status"),"requestCount":result.get("requestCount")}))
+                  "status":result.get("status"),"requestCount":result.get("requestCount"),
+                  "jobId":result.get("jobId"),"holderSetHash":result.get("holderSetHash")}))
               if result.get("status") in ("complete","idle"):break
               if result.get("status")=="failed":
                   raise SystemExit("Worker reported failure")
           after=status()
           scan=after.get("scan") or {}
-          report={"step":"verify","status":after.get("status"),
+          report={"step":"verify","status":after.get("status"),"jobId":after.get("jobId"),
               "transactionsChecked":scan.get("transactionsChecked"),
               "walletHistoriesReached":scan.get("walletHistoriesReached"),
               "directPairs":scan.get("directPairs")}
