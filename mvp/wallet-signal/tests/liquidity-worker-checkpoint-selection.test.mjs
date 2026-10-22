@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {selectLiquidityContinuationCheckpoint as select} from '../lib/liquidityAutomaticCheckpointSelector.mjs';
 const pool='6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA';
-const sig=n=>String(n).padStart(64,'1');
+const alphabet='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+const sig=n=>{let x=n+1,s='';while(x>0){s=alphabet[x%alphabet.length]+s;x=Math.floor(x/alphabet.length);}return s.padStart(64,'1');};
 const state=(count=60)=>({
  schemaVersion:1,pool,before:sig(999),seen:Array.from({length:count},(_,i)=>sig(i+1)),events:[],pages:2,complete:false,
  classification:'AMOUNT_RECONCILED_AUTHORIZATION_PENDING',pendingSignatures:[],pendingSignatureCount:0,unresolvedReasons:{},
