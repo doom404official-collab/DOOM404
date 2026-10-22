@@ -5,7 +5,7 @@ revoke all on schema creator_private from public, anon, authenticated;
 create table if not exists creator_private.signed_upload_claims (
  claim_id text primary key,
  approved_commit text not null,
- object_key text not null,
+ object_key text not null unique,
  expires_at timestamptz not null,
  claimed_at timestamptz not null default now(),
  constraint signed_upload_claims_claim_id_nonempty check (length(claim_id) between 16 and 256)
@@ -20,6 +20,7 @@ revoke all on creator_private.signed_upload_claims from public, anon, authentica
 -- PostgreSQL RETURNING requires SELECT privilege on returned columns; avoid RETURNING
 -- in the insert-only role design unless an explicitly scoped SELECT grant is reviewed.
 -- Claims are never automatically deleted on expiry: replay remains blocked across restarts.
+-- UNIQUE(object_key) prevents reissuing the same evidence object under a different commit or claim ID.
 -- No SECURITY DEFINER function and no client-side table access.
 
 -- Proposed issuer SQL: INSERT ... ON CONFLICT (claim_id) DO NOTHING;
