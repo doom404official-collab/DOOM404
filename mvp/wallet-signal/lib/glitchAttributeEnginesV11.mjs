@@ -44,10 +44,10 @@ export function scoreLiquidityQuality({verifiedDepthUsd,verifiedMarketCapUsd,lpS
  return result("liquidity_quality_safety",[
   component("available_liquidity",25,valid(verifiedDepthUsd,Number.MAX_SAFE_INTEGER)?linear(verifiedDepthUsd,250000,10000,25):null),
   component("liquidity_market_cap_ratio",20,valid(ratio,Number.MAX_SAFE_INTEGER)?linear(ratio,20,2,20):null),
-  component("lp_security",25,lpVerified&&valid(lpSecurityPoints,25)?lpSecurityPoints:null),
+  component("lp_security",25,lpVerified===true&&valid(lpSecurityPoints,25)?lpSecurityPoints:null),
   component("liquidity_concentration",10,valid(largestIndependentPoolSharePct)?linear(largestIndependentPoolSharePct,40,100,10):null),
-  component("trading_impact",10,impactVerified&&valid(impactPct)?linear(impactPct,1,15,10):null),
-  component("liquidity_stability",10,stabilityVerified&&valid(stabilityPoints,10)?stabilityPoints:null)
+  component("trading_impact",10,impactVerified===true&&valid(impactPct)?linear(impactPct,1,15,10):null),
+  component("liquidity_stability",10,stabilityVerified===true&&valid(stabilityPoints,10)?stabilityPoints:null)
  ]);
 }
 export const scoringComponents=attributes.map(a=>({id:a.id,weights:a.components}));
