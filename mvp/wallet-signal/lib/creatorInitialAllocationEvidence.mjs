@@ -9,10 +9,17 @@ export function assessCreatorInitialAllocation({mint,creator,launchTimestamp,dis
  coverageComplete=coverageComplete===true;
  const seen=new Set();let total=0n;const evidence=[];
  for(const x of distributions){
-  if(!x||x.mint!==mint||x.recipient!==creator||x.verifiedLaunchDistribution!==true||
-   !x.instructionVerified||!x.signature||seen.has(x.signature)||
+  if(!x||x.mint!==mint||x.recipient!==creator)continue;
+  if(x.verifiedLaunchDistribution!==true||x.instructionVerified!==true||
+   typeof x.signature!=='string'||!x.signature||
    !Number.isSafeInteger(x.timestamp)||x.timestamp<launchTimestamp||
-   !/^[0-9]+$/.test(String(x.amountRaw)))continue;
+   !['string','number','bigint'].includes(typeof x.amountRaw)||
+   (typeof x.amountRaw==='number'&&!Number.isSafeInteger(x.amountRaw))||
+   !/^[0-9]+$/.test(String(x.amountRaw))){
+   // Target-bound rejected evidence cannot prove a complete (or zero) allocation.
+   coverageComplete=false;continue;
+  }
+  if(seen.has(x.signature))continue;
   seen.add(x.signature);total+=BigInt(x.amountRaw);
   evidence.push({signature:x.signature,amountRaw:String(x.amountRaw)});
  }
