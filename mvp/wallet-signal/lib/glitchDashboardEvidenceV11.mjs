@@ -1,3 +1,4 @@
+import {mintAuthorityEvidence} from './mintAuthorityEvidence.mjs';
 import {scoreTokenSecurity,scoreHolderIntelligence,scoreCreatorIntelligence,scoreLiquidityQuality} from './glitchAttributeEnginesV11.mjs';
 import {resolveEpochFee,consistentEpochContext} from './tokenTransferFeeEvidence.mjs';
 import {attributes} from './glitchScoringV11.mjs';
@@ -12,12 +13,13 @@ export function evidenceFresh(updatedAt,now=Date.now()){
 export function adaptDashboardEvidence({result,extensions,concentration,creatorEvidence,historicalHolders,verifiedHolderEnvelope,workerEvidence,now=Date.now()}={}){
  const mint=result?.mint;
  const same=x=>Boolean(mint&&x?.mint===mint);
- const parsed=!!mint&&result.authorityDetailsStatus!=='not_parsed'&&Object.hasOwn(result,'mintAuthority')&&Object.hasOwn(result,'freezeAuthority');
+ const authorities=mintAuthorityEvidence(result,{parsed:!!mint&&result.authorityDetailsStatus!=='not_parsed'});
+ const parsed=authorities.authorityDetailsStatus==='available';
  const ext=same(extensions)&&extensions?.verified===true&&evidenceFresh(extensions.observedAt,now)?extensions:null,fee=ext?.transferFee;
  const context=ext?.epochContext;
  const epochVerified=context?.commitment==='confirmed'&&consistentEpochContext({epoch:context.epoch,absoluteSlot:context.beforeSlot},{epoch:context.epoch,absoluteSlot:context.afterSlot},context.accountSlot);
  const effectiveFee=fee?.status==='observed'&&epochVerified?resolveEpochFee({...fee,epoch:context.epoch}):null;
- const security=scoreTokenSecurity({tokenProgram:result?.tokenProgram,authoritiesParsed:parsed,mintAuthority:result?.mintAuthority,freezeAuthority:result?.freezeAuthority,
+ const security=scoreTokenSecurity({tokenProgram:result?.tokenProgram,authoritiesParsed:parsed,mintAuthority:authorities.mintAuthority,freezeAuthority:authorities.freezeAuthority,
   feeExtensionVerified:ext?.verified===true,feeApplicable:fee?.status==='observed'?true:fee?.status==='not_observed'?false:undefined,
   // Resolved schedule is evidence, not verified transfer behavior or a cap-adjusted score.
   feeConfigAuthorityReported:ext?.verified===true&&fee?.configAuthorityReported===true,feeConfigAuthority:fee?.configAuthority});

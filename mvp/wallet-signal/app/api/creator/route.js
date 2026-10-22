@@ -1,3 +1,4 @@
+import { mintAuthorityEvidence } from "../../../lib/mintAuthorityEvidence.mjs";
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
@@ -319,10 +320,8 @@ export async function GET(request) {
       decimals,
       verificationMethod,
       supply: displaySupply,
-      mintAuthority: info.mintAuthority ?? null,
-      freezeAuthority: info.freezeAuthority ?? null,
+      ...mintAuthorityEvidence(info,{parsed:parsedMintDetailsAvailable}),
       authoritiesAreCreatorIdentity: false,
-      authorityDetailsStatus: parsedMintDetailsAvailable ? "available" : "not_parsed",
       creator: solscan.status === "provider_attributed" ? { status: "provider_attributed", address: solscan.creator, source: "solscan_pro", creationSignature: solscan.creationSignature, firstMintSignature: solscan.firstMintSignature, createdTime: solscan.createdTime, initializationVerified: solscan.initializationVerified, creatorIsInitializationSigner: solscan.creatorIsInitializationSigner, reason: "Solscan labels this address as creator. This is provider attribution, not proof of wallet control or beneficial ownership." } : { status: "unverified", address: null, reason: "Mint and freeze authorities do not reliably identify the original token creator. Historical launch transaction and provenance indexing are required." },
       solscanDiagnostic: { status: solscan.status, diagnostic: solscan.diagnostic || null, httpStatus: solscan.httpStatus || null, source: "solscan_pro", fallback: solscan.status === "provider_attributed" ? "not_needed" : "helius_or_bounded_rpc", guidance: solscan.diagnostic === "authentication_failed" ? "Solscan rejected the server-side credential (HTTP 401). Verify the V2 API key and its endpoint entitlement; Helius/RPC investigation remains available." : solscan.diagnostic === "access_forbidden" ? "Solscan denied endpoint access (HTTP 403). Check API plan permissions; Helius/RPC investigation remains available." : null },
       mintOrigin: origin,
