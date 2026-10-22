@@ -62,6 +62,7 @@ export default function HolderBubbleMap({holders=[],groups=[],scanStatus=null,tr
  const verifiedCount=verifiedKeys.size;
  const assessmentStatus=verifiedAssessment?.status||"not_available";
  return <section style={panel} aria-label="Holder connection bubble map">
+  <style>{`.holder-map-bubble:focus-visible{outline:3px solid #ffffff;outline-offset:3px;stroke:#ffffff;stroke-width:.85}`}</style>
   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,flexWrap:"wrap"}}>
    <strong>HOLDER CONNECTION MAP</strong>
    <span style={{fontSize:12,color:"#bcaeb1"}}>{nodes.length} wallets · {edges.length} candidate pairs · {uniqueEvidence.size} signature references</span>
@@ -75,13 +76,13 @@ export default function HolderBubbleMap({holders=[],groups=[],scanStatus=null,tr
    <button type="button" style={action} onClick={()=>setZoom(z=>clamp(Number((z-.25).toFixed(2)),1,2))} aria-label="Zoom out">−</button>
   </div>
   <div style={{display:"grid",gridTemplateColumns:"minmax(0,1fr) auto",gap:6,alignItems:"center",marginBottom:10}}>
-   <label style={{fontSize:12,display:"flex",alignItems:"center",gap:6,minWidth:0}}>Cluster <select aria-label="Filter by connected cluster" value={groupFilter} onChange={e=>{setGroupFilter(e.target.value);setSelected(null);}} style={{...action,minWidth:0,width:"100%"}}><option value="all">All wallets</option>{clusters.map((g,i)=><option key={i} value={String(i)}>Group {i+1} · {g.members.length} wallets</option>)}</select></label>
+   <label style={{fontSize:12,display:"flex",alignItems:"center",gap:6,minWidth:0}}><span style={{flexShrink:0}}>Cluster</span> <select aria-label="Filter by connected cluster" value={groupFilter} onChange={e=>{setGroupFilter(e.target.value);setSelected(null);}} style={{...action,minWidth:0,flex:"1 1 0",width:0}}><option value="all">All wallets</option>{clusters.map((g,i)=><option key={i} value={String(i)}>Group {i+1} · {g.members.length} wallets</option>)}</select></label>
    <button type="button" style={action} onClick={()=>{setZoom(1);setSelected(null);setLinkedOnly(false);setGroupFilter("all");}}>Reset</button>
   </div>
   <svg viewBox="0 0 100 100" role="group" aria-label="Interactive wallet connection network" style={{width:"100%",height:"auto",maxHeight:430,background:"#09080b",borderRadius:10}}>
    <g transform={`translate(50 50) scale(${zoom}) translate(-50 -50)`}>
     {shownEdges.map(e=>{const a=lookup.get(e.walletA),b=lookup.get(e.walletB),highlight=selected&&(e.walletA===selected||e.walletB===selected);return <line key={e.key} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={highlight?"#ffffff":verifiedKeys.has(e.key)?"#ff525f":"#a64b56"} strokeWidth={highlight?.85:.35} opacity={selected&&!highlight?.22:.8}/>;})}
-    {visible.map(n=>{const linked=connected.has(n.wallet),radius=clamp(1.8+Math.sqrt(n.sharePct)*1.2,2,8);return <circle key={n.wallet} cx={n.x} cy={n.y} r={radius} fill={linked?"#db4455":"#79323e"} stroke={selected===n.wallet?"#ffffff":"#f5a2aa"} strokeWidth={selected===n.wallet?.85:.22} opacity={selected&&selected!==n.wallet?.6:1} tabIndex={0} role="button" aria-label={`Wallet ${short(n.wallet)}, ${n.sharePct.toFixed(2)} percent supply, ${linked?"connected":"no detected connections"}`} onClick={()=>setSelected(n.wallet)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();setSelected(n.wallet);}}} style={{cursor:"pointer",outline:"none"}}><title>{n.wallet}: {n.sharePct.toFixed(2)}% supply</title></circle>;})}
+    {visible.map(n=>{const linked=connected.has(n.wallet),radius=clamp(1.8+Math.sqrt(n.sharePct)*1.2,2,8);return <circle className="holder-map-bubble" key={n.wallet} cx={n.x} cy={n.y} r={radius} fill={linked?"#db4455":"#79323e"} stroke={selected===n.wallet?"#ffffff":"#f5a2aa"} strokeWidth={selected===n.wallet?.85:.22} opacity={selected&&selected!==n.wallet?.6:1} tabIndex={0} role="button" aria-label={`Wallet ${short(n.wallet)}, ${n.sharePct.toFixed(2)} percent supply, ${linked?"connected":"no detected connections"}`} onClick={()=>setSelected(n.wallet)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();setSelected(n.wallet);}}} style={{cursor:"pointer"}}><title>{n.wallet}: {n.sharePct.toFixed(2)}% supply</title></circle>;})}
    </g>
   </svg>
   {clusters.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:10,marginBottom:8}}>{clusters.map((g,i)=><button key={i} type="button" style={{...action,borderColor:groupFilter===String(i)?"#ff6370":"#6b3d47"}} onClick={()=>{setGroupFilter(String(i));setSelected(null);}}>Group {i+1}: {g.members.length} wallets · {g.sharePct.toFixed(2)}% observed supply</button>)}</div>}
