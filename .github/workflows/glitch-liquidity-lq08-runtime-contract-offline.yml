@@ -1,0 +1,25 @@
+name: GLITCH Liquidity LQ08 runtime contract offline
+on:
+  pull_request:
+    paths:
+      - 'mvp/wallet-signal/lib/liquidityAutoWorkerRuntimeContract.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-auto-worker-runtime-contract.test.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-auto-worker-mocked-investigator.test.mjs'
+      - '.github/workflows/glitch-liquidity-lq08-runtime-contract-offline.yml'
+permissions:
+  contents: read
+concurrency:
+  group: glitch-liquidity-history-worker
+  cancel-in-progress: false
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+        working-directory: mvp/wallet-signal
+      - run: node --test mvp/wallet-signal/tests/liquidity-auto-worker-runtime-contract.test.mjs mvp/wallet-signal/tests/liquidity-auto-worker-mocked-investigator.test.mjs
