@@ -2,6 +2,8 @@ name: GLITCH LQ08C offline execution contract
 on:
   pull_request:
     paths:
+      - 'mvp/wallet-signal/lib/liquidity*.mjs'
+      - 'mvp/wallet-signal/scripts/liquidity-validate-successor.mjs'
       - 'mvp/wallet-signal/lib/liquidityAutoExecutionContract.mjs'
       - 'mvp/wallet-signal/tests/liquidity-auto-execution-contract.test.mjs'
       - '.github/workflows/glitch-liquidity-lq08c-offline.yml'

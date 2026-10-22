@@ -2,6 +2,8 @@ name: GLITCH LQ08 automatic worker offline gate
 on:
   pull_request:
     paths:
+      - 'mvp/wallet-signal/lib/liquidity*.mjs'
+      - 'mvp/wallet-signal/scripts/liquidity-validate-successor.mjs'
       - 'mvp/wallet-signal/lib/liquidityAutoWorkerDecision.mjs'
       - 'mvp/wallet-signal/tests/liquidity-auto-worker-decision.test.mjs'
       - 'mvp/wallet-signal/lib/liquidityAutoWorkerOrchestrator.mjs'
