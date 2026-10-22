@@ -1,0 +1,22 @@
+name: GLITCH LQ08 automatic worker offline gate
+on:
+  pull_request:
+    paths:
+      - 'mvp/wallet-signal/lib/liquidityAutoWorkerDecision.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-auto-worker-decision.test.mjs'
+      - '.github/workflows/glitch-liquidity-lq08-auto-worker-offline.yml'
+permissions:
+  contents: read
+concurrency:
+  group: glitch-liquidity-history-worker
+  cancel-in-progress: false
+jobs:
+  offline-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test mvp/wallet-signal/tests/liquidity-auto-worker-decision.test.mjs
