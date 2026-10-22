@@ -61,6 +61,15 @@ Scope: frozen Snapshot #2, TOP20_NETWORK_V1, test mint 98kfF7rmsg1QDUEoCqNE7g7M1
 - Delta +4.11 score points, -1 connected holder, -6.08 percentage points largest cluster. Computed read-only from aggregated deduplicated pairs and frozen holder balances; independent script-output parity still required before acceptance. Historical coverage incomplete.
 - Previously reported 8.97/35 belongs to an earlier evidence checkpoint, not the current comparison baseline. No score promotion or snapshot mutation.
 
+## H06 application-scorer parity accepted (2026-10-22)
+- GitHub Actions 39737554344 succeeded, executing checked-in TOP20_NETWORK_V1 comparator on Supabase jobs d07c0256 and c670f393.
+- 23,963 unique transfers; parity flags baselineScoreMatches=true, excludedScoreMatches=true, transferCountMatches=true.
+- Baseline observed score 9.93/35, 13 connected holders, 19 direct pairs, largest cluster 22.33%.
+- Pool-excluded scenario 14.04/35, 12 connected holders, 12 direct pairs, largest cluster 16.25%.
+- Delta +4.11 score, -1 connected holder, -7 direct pairs, -6.08 pp largest cluster.
+- Source job timestamps 2026-10-22T06:58:54Z and 06:59:21Z; both running, historyComplete=false; no atomic snapshot guarantee.
+- H06 scorer parity COMPLETE; H06 final classification still requires provenance acceptance, remaining counterpart role review, and explicit exclusion decision. No promotion.
+
 ## Next action — no duplication
 1. H07 CLOSED. Do not rerun Diab CPI or vault observation without contradictory evidence.
 2. H06: inspect existing historical pool-state evidence and provider semantics; seek authenticated account state at slots 450097547, 451211747 and 457305617, or record a documented archival limitation.
