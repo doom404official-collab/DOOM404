@@ -18,3 +18,22 @@ jobs:
         with:
           node-version: '22'
       - run: node --test mvp/wallet-signal/tests/liquidity-pr46-workflow-contract.test.mjs mvp/wallet-signal/tests/liquidity-pr46-failure-cli.test.mjs
+      - name: Prepare synthetic upload fixtures
+        run: |
+          mkdir -p offline-artifacts
+          printf '%s\n' '{"kind":"SYNTHETIC_PARTIAL_RECOVERY","authorizationVerified":false,"finalScore":null,"continuationEligible":false}' > offline-artifacts/partial.json
+          printf '%s\n' '{"kind":"SYNTHETIC_FAILURE_DIAGNOSTIC","continuationEligible":false}' > offline-artifacts/diagnostic.json
+      - name: Upload isolated synthetic partial artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr46-offline-partial-${{ github.run_id }}
+          path: offline-artifacts/partial.json
+          retention-days: 3
+          if-no-files-found: error
+      - name: Upload isolated synthetic diagnostic artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr46-offline-diagnostic-${{ github.run_id }}
+          path: offline-artifacts/diagnostic.json
+          retention-days: 3
+          if-no-files-found: error
