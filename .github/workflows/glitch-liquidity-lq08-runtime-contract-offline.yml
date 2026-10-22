@@ -2,6 +2,9 @@ name: GLITCH Liquidity LQ08 runtime contract offline
 on:
   pull_request:
     paths:
+      - 'mvp/wallet-signal/scripts/liquidity-historical-investigator.mjs'
+      - 'mvp/wallet-signal/lib/liquidity*.mjs'
+      - 'mvp/wallet-signal/scripts/liquidity-validate-successor.mjs'
       - 'mvp/wallet-signal/lib/liquidityAutoWorkerRuntimeContract.mjs'
       - 'mvp/wallet-signal/tests/liquidity-auto-worker-runtime-contract.test.mjs'
       - 'mvp/wallet-signal/tests/liquidity-auto-worker-mocked-investigator.test.mjs'
@@ -9,7 +12,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: glitch-liquidity-history-worker
+  group: glitch-liquidity-offline-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   offline:
