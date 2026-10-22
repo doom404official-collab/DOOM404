@@ -76,3 +76,14 @@ test('successor CLI preserves canonical success, pause and no-progress behavior'
   }
  }finally{await rm(dir,{recursive:true,force:true});}
 });
+
+test('offline consumer workflows cover shared validators without cancelling each other',async()=>{
+ const {readFile}=await import('node:fs/promises');
+ for(const name of ['glitch-liquidity-lq08-auto-worker-offline.yml','glitch-liquidity-lq08-runtime-contract-offline.yml','glitch-liquidity-lq08c-offline.yml']){
+  const workflow=await readFile(new URL(`../../../.github/workflows/${name}`,import.meta.url),'utf8');
+  assert.ok(workflow.includes("- 'mvp/wallet-signal/lib/liquidity*.mjs'"));
+  assert.ok(workflow.includes("- 'mvp/wallet-signal/scripts/liquidity-validate-successor.mjs'"));
+  assert.ok(workflow.includes('group: glitch-liquidity-offline-${{ github.workflow }}-${{ github.ref }}'));
+  assert.ok(!workflow.includes('workflow_dispatch:')&&!workflow.includes('schedule:'));
+ }
+});
