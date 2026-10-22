@@ -1,0 +1,21 @@
+name: GLITCH H06 counterpart roles
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/glitch-assessment-sprint1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read historical counterpart roles
+        working-directory: mvp/wallet-signal
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: node scripts/holder-h06-counterpart-roles.mjs
