@@ -45,3 +45,17 @@ test('60 RPC request ceiling under mocked transaction pagination',async()=>{
   assert.equal(state.finalScore,null);assert.equal(state.authorizationVerified,false);
  }finally{await rm(dir,{recursive:true,force:true});}
 });
+
+test('primary failure and fallback requests share the same 60-call ceiling',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'lq08-fallback-'));
+ try{
+  const mock=join(dir,'mock.mjs'),output=join(dir,'result.json'),sig='3'.repeat(64);
+  await writeFile(mock,`let count=0;globalThis.fetch=async(url,opts)=>{count++;const req=JSON.parse(opts.body);if(req.method==='getSignaturesForAddress')return {ok:true,json:async()=>({result:[{signature:'${sig}',slot:123}]})};if(url.includes('primary'))return {ok:false,status:500};return {ok:true,json:async()=>({result:null})};};process.on('exit',()=>console.log('MOCK_RPC_REQUESTS='+count));`);
+  const proc=spawnSync(process.execPath,['--import',mock,script],{encoding:'utf8',env:{...process.env,GLITCH_LIQUIDITY_POOL:pool,HELIUS_RPC_URL:'https://primary.invalid',ALCHEMY_RPC_URL:'https://fallback.invalid',GLITCH_HISTORY_BUDGET:'60',GLITCH_HISTORY_OUTPUT:output}});
+  const state=JSON.parse(await readFile(output,'utf8')),count=Number(proc.stdout.match(/MOCK_RPC_REQUESTS=(\d+)/)?.[1]);
+  assert.notEqual(proc.status,0);
+  assert.ok(count>=3&&count<=60);assert.equal(state.requestCount,count);
+  assert.equal(state.complete,false);assert.equal(state.historyCoverageVerified,false);assert.equal(state.finalScore,null);
+  assert.ok(state.pendingSignatures.length>0);
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
