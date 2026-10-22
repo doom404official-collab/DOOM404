@@ -1,0 +1,25 @@
+name: GLITCH Liquidity offline recovery tests
+on:
+  pull_request:
+    paths:
+      - 'mvp/wallet-signal/lib/liquidityHistoricalDecoder.mjs'
+      - 'mvp/wallet-signal/lib/liquidityFailureDiagnostic.mjs'
+      - 'mvp/wallet-signal/lib/liquidityAutomaticHistoryGate.mjs'
+      - 'mvp/wallet-signal/lib/liquidityPartialRecovery.mjs'
+      - 'mvp/wallet-signal/scripts/liquidity-prepare-partial-recovery.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-partial-recovery.test.mjs'
+      - '.github/workflows/glitch-liquidity-recovery-offline-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test isolated recovery without RPC credentials
+        run: node --test mvp/wallet-signal/tests/liquidity-partial-recovery.test.mjs
