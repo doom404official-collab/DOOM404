@@ -31,12 +31,12 @@ export function scoreHolderIntelligence({top20SharePct,networkScore,creatorTeamE
 }
 export function scoreCreatorIntelligence({creatorVerified=false,holdingsPct,creatorHistoryComplete=false,soldPct1h,soldPct24h,soldPct7d,previousLaunchPoints,previousLaunchHistoryComplete=false}={}){
  const sale=(x)=>valid(x)?linear(x,0,50,10):null;
- const sells=creatorHistoryComplete?[sale(soldPct1h),sale(soldPct24h),sale(soldPct7d)]:[null,null,null];
+ const sells=creatorHistoryComplete===true?[sale(soldPct1h),sale(soldPct24h),sale(soldPct7d)]:[null,null,null];
  return result("creator_intelligence",[
-  component("creator_identification",20,creatorVerified?20:null),
-  component("creator_holdings",20,creatorVerified&&valid(holdingsPct)?linear(holdingsPct,2,20,20):null),
+  component("creator_identification",20,creatorVerified===true?20:null),
+  component("creator_holdings",20,creatorVerified===true&&valid(holdingsPct)?linear(holdingsPct,2,20,20):null),
   component("creator_selling",30,sells.every(x=>x!==null)?round(sells.reduce((s,x)=>s+x,0)):null),
-  component("previous_launches",30,previousLaunchHistoryComplete&&valid(previousLaunchPoints,30)?previousLaunchPoints:null)
+  component("previous_launches",30,previousLaunchHistoryComplete===true&&valid(previousLaunchPoints,30)?previousLaunchPoints:null)
  ]);
 }
 export function scoreLiquidityQuality({verifiedDepthUsd,verifiedMarketCapUsd,lpSecurityPoints,lpVerified=false,largestIndependentPoolSharePct,impactPct,impactVerified=false,stabilityPoints,stabilityVerified=false}={}){
