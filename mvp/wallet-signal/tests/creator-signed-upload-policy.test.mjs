@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {evaluateCreatorUploadAuthorization as check} from '../lib/creatorSignedUploadPolicy.mjs';
+const now=1000000;
+const commit='reviewed-commit';
+const valid=()=>({commit,branch:'refs/heads/feature/creator-history-worker-500',workflow:'creator-global-restricted-capture.yml',bucket:'creator-historical-evidence',objectKey:'global/442809233/4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf/9aa57beb2b897cc175a536f170ddb25c0c8bed8ed6620c7087d8a7fb834f7d30.json',overwrite:false,expiresAtMs:now+60000,singleUse:true,used:false});
+const run=x=>check(x,{approvedCommit:commit,nowMs:now});
+test('valid policy input is not a signed token',()=>{const x=run(valid());assert.equal(x.authorized,true);assert.equal(x.status,'POLICY_APPROVED_ONLY');assert.equal(x.eligibleForLivePromotion,false);});
+test('wrong commit rejected',()=>{const x=valid();x.commit='other';assert.equal(run(x).reason,'COMMIT_NOT_APPROVED');});
+test('wrong workflow rejected',()=>{const x=valid();x.workflow='other';assert.equal(run(x).reason,'WORKFLOW_IDENTITY_MISMATCH');});
+test('wrong object rejected',()=>{const x=valid();x.objectKey='global/other.json';assert.equal(run(x).reason,'OBJECT_IDENTITY_MISMATCH');});
+test('overwrite rejected',()=>{const x=valid();x.overwrite=true;assert.equal(run(x).reason,'OVERWRITE_FORBIDDEN');});
+test('expired request rejected',()=>{const x=valid();x.expiresAtMs=now;assert.equal(run(x).reason,'EXPIRATION_INVALID');});
+test('replay rejected',()=>{const x=valid();x.used=true;assert.equal(run(x).reason,'REPLAY_PROTECTION_REQUIRED');});
