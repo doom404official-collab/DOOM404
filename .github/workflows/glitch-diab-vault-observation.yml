@@ -1,0 +1,27 @@
+name: GLITCH Diab vault observation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/glitch-assessment-sprint1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Observe historical transaction vaults
+        working-directory: mvp/wallet-signal
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: node scripts/diab-vault-readonly-report.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: diab-vault-readonly
+          path: mvp/wallet-signal/diab-vault-readonly.json
+          retention-days: 30
