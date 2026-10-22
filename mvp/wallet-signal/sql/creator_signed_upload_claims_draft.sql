@@ -23,3 +23,13 @@ revoke all on creator_private.signed_upload_claims from public, anon, authentica
 -- Proposed issuer SQL: INSERT ... ON CONFLICT (claim_id) DO NOTHING RETURNING claim_id;
 -- A successful claim requires exactly one returned row; no DELETE/UPDATE grants to issuer.
 -- RLS on private schema is defense-in-depth; role privilege review is mandatory.
+
+-- SECURITY REVIEW NOTE: RLS is enabled without an issuer INSERT policy.
+-- This is intentionally NOT deployable as a working issuer schema yet.
+-- Prior to migration approval: provision a dedicated NOLOGIN issuer database role,
+-- explicitly grant schema USAGE and table INSERT only, and add an INSERT policy
+-- scoped TO that role. Do not grant UPDATE, DELETE, or unrestricted SELECT.
+-- Define how the trusted server assumes that role; service_role bypasses RLS
+-- and therefore cannot demonstrate least-privilege authorization.
+-- Verify duplicate INSERT behavior and privilege denials using a controlled
+-- integration test, not merely an in-memory concurrency simulation.
