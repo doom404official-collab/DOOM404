@@ -1,0 +1,14 @@
+import {readFile,writeFile} from "node:fs/promises";
+import {assessAutomaticHistoryCheckpoint} from "../lib/liquidityAutomaticHistoryGate.mjs";
+const priorPath=process.argv[2],nextPath=process.argv[3],pool=process.env.GLITCH_LIQUIDITY_POOL;
+if(!priorPath||!nextPath||!pool)throw Error("PRIOR_NEXT_POOL_REQUIRED");
+const prior=JSON.parse(await readFile(priorPath,"utf8"));
+const next=JSON.parse(await readFile(nextPath,"utf8"));
+const before=assessAutomaticHistoryCheckpoint(prior,pool);
+if(before.action!=="CONTINUE_BOUNDED")throw Error("PRIOR_CHECKPOINT_NOT_CONTINUABLE");
+const after=assessAutomaticHistoryCheckpoint(next,pool);
+if(next.seen.length<prior.seen.length||prior.seen.some(s=>!next.seen.includes(s)))throw Error("HISTORY_SIGNATURE_REGRESSION");
+if(next.reconciliation?.sourceDigest!==prior.reconciliation?.sourceDigest)throw Error("HISTORY_RECONCILIATION_DRIFT");
+if((next.requestCount||0)<(prior.requestCount||0))throw Error("HISTORY_REQUEST_REGRESSION");
+if(next.before===prior.before&&next.seen.length===prior.seen.length&&after.action==="CONTINUE_BOUNDED")throw Error("HISTORY_NO_PROGRESS_MANUAL_REVIEW");
+console.log(JSON.stringify({status:"HISTORY_SUCCESSOR_VALIDATED",priorSeen:prior.seen.length,nextSeen:next.seen.length,action:after.action,classification:after.classification,score:null}));

@@ -1,0 +1,27 @@
+name: GLITCH Liquidity worker offline safety tests
+on:
+  pull_request:
+    paths:
+      - 'mvp/wallet-signal/scripts/liquidity-historical-investigator.mjs'
+      - 'mvp/wallet-signal/scripts/liquidity-preserve-failure-diagnostic.mjs'
+      - 'mvp/wallet-signal/lib/liquidityHistoricalRateLimit.mjs'
+      - 'mvp/wallet-signal/lib/liquidityHistoricalTransactionCompat.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-worker-offline-safety.test.mjs'
+      - 'mvp/wallet-signal/tests/liquidity-worker-checkpoint-selection.test.mjs'
+      - '.github/workflows/glitch-liquidity-worker-offline-tests.yml'
+permissions:
+  contents: read
+jobs:
+  offline-worker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        working-directory: mvp/wallet-signal
+        run: npm install --no-audit --no-fund
+      - name: Run offline worker safety checks
+        run: node --test mvp/wallet-signal/tests/liquidity-worker-offline-safety.test.mjs mvp/wallet-signal/tests/liquidity-worker-checkpoint-selection.test.mjs
