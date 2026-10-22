@@ -23,7 +23,7 @@ function mockedCapture(response,{httpStatus=200}={}){
  try{
   const mock=join(dir,'mock-fetch.cjs');
   const output=join(dir,'capture.json');
-  writeFileSync(mock,`globalThis.fetch=async()=>({ok:${httpStatus>=200&&httpStatus<300},status:${httpStatus},json:async()=>${JSON.stringify(response)}});`);
+  writeFileSync(mock,`globalThis.fetch=async()=>({ok:${httpStatus>=200&&httpStatus<300},status:${httpStatus},json:async()=>(${JSON.stringify(response)})});`);
   const r=spawnSync(process.execPath,['--require',mock,script],{encoding:'utf8',env:{...process.env,ALCHEMY_RPC_URL:'https://example.invalid',GLITCH_RESTRICTED_CAPTURE:output,NODE_OPTIONS:''}});
   return {r,created:existsSync(output)};
  }finally{rmSync(dir,{recursive:true,force:true});}
