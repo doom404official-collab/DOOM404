@@ -13,3 +13,11 @@ Source token account: 6DgMfbDmjbGT9knSgztDg7Fg813mwjw2Bz5ieBztqDju, initialized 
 - Their fee/settlement roles are NOT established by ownership metadata alone. Do not classify as protocol fee, creator fee, swap, or common ownership without ordered instruction context, fee-account authority and transfer amounts.
 
 Next: focused read-only transaction role audit for the single existing signature, including outer instruction program ID, decoded operation, inner transfer amounts and account roles; verify against historical Pump AMM config/fee recipient evidence. No score promotion, checkpoint mutation or production changes.
+
+## Accepted parent-operation result (2026-10-22)
+- GitHub Actions 39742090414 succeeded.
+- Slot 450097547, outer instruction 6: Pump AMM discriminator c62e1552b4d9e870, `buy_exact_quote_in` candidate, 26 instruction accounts.
+- The three WSOL transfers at inner indices 3,4,5 (as separately indexed by the role audit 39740757340) occur beneath that successful buy instruction.
+- Their role is `BUY_INSTRUCTION_ASSOCIATED_DISTRIBUTION`; do not assert protocol-fee / creator-fee / referral-fee labels or authorization until historical config and account-layout checks establish them.
+- No additional general transaction or CPI audit required for this signature.
+
