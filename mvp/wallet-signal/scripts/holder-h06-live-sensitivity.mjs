@@ -17,4 +17,6 @@ for(const job of jobs)for(const t of job.checkpoint?.networkEvidence?.transfers?
  if(!transfers.has(k))transfers.set(k,t);
 }
 const result=compareHolderInfrastructureExclusion({snapshot:s,transfers:[...transfers.values()],pool});
-console.log(JSON.stringify({status:"OBSERVED_ONLY",snapshotId,sourceJobs:jobs.map(j=>({id:j.id,status:j.status,updatedAt:j.updated_at})),uniqueTransfers:transfers.size,baseline:{score:result.baseline.score,evidence:result.baseline.evidence,penalties:result.baseline.penalties},poolExcluded:{score:result.excluded.score,evidence:result.excluded.evidence,penalties:result.excluded.penalties},delta:result.delta,historyComplete:false,scorePromoted:false,snapshotModified:false}));
+const expected={baselineScore:9.93,excludedScore:14.04,uniqueTransfers:23963};
+const parity={baselineScoreMatches:result.baseline.score===expected.baselineScore,excludedScoreMatches:result.excluded.score===expected.excludedScore,transferCountMatches:transfers.size===expected.uniqueTransfers};
+console.log(JSON.stringify({status:"OBSERVED_ONLY",snapshotId,sourceJobs:jobs.map(j=>({id:j.id,status:j.status,updatedAt:j.updated_at})),uniqueTransfers:transfers.size,parity,baseline:{score:result.baseline.score,evidence:result.baseline.evidence,penalties:result.baseline.penalties},poolExcluded:{score:result.excluded.score,evidence:result.excluded.evidence,penalties:result.excluded.penalties},delta:result.delta,historyComplete:false,scorePromoted:false,snapshotModified:false}));
