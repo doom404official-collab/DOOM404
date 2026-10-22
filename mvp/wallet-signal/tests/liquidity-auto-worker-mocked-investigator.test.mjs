@@ -29,3 +29,19 @@ test('invalid RPC budget rejects configuration before fetch',async()=>{
  const {proc,state}=await runMock([],'1');
  assert.notEqual(proc.status,0);assert.equal(state,null);
 });
+
+test('60 RPC request ceiling under mocked transaction pagination',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'lq08-budget-'));
+ try{
+  const mock=join(dir,'mock.mjs'),output=join(dir,'result.json');
+  const sig='2'.repeat(64);
+  await writeFile(mock,`let count=0;globalThis.fetch=async(_url,opts)=>{count++;const req=JSON.parse(opts.body);const result=req.method==='getSignaturesForAddress'?[{signature:'${sig}',slot:123}]:null;return {ok:true,json:async()=>({result})};};process.on('exit',()=>console.log('MOCK_RPC_REQUESTS='+count));`);
+  const proc=spawnSync(process.execPath,['--import',mock,script],{encoding:'utf8',env:{...process.env,GLITCH_LIQUIDITY_POOL:pool,HELIUS_RPC_URL:'https://offline.invalid',ALCHEMY_RPC_URL:'',GLITCH_HISTORY_BUDGET:'60',GLITCH_HISTORY_OUTPUT:output}});
+  const state=JSON.parse(await readFile(output,'utf8'));
+  const count=Number(proc.stdout.match(/MOCK_RPC_REQUESTS=(\d+)/)?.[1]);
+  assert.ok(count>0&&count<=60);
+  assert.equal(state.requestCount,count);
+  assert.equal(state.complete,false);assert.equal(state.historyCoverageVerified,false);
+  assert.equal(state.finalScore,null);assert.equal(state.authorizationVerified,false);
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
