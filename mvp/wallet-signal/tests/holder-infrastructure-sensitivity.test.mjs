@@ -1,9 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {PublicKey} from "@solana/web3.js";
 import {compareHolderInfrastructureExclusion} from "../lib/holderInfrastructureSensitivity.mjs";
 const pool="6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA";
 const wallet="GHceWgs54Ye6iQCdk2orLgvSweaNsNa57qxaJBjAg7gA";
-const extra=Array.from({length:18},(_,i)=>"111111111111111111111111111111"+String(i+10));
+const extra=Array.from({length:18},(_,i)=>new PublicKey(Uint8Array.from({length:32},(_,j)=>j===31?i+1:0)).toBase58());
 const snapshot={id:"frozen",status:"frozen",supply_raw:"1000000",excluded_wallets:[],holder_ranking:[pool,wallet,...extra].map(wallet=>({wallet,balance:"1000"}))};
 test("sensitivity excludes pool without modifying snapshot or promoting",()=>{
  const original=JSON.stringify(snapshot);
