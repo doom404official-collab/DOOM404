@@ -8,7 +8,7 @@ export function assessOfflineEvidencePreservation({prior,next,artifactName}){
  if(next.authorizationVerified!==false||next.withdrawalVerified!==false||next.finalScore!==null)throw Error('UNAUTHORIZED_EVIDENCE_PROMOTION');
  if(next.complete!==true&&next.historyCoverageVerified!==false)throw Error('UNVERIFIED_HISTORY_COVERAGE');
  const successor=assessHistorySuccessor(prior,next,prior.pool);
- if(successor.action==='PAUSE_UNRESOLVED_SIGNATURES'||successor.action==='PAUSE_EVIDENCE_ERROR')return {action:'ISOLATE_PARTIAL_NO_PROMOTION',checkpointEligible:false};
+ if(next.stopReason==='RETRIEVAL_INCOMPLETE'||successor.action==='PAUSE_UNRESOLVED_SIGNATURES'||successor.action==='PAUSE_EVIDENCE_ERROR')return {action:'ISOLATE_PARTIAL_NO_PROMOTION',checkpointEligible:false};
  if(!/^liquidity-history-[0-9]+$/.test(artifactName))throw Error('UNTRUSTED_CHECKPOINT_ARTIFACT_NAME');
  return {action:'VALIDATED_SUCCESSOR_CANDIDATE',checkpointEligible:true};
 }

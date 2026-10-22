@@ -30,7 +30,7 @@ for(const [name,patch,error] of [
  assert.throws(()=>assess({prior,next:{...prior,...patch},artifactName:'liquidity-history-39729408870'}),error);
 });
 
-for(const patch of [{errors:[{stage:'slot_mismatch'}]},{errors:[{stage:'retry_guard'}]},{stopReason:'RETRIEVAL_INCOMPLETE'},{pendingSignatures:[b]}])
+for(const patch of [{errors:[{stage:'slot_mismatch'}]},{errors:[{stage:'retry_guard'}]},{stopReason:'RETRIEVAL_INCOMPLETE'},{complete:true,historyCoverageVerified:true,stopReason:'RETRIEVAL_INCOMPLETE'},{pendingSignatures:[b]}])
  test(`canonical pause stays isolated: ${JSON.stringify(patch)}`,()=>{
   assert.deepEqual(assess({prior,next:{...prior,...patch},artifactName:'liquidity-history-partial-123'}),{action:'ISOLATE_PARTIAL_NO_PROMOTION',checkpointEligible:false});
  });
