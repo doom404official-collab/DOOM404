@@ -13,4 +13,6 @@ test('reject untrusted source, invalid cycles and unsafe evidence',()=>{
  assert.throws(()=>plan({pool,candidates:[{runId:39729408868,state}]}));
  assert.throws(()=>plan({pool,candidates:[{runId:39729408869,state}],maxCycles:2}));
  assert.throws(()=>plan({pool,candidates:[{runId:39729408869,state:{...state,finalScore:1}}]}));
+ assert.throws(()=>plan({pool,candidates:[{runId:39729408869,state},{runId:39729408870,state:{...state,authorizationVerified:true}}]}),/NEWER_CHECKPOINT_INVALID/);
+ assert.throws(()=>plan({pool,candidates:[{runId:39729408869,state},{runId:39729408870,state:{...state,seen:[]}}]}),/CHECKPOINT_LINEAGE_REGRESSION/);
 });
