@@ -1,0 +1,42 @@
+name: GLITCH Diab CPI read-only audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Inspect one historical transaction
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: |
+          python3 - <<'PY'
+          import os,json,urllib.request
+          endpoint=os.environ.get("HELIUS_RPC_URL","")
+          if not endpoint.startswith("https://"):raise SystemExit("RPC_NOT_CONFIGURED")
+          sig="46WKG3FP4Lp9JnFhz8y9ZdyS232DSm4yWPhr5gEnjN7HU9gwxDZFzoviZZasNNcsy8JCz8DmPMjDqt6cwNXvRXbB"
+          pool="6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA"
+          req=urllib.request.Request(endpoint,data=json.dumps({"jsonrpc":"2.0","id":1,"method":"getTransaction","params":[sig,{"encoding":"jsonParsed","commitment":"confirmed","maxSupportedTransactionVersion":1}]}).encode(),headers={"Content-Type":"application/json"})
+          with urllib.request.urlopen(req,timeout=40) as response:payload=json.load(response)
+          tx=payload.get("result")
+          if payload.get("error") or not tx or tx.get("meta",{}).get("err") is not None:raise SystemExit("TRANSACTION_NOT_VERIFIED")
+          msg=tx["transaction"]["message"]
+          groups=tx["meta"].get("innerInstructions")
+          outer=msg.get("instructions",[])
+          inner=[] if groups is None else [i for g in groups for i in g.get("instructions",[])]
+          def summarize(ix):
+            p=ix.get("parsed")
+            info=p.get("info",{}) if isinstance(p,dict) else {}
+            return {"program":ix.get("programId"),"type":p.get("type") if isinstance(p,dict) else None,"poolReferenced":pool in ix.get("accounts",[]) or pool in info.values()}
+          report={"status":"OBSERVED_ONLY","signature":sig,"slot":tx["slot"],"innerMetadataState":"null" if groups is None else "present","innerGroupCount":None if groups is None else len(groups),"innerInstructionCount":None if groups is None else len(inner),"outerPrograms":[summarize(x) for x in outer],"innerPrograms":[summarize(x) for x in inner],"historicalStateVerified":False,"scorePromoted":False}
+          with open("diab-cpi-readonly.json","w") as f:json.dump(report,f,indent=2)
+          print(json.dumps(report))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: diab-cpi-readonly
+          path: diab-cpi-readonly.json
+          retention-days: 30
