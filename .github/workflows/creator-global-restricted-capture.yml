@@ -28,7 +28,10 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Offline negative controls
         run: node --test tests/capture-historical-global-evidence-local.test.mjs tests/verify-historical-global-evidence-local.test.mjs tests/pump-fun-pinned-global-decoder.test.mjs
+      # Historical slot semantics have not been independently established for this provider.
+      # Keep credential-backed capture disabled until a provider-specific historical-state proof is reviewed.
       - name: Read-only capture and verification
+        if: ${{ false }}
         env:
           ALCHEMY_RPC_URL: ${{ secrets.ALCHEMY_RPC_URL }}
         run: |
