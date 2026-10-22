@@ -24,9 +24,9 @@ export function scoreTokenSecurity({tokenProgram,authoritiesParsed=false,mintAut
 export function scoreHolderIntelligence({top20SharePct,networkScore,creatorTeamExposurePct,independencePoints,historyComplete=false,classificationComplete=false,creatorAttributionComplete=false}={}){
  return result("holder_intelligence",[
   component("top20_holder_concentration",35,valid(top20SharePct)?linear(top20SharePct,15,65,35):null),
-  component("connected_wallet_network",35,historyComplete&&valid(networkScore,35)?networkScore:null),
-  component("creator_team_exposure",20,creatorAttributionComplete&&valid(creatorTeamExposurePct)?linear(creatorTeamExposurePct,1,20,20):null),
-  component("holder_breadth_independence",10,historyComplete&&classificationComplete&&valid(independencePoints,10)?independencePoints:null)
+  component("connected_wallet_network",35,historyComplete===true&&valid(networkScore,35)?networkScore:null),
+  component("creator_team_exposure",20,creatorAttributionComplete===true&&valid(creatorTeamExposurePct)?linear(creatorTeamExposurePct,1,20,20):null),
+  component("holder_breadth_independence",10,historyComplete===true&&classificationComplete===true&&valid(independencePoints,10)?independencePoints:null)
  ]);
 }
 export function scoreCreatorIntelligence({creatorVerified=false,holdingsPct,creatorHistoryComplete=false,soldPct1h,soldPct24h,soldPct7d,previousLaunchPoints,previousLaunchHistoryComplete=false}={}){
