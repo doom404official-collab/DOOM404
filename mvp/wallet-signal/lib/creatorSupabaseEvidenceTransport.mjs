@@ -1,11 +1,11 @@
 // Server-only Supabase Storage transport. No credentials are read or logged here.
 export function createCreatorEvidenceTransport({projectUrl,serviceKey,fetchImpl=fetch}={}){
- if(typeof projectUrl!=='string'||!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(projectUrl)||
+ if(typeof projectUrl!=='string'||!/^https:\/\/acwmtobcbpkjfqiatyke\.supabase\.co\/?$/.test(projectUrl)||
     typeof serviceKey!=='string'||!serviceKey)throw Error('PRIVATE_STORAGE_CONFIGURATION_REQUIRED');
  const base=projectUrl.replace(/\/$/,'')+'/storage/v1/object/creator-historical-evidence/';
  const headers={apikey:serviceKey,authorization:'Bearer '+serviceKey};
  const target=key=>{
-  if(typeof key!=='string'||!/^global\/[a-zA-Z0-9/_-]+\.json$/.test(key)||key.includes('..'))throw Error('INVALID_EVIDENCE_KEY');
+  if(typeof key!=='string'||key!=='global/442809233/4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf/9aa57beb2b897cc175a536f170ddb25c0c8bed8ed6620c7087d8a7fb834f7d30.json'||key.includes('..'))throw Error('INVALID_EVIDENCE_KEY');
   return base+key;
  };
  return {
