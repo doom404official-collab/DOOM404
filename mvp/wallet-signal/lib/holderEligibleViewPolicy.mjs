@@ -1,3 +1,4 @@
+import {scoreHolderIntelligence} from './glitchAttributeEnginesV11.mjs';
 import {readFrozenHolderSnapshot} from './frozenHolderSnapshot.mjs';
 // Owner-approved view only; not a snapshot migration, scoring calibration or release.
 export const HOLDER_RETAIN19_POLICY=Object.freeze({
@@ -25,4 +26,21 @@ export function buildApprovedHolderEligibleView(snapshot){
   snapshotModified:false,checkpointModified:false,scorePromoted:false,finalScore:null,
   historyComplete:false,calibrated:false,historicalStateVerified:false,snapshotProvenanceVerified:false,
   note:'Owner approval establishes eligibility policy only. Historical evidence, calibration and score promotion remain separate gates.'};
+}
+
+export const HOLDER_ELIGIBLE_CONCENTRATION_POLICY=Object.freeze({
+ id:'HOLDER_ELIGIBLE_CONCENTRATION_V1',label:'Eligible-holder concentration',
+ approvalReference:'Sentinel_77826a37be548191a0dd3d299d208769',approvedAt:'2026-10-27T10:25:56Z'
+});
+/** Scoped observed component only; original frozen top-20 measurement is retained separately. */
+export function assessApprovedHolderEligibleConcentration(snapshot){
+ const view=buildApprovedHolderEligibleView(snapshot),supply=BigInt(view.supplyRaw);
+ const measure=ranking=>{const raw=ranking.reduce((sum,h)=>sum+BigInt(h.balance),0n);return {holderCount:ranking.length,numeratorRaw:String(raw),supplyRaw:view.supplyRaw,sharePct:Number(raw*1000000n/supply)/10000};};
+ const originalTop20={label:'Original frozen top-20 concentration',...measure(view.frozenRanking)};
+ const eligible={label:HOLDER_ELIGIBLE_CONCENTRATION_POLICY.label,...measure(view.eligibleRanking)};
+ const points=scoreHolderIntelligence({top20SharePct:eligible.sharePct}).components[0].points;
+ return {policy:{...HOLDER_ELIGIBLE_CONCENTRATION_POLICY},eligibilityPolicy:view.policy.id,snapshotId:view.snapshotId,snapshotIdentity:view.snapshotIdentity,
+  originalTop20,eligible,component:{id:'eligible_holder_concentration',label:eligible.label,max:35,points,status:'observed_only'},
+  score:null,finalScore:null,calibrated:false,historyComplete:false,scorePromoted:false,snapshotModified:false,checkpointModified:false,
+  replacementApplied:false,supplyRescaled:false};
 }

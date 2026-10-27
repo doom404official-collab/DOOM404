@@ -22,3 +22,22 @@ for(const [name,mutate] of [
 ])test(`approval cannot silently expand to ${name}`,()=>{
  const s=fixture();mutate(s);const before=JSON.stringify(s);assert.throws(()=>buildApprovedHolderEligibleView(s),/RETAIN19_|INVALID_FROZEN/);assert.equal(JSON.stringify(s),before);
 });
+
+test('approved eligible concentration uses 19 raw balances, preserving original 20 measurement and formula',async()=>{
+ const {assessApprovedHolderEligibleConcentration}=await import('../lib/holderEligibleViewPolicy.mjs');
+ const s=fixture(),before=JSON.stringify(s),r=assessApprovedHolderEligibleConcentration(s);
+ assert.equal(r.policy.id,'HOLDER_ELIGIBLE_CONCENTRATION_V1');assert.equal(r.component.label,'Eligible-holder concentration');
+ assert.equal(r.originalTop20.holderCount,20);assert.equal(r.originalTop20.sharePct,20);assert.equal(r.eligible.holderCount,19);assert.equal(r.eligible.sharePct,19);
+ assert.equal(BigInt(r.originalTop20.numeratorRaw)-BigInt(r.eligible.numeratorRaw),BigInt(s.holder_ranking[0].balance));
+ assert.equal(r.originalTop20.supplyRaw,s.supply_raw);assert.equal(r.eligible.supplyRaw,s.supply_raw);assert.equal(r.component.max,35);assert.equal(r.component.points,32.2);
+ assert.equal(r.score,null);assert.equal(r.finalScore,null);assert.equal(r.calibrated,false);assert.equal(r.scorePromoted,false);assert.equal(JSON.stringify(s),before);
+ assert.deepEqual(JSON.parse(JSON.stringify(r)),r);assert.deepEqual(assessApprovedHolderEligibleConcentration(JSON.parse(JSON.stringify(s))),r);
+});
+test('eligible component retains 15/65 boundaries and does not expand to unrelated snapshots',async()=>{
+ const {assessApprovedHolderEligibleConcentration}=await import('../lib/holderEligibleViewPolicy.mjs');
+ for(const [share,points] of [[15,35],[40,17.5],[65,0]]){
+  const s=fixture();s.supply_raw='1000000';s.holder_ranking.forEach(h=>h.balance='0');s.holder_ranking[0].balance='1000';s.holder_ranking[1].balance=String(share*10000);
+  const r=assessApprovedHolderEligibleConcentration(s);assert.equal(r.component.points,points);assert.equal(r.originalTop20.sharePct,share+0.1);
+ }
+ const s=fixture();s.id='legacy';const before=JSON.stringify(s);assert.throws(()=>assessApprovedHolderEligibleConcentration(s),/SCOPE/);assert.equal(JSON.stringify(s),before);
+});
