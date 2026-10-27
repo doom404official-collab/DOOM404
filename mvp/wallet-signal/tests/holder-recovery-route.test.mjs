@@ -1,12 +1,13 @@
-import {createHolderRecoveryBudget} from '../lib/holderRecoveryBudget.mjs';
+import {readHolderRecoveryWindow,recoveryWindowOpen} from '../lib/holderRecoveryWindow.mjs';
+import {createHolderRecoveryBudget,assertHolderBudgetSignal} from '../lib/holderRecoveryBudget.mjs';
 import {setTimeout as delay} from 'node:timers/promises';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 const source=await readFile(new URL('../app/api/holder-scan-recovery/route.js',import.meta.url),'utf8');
-const keys=['VERCEL_ENV','VERCEL_GIT_COMMIT_REF','GLITCH_HOLDER_RECOVERY_ENABLED','GLITCH_HOLDER_WORKER_ENABLED','GLITCH_HOLDER_WORKER_TOKEN','HELIUS_RPC_URL'];
-const configured=['preview','fix/glitch-recovery-preflight-20261027','true','false','fixture-token','https://offline.invalid'];
-function load(run,create=()=>({}),wait=delay){return new Function('createHolderRecoveryBudget','delay','NextResponse','timingSafeEqual','createHolderJobStore','runPinnedHolderRecovery',source.replace(/^import .*;\n/gm,'').replace(/export const /g,'const ').replace('export async function POST','async function POST')+'\nreturn POST;' )(createHolderRecoveryBudget,wait,{json:(body,options={})=>({body,...options})},(a,b)=>a.equals(b),create,run);}
+const keys=['VERCEL_ENV','VERCEL_GIT_COMMIT_REF','GLITCH_HOLDER_RECOVERY_ENABLED','GLITCH_HOLDER_WORKER_ENABLED','GLITCH_HOLDER_WORKER_TOKEN','HELIUS_RPC_URL','GLITCH_HOLDER_RECOVERY_START_AT','GLITCH_HOLDER_RECOVERY_EXPIRES_AT','GLITCH_HOLDER_RECOVERY_JOB_C670_VERSION','GLITCH_HOLDER_RECOVERY_JOB_D07_VERSION'];
+const configured=['preview','fix/glitch-recovery-preflight-20261027','true','false','fixture-token','https://offline.invalid',new Date(Date.now()-60000).toISOString(),new Date(Date.now()+600000).toISOString(),'2134','1812'];
+function load(run,create=()=>({}),wait=delay){return new Function('readHolderRecoveryWindow','recoveryWindowOpen','createHolderRecoveryBudget','assertHolderBudgetSignal','delay','NextResponse','timingSafeEqual','createHolderJobStore','runPinnedHolderRecovery',source.replace(/^import .*;\n/gm,'').replace(/export const /g,'const ').replace('export async function POST','async function POST')+'\nreturn POST;' )(readHolderRecoveryWindow,recoveryWindowOpen,createHolderRecoveryBudget,assertHolderBudgetSignal,wait,{json:(body,options={})=>({body,...options})},(a,b)=>a.equals(b),create,run);}
 const payload={jobId:'c670f393-31b0-470c-a01f-cb2b813a1219',mint:'98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump',expectedVersion:2134};
 const request=(body=payload,token='fixture-token')=>({headers:{get:()=>token},json:async()=>body});
 test('route enforces environment, opt-in, authentication and pinned inputs before store creation',async()=>{

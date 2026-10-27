@@ -6,7 +6,7 @@ const require=createRequire(import.meta.url),routes={};
 for(const name of ['recovery','worker','tick','scheduler'])routes[name]=require('../.next/server/app/api/holder-scan-'+name+'/route.js').routeModule.userland.POST;
 const ids=['c670f393-31b0-470c-a01f-cb2b813a1219','d07c0256-b472-4089-a237-99ed5e5c8cc4'];
 const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
-Object.assign(process.env,{VERCEL_ENV:'preview',VERCEL_GIT_COMMIT_REF:'fix/glitch-recovery-preflight-20261027',GLITCH_HOLDER_RECOVERY_ENABLED:'true',GLITCH_HOLDER_WORKER_TOKEN:'offline-only',SUPABASE_URL:'https://store.invalid',SUPABASE_SERVICE_ROLE_KEY:'offline-only',HELIUS_RPC_URL:'https://provider.invalid'});
+Object.assign(process.env,{VERCEL_ENV:'preview',VERCEL_GIT_COMMIT_REF:'fix/glitch-recovery-preflight-20261027',GLITCH_HOLDER_RECOVERY_ENABLED:'true',GLITCH_HOLDER_RECOVERY_START_AT:new Date(Date.now()-60000).toISOString(),GLITCH_HOLDER_RECOVERY_EXPIRES_AT:new Date(Date.now()+600000).toISOString(),GLITCH_HOLDER_RECOVERY_JOB_C670_VERSION:'7',GLITCH_HOLDER_RECOVERY_JOB_D07_VERSION:'7',GLITCH_HOLDER_WORKER_TOKEN:'offline-only',SUPABASE_URL:'https://store.invalid',SUPABASE_SERVICE_ROLE_KEY:'offline-only',HELIUS_RPC_URL:'https://provider.invalid'});
 let activeId=ids[0],calls=[],cases=0;
 global.fetch=async(url,options)=>{
  const u=new URL(url);assert.equal(u.origin,'https://store.invalid','provider/network prohibited');calls.push(u.pathname);

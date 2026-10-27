@@ -1,3 +1,4 @@
+import {assertHolderBudgetSignal} from "./holderRecoveryBudget.mjs";
 import {publicHolderScanView} from "./publicHolderScanView.mjs";
 const table="glitch_holder_scan_jobs";
 export function createHolderJobStore({url=process.env.SUPABASE_URL,key=process.env.SUPABASE_SERVICE_ROLE_KEY,fetchImpl=fetch}={}){
@@ -5,8 +6,10 @@ export function createHolderJobStore({url=process.env.SUPABASE_URL,key=process.e
  const base=url.replace(/\/$/,"")+"/rest/v1/";
  const headers={apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json"};
  async function request(path,{method="GET",body,prefer,signal}={}){
+  const payload=body===undefined?undefined:JSON.stringify(body);
+  assertHolderBudgetSignal(signal);
   const response=await fetchImpl(base+path,{method,headers:{...headers,...(prefer?{Prefer:prefer}:{})},
-   ...(body===undefined?{}:{body:JSON.stringify(body)}),cache:"no-store",...(signal?{signal}:{})});
+   ...(payload===undefined?{}:{body:payload}),cache:"no-store",...(signal?{signal}:{})});
   if(!response.ok)throw Error("HOLDER_STORE_HTTP_"+response.status);
   return response.status===204?null:response.json();
  }
