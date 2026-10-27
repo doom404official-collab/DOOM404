@@ -1,10 +1,12 @@
-import {createCreatorEvidenceHttpHandler} from '../lib/creatorEvidenceHttp.mjs';
+import {TEST_OBJECT,TEST_HASH,TEST_WORKFLOW,TEST_REF,testBytes} from '../lib/creatorEvidenceTestProfile.mjs';
+import {createCreatorSyntheticEvidenceStorage} from '../lib/creatorEvidenceStorage.mjs';
+import {createCreatorEvidenceHttpHandler,createCreatorSyntheticEvidenceHttpHandler} from '../lib/creatorEvidenceHttp.mjs';
 import {readCreatorEvidenceBody} from '../lib/creatorEvidenceBody.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {generateKeyPairSync,sign,createHash} from 'node:crypto';
 import {verifyCreatorGithubOidc,createCreatorGithubJwksResolver,GITHUB_ISSUER,GITHUB_JWKS} from '../lib/creatorEvidenceOidc.mjs';
-import {createCreatorEvidenceRelay,createCreatorPreparedEvidenceRelay} from '../lib/creatorEvidenceRelay.mjs';
+import {createCreatorEvidenceRelay,createCreatorPreparedEvidenceRelay,createCreatorSyntheticEvidenceRelay} from '../lib/creatorEvidenceRelay.mjs';
 const {privateKey,publicKey}=generateKeyPairSync('rsa',{modulusLength:2048}); // ephemeral synthetic keys only
 const jwk={...publicKey.export({format:'jwk'}),kid:'synthetic-key',alg:'RS256',use:'sig'},jwks={keys:[jwk]},now=1800000000;
 const manifest={repository:'doom404official-collab/DOOM404',repository_id:'1405094598',repository_owner:'doom404official-collab',repository_owner_id:'335732040',ref:'refs/heads/feature/creator-history-worker-500',sha:'a'.repeat(40),workflow_sha:'a'.repeat(40),workflow_ref:'doom404official-collab/DOOM404/.github/workflows/creator-global-restricted-capture.yml@refs/heads/feature/creator-history-worker-500',run_id:'123456',run_attempt:'1',event_name:'workflow_dispatch',environment:'creator-historical-capture',runner_environment:'github-hosted',sub:'synthetic-exact-approved-subject',audience:'https://relay.invalid/upload',startsAt:now-1,expiresAt:now+299};
@@ -30,13 +32,15 @@ test('pinned resolver is disabled by default, fetches no token URL and rejects r
 const objectKey='global/442809233/4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf/9aa57beb2b897cc175a536f170ddb25c0c8bed8ed6620c7087d8a7fb834f7d30.json';
 const payload=Buffer.from('{"synthetic":"prepared-stage-only"}'),hash=b=>createHash('sha256').update(b).digest('hex');
 const prepared={status:'READY_FOR_RESTRICTED_REVIEW',objectKey,payload,payloadSha256:hash(payload)};
-function fixture(){let time=now,record=null,consumed=false,read=false,stored=null,puts=0,reads=0,claimsCount=0;const claims={
+function fixture(synthetic=false){const target=synthetic?TEST_OBJECT:objectKey;let time=now,record=null,consumed=false,read=false,stored=null,puts=0,reads=0,claimsCount=0;const claims={
  async reserve(r){claimsCount++;if(record)return false;record=structuredClone(r);return true;},
  async consume(r){claimsCount++;if(consumed||!record||r.capabilityHash!==record.capabilityHash||r.payloadSha256!==record.payloadSha256||r.byteLength!==record.byteLength||time>=record.expiresAt)return null;consumed=true;return structuredClone(record);},
  async consumeReadback(){claimsCount++;if(!consumed||read)return null;read=true;return structuredClone(record);}
- };const storage={async put(k,b,o){puts++;assert.equal(k,objectKey);assert.equal(o.overwrite,false);if(stored)return false;stored=Buffer.from(b);return true;},async read(k){reads++;assert.equal(k,objectKey);return stored;}};
- const options={enabled:true,manifest,readManifest,resolveJwks:async()=>jwks,claims,storage,now:()=>time*1000};
- return {options,claims,storage,relay:createCreatorPreparedEvidenceRelay(options),advance:n=>time+=n,get counts(){return {puts,reads,claims:claimsCount}},corrupt:()=>{stored=Buffer.from('wrong')}};
+ };const storage={async put(k,b,o){puts++;assert.equal(k,target);assert.equal(o.overwrite,false);if(stored)return false;stored=Buffer.from(b);return true;},async read(k){reads++;assert.equal(k,target);return stored;}};
+ const write=synthetic?{...manifest,ref:TEST_REF,workflow_ref:manifest.repository+'/.github/workflows/'+TEST_WORKFLOW+'@'+TEST_REF}:manifest;
+ const reader=synthetic?{...write,run_id:readManifest.run_id,audience:readManifest.audience}:readManifest;
+ const options={enabled:true,manifest:write,readManifest:reader,resolveJwks:async()=>jwks,claims,storage,now:()=>time*1000};
+ return {options,claims,storage,relay:synthetic?createCreatorSyntheticEvidenceRelay(options):createCreatorPreparedEvidenceRelay(options),advance:n=>time+=n,get counts(){return {puts,reads,claims:claimsCount}},corrupt:()=>{stored=Buffer.from('wrong')}};
 }
 test('default disabled wrapper and authentic preflight reject synthetic historical capture',async()=>{
  assert.throws(()=>createCreatorEvidenceRelay(),/DISABLED/);const h=fixture();await assert.rejects(createCreatorEvidenceRelay(h.options).issue({token:token(),capture:{}}));assert.deepEqual(h.counts,{puts:0,reads:0,claims:0});
@@ -149,4 +153,76 @@ test('expiry after authenticated body consumption rejects before any upload clai
  const handler=createCreatorEvidenceHttpHandler({...h.options,resolveJwks:async()=>{keys++;return jwks;}});
  const result=await handler({url:'https://relay.invalid/api/creator-evidence/upload',method:'POST',headers:new Headers({authorization:'Bearer '+token(),'content-type':'application/json','x-creator-capability':cap.capability}),get body(){assert.ok(keys>0);return {getReader(){return {async read(){reads++;if(reads===1){h.advance(300);return {done:false,value:payload};}return {done:true};},cancel(){}};}};}});
  assert.notEqual(result.status,200);assert.equal(h.counts.puts,0);assert.equal(h.counts.claims,1);
+});
+
+
+const syntheticIssue=h=>h.relay.issue({token:token(h.options.manifest),capture:{}});
+test('fixed synthetic bytes are tiny, deterministic and never historical evidence',async()=>{
+ assert.ok(testBytes().length<=1024);assert.equal(hash(testBytes()),TEST_HASH);assert.equal(JSON.parse(testBytes()).historicalEvidence,false);
+ assert.throws(()=>createCreatorSyntheticEvidenceRelay(),/DISABLED/);const h=fixture(true);
+ for(const capture of [{objectKey},{payload:'anything'},{profile:'historical'},prepared])await assert.rejects(h.relay.issue({token:token(h.options.manifest),capture}));
+ await assert.rejects(h.relay.issue({token:token(),capture:{}}));assert.equal(h.counts.claims,0);
+ const cap=await syntheticIssue(h);assert.equal(cap.objectKey,TEST_OBJECT);
+ await assert.rejects(h.relay.upload({token:token(h.options.manifest),capability:cap.capability,payload}));assert.equal(h.counts.puts,0);
+ await h.relay.upload({token:token(h.options.manifest),capability:cap.capability,payload:testBytes()});
+ await assert.rejects(h.relay.verifyReadback({token:token(h.options.manifest,{aud:h.options.readManifest.audience})}));
+ assert.equal((await h.relay.verifyReadback({token:token(h.options.readManifest)})).payloadSha256,TEST_HASH);
+});
+test('historical wrapper rejects synthetic workflow and never accepts synthetic preflight',async()=>{
+ const h=fixture(true);assert.throws(()=>createCreatorEvidenceRelay(h.options));
+ const old=fixture();await assert.rejects(createCreatorEvidenceRelay(old.options).issue({token:token(),capture:JSON.parse(testBytes())}));assert.equal(old.counts.claims,0);
+});
+test('synthetic HTTP path is fixed; one JWKS fetch per request with repeated cryptographic checks',async()=>{
+ const h=fixture(true);let keys=0;const handler=createCreatorSyntheticEvidenceHttpHandler({...h.options,resolveJwks:async()=>{keys++;return jwks;}});
+ const request=(action,body,policy=h.options.manifest,cap)=>new Request('https://relay.invalid/api/creator-evidence-test/'+action,{method:'POST',headers:{authorization:'Bearer '+token(policy),'content-type':'application/json',...(cap?{'x-creator-capability':cap}:{})},body});
+ const forbidden=await handler(new Request('https://relay.invalid/api/creator-evidence/issue',{method:'POST'}));assert.equal(forbidden.status,404);assert.equal(keys,0);
+ const issued=await handler(request('issue','{}'));assert.equal(issued.status,200);assert.equal(keys,1);const cap=await issued.json();
+ const uploaded=await handler(request('upload',testBytes(),h.options.manifest,cap.capability));assert.equal(uploaded.status,200);assert.equal(keys,2);
+ const read=await handler(request('verify','{}',h.options.readManifest));assert.equal(read.status,200);assert.equal(keys,3);assert.equal((await read.json()).eligibleForLivePromotion,false);
+});
+test('synthetic concurrent upload/readback and replay permit exactly one of each',async()=>{
+ const h=fixture(true),cap=await syntheticIssue(h),args={token:token(h.options.manifest),capability:cap.capability,payload:testBytes()};
+ const uploads=await Promise.allSettled([h.relay.upload(args),h.relay.upload(args)]);assert.equal(uploads.filter(x=>x.status==='fulfilled').length,1);
+ const reads=await Promise.allSettled([1,2].map(()=>h.relay.verifyReadback({token:token(h.options.readManifest)})));assert.equal(reads.filter(x=>x.status==='fulfilled').length,1);
+ await assert.rejects(syntheticIssue(h));assert.equal(h.counts.puts,1);assert.equal(h.counts.reads,1);
+});
+test('synthetic late write stays uncertain, cannot retry, separate approved run reconciles',async()=>{
+ const h=fixture(true),cap=await syntheticIssue(h),original=h.storage.put;let release,started;const ready=new Promise(r=>started=r);
+ h.storage.put=async(...args)=>{started();await new Promise(r=>release=r);return original(...args);};
+ const controller=new AbortController(),args={token:token(h.options.manifest),capability:cap.capability,payload:testBytes()};
+ const pending=h.relay.upload({...args,signal:controller.signal});await ready;controller.abort();await assert.rejects(pending,/RECONCILIATION_REQUIRED/);release();await new Promise(r=>setImmediate(r));
+ await assert.rejects(h.relay.upload(args));assert.equal(h.counts.puts,1);assert.equal((await h.relay.verifyReadback({token:token(h.options.readManifest)})).status,'READBACK_VERIFIED');
+});
+test('synthetic expired window has no downstream activity',async()=>{
+ const h=fixture(true),cap=await syntheticIssue(h),before=h.counts;h.advance(300);
+ await assert.rejects(h.relay.upload({token:token(h.options.manifest),capability:cap.capability,payload:testBytes()}));await assert.rejects(h.relay.verifyReadback({token:token(h.options.readManifest)}));assert.deepEqual(h.counts,before);
+});
+test('synthetic Storage transport rejects historical paths and arbitrary bytes before credentials',async()=>{
+ let credentials=0,requests=0;const identity=async()=>{credentials++;return 'synthetic-only';};
+ const storage=createCreatorSyntheticEvidenceStorage({enabled:true,uploadIdentity:identity,readbackIdentity:identity,fetchImpl:async(url,o)=>{requests++;assert.ok(url.endsWith('/creator-historical-evidence/'+TEST_OBJECT));assert.equal(o.redirect,'error');if(o.method==='POST'){assert.equal(o.headers['x-upsert'],'false');assert.deepEqual(o.body,testBytes());return new Response('{}');}return new Response(testBytes());}});
+ await assert.rejects(storage.put(objectKey,testBytes()));await assert.rejects(storage.read(objectKey));await assert.rejects(storage.put(TEST_OBJECT,payload));assert.equal(credentials,0);
+ assert.equal(await storage.put(TEST_OBJECT,testBytes()),true);assert.deepEqual(await storage.read(TEST_OBJECT),testBytes());assert.equal(requests,2);
+});
+test('request-local JWKS is not shared across requests, and cached keys cannot bypass expiry',async()=>{
+ const h=fixture(true);let keys=0;const handler=createCreatorSyntheticEvidenceHttpHandler({...h.options,resolveJwks:async()=>{keys++;return jwks;}});
+ let reads=0;const result=await handler({url:'https://relay.invalid/api/creator-evidence-test/issue',method:'POST',headers:new Headers({authorization:'Bearer '+token(h.options.manifest),'content-type':'application/json'}),get body(){return {getReader(){return {async read(){if(reads++===0){h.advance(300);return {done:false,value:Buffer.from('{}')};}return {done:true};},cancel(){}};}};}});
+ assert.notEqual(result.status,200);assert.equal(keys,1);assert.equal(h.counts.claims,0);
+});
+
+test('synthetic composition uses actual crypto/HTTP/claim/storage adapters, no live network',async()=>{
+ const {createCreatorSyntheticTestIntegration}=await import('../lib/creatorEvidenceSyntheticIntegration.mjs');
+ assert.equal((await createCreatorSyntheticTestIntegration()({})).status,404);
+ const h=fixture(true);let jwksFetches=0,puts=0,reads=0,stored;
+ const client=(method,name)=>({async query({text,values}){assert.equal(text,`SELECT creator_relay_test_private.${name}($1::jsonb${name==='relay_readback'?',$2::bigint':''}) AS result`);return {rows:[{result:await h.claims[method](JSON.parse(values[0]))}]};}});
+ const handler=createCreatorSyntheticTestIntegration({...h.options,claimClients:{issuer:client('reserve','relay_reserve'),consumer:client('consume','relay_consume'),verifier:client('consumeReadback','relay_readback')},uploadIdentity:async()=> 'synthetic-upload-identity',readbackIdentity:async()=> 'synthetic-read-identity',fetchImpl:async(url,o)=>{
+  if(url===GITHUB_JWKS){jwksFetches++;return new Response(JSON.stringify(jwks));}
+  assert.ok(url.startsWith('https://acwmtobcbpkjfqiatyke.supabase.co/storage/v1/object/'));assert.ok(url.endsWith('/'+TEST_OBJECT));
+  if(o.method==='POST'){puts++;assert.equal(o.headers.authorization,'Bearer synthetic-upload-identity');assert.equal(o.headers['x-upsert'],'false');assert.equal(stored,undefined);stored=Buffer.from(o.body);return new Response('{}');}
+  reads++;assert.equal(o.headers.authorization,'Bearer synthetic-read-identity');return new Response(stored);
+ }});
+ const request=(action,body,policy=h.options.manifest,cap)=>new Request('https://relay.invalid/api/creator-evidence-test/'+action,{method:'POST',headers:{authorization:'Bearer '+token(policy),'content-type':'application/json',...(cap?{'x-creator-capability':cap}:{})},body});
+ const issue=await handler(request('issue','{}'));assert.equal(issue.status,200);const cap=(await issue.json()).capability;
+ assert.equal((await handler(request('upload',testBytes(),h.options.manifest,cap))).status,200);
+ const verified=await handler(request('verify','{}',h.options.readManifest));assert.equal(verified.status,200);assert.equal((await verified.json()).payloadSha256,TEST_HASH);
+ assert.equal(jwksFetches,3);assert.equal(puts,1);assert.equal(reads,1);
 });

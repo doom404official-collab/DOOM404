@@ -1,5 +1,6 @@
 /** Private-schema PostgreSQL adapter. No connection, credential or environment reads. */
-export function createCreatorEvidenceClaimStore({enabled=false,client}={}){
+function createStore({enabled=false,client}={},synthetic=false){
+ const schema=synthetic?'creator_relay_test_private':'creator_private';
  if(enabled!==true)throw Error('CREATOR_CLAIMS_DISABLED');
  if(typeof client?.query!=='function')throw Error('CREATOR_CLAIMS_CONFIGURATION');
  async function call(name,record,{signal}={}){
@@ -7,7 +8,7 @@ export function createCreatorEvidenceClaimStore({enabled=false,client}={}){
   const isRead=name==='relay_readback';
   if(isRead&&(!Number.isSafeInteger(record.deadlineSeconds)||record.deadlineSeconds<=0))throw Error('CREATOR_CLAIMS_REJECTED');
   try{
-   const result=await client.query({text:`SELECT creator_private.${name}($1::jsonb${isRead?',$2::bigint':''}) AS result`,values:isRead?[encoded,record.deadlineSeconds]:[encoded],signal});
+   const result=await client.query({text:`SELECT ${schema}.${name}($1::jsonb${isRead?',$2::bigint':''}) AS result`,values:isRead?[encoded,record.deadlineSeconds]:[encoded],signal});
    signal?.throwIfAborted();if(!Array.isArray(result?.rows)||result.rows.length!==1||!Object.hasOwn(result.rows[0],'result'))throw Error();
    const value=result.rows[0].result;
    if(name==='relay_reserve'){if(typeof value!=='boolean')throw Error();}
@@ -17,3 +18,6 @@ export function createCreatorEvidenceClaimStore({enabled=false,client}={}){
  }
  return Object.freeze({reserve:(r,o)=>call('relay_reserve',r,o),consume:(r,o)=>call('relay_consume',r,o),consumeReadback:(r,o)=>call('relay_readback',r,o)});
 }
+
+export const createCreatorEvidenceClaimStore=options=>createStore(options);
+export const createCreatorSyntheticEvidenceClaimStore=options=>createStore(options,true);

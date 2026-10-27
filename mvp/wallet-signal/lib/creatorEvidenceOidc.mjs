@@ -1,3 +1,4 @@
+import {TEST_WORKFLOW} from './creatorEvidenceTestProfile.mjs';
 import {readCreatorEvidenceBody} from './creatorEvidenceBody.mjs';
 import {createPublicKey,verify,createHash} from 'node:crypto';
 export const GITHUB_ISSUER='https://token.actions.githubusercontent.com';
@@ -21,7 +22,7 @@ export function validateCreatorOidcManifest(manifest){
  for(const key of ['repository_id','repository_owner_id','run_id','run_attempt'])if(!/^[1-9][0-9]*$/.test(manifest[key]))fail();
  for(const key of ['sha','workflow_sha'])if(!/^[a-f0-9]{40}$/.test(manifest[key]))fail();
  if(manifest.event_name!=='workflow_dispatch'||manifest.run_attempt!=='1'||manifest.runner_environment!=='github-hosted'||!manifest.ref.startsWith('refs/heads/'))fail();
- if(manifest.workflow_ref!==manifest.repository+'/.github/workflows/creator-global-restricted-capture.yml@'+manifest.ref)fail();
+ if(!['creator-global-restricted-capture.yml',TEST_WORKFLOW].some(workflow=>manifest.workflow_ref===manifest.repository+'/.github/workflows/'+workflow+'@'+manifest.ref))fail();
  if((manifest.job_workflow_ref===undefined)!==(manifest.job_workflow_sha===undefined))fail();
  if(manifest.job_workflow_ref!==undefined&&(typeof manifest.job_workflow_ref!=='string'||!/^[a-f0-9]{40}$/.test(manifest.job_workflow_sha)))fail();
  if(!Number.isSafeInteger(manifest.startsAt)||manifest.startsAt<0||!Number.isSafeInteger(manifest.expiresAt)||manifest.expiresAt<=manifest.startsAt||manifest.expiresAt-manifest.startsAt>300)fail();

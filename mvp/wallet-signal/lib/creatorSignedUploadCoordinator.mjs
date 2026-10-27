@@ -1,8 +1,8 @@
 // Pure authorization coordinator. Inject a durable atomic claim store and token issuer.
 // Does not authenticate GitHub callers or sign real tokens by itself.
-import {evaluateCreatorUploadAuthorization} from './creatorSignedUploadPolicy.mjs';
-export async function authorizeCreatorEvidenceUpload(request,{approvedCommit,nowMs,claimOnce,issueSignedUpload}={}){
- const policy=evaluateCreatorUploadAuthorization(request,{approvedCommit,nowMs});
+import {evaluateCreatorUploadAuthorization,evaluateCreatorTestUploadAuthorization} from './creatorSignedUploadPolicy.mjs';
+async function authorize(request,{approvedCommit,nowMs,claimOnce,issueSignedUpload}={},evaluate=evaluateCreatorUploadAuthorization){
+ const policy=evaluate(request,{approvedCommit,nowMs});
  if(!policy.authorized)return policy;
  if(typeof claimOnce!=='function'||typeof issueSignedUpload!=='function')
   return {authorized:false,reason:'ISSUER_DEPENDENCIES_UNAVAILABLE',eligibleForLivePromotion:false};
@@ -17,3 +17,6 @@ export async function authorizeCreatorEvidenceUpload(request,{approvedCommit,now
   return {authorized:false,reason:'SIGNED_ISSUANCE_FAILED',eligibleForLivePromotion:false};
  }
 }
+
+export const authorizeCreatorEvidenceUpload=(r,o)=>authorize(r,o);
+export const authorizeCreatorTestEvidenceUpload=(r,o)=>authorize(r,o,evaluateCreatorTestUploadAuthorization);

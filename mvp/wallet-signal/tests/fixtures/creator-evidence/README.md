@@ -15,3 +15,12 @@ docker stop creator-evidence-disposable
 ```
 
 The SQL artifact has a disposable database-name guard, is outside migrations, and installs no production roles/policies. The Python fixture adds a synthetic NOLOGIN role/policies only inside the isolated database to test actual invoker permissions. Tests cover unique issuance/consumption/readback, independent connections, expiry after a lock wait, rollback and privilege denials. The JavaScript bridge exercises the actual parameterized claim adapter through local psql. It does not test a real Node database driver, hosted gateway, Storage RLS, or authentic evidence capture. No evidence rows or claims are copied from hosted storage.
+
+For the synthetic-only profile, also run (in the same fresh disposable container):
+
+```sh
+python3 mvp/wallet-signal/tests/fixtures/creator-evidence/run-synthetic.py
+node mvp/wallet-signal/tests/fixtures/creator-evidence/run-synthetic-adapter.mjs
+```
+
+The synthetic schema is separate. Its fixture substitutes synthetic UIDs, runs and short windows into the exact unapplied permission template. A minimal local `storage.objects`/`auth.uid()` fixture tests PostgreSQL RLS only; it is not Supabase Storage/Auth integration. No canonical historical object is used for synthetic hosted testing. All bytes here remain local.
