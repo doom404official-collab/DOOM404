@@ -381,17 +381,19 @@ function CreatorLookup() {
   useEffect(() => {
     const address=result?.mint;
     if(!address)return;
+    setHolderConnections(null);setHolderConnectionsError("");setHolderConnectionsBusy(true);
     let stopped=false;
     let timer;
     async function refresh(){
       try{
         const response=await fetch("/api/holder-scan-status?mint="+encodeURIComponent(address),{cache:"no-store"});
-        if(!response.ok)return;
+        if(!response.ok)throw Error("Saved holder intelligence unavailable");
         const data=await response.json();
         if(stopped)return;
         if(data.scan?.mint===address)setHolderConnections({...data.scan,jobId:data.jobId,observedAt:data.scan.updatedAt});
         if(["not_started","queued","running","partial"].includes(data.status))timer=setTimeout(refresh,12000);
-      }catch{/* Retain last verified result rather than replacing it with an error. */}
+      }catch{if(!stopped)setHolderConnectionsError("Saved holder intelligence unavailable");}
+      finally{if(!stopped)setHolderConnectionsBusy(false);}
     }
     refresh();
     return ()=>{stopped=true;clearTimeout(timer);};
@@ -400,20 +402,22 @@ function CreatorLookup() {
     const address=result?.mint;
     if(!address){setVerifiedHolderAssessment(null);setHolderEvidenceState("unknown");return;}
     let stopped=false;
+    let requestSequence=0;
     async function refreshVerified(){
+      const sequence=++requestSequence;
       try{
         const response=await fetch("/api/holder-assessment?mint="+encodeURIComponent(address),{cache:"no-store"});
         if(!response.ok)throw Error("HOLDER_EVIDENCE_UNAVAILABLE");
         const data=await response.json();
-        if(!stopped)setHolderEvidenceState(data.mint===address&&data.assessment?"ready":"unknown");
-        if(!stopped)setVerifiedHolderAssessment(data.mint===address&&data.assessment?data:null);
-      }catch{if(!stopped){setHolderEvidenceState("error");setVerifiedHolderAssessment(null);}}
+        if(!stopped&&sequence===requestSequence)setHolderEvidenceState(data.mint===address&&data.assessment?"ready":"unknown");
+        if(!stopped&&sequence===requestSequence)setVerifiedHolderAssessment(data.mint===address&&data.assessment?data:null);
+      }catch{if(!stopped&&sequence===requestSequence){setHolderEvidenceState("error");setVerifiedHolderAssessment(null);}}
     }
     setVerifiedHolderAssessment(null);
     setHolderEvidenceState("loading");
     refreshVerified();
     const interval=setInterval(refreshVerified,30000);
-    return ()=>{stopped=true;clearInterval(interval);};
+    return ()=>{stopped=true;requestSequence++;clearInterval(interval);};
   },[result?.mint]);
   useEffect(() => {
     const address=result?.mint;
@@ -504,16 +508,9 @@ function CreatorLookup() {
           const accountData = await concentrationResponse.json();
           if (!concentrationResponse.ok) throw new Error(accountData.error || "Token-account balances unavailable");
           setConcentration(accountData);
-          setHolderConnections(null);
-          setHolderConnectionsError("");
-          setHolderConnectionsBusy(true);
-          // Read existing persisted intelligence; never launch an expensive
-          // synchronous two-transaction scan as a substitute for deep history.
-          fetch("/api/holder-scan-status?mint="+encodeURIComponent(mint.trim()),{cache:"no-store"})
-            .then(async response=>{const payload=await response.json();if(!response.ok)throw Error(payload.error||"Saved holder intelligence unavailable");return payload;})
-            .then(payload=>{if(payload.scan)setHolderConnections({...payload.scan,jobId:payload.jobId,observedAt:payload.scan.updatedAt});})
-            .catch(e=>setHolderConnectionsError(e.message))
-            .finally(()=>setHolderConnectionsBusy(false));
+          // The mint-scoped Holder status effect owns this request. A second
+          // unscoped fetch here could overwrite a newer mint's observations.
+
         } catch (concentrationFailure) { setConcentrationError(concentrationFailure.message); }
       }
       if (!cursor && data.tokenProgram === "spl-token-2022") {

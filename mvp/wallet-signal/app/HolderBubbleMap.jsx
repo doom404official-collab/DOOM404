@@ -60,7 +60,7 @@ export default function HolderBubbleMap({holders=[],groups=[],scanStatus=null,tr
    <button type="button" style={action} onClick={()=>setZoom(z=>clamp(Number((z-.25).toFixed(2)),1,2))} aria-label="Zoom out">−</button>
   </div>
   <div style={{display:"grid",gridTemplateColumns:"minmax(0,1fr) auto",gap:6,alignItems:"center",marginBottom:10}}>
-   <label style={{fontSize:12,display:"flex",alignItems:"center",gap:6,minWidth:0}}>Cluster <select aria-label="Filter by connected cluster" value={groupFilter} onChange={e=>{setGroupFilter(e.target.value);setSelected(null);}} style={{...action,minWidth:0,width:"100%"}}><option value="all">All wallets</option>{clusters.map((g,i)=><option key={i} value={String(i)}>Group {i+1} · {g.members.length} wallets</option>)}</select></label>
+   <label style={{fontSize:12,display:"flex",alignItems:"center",gap:6,minWidth:0}}><span style={{whiteSpace:"nowrap",flexShrink:0}}>Cluster</span> <select aria-label="Filter by connected cluster" value={groupFilter} onChange={e=>{setGroupFilter(e.target.value);setSelected(null);}} style={{...action,minWidth:0,flex:1,width:"auto"}}><option value="all">All wallets</option>{clusters.map((g,i)=><option key={i} value={String(i)}>Group {i+1} · {g.members.length} wallets</option>)}</select></label>
    <button type="button" style={action} onClick={()=>{setZoom(1);setSelected(null);setLinkedOnly(false);setGroupFilter("all");}}>Reset</button>
   </div>
   {nodes.length===0&&<p role="status">No holder map data available. This does not establish an absence of connections.</p>}
