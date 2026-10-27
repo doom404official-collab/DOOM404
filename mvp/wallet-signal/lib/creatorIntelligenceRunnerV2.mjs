@@ -34,13 +34,17 @@ export async function runCreatorIntelligenceV2({enabled=false,storeConfig,fetchI
  const result=await runCreatorIntelligenceTick({...tick,store:bridge,fetchImpl:async(url,options)=>{
   assertCreatorSignal(options?.signal);active();
   if(providerStopped)throw Error('CREATOR_V2_PROVIDER_STOPPED');
+  const stopProvider=()=>{providerStopped=true;};
+  options?.signal?.addEventListener('abort',stopProvider,{once:true});
   try{
    const response=await fetchImpl(url,options);assertCreatorSignal(options?.signal);active();
    // The legacy RPC helper retries HTTP 429. This path never hands it a
    // retryable response and never sends another request after transport failure.
    if(!response.ok)throw Error(response.status===429?'RPC_RATE_LIMITED':'RPC_HTTP_ERROR');
-   return response;
+   const payload=await response.json();assertCreatorSignal(options?.signal);active();
+   return {ok:response.ok,status:response.status,headers:response.headers,json:async()=>payload};
   }catch(error){providerStopped=true;throw error;}
+  finally{options?.signal?.removeEventListener('abort',stopProvider);}
  }});
  return {...result,revision:proof?.revision??before?.revision??null};
 }

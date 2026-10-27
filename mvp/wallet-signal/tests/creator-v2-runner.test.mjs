@@ -1,3 +1,4 @@
+import {createCreatorExecutionBudget} from '../lib/creatorExecutionBudget.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runCreatorIntelligenceV2 as run} from '../lib/creatorIntelligenceRunnerV2.mjs';
@@ -41,3 +42,15 @@ for(const field of ['revision','lease_owner','state','lease_until'])test('runner
  await assert.rejects(run(h.options),/RECONCILIATION_REQUIRED/);assert.equal(h.calls,0);assert.equal(h.saves,0);
 });
 test('missing job is never enqueued',async()=>{const h=harness();h.options.storeConfig.fetchImpl=async()=>({ok:true,json:async()=>[]});await assert.rejects(run(h.options),/NOT_ENQUEUED/);assert.equal(h.calls,0);});
+
+test('malformed provider JSON stops all subsequent transport calls',async()=>{
+ const h=harness();let calls=0,parses=0;h.options.fetchImpl=async()=>{calls++;return {ok:true,json:async()=>{parses++;throw new SyntaxError('synthetic malformed JSON');}}};
+ await run(h.options);assert.equal(calls,1);assert.equal(parses,1);assert.notEqual(h.row.state.historyComplete,true);assert.equal(h.row.state.indexedOriginLookupAttempted,true);
+});
+for(const phase of ['headers','body'])test('late '+phase+' failure cannot restart provider work',async()=>{
+ const h=harness();let calls=0,parses=0;
+ h.options.executionBudget=createCreatorExecutionBudget({schedule:fn=>setTimeout(fn,10)});
+ h.options.fetchImpl=async()=>{calls++;if(phase==='headers')await new Promise(r=>setTimeout(r,50));return {ok:true,json:async()=>{parses++;await new Promise(r=>setTimeout(r,50));throw Error('late synthetic failure');}}};
+ await run(h.options);const saves=h.saves;await new Promise(r=>setTimeout(r,100));
+ assert.equal(calls,1);assert.equal(parses,phase==='headers'?0:1);assert.equal(h.saves,saves);assert.notEqual(h.row.state.historyComplete,true);assert.equal(h.row.state.indexedOriginLookupAttempted,true);
+});
