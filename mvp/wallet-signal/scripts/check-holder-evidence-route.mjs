@@ -6,12 +6,15 @@ const require=createRequire(import.meta.url);
 Object.assign(process.env,{GLITCH_EVIDENCE_WORKER_ENABLED:"true",GLITCH_HOLDER_WORKER_TOKEN:"test-only-worker",
  SUPABASE_URL:"https://database.invalid",SUPABASE_SERVICE_ROLE_KEY:"test-only-key",HELIUS_RPC_URL:"https://rpc.invalid"});
 const {POST}=require("../.next/server/app/api/holder-evidence-tick/route.js").routeModule.userland;
+const A="3".repeat(32),B="4".repeat(32),signature="2".repeat(64);
 const selected={id:"selected-job",mint:"mint-a"};
-const checkpoint={version:1,mint:"mint-a",holders:[{ownerWallet:"a"},{ownerWallet:"b"}],
- wallets:{a:{},b:{}},edges:{ab:{signatures:["sig"]}}};
+const checkpoint={version:1,mint:"mint-a",holders:[{ownerWallet:A},{ownerWallet:B}],
+ wallets:{[A]:{},[B]:{}},edges:{ab:{signatures:[signature]}}};
 const job={...selected,status:"partial",checkpoint};
 const health={total:1,pending:0,verified:1,rejected:0,unavailable:0,active_leases:0,expired_leases:0,retry_exhausted:0};
 const cases=[
+ {name:"missing identity persists unavailable, never rejection",unknown:"identity",selection:[selected],rows:[job],http:200,status:"processed"},
+ {name:"unresolved ownership persists unavailable, never rejection",unknown:"ownership",selection:[selected],rows:[job],http:200,status:"processed"},
  {name:"valid lease contention is explicit no-claims",selection:[selected],rows:[job],claim:[],http:200,status:"no_claims"},
  {name:"lost lease is a retryable failure, not false progress",selection:[selected],rows:[job],finish:false,http:503,code:"EVIDENCE_LEASE_LOST",afterBatch:true},
  {name:"malformed finish cannot fabricate progress",selection:[selected],rows:[job],finish:{},http:503,code:"EVIDENCE_FINISH_INVALID_RESPONSE",afterBatch:true},
@@ -58,17 +61,19 @@ for(const fixture of cases){
      if(Object.hasOwn(fixture,"health")){result=fixture.health;break;}
      result=fixture.status==="idle"?Object.fromEntries(Object.keys(health).map(key=>[key,0])):health;break;
     case "/rest/v1/rpc/glitch_seed_holder_evidence":assert.equal(body.p_job_id,selected.id);result=Object.hasOwn(fixture,"seed")?fixture.seed:1;break;
-    case "/rest/v1/rpc/glitch_claim_holder_evidence":assert.equal(body.p_job_id,selected.id);result=fixture.claim??[{signature:"sig",attempts:0}];break;
+    case "/rest/v1/rpc/glitch_claim_holder_evidence":assert.equal(body.p_job_id,selected.id);result=fixture.claim??[{signature,attempts:0}];break;
     case "/rest/v1/rpc/glitch_finish_holder_evidence":
-     assert.equal(body.p_job_id,selected.id);assert.equal(body.p_signature,"sig");
-     assert.equal(body.p_status,"verified");assert.deepEqual(body.p_evidence.pairs,["a|b"]);result=Object.hasOwn(fixture,"finish")?fixture.finish:true;break;
+     assert.equal(body.p_job_id,selected.id);assert.equal(body.p_signature,signature);
+     assert.equal(body.p_status,fixture.unknown?"unavailable":"verified");assert.deepEqual(body.p_evidence.pairs,fixture.unknown?[]:[A+"|"+B]);result=Object.hasOwn(fixture,"finish")?fixture.finish:true;break;
     default:assert.fail("Unexpected database call in no-network test: "+parsed.pathname);
    }
   }else if(parsed.host==="rpc.invalid"){
-   assert.equal(body.method,"getTransaction");assert.equal(body.params[0],"sig");
-   result={result:{slot:12,meta:{err:null,innerInstructions:[]},transaction:{message:{instructions:[
-    {program:"system",parsed:{type:"transfer",info:{source:"a",destination:"b",lamports:100}}}
+   assert.equal(body.method,"getTransaction");assert.equal(body.params[0],signature);
+   result={result:{slot:12,meta:{err:null,innerInstructions:[]},transaction:{signatures:[signature],message:{accountKeys:[],instructions:[
+    {programId:"11111111111111111111111111111111",program:"system",parsed:{type:"transfer",info:{source:A,destination:B,lamports:100}}}
    ]}}}};
+   if(fixture.unknown==='identity')delete result.result.transaction.signatures;
+   if(fixture.unknown==='ownership')result.result.transaction.message.instructions=[{programId:'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',parsed:{type:'transfer',info:{source:A,destination:B,amount:'10'}}}];
   }else assert.fail("Network forbidden: unexpected host");
   return new Response(JSON.stringify(result),{status:200,headers:{"Content-Type":"application/json"}});
  };

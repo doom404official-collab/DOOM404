@@ -1,3 +1,4 @@
+import {holderTransferContext} from './holderTransferContext.mjs';
 // Confirmed parsed transfer instructions only. Co-occurrence and balance deltas
 // are not transfers. Token owners come from transaction-local balance metadata.
 const address=x=>typeof x==='string'&&/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(x);
@@ -11,32 +12,22 @@ export function extractHolderNetworkTransfers({transaction:tx,signature}={}){
  const message=tx.transaction.message;
  if(!message||!Array.isArray(message.accountKeys)||!Array.isArray(message.instructions)||!Array.isArray(tx.meta.innerInstructions)||tx.meta.innerInstructions.some(x=>!Array.isArray(x?.instructions)))
   return {valid:false,transfers:[],reason:'TRANSACTION_INSTRUCTIONS_UNAVAILABLE'};
- const keys=(tx.transaction.message?.accountKeys??[]).map(k=>typeof k==='string'?k:k?.pubkey);
- const owners=new Map(),conflicts=new Set();
- for(const b of [...(tx.meta.preTokenBalances??[]),...(tx.meta.postTokenBalances??[])]){
-  const account=keys[b.accountIndex];
-  if(!Number.isInteger(b.accountIndex)||!address(account)||!address(b.owner)||!address(b.mint))continue;
-  const old=owners.get(account);
-  if(old&&(old.owner!==b.owner||old.mint!==b.mint))conflicts.add(account);
-  owners.set(account,{owner:b.owner,mint:b.mint});
- }
- const instructions=[...(tx.transaction.message?.instructions??[]),...(tx.meta.innerInstructions??[]).flatMap(x=>x.instructions??[])];
+ const context=holderTransferContext(tx,signature,address);
+ if(!context)return {valid:false,transfers:[],reason:'TRANSACTION_CONTEXT_UNVERIFIED'};
+ const {instructions,owners,conflicts,opaqueOwnership}=context;
  const transfers=new Map();let unresolvedTokenTransfers=0;
  const unresolvedReasons={};
  const unresolvedAccounts=[];
- const capture=(reason,info,programId)=>{
+ const capture=(reason,info,programId,location)=>{
   if(unresolvedAccounts.length>=20)return;
-  unresolvedAccounts.push({reason,signature,slot:tx.slot,
+  unresolvedAccounts.push({reason,signature,...location,slot:tx.slot,
    sourceTokenAccount:address(info?.source)?info.source:null,
    destinationTokenAccount:address(info?.destination)?info.destination:null,
    mint:address(info?.mint)?info.mint:null,
    programId:programId??null});
  };
  const unresolved=reason=>{unresolvedTokenTransfers++;unresolvedReasons[reason]=(unresolvedReasons[reason]??0)+1;};
- // End-state owner metadata cannot resolve transfer-time ownership across an
- // owner change (including changing away and back within the same transaction).
- for(const ix of instructions)if((ix?.programId===programs.SPL||ix?.programId===programs.TOKEN_2022)&&ix?.parsed?.type==='setAuthority'&&ix.parsed.info?.authorityType==='accountOwner')conflicts.add(ix.parsed.info.account);
- for(const ix of instructions){
+ for(const {ix,location} of instructions){
   const p=ix?.parsed,info=p?.info;
   const known=Object.values(programs).includes(ix?.programId);
   if(!known)continue;
@@ -55,16 +46,18 @@ export function extractHolderNetworkTransfers({transaction:tx,signature}={}){
    if(!uint(amount)){unresolved("TRANSFER_AMOUNT_INVALID");continue;}
    if(!positive(amount))continue;
    const source=owners.get(info.source),destination=owners.get(info.destination);
-   if(conflicts.has(info.source)||conflicts.has(info.destination)||!source||!destination||source.mint!==destination.mint||
+   if(opaqueOwnership||conflicts.has(info.source)||conflicts.has(info.destination)||!source||!destination||source.mint!==destination.mint||
+    (source.programId&&source.programId!==ix.programId)||(destination.programId&&destination.programId!==ix.programId)||
     (p.type==='transferChecked'&&info.mint!==source.mint)){
-    const reason=conflicts.has(info.source)||conflicts.has(info.destination)?"OWNER_CONFLICT":!source||!destination?"OWNER_METADATA_MISSING":source.mint!==destination.mint?"TOKEN_MINT_MISMATCH":"CHECKED_MINT_MISMATCH";
-    unresolved(reason);capture(reason,info,ix.programId);continue;}
+    const reason=opaqueOwnership?"OWNERSHIP_TIMELINE_UNVERIFIED":conflicts.has(info.source)||conflicts.has(info.destination)?"OWNER_CONFLICT":!source||!destination?"OWNER_METADATA_MISSING":source.mint!==destination.mint?"TOKEN_MINT_MISMATCH":(source.programId&&source.programId!==ix.programId)||(destination.programId&&destination.programId!==ix.programId)?"TOKEN_PROGRAM_MISMATCH":"CHECKED_MINT_MISMATCH";
+    unresolved(reason);capture(reason,info,ix.programId,location);continue;}
    from=source.owner;to=destination.owner;mint=source.mint;
   }else {unresolved("UNCLASSIFIED_TRANSFER");continue;}
   if(!uint(amount)||!address(from)||!address(to)){unresolved("UNCLASSIFIED_TRANSFER");continue;}
   if(from===to||!positive(amount))continue;
-  const edge={signature,slot:tx.slot,from,to,assetType,mint,amountRaw:String(amount),verifiedOnChain:true,transferVerified:true};
-  transfers.set([signature,from,to,assetType,mint??'',edge.amountRaw].join('|'),edge);
+  const edge={signature,...location,programId:ix.programId,slot:tx.slot,from,to,assetType,mint,amountRaw:String(amount),verifiedOnChain:true,transferVerified:true};
+  if(assetType!=='SOL')Object.assign(edge,{sourceTokenAccount:info.source,destinationTokenAccount:info.destination,ownershipSource:'transaction_pre_post_stable'});
+  transfers.set(location.instructionId,edge);
  }
  return {valid:true,transfers:[...transfers.values()],unresolvedTokenTransfers,unresolvedReasons,unresolvedAccounts};
 }

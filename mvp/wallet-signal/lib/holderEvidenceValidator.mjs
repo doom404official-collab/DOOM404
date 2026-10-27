@@ -1,3 +1,4 @@
+import {extractHolderNetworkTransfers} from './holderNetworkTransfers.mjs';
 import {extractDirectHolderTransfers} from "./directHolderTransfers.mjs";
 
 /**
@@ -34,7 +35,11 @@ export async function validateHolderEvidence({checkpoint,rpc,maxRequests=24}={})
    const transfers=extractDirectHolderTransfers({transaction:evidence.tx,signature:sig,
     holderWallets:[...holders],tokenAccounts:checkpoint.holders||[]});
    if(transfers.some(t=>t.participants.join("|")===key))verified.push(sig);
-   else rejected.push(sig);
+   else {
+    const network=extractHolderNetworkTransfers({transaction:evidence.tx,signature:sig});
+    if(!network.valid||network.unresolvedTokenTransfers>0)unavailable.push(sig);
+    else rejected.push(sig);
+   }
   }
   const status=verified.length?"verified":unavailable.length?"unverified":"rejected";
   // Repeated direct transfers establish interaction frequency, not coordinated trading.

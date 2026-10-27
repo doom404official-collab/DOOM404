@@ -30,9 +30,12 @@ export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}=
     evidence={reason:transfers.length?"DIRECT_TRANSFER_PROVEN":"NO_DIRECT_HOLDER_TRANSFER",
      pairs:transfers.map(t=>t.participants.join("|")),kinds:[...new Set(transfers.map(t=>t.kind))],slot:tx.slot};
     // Reuse this exact RPC response for independent network extraction. Keep the
-    // legacy validation outcome unchanged; do not promote incomplete evidence.
+    // instruction identities and unresolved ownership; never reject missing proof.
     try{
      const network=extractHolderNetworkTransfers({transaction:tx,signature:item.signature});
+     if(!transfers.length&&(!network.valid||network.unresolvedTokenTransfers>0)){
+      status='unavailable';evidence.reason='TRANSFER_EVIDENCE_UNVERIFIED';
+     }
      evidence.networkExtraction={version:1,valid:network.valid===true,
       unresolvedTokenTransfers:network.unresolvedTokenTransfers??0,
       unresolvedReasons:network.unresolvedReasons??{},
@@ -40,7 +43,7 @@ export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}=
       transfers:network.valid===true?network.transfers:[],
       ...(network.valid===true?{}:{reason:network.reason??"NETWORK_EVIDENCE_UNAVAILABLE"})};
     }catch{
-     // Optional network extraction must never invalidate proven legacy evidence.
+     if(!transfers.length){status='unavailable';evidence.reason='TRANSFER_EVIDENCE_UNVERIFIED';}
      evidence.networkExtraction={version:1,valid:false,unresolvedTokenTransfers:0,
       transfers:[],reason:"NETWORK_EXTRACTION_ERROR"};
     }
