@@ -3,7 +3,7 @@
  */
 export const CREATOR_RETENTION_LIMIT=5000;
 const fields=['creatorVerifiedAcquisitionEvents','creatorAcquisitionMovements',
- 'creatorTransferDirections','creatorProcessedSignatures','creatorPendingSignatures'];
+ 'creatorTransferDirections','creatorProcessedSignatures','creatorPendingSignatures','verifiedLaunchDistributions'];
 export function assertCreatorRetention(state,{legacy=false}={}){
  let reason=state.creatorRetentionBlocked?.reason||null;
  for(const field of fields){
@@ -16,6 +16,8 @@ export function assertCreatorRetention(state,{legacy=false}={}){
 }
 export function blockCreatorRetention(previous,reason){
  return {...previous,creatorRetentionBlocked:{reason,recoveryRequired:true},
+  launchDistributionCoverageComplete:false,
+  initialAllocationEvidence:{...(previous.initialAllocationEvidence||{}),status:'RETENTION_RECOVERY_REQUIRED',initialAttributableRaw:null,coverageComplete:false,zeroAllocationVerified:false},
   creatorHistoryComplete:false,creatorSwapVerificationComplete:false,
   creatorHistoricalCoverage:{...(previous.creatorHistoricalCoverage||{}),historyComplete:false,status:'RETENTION_RECOVERY_REQUIRED'},
   creatorAcquisitionLedger:{...(previous.creatorAcquisitionLedger||{}),status:'INCOMPLETE',historyComplete:false,scoreEligible:false,sellThroughPct:null},

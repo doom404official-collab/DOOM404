@@ -16,6 +16,7 @@ import { extractCreatorLaunchTime } from './creatorLaunchTimeEvidence.mjs';
 import { assessCreatorInitialAllocation } from './creatorInitialAllocationEvidence.mjs';
 import { assessCreatorHistoricalCoverage } from './creatorHistoricalCoverage.mjs';
 import { summarizeCreatorAcquisitionLedger } from './creatorAcquisitionLedger.mjs';
+import { produceCreatorLaunchDistributions } from './creatorLaunchDistributionProducer.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -51,6 +52,11 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    state={...previous,lastError:null,historicalLaunchCandidates:discovery.candidates,launchDiscoveryCoverageComplete:false,previousLaunches:launches,previousLaunchesStatus:launches.previousLaunchesScoreEligible?'EVIDENCE_READY':'HISTORICAL_COVERAGE_INCOMPLETE',lastTickAt:new Date().toISOString()};
    // Never mark complete without verified historical discovery and comparable evidence.
   }else if(stage==='selling'){
+   state={...state,launchDistributionCoverageComplete:false,
+    initialAllocationEvidence:{status:'INITIAL_ALLOCATION_INCOMPLETE',initialAttributableRaw:null,coverageComplete:false,zeroAllocationVerified:false},
+    ...(state.selling?{selling:{...state.selling,creatorSellingScoreEligible:false,
+     windows:(Array.isArray(state.selling.windows)?state.selling.windows:[]).map(window=>({...window,scoreEligible:false,sellThroughPct:null}))}}:{}),
+    sellingStatus:'AWAITING_VERIFIED_INITIAL_ALLOCATION'};
    const creators=[...new Set((previous.originEvidence||[]).map(e=>e.creator))];
    if(creators.length!==1)throw Error('CREATOR_IDENTITY_UNRESOLVED');
    const existingProcessed=new Set(previous.creatorProcessedSignatures||[]);
@@ -59,14 +65,15 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    const history=outstanding.length>CREATOR_RETENTION_LIMIT-300?
     {nextCursor:previous.creatorHistoryCursor||null,signatures:[],rpcHistoryExhausted:previous.creatorHistoryRpcExhausted===true}:
     await discoverCreatorWalletHistory({creator:creators[0],rpc,before:previous.creatorHistoryCursor||null,maxPages:3,maxSignatures:300});
-   state={...previous,lastError:null,creatorHistoryCursor:history.nextCursor,
+   state={...state,lastError:null,creatorHistoryCursor:history.nextCursor,
     creatorHistorySignatures:[...new Set([...(previous.creatorHistorySignatures||[]),...history.signatures])].slice(-2000),
     creatorHistoryRpcExhausted:history.rpcHistoryExhausted,creatorHistoryComplete:false,
     lastTickAt:new Date().toISOString()};
    const processed=new Set(previous.creatorProcessedSignatures||[]);
    const queue=[...new Set([...outstanding,...history.signatures])].filter(sig=>!processed.has(sig));
    const decoded=await inspectCreatorHistoricalBatch({mint,creator:creators[0],signatures:queue,rpc,maxTransactions:creatorBatchSize,swapDecoder,buySettlementDecoder});
-   const creatorVerifiedAcquisitionEvents=[...new Map([...(previous.creatorVerifiedAcquisitionEvents||[]),...decoded.verifiedAcquisitionEvents].map(item=>[item.signature+':'+item.instructionIndex+':'+String(item.innerInstructionIndex??'outer'),item])).values()];
+   // Preserve conflicting launch proofs for rejection downstream; never last-wins.
+   const creatorVerifiedAcquisitionEvents=[...new Map([...(previous.creatorVerifiedAcquisitionEvents||[]),...decoded.verifiedAcquisitionEvents].map(item=>[item.signature+':'+item.instructionIndex+':'+String(item.innerInstructionIndex??'outer')+(item.type==='LAUNCH_DISTRIBUTION'?':'+JSON.stringify(item):''),item])).values()];
    const verifiedSwapSales=[...new Map([...(previous.verifiedSwapSales||[]),...decoded.verifiedSales].map(x=>[x.signature,x])).values()];
    state={...state,verifiedSwapSales,creatorVerifiedAcquisitionEvents,
     creatorBuyShadowStatusCounts:Object.fromEntries(Object.entries(decoded.buyShadowStatusCounts||{}).map(([key,count])=>[key,(Number(previous.creatorBuyShadowStatusCounts?.[key])||0)+count])),
@@ -101,10 +108,15 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
     attributionComplete:previous.creatorAcquisitionAttributionComplete===true});
    state={...state,creatorAcquisitionLedger:acquisitionLedger};
    const launchTimestamp=verifiedLaunchTimestamp;
+   if(Number.isSafeInteger(launchTimestamp)&&launchTimestamp>0){
+    state={...state,...produceCreatorLaunchDistributions({mint,creator:creators[0],launchTimestamp,
+     events:state.creatorVerifiedAcquisitionEvents||[],retainedDistributions:previous.verifiedLaunchDistributions||[]})};
+    assertCreatorRetention(state);
+   }
    const allocation=Number.isSafeInteger(launchTimestamp)&&launchTimestamp>0?
     assessCreatorInitialAllocation({mint,creator:creators[0],launchTimestamp,
-     distributions:previous.verifiedLaunchDistributions||[],coverageComplete:previous.launchDistributionCoverageComplete===true}):null;
-   if(allocation)state={...state,initialAllocationEvidence:allocation};
+     distributions:state.verifiedLaunchDistributions||[],coverageComplete:state.launchDistributionCoverageComplete===true}):null;
+   state={...state,initialAllocationEvidence:allocation||{status:'LAUNCH_TIME_UNVERIFIED',initialAttributableRaw:null,coverageComplete:false,zeroAllocationVerified:false}};
    const initialAttributableRaw=allocation?.initialAttributableRaw??null;
    if(!Number.isSafeInteger(launchTimestamp)||launchTimestamp<=0||!/^[0-9]+$/.test(String(initialAttributableRaw||''))){
     state={...state,sellingStatus:launchTimestamp>0?'AWAITING_VERIFIED_INITIAL_ALLOCATION':'AWAITING_VERIFIED_LAUNCH_TIME',lastTickAt:new Date().toISOString()};
