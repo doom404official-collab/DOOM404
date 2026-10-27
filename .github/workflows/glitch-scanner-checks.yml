@@ -65,4 +65,4 @@ jobs:
           PGPASSWORD: disposable_test_only
         run: |
           python3 mvp/wallet-signal/tests/fixtures/holder-atomic-merge/run-disposable-tests.py
-          python3 mvp/wallet-signal/tests/fixtures/holder-atomic-merge/run-large-commit-test.py
+          python3 mvp/wallet-signal/tests/fixtures/holder-atomic-merge/run-postgrest-commit-test.py
