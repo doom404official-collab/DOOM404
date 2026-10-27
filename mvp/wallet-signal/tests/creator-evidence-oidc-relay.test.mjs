@@ -199,7 +199,7 @@ test('synthetic expired window has no downstream activity',async()=>{
 });
 test('synthetic Storage transport rejects historical paths and arbitrary bytes before credentials',async()=>{
  let credentials=0,requests=0;const identity=async()=>{credentials++;return 'synthetic-only';};
- const storage=createCreatorSyntheticEvidenceStorage({enabled:true,uploadIdentity:identity,readbackIdentity:identity,fetchImpl:async(url,o)=>{requests++;assert.ok(url.endsWith('/creator-historical-evidence/'+TEST_OBJECT));assert.equal(o.redirect,'error');if(o.method==='POST'){assert.equal(o.headers['x-upsert'],'false');assert.deepEqual(o.body,testBytes());return new Response('{}');}return new Response(testBytes());}});
+ const storage=createCreatorSyntheticEvidenceStorage({enabled:true,publishableKey:'sb_publishable_synthetic',uploadIdentity:identity,readbackIdentity:identity,fetchImpl:async(url,o)=>{requests++;assert.ok(url.endsWith('/creator-historical-evidence/'+TEST_OBJECT));assert.equal(o.redirect,'error');if(o.method==='POST'){assert.equal(o.headers['x-upsert'],'false');assert.deepEqual(o.body,testBytes());return new Response('{}');}return new Response(testBytes());}});
  await assert.rejects(storage.put(objectKey,testBytes()));await assert.rejects(storage.read(objectKey));await assert.rejects(storage.put(TEST_OBJECT,payload));assert.equal(credentials,0);
  assert.equal(await storage.put(TEST_OBJECT,testBytes()),true);assert.deepEqual(await storage.read(TEST_OBJECT),testBytes());assert.equal(requests,2);
 });
@@ -214,7 +214,7 @@ test('synthetic composition uses actual crypto/HTTP/claim/storage adapters, no l
  assert.equal((await createCreatorSyntheticTestIntegration()({})).status,404);
  const h=fixture(true);let jwksFetches=0,puts=0,reads=0,stored;
  const client=(method,name)=>({async query({text,values}){assert.equal(text,`SELECT creator_relay_test_private.${name}($1::jsonb${name==='relay_readback'?',$2::bigint':''}) AS result`);return {rows:[{result:await h.claims[method](JSON.parse(values[0]))}]};}});
- const handler=createCreatorSyntheticTestIntegration({...h.options,claimClients:{issuer:client('reserve','relay_reserve'),consumer:client('consume','relay_consume'),verifier:client('consumeReadback','relay_readback')},uploadIdentity:async()=> 'synthetic-upload-identity',readbackIdentity:async()=> 'synthetic-read-identity',fetchImpl:async(url,o)=>{
+ const handler=createCreatorSyntheticTestIntegration({...h.options,publishableKey:'sb_publishable_synthetic',claimClients:{issuer:client('reserve','relay_reserve'),consumer:client('consume','relay_consume'),verifier:client('consumeReadback','relay_readback')},uploadIdentity:async()=> 'synthetic-upload-identity',readbackIdentity:async()=> 'synthetic-read-identity',fetchImpl:async(url,o)=>{
   if(url===GITHUB_JWKS){jwksFetches++;return new Response(JSON.stringify(jwks));}
   assert.ok(url.startsWith('https://acwmtobcbpkjfqiatyke.supabase.co/storage/v1/object/'));assert.ok(url.endsWith('/'+TEST_OBJECT));
   if(o.method==='POST'){puts++;assert.equal(o.headers.authorization,'Bearer synthetic-upload-identity');assert.equal(o.headers['x-upsert'],'false');assert.equal(stored,undefined);stored=Buffer.from(o.body);return new Response('{}');}
