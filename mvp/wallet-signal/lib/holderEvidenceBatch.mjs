@@ -18,7 +18,7 @@ export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}=
   (Object.hasOwn(item,"job_id")&&item.job_id!==jobId))||
   new Set(pending.map(item=>item.signature)).size!==pending.length)throw Error("EVIDENCE_CLAIM_INVALID_RESPONSE");
  const holders=Object.keys(checkpoint.wallets||{});
- let processed=0,leaseLost=0;
+ let processed=0,leaseLost=0,interrupted=false;
  for(const item of pending){
   let status="unavailable",evidence={reason:"RPC_UNAVAILABLE"};
   try{
@@ -49,13 +49,16 @@ export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}=
       transfers:[],reason:"NETWORK_EXTRACTION_ERROR"};
     }
    }
-  }catch{evidence={reason:"RPC_RETRYABLE_ERROR"};}
+  }catch(error){
+   if(error?.message==="RECOVERY_PROVIDER_TIMEOUT"){interrupted=true;break;}
+   evidence={reason:"RPC_RETRYABLE_ERROR"};
+  }
   let saved;
   try{saved=await store.finish(jobId,item.signature,workerId,{status,evidence,attempts:item.attempts+1});}
   catch(error){throw Error("EVIDENCE_FINISH_FAILED",{cause:error});}
   if(saved===true)processed++;
-  else if(saved===false)leaseLost++;
+  else if(saved===false){leaseLost++;break;}
   else throw Error("EVIDENCE_FINISH_INVALID_RESPONSE");
  }
- return {processed,claimed:pending.length,leaseLost,seeded,queuedSignatures:signatures.length};
+ return {processed,claimed:pending.length,leaseLost,seeded,queuedSignatures:signatures.length,...(interrupted?{interrupted:true}: {})};
 }

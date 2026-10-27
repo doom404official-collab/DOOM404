@@ -4,8 +4,9 @@ export const HOLDER_RECOVERY_TIMING=Object.freeze({totalMs:50000,providerMs:3000
 export function createHolderRecoveryBudget({now=()=>performance.now(),schedule=setTimeout,cancel=clearTimeout}={}){
  const started=now();
  return Object.freeze({
-  async run(label,operation,{provider=false}={}){
-   const deadline=Math.min(started+(provider?HOLDER_RECOVERY_TIMING.providerMs:HOLDER_RECOVERY_TIMING.totalMs),now()+HOLDER_RECOVERY_TIMING.requestMs);
+  async run(label,operation,{provider=false,maxOperationMs=HOLDER_RECOVERY_TIMING.requestMs}={}){
+   if(!Number.isSafeInteger(maxOperationMs)||maxOperationMs<1||maxOperationMs>HOLDER_RECOVERY_TIMING.requestMs)throw Error("INVALID_OPERATION_BUDGET");
+   const deadline=Math.min(started+(provider?HOLDER_RECOVERY_TIMING.providerMs:HOLDER_RECOVERY_TIMING.totalMs),now()+maxOperationMs);
    const error=new Error('RECOVERY_'+label+'_TIMEOUT');
    if(now()>=deadline)throw error;
    const controller=new AbortController();
