@@ -18,7 +18,7 @@ export async function readHolderFrozenObservation(mint,{url=process.env.SUPABASE
  if(!rows.length)return {mint,status:'unavailable',finalScore:null};
  const row=rows[0];
  // Hosted BIGINT arrives as a JSON number. Reject unsafe or coerced slots;
- // raw supply/balances remain strings and are never converted here.
+ // Raw supply stays a string; exact safe numeric balances are canonicalized below.
  if(!row||!Number.isSafeInteger(row.snapshot_slot)||row.snapshot_slot<0)throw Error('FROZEN_STORE_INVALID_SLOT');
  if(!Array.isArray(row.holder_ranking))throw Error('FROZEN_STORE_INVALID_RANKING');
  if(row.supply_definition!=='mint-total-supply-not-circulating')throw Error('FROZEN_STORE_INVALID_SUPPLY_DEFINITION');
