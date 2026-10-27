@@ -76,6 +76,7 @@ export async function runHolderActionsRecovery({env=process.env,checkedOutSha,fe
    const statuses=['partial','complete','ALREADY_CLAIMED','LEASE_LOST','VERSION_CONFLICT','CLAIM_OUTCOME_UNKNOWN','RENEWAL_OUTCOME_UNKNOWN','COMMIT_OUTCOME_UNKNOWN'];
    item.status=statuses.includes(result.status)?result.status:'interrupted';
    item.resultVersion=Number.isSafeInteger(result.version)?result.version:null;
+   if(result.status==='COMMIT_OUTCOME_UNKNOWN')item.commitDiagnostic=result.commitDiagnostic;
    item.reconciliationRequired=result.reconciliationRequired===true||!['partial','complete'].includes(item.status);
    if(item.reconciliationRequired||providerFailed){receipt.status='stopped';receipt.stopReason=item.reconciliationRequired?'RECONCILIATION_REQUIRED':'PROVIDER_UNAVAILABLE';receipt.reconciliationRequired=item.reconciliationRequired;return receipt;}
   }

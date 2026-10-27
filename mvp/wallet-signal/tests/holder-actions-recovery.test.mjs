@@ -57,6 +57,15 @@ test('lost first commit response stops second job and produces no secrets/checkp
 test('provider credential/runtime failure stops before second job; no probe outside budget',async()=>{
  const t=transport();t.mode='provider-failure';const r=await run(config(),t);assert.equal(r.status,'stopped');assert.equal(r.stopReason,'PROVIDER_UNAVAILABLE');assert.equal(t.provider,1);assert.equal(t.claims,1);assert.equal(r.jobs.length,1);
 });
+test('redacted HTTP commit failure reaches receipt, stops second job, never retries',async()=>{
+ const t=transport(),fetch=t.fetch,before=structuredClone(t.rows.get(ids[0]).checkpoint);let commits=0;
+ t.fetch=async(url,o)=>{if(url.endsWith('/glitch_commit_holder_scan')){commits++;return new Response('SECRET_SQL_BODY',{status:413});}return fetch(url,o);};
+ const r=await run(config(),t),d=r.jobs[0].commitDiagnostic;
+ assert.equal(r.jobs.length,1);assert.equal(r.requestCount,20);assert.equal(r.retries,0);assert.equal(commits,1);assert.equal(t.claims,1);
+ assert.equal(r.stopReason,'RECONCILIATION_REQUIRED');assert.equal(d.category,'http_rejected');assert.equal(d.phase,'response');assert.equal(d.httpStatus,413);assert.ok(d.requestBytes>0);
+ assert.deepEqual(t.rows.get(ids[0]).checkpoint,before);assert.equal(t.rows.get(ids[0]).version,9);assert.equal(t.rows.get(ids[1]).version,11);
+ assert.ok(!JSON.stringify(r).includes('SECRET'));
+});
 test('database authentication failure cannot reach mutation or provider',async()=>{
  const t=transport();t.fetch=async()=>new Response('{}',{status:401});const r=await run(config(),t);assert.equal(r.stopReason,'PREFLIGHT_FAILED');assert.equal(r.reconciliationRequired,false);assert.equal(r.requestCount,0);
 });

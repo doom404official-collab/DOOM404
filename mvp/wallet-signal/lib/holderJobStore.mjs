@@ -5,13 +5,21 @@ export function createHolderJobStore({url=process.env.SUPABASE_URL,key=process.e
  if(!url||!key||!/^https:\/\//.test(url))throw Error("HOLDER_STORE_NOT_CONFIGURED");
  const base=url.replace(/\/$/,"")+"/rest/v1/";
  const headers={apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json"};
- async function request(path,{method="GET",body,prefer,signal}={}){
+ async function request(path,{method="GET",body,prefer,signal,commitDiagnostic}={}){
+  const diagnostic=path==='rpc/glitch_commit_holder_scan'?commitDiagnostic:null;
+  if(diagnostic)diagnostic.phase='serialization';
   const payload=body===undefined?undefined:JSON.stringify(body);
+  if(diagnostic){diagnostic.requestBytes=Buffer.byteLength(payload);diagnostic.phase='before_transport';}
   assertHolderBudgetSignal(signal);
+  if(diagnostic)diagnostic.phase='transport';
   const response=await fetchImpl(base+path,{method,headers:{...headers,...(prefer?{Prefer:prefer}:{})},
    ...(payload===undefined?{}:{body:payload}),cache:"no-store",...(signal?{signal}:{})});
+  if(diagnostic){diagnostic.phase='response';diagnostic.httpStatus=response.status;}
   if(!response.ok)throw Error("HOLDER_STORE_HTTP_"+response.status);
-  return response.status===204?null:response.json();
+  if(diagnostic)diagnostic.phase='response_parse';
+  const result=response.status===204?null:await response.json();
+  if(diagnostic)diagnostic.phase='response_validation';
+  return result;
  }
  async function rpc(name,args,options={}){
   const response=await request("rpc/"+name,{method:"POST",body:args,...options});

@@ -140,8 +140,7 @@ test('bad commit identity reports uncertainty without retry',async()=>{
  const r=await runPinnedHolderRecovery(args(s));assert.equal(r.status,'COMMIT_OUTCOME_UNKNOWN');assert.equal(r.retryAllowed,false);assert.equal(r.reconciliationRequired,true);assert.equal(n,1);
 });
 
-test('eight-megabyte checkpoint preserves retained history through the real worker',async()=>{
- const s=new Store(),cp=s.row.checkpoint;
+function enlargeCheckpoint(cp){
  // Synthetic, not copied live evidence. Parent reported 7.6–8.3 MB checkpoints.
  const evidence=cp.networkEvidence;
  evidence.transfers=Array.from({length:9500},(_,i)=>({signature:String(i).padStart(88,'0'),slot:450097547,
@@ -150,6 +149,12 @@ test('eight-megabyte checkpoint preserves retained history through the real work
  evidence.processed={};
  for(let i=0;i<15000;i++){const signature=String(i).padStart(88,'0');cp.signatures[signature]='checked';evidence.processed[signature]={valid:true,transferCount:i<9500?1:0};}
  const bytes=Buffer.byteLength(JSON.stringify(cp));assert.ok(bytes>=7_500_000&&bytes<=9_000_000,`fixture bytes ${bytes}`);
+ return bytes;
+}
+
+test('eight-megabyte checkpoint preserves retained history through the real worker',async()=>{
+ const s=new Store(),cp=s.row.checkpoint;
+ const bytes=enlargeCheckpoint(cp),evidence=cp.networkEvidence;
  const original=JSON.stringify(evidence),snapshot=JSON.stringify(cp.snapshot);
  const start=performance.now();const result=await runPinnedHolderRecovery(args(s));
  assert.equal(result.status,'partial');assert.equal(result.requestCount,2);
@@ -167,6 +172,50 @@ function fakeClock(){
  },get pending(){return timers.size;}};
  return clock;
 }
+for(const mode of ['success','http_rejected','transport_failed','parse_failed','invalid_response','response_mismatch','serialization_failed','serialization_deadline','commit_deadline','saved_response_deadline'])test('large JSON transport commit boundary: '+mode,async()=>{
+ const model=new Store(),bytes=enlargeCheckpoint(model.row.checkpoint),before=structuredClone(model.row.checkpoint),clock=fakeClock();
+ let commits=0,payloadBytes=0;
+ const store=createHolderJobStore({url:'https://offline.invalid',key:'SECRET_NEVER_REPORT',fetchImpl:async(url,o)=>{
+  if(o.method==='GET')return Response.json([await model.getById(ids[0])]);
+  const b=JSON.parse(o.body);let row;
+  if(url.endsWith('/glitch_claim_holder_scan'))row=await model.claim(b.p_job_id,b.p_worker,b.p_lease_seconds);
+  else if(url.endsWith('/glitch_renew_holder_scan'))row=await model.renew(b.p_job_id,b.p_worker,b.p_expected_version,b.p_lease_seconds);
+  else{
+   commits++;payloadBytes=Buffer.byteLength(o.body);assert.ok(payloadBytes>bytes);
+   assert.equal(b.p_expected_version,2136);assert.deepEqual(b.p_checkpoint.networkEvidence,before.networkEvidence);
+   if(mode==='http_rejected')return new Response('PRIVATE_DATABASE_BODY',{status:413});
+   if(mode==='transport_failed')throw Error('SECRET_URL_AND_KEY');
+   if(mode==='commit_deadline'){clock.advance(8000);throw o.signal.reason;}
+   if(mode==='parse_failed')return new Response('PRIVATE_INVALID_JSON');
+   if(mode==='invalid_response')return Response.json([]);
+   row=await model.commit(b.p_job_id,b.p_worker,b.p_expected_version,b.p_checkpoint,b.p_summary,b.p_status);
+   if(mode==='response_mismatch')row.version++;
+   if(mode==='saved_response_deadline'){clock.advance(8000);throw o.signal.reason;}
+  }
+  return Response.json(row);
+ }});
+ const commit=store.commit;
+ store.commit=(id,worker,version,cp,summary,status,options)=>{
+  if(mode==='serialization_failed')summary.unserializable=1n;
+  if(mode==='serialization_deadline')Object.defineProperty(summary,'toJSON',{value:()=>{clock.advance(8000);return {};}});
+  return commit(id,worker,version,cp,summary,status,options);
+ };
+ const result=await runPinnedHolderRecovery({...args(store),budget:createHolderRecoveryBudget(clock)});
+ if(mode==='success'){assert.equal(result.status,'partial');assert.equal(model.row.version,2137);return;}
+ assert.equal(result.status,'COMMIT_OUTCOME_UNKNOWN');assert.equal(result.reconciliationRequired,true);assert.equal(result.retryAllowed,false);
+ assert.equal(commits,mode.startsWith('serialization_')?0:1);
+ const saved=['response_mismatch','saved_response_deadline'].includes(mode);
+ assert.equal(model.row.version,saved?2137:2136);if(!saved)assert.deepEqual(model.row.checkpoint,before);
+ assert.deepEqual(model.row.checkpoint.networkEvidence,before.networkEvidence);assert.equal(model.row.summary.score,9.93);
+ const expected={http_rejected:['response','http_rejected'],transport_failed:['transport','transport_or_store_failed'],parse_failed:['response_parse','response_parse_failed'],invalid_response:['response_validation','response_invalid'],response_mismatch:['response_validation','response_mismatch'],serialization_failed:['serialization','serialization_failed'],serialization_deadline:['before_transport','deadline'],commit_deadline:['transport','deadline'],saved_response_deadline:['transport','deadline']}[mode];
+ assert.deepEqual([result.commitDiagnostic.phase,result.commitDiagnostic.category],expected);
+ assert.equal(result.commitDiagnostic.httpStatus,mode==='http_rejected'?413:['parse_failed','invalid_response','response_mismatch'].includes(mode)?200:null);
+ if(mode==='serialization_failed')assert.equal(result.commitDiagnostic.requestBytes,null);
+ else if(mode==='serialization_deadline')assert.ok(Number.isSafeInteger(result.commitDiagnostic.requestBytes)&&result.commitDiagnostic.requestBytes>bytes);
+ else assert.equal(result.commitDiagnostic.requestBytes,payloadBytes);
+ for(const secret of ['SECRET','PRIVATE','offline.invalid','historical','transfers'])assert.ok(!JSON.stringify(result).includes(secret));
+ assert.equal(clock.pending,0);
+});
 test('slow successful provider stops at 30s and persists prior progress within reserved time',async()=>{
  const clock=fakeClock(),s=new Store(),before=structuredClone(s.row.checkpoint),started=[];
  for(const name of ['getById','claim','renew','commit']){const fn=s[name].bind(s);s[name]=async(...a)=>{clock.advance(7000);return fn(...a);};}
