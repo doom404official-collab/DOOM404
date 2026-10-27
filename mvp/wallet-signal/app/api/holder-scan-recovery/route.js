@@ -16,7 +16,8 @@ function authorized(request){
 export async function POST(request){
  const budget=createHolderRecoveryBudget();
  if(process.env.VERCEL_ENV!=="preview"||process.env.VERCEL_GIT_COMMIT_REF!=="fix/glitch-recovery-preflight-20261027"||process.env.GLITCH_HOLDER_RECOVERY_ENABLED!=="true")return NextResponse.json({error:"Recovery disabled"},{status:503});
- if(process.env.GLITCH_HOLDER_WORKER_ENABLED!=="true")return NextResponse.json({error:"Worker not enabled"},{status:503});
+ // Dedicated recovery opt-in is independent of ordinary worker activation.
+ // Keep GLITCH_HOLDER_WORKER_ENABLED absent/false for recovery-only use.
  if(!authorized(request))return NextResponse.json({error:"Unauthorized"},{status:401});
  let jobId,mint,expectedVersion;
  try{
