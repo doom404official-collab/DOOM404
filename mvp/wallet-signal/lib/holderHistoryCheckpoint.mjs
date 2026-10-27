@@ -16,6 +16,7 @@ export function recordHistoryPage(checkpoint,{wallet,page}){
  if(!page||page.wallet!==wallet||!Array.isArray(page.signatures))throw Error("INVALID_PAGE");
  if(state.cursor&&state.cursor===page.nextCursor&&!page.providerPageExhausted)throw Error("PAGINATION_STALLED");
  state.cursor=page.nextCursor;
+ if(page.oldestSlot!==null&&page.oldestSlot!==undefined)state.oldestSlot=page.oldestSlot;
  state.pages++;
  state.signaturesSeen+=page.entriesSeen;
  state.exhausted=page.providerPageExhausted;
