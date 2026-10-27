@@ -50,3 +50,11 @@ test("getById rejects ambiguous or malformed rows instead of treating them as a 
   await assert.rejects(store.getById("job"),{message:"INVALID_HOLDER_JOB_RESPONSE"});
  }
 });
+
+test('RPC distinguishes SQL no-match from malformed transport success',async()=>{
+ let payload=null;
+ const store=createHolderJobStore({url:'https://offline.invalid',key:'fixture',fetchImpl:async()=>({ok:true,status:200,json:async()=>payload})});
+ assert.equal(await store.claim('job','worker'),null);
+ payload={id:null};assert.equal(await store.claim('job','worker'),null);
+ for(const bad of [{},[],false,{id:12}]){payload=bad;await assert.rejects(store.commit('job','worker',1,{}, {},'partial'),/INVALID_HOLDER_RPC_RESPONSE/);}
+});

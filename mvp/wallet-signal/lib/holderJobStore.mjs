@@ -12,12 +12,14 @@ export function createHolderJobStore({url=process.env.SUPABASE_URL,key=process.e
  }
  async function rpc(name,args){
   const response=await request("rpc/"+name,{method:"POST",body:args});
-  return response&&response.id?response:null;
+  if(response===null||response?.id===null)return null;
+  if(!response||typeof response!=="object"||Array.isArray(response)||typeof response.id!=="string"||!response.id)throw Error("INVALID_HOLDER_RPC_RESPONSE");
+  return response;
  }
  return {
   async getById(jobId){
    if(typeof jobId!=="string"||!jobId.trim())throw Error("INVALID_HOLDER_JOB_ID");
-   const rows=await request(table+"?id=eq."+encodeURIComponent(jobId)+"&select=id,mint,status,checkpoint,summary,updated_at,version&limit=1");
+   const rows=await request(table+"?id=eq."+encodeURIComponent(jobId)+"&select=id,mint,status,checkpoint,summary,updated_at,version,lease_owner,lease_expires_at&limit=1");
    if(!Array.isArray(rows)||rows.length>1||(rows.length===1&&(!rows[0]||typeof rows[0]!=="object"||Array.isArray(rows[0]))))throw Error("INVALID_HOLDER_JOB_RESPONSE");
    return rows[0]||null;
   },

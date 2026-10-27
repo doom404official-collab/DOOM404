@@ -4,12 +4,12 @@ Status: HOLD — offline engineering only. This document does not authorize work
 
 ## Holder
 Frozen mint: 98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump.
-Two existing running-status jobs have expired leases:
+Historical observations only (not fresh execution authority): two running-status jobs had expired leases:
 - c670f393-31b0-470c-a01f-cb2b813a1219, version 2134, nextWalletIndex 18, 20 holders.
 - d07c0256-b472-4089-a237-99ed5e5c8cc4, version 1812, nextWalletIndex 4, 20 holders.
 Both have archiveCompletenessProven=false. Do not reset or merge their checkpoints.
 
-The deployed tick API currently calls getNextRunnable(), which selects the oldest eligible job rather than a pinned job. Implement a separate explicitly pinned recovery path with an allowlisted job ID, mint and expected checkpoint version. Preserve the atomic claim, renewal and commit RPCs. Reject mismatches and concurrent claims fail-closed. Do not change the general scheduled worker's selection policy without a separate review.
+The deployed tick API currently calls getNextRunnable(), which selects the oldest eligible job rather than a pinned job. Use the separately gated explicitly pinned recovery path described below with an allowlisted job ID, mint and expected checkpoint version. Preserve the atomic claim, renewal and commit RPCs. Reject mismatches and concurrent claims fail-closed. Do not change the general scheduled worker's selection policy without a separate review.
 
 Offline acceptance:
 1. Correct pinned job selects only that job.
@@ -34,3 +34,82 @@ Offline acceptance:
 ## Operational gates
 Check GitHub workflow enabled state, final scheduled-run logs, Vercel preview commit and worker configuration, and Supabase snapshot/version before any approved bounded dispatch.
 Liquidity LQ-08 remains offline-only. No recurring scheduling or production deployment is authorized.
+
+## Holder H03 implementation evidence — 2026-10-27
+
+Draft PR #74 remains offline-only. Consolidated `runPinnedHolderRecovery` replaces both V1 and V2; V2 and its exception-only “valid scan” test are removed. `POST /api/holder-scan-recovery` calls this adapter explicitly. It requires Preview, the recovery branch ref, the new `GLITCH_HOLDER_RECOVERY_ENABLED=true` opt-in, the existing worker-enabled flag and existing constant-time worker-token authentication. No flag or credential was changed. No workflow calls the new endpoint. No scheduler selection changes.
+
+Only the two job IDs above and the frozen mint are accepted. Caller must supply a freshly reviewed expected version; historical 2134/1812 are fixture examples, not permission to execute. Each job retains its own checkpoint. Max 20 provider calls, no transport retry, lease 90–180 seconds (route fixes 90). Invalid dependencies/budgets, missing or inconsistent lease metadata, active leases, malformed engine state and non-false archive flags fail closed. `getById` now includes owner/expiry. Explicit wrapper methods preserve prototype-bound stores.
+
+### Checkpoint and lease contract
+- Read returns complete lease metadata and checkpoint; adapter clones it before any work.
+- Existing SQL claim increments version **v → v+1** and is atomic on runnable status and null/expired lease. It has no expected-version argument. A concurrent change between read/claim can therefore acquire a lease, but exact post-claim job/mint/version/checkpoint comparison stops before provider RPC. No unsafe release/reset is attempted; let the short lease expire and obtain fresh authority. A schema-level compare-and-claim enhancement is outside this no-migration task.
+- Worker scans a private checkpoint copy. Its existing round-robin cursors, checked/pending signatures, failed history, edges, network evidence and snapshot survive. No checkpoint combining, pruning or scoring promotion is added.
+- Renewal checks owner, active expiry and exact version **v+1 → v+2**, with exact checkpoint equality; false or malformed renewal cannot commit. Provider requests stop once the observed lease expires; database time remains authoritative for renewal/commit.
+- Commit uses **v+2 → v+3**, preserving pre-existing summary fields (including score/methodology). Response must match identity, version, status, released lease, checkpoint and summary. SQL no-match is VERSION_CONFLICT. Transport failure or malformed success is COMMIT_OUTCOME_UNKNOWN, reconciliationRequired=true, retryAllowed=false (HTTP 503). Inspect persisted job/version/checkpoint read-only before any further authorized attempt; this path does not auto-retry or infer rollback.
+- A provider interruption can persist bounded progress through normal renewal/commit. Process termination before commit leaves prior persisted checkpoint intact; resume only after lease expiry with a fresh version. Lost commit responses may have persisted: never replay the old request.
+- Existing worker status `complete` means provider-observed exhaustion only. `archiveCompletenessProven:false` is retained; no historical completeness or accepted score follows.
+
+### Verification
+- 60 focused offline tests: `node --test tests/holder-pinned-recovery.test.mjs tests/holder-recovery*.test.mjs tests/holder-job-store.test.mjs`.
+- Actual history engine + realistic synthetic 20-holder checkpoint fixtures at separate cursor positions 18/4; actual REST store with mocked transport; prototype-bound store, both IDs, malformed metadata, race/concurrent claims, renewal loss/mismatch, stale commit, provider/process interruption, uncertain commits (persisted and not persisted), exact 20-call ceiling, duplicate decoded transfer replay and immutable prior history/snapshot/score.
+- Existing disposable PostgreSQL suite: `PGHOST=127.0.0.1 PGDATABASE=glitch_controlled_merge_test PSQL=/tmp/holder-psql python3 tests/fixtures/holder-atomic-merge/run-disposable-tests.py`: **25 checks passed**. PostgreSQL 17 container with `--network none`; wrapper executes local container psql. Tests use checked-in claim/renew/commit SQL fixtures, concurrency/rollback/expired lease/stale worker/readback cases. This verifies fixture SQL, not deployed schema, credentials or hosted database permissions. No Supabase branch/project created.
+- Final `NODE_OPTIONS=--require=/tmp/holder-offline-guard.cjs NEXT_TELEMETRY_DISABLED=1 npm run build`: **700/700 smoke tests passed**, Next build/lint/type phase passed, persistence helper SKIPPED_NOT_OPTED_IN. Guard blocks socket connects and default global fetch. Installed dependencies reused (Node 24); not a fresh dependency-install test. Existing compiled evidence-route script passed **21 no-network cases**; compiled recovery handler returned disabled/503 with zero network. No standalone lint/type script is configured. `git diff --check` passed.
+
+### Branch reconciliation
+Assessment already contains snapshot-validity, controlled-merge uncertain-outcome, reconciliation-provenance, strict-flags and disposable-PostgreSQL branch work (ancestor checks passed). No duplicate implementation or merge added. Separate `fix/holder-tick-identity` (4dd8478) improves ordinary tick observability; it is not integrated here. Dashboard-integration, concentration-scoring and workflow-syntax branches remain separate; their source was inventoried, not merged. Recovery does not modify ordinary tick selection or introduce competing merge/reconciliation logic.
+
+### Workflow and trigger inventory
+Source reviewed at recovery base 1207f4c8, assessment 58195222, main fe5b845b and all nine existing Holder branches. Source schedules below are not proof that workflows are currently enabled. No dispatch/schedule edit occurred.
+
+- Assessment/recovery `glitch-holder-worker-auto`: hourly minute 17; manual worker shares `glitch-holder-investigation`, cancel-in-progress=false. Both call ordinary tick; automatic can start a missing job. Recovery never does.
+- Main `glitch-holder-worker-controlled-test`: minute 5,17,29,41,53; four bounded ordinary ticks; `glitch-holder-investigation`. Main “auto” is manual-only; main manual-worker YAML lacks that concurrency group (assessment copy has it). Cross-source discrepancy retained, not silently edited.
+- Main `glitch-controlled-network-merge`: manual, same holder concurrency group, three verified signatures via atomic claim/commit; no provider RPC. Existing reconciliation and frozen-cross-job tools are read-only/provenance-guarded; they are not substitutes for fresh pinned recovery authority.
+- Evidence validation: assessment `glitch-evidence-worker`, main `glitch-evidence-validation-manual`, every 30 minutes, separate `glitch-evidence-validation` group. Per-job/signature evidence leases are separate from the scan-job lease. This group does not serialize against recovery; atomic scan claim/renew/commit remains required.
+- History artifact scanner: manual, no workflow concurrency group; up to two 65-request batches, separate artifact checkpoint. Not the 20-call database recovery path; never used here.
+- Read-only diagnostics and snapshot/assessment writers are also inventoried below; “manual” does not mean harmless and none was invoked.
+
+Read-only run metadata: latest 100 runs returned no newer Holder scheduled run than **39752751653** (2026-10-22): successful, one partial tick with 20 requests, then idle; final running, 11,540 checked, 2,862 pending, 6 exhausted wallets, historyComplete=false. Evidence run **39748276525** successful: six requests/claims/processed, zero lease loss. These are historical logs, not fresh checkpoint or lease authority. Workflow enabled-state listing was unavailable: connector rejected `/actions/workflows` as unsupported; `gh api` returned Forbidden. Neither executed a mutation. Do not infer disabled schedules from missing newer runs.
+
+Publication safety: normal PR runs for the recovery base were 40451488620 (Scanner checks), 40451488550 (Evidence validation tests), 40451488526 (Sprint 1), all success. Source runs offline tests/build and disposable Postgres only. Branch-specific live push workflows do not match the recovery branch. Build persistence helper requires a different Creator branch and is skipped here. No vercel.json cron/config was found; all API handlers are request-driven. New recovery endpoint defaults disabled and no existing workflow targets it. Both projects previously reported Preview Ready on PR #74; exact new-commit statuses must be checked after publication. No production promotion, Preview API invocation or hosted writes authorized.
+
+| Source | Workflow | Trigger / concurrency declaration |
+|---|---|---|
+| assessment/recovery | `glitch-diab-cpi-readonly.yml` | workflow_dispatch: |
+| assessment/recovery | `glitch-evidence-validation-tests.yml` | workflow_dispatch:; pull_request:; push: |
+| assessment/recovery | `glitch-evidence-worker.yml` | workflow_dispatch:; schedule:; - cron: '*/30 * * * *'; group: glitch-evidence-validation |
+| assessment/recovery | `glitch-holder-assessment-tests.yml` | workflow_dispatch:; push: |
+| assessment/recovery | `glitch-holder-history-checkpoint.yml` | workflow_dispatch: |
+| assessment/recovery | `glitch-holder-worker-auto.yml` | workflow_dispatch:; schedule:; - cron: '17 * * * *'; group: glitch-holder-investigation |
+| assessment/recovery | `glitch-holder-worker-manual.yml` | workflow_dispatch:; group: glitch-holder-investigation |
+| assessment/recovery | `glitch-liquidity-evidence-worker.yml` | workflow_dispatch:; group: glitch-liquidity-evidence-${{ inputs.mint }} |
+| main | `glitch-controlled-network-merge.yml` | workflow_dispatch:; group: glitch-holder-investigation |
+| main | `glitch-diab-cpi-readonly.yml` | workflow_dispatch: |
+| main | `glitch-diab-vault-observation.yml` | workflow_dispatch: |
+| main | `glitch-evidence-validation-manual.yml` | workflow_dispatch:; schedule:; - cron: "*/30 * * * *"; group: glitch-evidence-validation |
+| main | `glitch-frozen-cross-job-readonly.yml` | workflow_dispatch: |
+| main | `glitch-holder-assessment-readonly.yml` | workflow_dispatch: |
+| main | `glitch-holder-h06-alchemy.yml` | workflow_dispatch:; group: glitch-holder-h06-alchemy-readonly |
+| main | `glitch-holder-h06-counterpart-roles.yml` | workflow_dispatch: |
+| main | `glitch-holder-h06-pump-operation.yml` | workflow_dispatch: |
+| main | `glitch-holder-h06-sensitivity.yml` | workflow_dispatch: |
+| main | `glitch-holder-h06-vault-history.yml` | workflow_dispatch:; group: glitch-h06-vault-readonly |
+| main | `glitch-holder-history-checkpoint.yml` | workflow_dispatch: |
+| main | `glitch-holder-worker-auto.yml` | workflow_dispatch:; group: glitch-holder-investigation |
+| main | `glitch-holder-worker-controlled-test.yml` | workflow_dispatch:; schedule:; - cron: '5,17,29,41,53 * * * *'; group: glitch-holder-investigation |
+| main | `glitch-holder-worker-manual.yml` | workflow_dispatch: |
+| main | `glitch-liquidity-evidence-worker.yml` | workflow_dispatch:; group: glitch-liquidity-evidence-${{ inputs.mint }} |
+| main | `helius-historical-throughput.yml` | workflow_dispatch:; group: helius-live-diagnostic |
+| main | `helius-low-impact-diagnostic.yml` | workflow_dispatch:; group: helius-low-impact-diagnostic |
+| main | `helius-staged-concurrency.yml` | workflow_dispatch:; group: helius-live-diagnostic |
+| main | `holder-concentration-live-assessment.yml` | workflow_dispatch: |
+| main | `holder-network-live-diagnostic.yml` | workflow_dispatch: |
+| main | `holder-snapshot-rpc-diagnostic.yml` | workflow_dispatch: |
+| main | `shared-rpc-capacity-diagnostic.yml` | workflow_dispatch: |
+| main | `top20-consolidated-assessment.yml` | workflow_dispatch: |
+| main | `top20-single-run.yml` | workflow_dispatch:; group: top20-${{ inputs.snapshot_id }} |
+| main | `top20-snapshot-write-read.yml` | workflow_dispatch: |
+| main | `top20-vault-connection.yml` | workflow_dispatch: |
+
+### Remaining H03 acceptance / proposed Issue #66 delta
+H03 remains IN_PROGRESS; Holder remains **4/11** accepted. Draft pinned recovery now has offline worker/store/lease coverage and disposable SQL evidence, but neither live job is complete or has an approved bounded cutoff. Owner authorization, fresh separate checkpoints/versions/leases, actual deployed SQL/Preview configuration, workflow enabled-state/concurrency and provider budget must be verified before any bounded live attempt. H04/H05 historical coverage/ownership, H08 retain-19-versus-versioned-replacement decision, H09 calibration/promotion, H10 dashboard acceptance and H11 release remain open/gated. H06 infrastructure classification only and H07 accepted observations remain unchanged; no repeat RPC.
