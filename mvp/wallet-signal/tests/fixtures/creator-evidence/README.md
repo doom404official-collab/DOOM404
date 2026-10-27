@@ -32,3 +32,11 @@ python3 mvp/wallet-signal/tests/fixtures/creator-evidence/run-runtime.py
 ```
 
 Run `npm ci --ignore-scripts` in the app first if dependencies are absent. The harness uses the installed Node binary and app directory as read-only binds, PostgreSQL data in tmpfs, no published ports and `--network none`. It generates only ephemeral local self-signed TLS fixtures and synthetic database passwords, never production credentials. It tests actual driver AbortSignal/query-timeout behavior, TLS/SCRAM, exact proposed invoker grants, concurrent claims, cancellation, committed-after-disconnect reconciliation, bounded handshake/query lifetime and full crypto/SQL composition with mocked Storage. It stops its container even on failure and refuses to reuse an existing container. No hosted endpoint or environment credential is accepted as input.
+
+Closed setup and non-destructive closeout:
+
+```sh
+python3 mvp/wallet-signal/tests/fixtures/creator-evidence/run-closed-setup.py
+```
+
+This fresh network-none/tmpfs fixture executes the exact closed setup candidate, checks audit/collision rollback, zero connection admission, exact role memberships, restrictive RLS even under hostile permissive policies, and non-destructive closeout. Its Storage/Auth stand-in supplies synthetic UIDs only locally; actual hosted UIDs are never fabricated. The harness waits for the final PostgreSQL process (not the temporary initialization server) and always stops the container.
