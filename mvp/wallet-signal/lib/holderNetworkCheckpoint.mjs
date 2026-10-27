@@ -17,7 +17,7 @@ export function recordHolderNetworkTransaction(checkpoint,{transaction,signature
 }
 export function summarizeHolderNetworkCheckpoint(checkpoint,{snapshotProvenanceVerified=false}={}){
  const unavailable=reason=>({status:'unavailable',score:null,reason,methodology:'TOP20_NETWORK_V1',historyComplete:false,calibrated:false,commonOwnershipEstablished:false});
- if(!snapshotProvenanceVerified)return unavailable('SNAPSHOT_PROVENANCE_UNVERIFIED');
+ if(snapshotProvenanceVerified!==true)return unavailable('SNAPSHOT_PROVENANCE_UNVERIFIED');
  const e=checkpoint.networkEvidence;
  if(!e||e.version!==1||!object(e.processed)||!Array.isArray(e.transfers))return unavailable('NETWORK_TRANSFER_EVIDENCE_MISSING');
  if(e.snapshotIdentity!==holderNetworkSnapshotIdentity(checkpoint))return unavailable('NETWORK_SNAPSHOT_IDENTITY_MISMATCH');

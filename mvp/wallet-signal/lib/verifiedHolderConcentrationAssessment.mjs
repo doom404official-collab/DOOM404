@@ -11,7 +11,7 @@ export function assessVerifiedHolderConcentration({checkpoint,evidenceRows=[],cu
  const uniqueAccounts=holders.every(h=>typeof h.tokenAccount==="string"&&h.tokenAccount.length>0)&&new Set(holders.map(h=>h.tokenAccount)).size===20;
  // Raw-backed shares are quantized to four decimals; avoid binary summation overflow at 100%.
  const totalShare=Math.round(holders.reduce((sum,h)=>sum+(typeof h.sharePct==="number"?h.sharePct:NaN),0)*10000)/10000;
- let rawEvidenceValid=false;
+ let rawEvidenceValid=false,rawTop20SharePct;
  const rawPresent=checkpoint.snapshot!==undefined||holders.some(h=>h.amountRaw!==undefined);
  if(rawPresent){
   const snapshot=checkpoint.snapshot;
@@ -22,11 +22,14 @@ export function assessVerifiedHolderConcentration({checkpoint,evidenceRows=[],cu
    Array.isArray(snapshot.ownerSlots)&&snapshot.ownerSlots.length===holders.length&&snapshot.ownerSlots.every(s=>slot(s)&&s>=snapshot.supplySlot);
   if(rawEvidenceValid){
    const supply=BigInt(snapshot.supplyRaw);
-   rawEvidenceValid=holders.reduce((sum,h)=>sum+BigInt(h.amountRaw),0n)<=supply&&holders.every(h=>Number(BigInt(h.amountRaw)*1000000n/supply)/10000===h.sharePct);
+   const rawTotal=holders.reduce((sum,h)=>sum+BigInt(h.amountRaw),0n);
+   rawTop20SharePct=Number(rawTotal*1000000n/supply)/10000;
+   rawEvidenceValid=rawTotal<=supply&&holders.every(h=>Number(BigInt(h.amountRaw)*1000000n/supply)/10000===h.sharePct);
   }
  }
  const validSnapshot=validShares&&ownerResolved&&uniqueAccounts&&totalShare<=100&&rawEvidenceValid;
- const top20SharePct=validSnapshot?totalShare:undefined;
+ // Quantize the raw aggregate once; summing individually truncated shares loses mass.
+ const top20SharePct=validSnapshot?rawTop20SharePct:undefined;
  // Graph evidence establishes observed connections, not history exhaustion.
  // The authoritative 35-point network scorer must provide its independently
  // validated result before this component can be numerically populated.
