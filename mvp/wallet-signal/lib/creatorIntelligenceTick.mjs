@@ -17,6 +17,7 @@ import { assessCreatorInitialAllocation } from './creatorInitialAllocationEviden
 import { assessCreatorHistoricalCoverage } from './creatorHistoricalCoverage.mjs';
 import { summarizeCreatorAcquisitionLedger } from './creatorAcquisitionLedger.mjs';
 import { produceCreatorLaunchDistributions } from './creatorLaunchDistributionProducer.mjs';
+import { inspectCreatorLaunchDistributionTransaction } from './creatorLaunchDistributionProtocol.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -92,6 +93,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
     const origin=previous.originRecheck;
     if(origin?.rechecked===true&&origin.signature){
      const creation=await rpc.fetchTransaction(origin.signature);
+     state={...state,launchDistributionProtocolReview:inspectCreatorLaunchDistributionTransaction({mint,creator:creators[0],signature:origin.signature,transaction:creation})};
      const recovered=extractCreatorLaunchTime({transaction:creation,
       creationSignature:origin.signature,verifiedSignature:origin.signature});
      if(recovered.status==='CREATION_TIMESTAMP_VERIFIED'){
@@ -134,9 +136,10 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
     state={...previous,lastError:null,originRecheck:review,identificationStatus:'ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW',lastTickAt:new Date().toISOString()};
    }else{
    const creationTx=await rpc.fetchTransaction(review.signature);
+   state={...state,launchDistributionProtocolReview:inspectCreatorLaunchDistributionTransaction({mint,creator:creators[0],signature:review.signature,transaction:creationTx})};
    const launch=extractCreatorLaunchTime({transaction:creationTx,creationSignature:review.signature,verifiedSignature:evidence[0].signature});
    const holdings=await investigateCreatorHoldings({mint,creator:creators[0],rpc});
-   state={...previous,lastError:null,originRecheck:review,identificationStatus:'ONCHAIN_CREATOR_RECHECKED',launchTimeEvidence:launch,
+   state={...state,lastError:null,originRecheck:review,identificationStatus:'ONCHAIN_CREATOR_RECHECKED',launchTimeEvidence:launch,
     ...(launch.launchTimestamp?{launchTimestamp:launch.launchTimestamp}:{}),holdings,lastTickAt:new Date().toISOString()};
    stage='selling';
    }
