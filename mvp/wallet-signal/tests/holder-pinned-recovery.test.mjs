@@ -1,3 +1,5 @@
+import {holderNetworkSnapshotIdentity} from '../lib/holderNetworkCheckpoint.mjs';
+import {createHolderRecoveryBudget} from '../lib/holderRecoveryBudget.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHolderHistoryCheckpoint} from '../lib/holderHistoryCheckpoint.mjs';
@@ -12,7 +14,7 @@ function fixture(i=0){
  checkpoint.signatures={historical:'checked',retry:'pending'};
  checkpoint.edges={'wallet0|wallet1':{walletA:'wallet0',walletB:'wallet1',signatures:['historical']}};
  checkpoint.failedSignatures={oldFailure:'retained'};
- checkpoint.networkEvidence={version:1,snapshotIdentity:'retained-fixture-identity',processed:{historical:{valid:true,transferCount:1}},transfers:[{signature:'historical',amountRaw:'7'}],retentionLimited:false};
+ checkpoint.networkEvidence={version:1,snapshotIdentity:holderNetworkSnapshotIdentity(checkpoint),processed:{historical:{valid:true,transferCount:1}},transfers:[{signature:'historical',amountRaw:'7'}],retentionLimited:false};
  for(const w of Object.values(checkpoint.wallets)){w.pages=12;w.signaturesSeen=1200;w.cursor='old-cursor';}
  return {id:ids[i],mint,version:[2134,1812][i],status:'running',lease_owner:'expired-worker',lease_expires_at:'2026-01-01T00:00:00Z',checkpoint,summary:{score:9.93,scorePromoted:false,methodology:'TOP20_NETWORK_V1'}};
 }
@@ -142,10 +144,11 @@ test('eight-megabyte checkpoint preserves retained history through the real work
  const s=new Store(),cp=s.row.checkpoint;
  // Synthetic, not copied live evidence. Parent reported 7.6–8.3 MB checkpoints.
  const evidence=cp.networkEvidence;
- evidence.transfers=Array.from({length:13000},(_,i)=>({signature:String(i).padStart(88,'2'),slot:450097547,
+ evidence.transfers=Array.from({length:9500},(_,i)=>({signature:String(i).padStart(88,'0'),slot:450097547,
   from:'3'.repeat(44),to:'4'.repeat(44),assetType:'TOKEN',mint,amountRaw:'12345678901234567890',
   verifiedOnChain:true,transferVerified:true,sourceTokenAccount:'5'.repeat(44),destinationTokenAccount:'6'.repeat(44)}));
- for(let i=0;i<15000;i++)cp.signatures[String(i).padStart(88,'2')]='checked';
+ evidence.processed={};
+ for(let i=0;i<15000;i++){const signature=String(i).padStart(88,'0');cp.signatures[signature]='checked';evidence.processed[signature]={valid:true,transferCount:i<9500?1:0};}
  const bytes=Buffer.byteLength(JSON.stringify(cp));assert.ok(bytes>=7_500_000&&bytes<=9_000_000,`fixture bytes ${bytes}`);
  const original=JSON.stringify(evidence),snapshot=JSON.stringify(cp.snapshot);
  const start=performance.now();const result=await runPinnedHolderRecovery(args(s));
@@ -153,4 +156,78 @@ test('eight-megabyte checkpoint preserves retained history through the real work
  assert.equal(JSON.stringify(s.row.checkpoint.networkEvidence),original);assert.equal(JSON.stringify(s.row.checkpoint.snapshot),snapshot);
  assert.equal(s.row.summary.score,9.93);assert.equal(s.row.checkpoint.signatures.retry,'pending');
  console.log(`Large synthetic recovery checkpoint: ${bytes} bytes; ${Math.round(performance.now()-start)} ms (local diagnostic only)`);
+});
+
+function fakeClock(){
+ let time=0,next=0;const timers=new Map();
+ const clock={now:()=>time,schedule:(fn,ms)=>{const id=++next;timers.set(id,{fn,at:time+ms});return id;},cancel:id=>timers.delete(id),advance(ms){
+  const end=time+ms;
+  while(true){const due=[...timers].filter(([,t])=>t.at<=end).sort((a,b)=>a[1].at-b[1].at)[0];if(!due)break;time=due[1].at;timers.delete(due[0]);due[1].fn();}
+  time=end;
+ },get pending(){return timers.size;}};
+ return clock;
+}
+test('slow successful provider stops at 30s and persists prior progress within reserved time',async()=>{
+ const clock=fakeClock(),s=new Store(),before=structuredClone(s.row.checkpoint),started=[];
+ for(const name of ['getById','claim','renew','commit']){const fn=s[name].bind(s);s[name]=async(...a)=>{clock.advance(7000);return fn(...a);};}
+ let cancelled=false;
+ const r=await runPinnedHolderRecovery({...args(s),maxRequests:20,budget:createHolderRecoveryBudget(clock),rpc:async(method,params,{signal})=>{
+  started.push(clock.now());signal.addEventListener('abort',()=>cancelled=true,{once:true});clock.advance(7000);return method==='getTransaction'?null:[];
+ }});
+ assert.deepEqual(started,[14000,21000,28000]);assert.equal(cancelled,true);assert.equal(r.status,'partial');assert.equal(r.requestCount,3);
+ assert.equal(s.row.summary.reason,'RECOVERY_PROVIDER_TIMEOUT');assert.ok(clock.now()<50000);assert.equal(clock.pending,0);
+ assert.deepEqual(s.row.checkpoint.networkEvidence,before.networkEvidence);assert.deepEqual(s.row.checkpoint.snapshot,before.snapshot);assert.equal(s.row.checkpoint.signatures.retry,'pending');
+});
+test('expired provider budget does not start a request',async()=>{
+ const clock=fakeClock(),budget=createHolderRecoveryBudget(clock);clock.advance(30000);let calls=0;
+ await assert.rejects(budget.run('PROVIDER',()=>calls++,{provider:true}),/PROVIDER_TIMEOUT/);assert.equal(calls,0);assert.equal(clock.pending,0);
+});
+test('hung provider is aborted and late completion cannot mutate committed progress',async()=>{
+ const clock=fakeClock(),s=new Store();let release,signalSeen;
+ const task=runPinnedHolderRecovery({...args(s),budget:createHolderRecoveryBudget(clock),rpc:(method,params,{signal})=>{signalSeen=signal;return new Promise(resolve=>{release=resolve;});}});
+ while(!release)await Promise.resolve();clock.advance(8000);
+ const result=await task;assert.equal(result.status,'partial');assert.equal(signalSeen.aborted,true);
+ const saved=structuredClone(s.row.checkpoint);release([{signature:'late',slot:1,err:null}]);await Promise.resolve();await Promise.resolve();
+ assert.deepEqual(s.row.checkpoint,saved);assert.equal(saved.signatures.retry,'pending');assert.equal(clock.pending,0);
+});
+for(const phase of ['fetch','body'])for(const stage of ['getById','claim','renew','commit'])test('hung '+stage+' aborts actual store '+phase,async()=>{
+ const clock=fakeClock(),model=new Store(),before=structuredClone(model.row.checkpoint);let blockedSignal,resolveBody;const calls=[];
+ const names={glitch_claim_holder_scan:'claim',glitch_renew_holder_scan:'renew',glitch_commit_holder_scan:'commit'};
+ const store=createHolderJobStore({url:'https://offline.invalid',key:'fixture',fetchImpl:async(url,opts)=>{
+  const name=opts.method==='GET'?'getById':names[url.split('/').at(-1)];calls.push(name);
+  if(name===stage){blockedSignal=opts.signal;if(phase==='fetch')return new Promise(resolve=>resolveBody=resolve);return {ok:true,status:200,json:()=>new Promise(resolve=>resolveBody=resolve)};}
+  const b=opts.body?JSON.parse(opts.body):{};
+  const value=name==='getById'?[await model.getById(ids[0])]:name==='claim'?await model.claim(b.p_job_id,b.p_worker,b.p_lease_seconds):name==='renew'?await model.renew(b.p_job_id,b.p_worker,b.p_expected_version,b.p_lease_seconds):await model.commit(b.p_job_id,b.p_worker,b.p_expected_version,b.p_checkpoint,b.p_summary,b.p_status);
+  return {ok:true,status:200,json:async()=>value};
+ }});
+ // Attach rejection handler before advancing the deterministic timer.
+ const outcome=runPinnedHolderRecovery({...args(store),budget:createHolderRecoveryBudget(clock)}).then(value=>({value}),error=>({error}));
+ while(!resolveBody)await Promise.resolve();clock.advance(8000);const result=await outcome;
+ assert.equal(blockedSignal.aborted,true);assert.deepEqual(model.row.checkpoint,before);
+ if(stage==='getById'){assert.match(result.error.message,/READ_TIMEOUT/);assert.deepEqual(calls,['getById']);}
+ else{assert.equal(result.value.status,{claim:'CLAIM_OUTCOME_UNKNOWN',renew:'RENEWAL_OUTCOME_UNKNOWN',commit:'COMMIT_OUTCOME_UNKNOWN'}[stage]);assert.equal(result.value.retryAllowed,false);}
+ if(stage!=='commit')assert.ok(!calls.includes('commit'));
+ resolveBody(null);await Promise.resolve();assert.deepEqual(model.row.checkpoint,before);assert.equal(clock.pending,0);
+});
+test('commit timeout after server persistence remains uncertain without replay',async()=>{
+ const clock=fakeClock(),s=new Store(),commit=s.commit.bind(s);let signalSeen,release,n=0;
+ s.commit=async(...a)=>{n++;await commit(...a);signalSeen=a.at(-1).signal;return new Promise(resolve=>release=resolve);};
+ const task=runPinnedHolderRecovery({...args(s),budget:createHolderRecoveryBudget(clock)});
+ while(!release)await Promise.resolve();clock.advance(8000);const result=await task;
+ assert.equal(result.status,'COMMIT_OUTCOME_UNKNOWN');assert.equal(result.retryAllowed,false);assert.equal(signalSeen.aborted,true);assert.equal(n,1);assert.equal(s.row.version,2137);
+ const saved=structuredClone(s.row);release(saved);await Promise.resolve();assert.deepEqual(s.row,saved);
+});
+test('total budget rejects store work before starting after 50s',async()=>{
+ const clock=fakeClock(),budget=createHolderRecoveryBudget(clock);clock.advance(50000);let calls=0;
+ await assert.rejects(budget.run('COMMIT',()=>calls++),/COMMIT_TIMEOUT/);assert.equal(calls,0);
+});
+for(const mutate of [cp=>delete cp.version,cp=>cp.version=2,cp=>cp.version='1',cp=>cp.networkEvidence.version=2,cp=>cp.networkEvidence=null,cp=>cp.networkEvidence.processed=[],cp=>cp.networkEvidence.transfers={},cp=>cp.networkEvidence.snapshotIdentity='mismatch',cp=>cp.networkEvidence.retentionLimited=true,cp=>cp.networkEvidence.processed.historical.transferCount=2,cp=>cp.networkEvidence.processed.historical.valid='true',cp=>cp.networkEvidence.transfers[0].signature='foreign'])test('incompatible schema/evidence is rejected before claim',async()=>{
+ const s=new Store();mutate(s.row.checkpoint);const before=structuredClone(s.row);
+ await assert.rejects(runPinnedHolderRecovery(args(s)),/RECOVERY_(CHECKPOINT_SCHEMA|NETWORK_)/);assert.deepEqual(s.calls,['read']);assert.deepEqual(s.row,before);
+});
+test('legacy missing raw balances and snapshot are preserved with matching ordered identity',async()=>{
+ const s=new Store(),cp=s.row.checkpoint;delete cp.snapshot;for(const h of cp.holders)delete h.amountRaw;
+ cp.networkEvidence.snapshotIdentity=holderNetworkSnapshotIdentity(cp);const original=structuredClone(cp.holders);
+ assert.ok(!cp.networkEvidence.snapshotIdentity.includes('amountRaw'));
+ assert.equal((await runPinnedHolderRecovery(args(s))).status,'partial');assert.deepEqual(s.row.checkpoint.holders,original);assert.equal(Object.hasOwn(s.row.checkpoint,'snapshot'),false);
 });

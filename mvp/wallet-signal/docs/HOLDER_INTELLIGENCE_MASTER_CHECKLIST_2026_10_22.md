@@ -94,3 +94,10 @@ Draft PR #74 consolidates V1/V2 into one explicit-job adapter and default-disabl
 61 focused tests and the existing 25-case disposable PostgreSQL concurrency/rollback suite passed. Full build/regression results and complete workflow source inventory are recorded in [existing recovery preflight](GLITCH_HISTORICAL_RECOVERY_PREFLIGHT_2026_10_27.md). Fixtures are synthetic; no hosted lease claim, provider RPC or checkpoint write occurred. Claim SQL has no expected-version input: post-claim mismatch stops before provider RPC but can leave a short lease to expire. Unknown commit outcome is never retried automatically.
 
 H03 stays IN_PROGRESS and accepted gates remain 4/11. Fresh live prerequisites, deployed contract/configuration, actual enabled workflow state and both jobs' complete-or-approved-cutoff evidence remain outstanding. H04/H05/H10 remain open; H08/H09/H11 remain gated. Historical H06 paragraphs above are chronology; the final infrastructure-only acceptance governs, with historicalStateVerified:false and no promoted exclusion.
+
+### H03 independent-review follow-up — timing and schema
+Recovery now reserves persistence time within the 60s route: provider cutoff 30s, overall network budget 50s, per-operation maximum 8s. Cancellation covers store/provider fetch and body reads; timed-out commits remain explicitly uncertain without retry. Unsupported checkpoint/network schema or mismatched retained identity fails before claim. Legacy omitted raw balances remain omitted and scoring Unknown. See the existing recovery preflight for deterministic fault tests and final verification.
+
+Main's controlled workflow declares four ticks, but older approval covered two. That source declaration does not authorize four ticks; do not dispatch under the older approval. No schedule was edited. H03 remains open.
+
+Follow-up verification: 88 focused / 728 full offline tests passed, build/lint/type phase passed, compiled evidence route 21 cases and recovery default-disabled check passed. These are engineering results, not live H03 acceptance.

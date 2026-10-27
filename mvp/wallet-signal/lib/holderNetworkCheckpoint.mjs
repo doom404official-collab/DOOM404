@@ -3,12 +3,12 @@ import {scoreTop20Network} from './top20NetworkScore.mjs';
 // Operational retention bounds, not scoring thresholds. Hitting either bound
 // is explicit missing evidence, never a truncated graph awarded full points.
 export const NETWORK_RETENTION_LIMITS=Object.freeze({signatures:20000,transfers:20000});
-const identity=c=>JSON.stringify({mint:c.mint,snapshot:c.snapshot??null,holders:(c.holders??[]).map(h=>({ownerWallet:h.ownerWallet,tokenAccount:h.tokenAccount,amountRaw:h.amountRaw,sharePct:h.sharePct}))});
+export const holderNetworkSnapshotIdentity=c=>JSON.stringify({mint:c.mint,snapshot:c.snapshot??null,holders:(c.holders??[]).map(h=>({ownerWallet:h.ownerWallet,tokenAccount:h.tokenAccount,amountRaw:h.amountRaw,sharePct:h.sharePct}))});
 const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
 export function recordHolderNetworkTransaction(checkpoint,{transaction,signature}={}){
  if(checkpoint.signatures?.[signature]!=='checked')throw Error('NETWORK_SIGNATURE_NOT_CHECKED');
- const evidence=checkpoint.networkEvidence??={version:1,snapshotIdentity:identity(checkpoint),processed:{},transfers:[],retentionLimited:false};
- if(evidence.version!==1||evidence.retentionLimited||evidence.snapshotIdentity!==identity(checkpoint))return;
+ const evidence=checkpoint.networkEvidence??={version:1,snapshotIdentity:holderNetworkSnapshotIdentity(checkpoint),processed:{},transfers:[],retentionLimited:false};
+ if(evidence.version!==1||evidence.retentionLimited||evidence.snapshotIdentity!==holderNetworkSnapshotIdentity(checkpoint))return;
  if(Object.hasOwn(evidence.processed,signature))return;
  const parsed=extractHolderNetworkTransfers({transaction,signature});
  if(Object.keys(evidence.processed).length>=NETWORK_RETENTION_LIMITS.signatures||evidence.transfers.length+parsed.transfers.length>NETWORK_RETENTION_LIMITS.transfers){evidence.retentionLimited=true;return;}
@@ -20,7 +20,7 @@ export function summarizeHolderNetworkCheckpoint(checkpoint,{snapshotProvenanceV
  if(!snapshotProvenanceVerified)return unavailable('SNAPSHOT_PROVENANCE_UNVERIFIED');
  const e=checkpoint.networkEvidence;
  if(!e||e.version!==1||!object(e.processed)||!Array.isArray(e.transfers))return unavailable('NETWORK_TRANSFER_EVIDENCE_MISSING');
- if(e.snapshotIdentity!==identity(checkpoint))return unavailable('NETWORK_SNAPSHOT_IDENTITY_MISMATCH');
+ if(e.snapshotIdentity!==holderNetworkSnapshotIdentity(checkpoint))return unavailable('NETWORK_SNAPSHOT_IDENTITY_MISMATCH');
  if(e.retentionLimited!==false||Object.keys(e.processed).length>NETWORK_RETENTION_LIMITS.signatures||e.transfers.length>NETWORK_RETENTION_LIMITS.transfers)return unavailable('NETWORK_EVIDENCE_RETENTION_LIMIT');
  const checked=Object.entries(checkpoint.signatures??{}).filter(([,s])=>s==='checked').map(([s])=>s);
  if(!checked.length||checked.some(s=>!object(e.processed[s])||e.processed[s].valid!==true))return unavailable('NETWORK_CHECKED_TRANSACTION_EVIDENCE_MISSING');
