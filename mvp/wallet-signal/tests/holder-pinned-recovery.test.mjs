@@ -137,3 +137,20 @@ test('bad commit identity reports uncertainty without retry',async()=>{
  const s=new Store(),commit=s.commit.bind(s);let n=0;s.commit=async(...a)=>{n++;const r=await commit(...a);r.id=ids[1];return r;};
  const r=await runPinnedHolderRecovery(args(s));assert.equal(r.status,'COMMIT_OUTCOME_UNKNOWN');assert.equal(r.retryAllowed,false);assert.equal(r.reconciliationRequired,true);assert.equal(n,1);
 });
+
+test('eight-megabyte checkpoint preserves retained history through the real worker',async()=>{
+ const s=new Store(),cp=s.row.checkpoint;
+ // Synthetic, not copied live evidence. Parent reported 7.6–8.3 MB checkpoints.
+ const evidence=cp.networkEvidence;
+ evidence.transfers=Array.from({length:13000},(_,i)=>({signature:String(i).padStart(88,'2'),slot:450097547,
+  from:'3'.repeat(44),to:'4'.repeat(44),assetType:'TOKEN',mint,amountRaw:'12345678901234567890',
+  verifiedOnChain:true,transferVerified:true,sourceTokenAccount:'5'.repeat(44),destinationTokenAccount:'6'.repeat(44)}));
+ for(let i=0;i<15000;i++)cp.signatures[String(i).padStart(88,'2')]='checked';
+ const bytes=Buffer.byteLength(JSON.stringify(cp));assert.ok(bytes>=7_500_000&&bytes<=9_000_000,`fixture bytes ${bytes}`);
+ const original=JSON.stringify(evidence),snapshot=JSON.stringify(cp.snapshot);
+ const start=performance.now();const result=await runPinnedHolderRecovery(args(s));
+ assert.equal(result.status,'partial');assert.equal(result.requestCount,2);
+ assert.equal(JSON.stringify(s.row.checkpoint.networkEvidence),original);assert.equal(JSON.stringify(s.row.checkpoint.snapshot),snapshot);
+ assert.equal(s.row.summary.score,9.93);assert.equal(s.row.checkpoint.signatures.retry,'pending');
+ console.log(`Large synthetic recovery checkpoint: ${bytes} bytes; ${Math.round(performance.now()-start)} ms (local diagnostic only)`);
+});
