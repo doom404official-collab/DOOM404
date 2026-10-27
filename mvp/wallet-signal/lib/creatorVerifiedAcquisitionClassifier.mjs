@@ -2,10 +2,13 @@
  * Unknown transfers and wallet balance changes cannot become verified acquisitions.
  */
 export function classifyVerifiedCreatorAcquisition({mint,creator,observation,proof}={}){
- if(proof?.type==='LAUNCH_DISTRIBUTION'&&(!['string','number','bigint'].includes(typeof proof.amountRaw)||
+ if(!proof||!['string','number','bigint'].includes(typeof proof.amountRaw)||
   (typeof proof.amountRaw==='number'&&!Number.isSafeInteger(proof.amountRaw))||
   !['string','number','bigint'].includes(typeof observation?.amountRaw)||
-  (typeof observation.amountRaw==='number'&&!Number.isSafeInteger(observation.amountRaw))))return {status:'UNVERIFIED',event:null};
+  (typeof observation.amountRaw==='number'&&!Number.isSafeInteger(observation.amountRaw)))return {status:'UNVERIFIED',event:null};
+ if(typeof proof.signature!=='string'||!proof.signature.trim()||!Number.isSafeInteger(proof.instructionIndex)||proof.instructionIndex<0||
+  (proof.innerInstructionIndex!=null&&(!Number.isSafeInteger(proof.innerInstructionIndex)||proof.innerInstructionIndex<0))||
+  (proof.innerInstructionIndex??null)!==(observation?.innerInstructionIndex??null))return {status:'UNVERIFIED',event:null};
  if(!observation||!proof||observation.mint!==mint||observation.creator!==creator||
   proof.signature!==observation.signature||proof.instructionIndex!==observation.instructionIndex||
   proof.mint!==mint||proof.creator!==creator||proof.independentlyVerified!==true||

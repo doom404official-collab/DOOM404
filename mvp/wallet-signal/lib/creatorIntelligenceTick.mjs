@@ -18,6 +18,7 @@ import { assessCreatorHistoricalCoverage } from './creatorHistoricalCoverage.mjs
 import { summarizeCreatorAcquisitionLedger } from './creatorAcquisitionLedger.mjs';
 import { produceCreatorLaunchDistributions } from './creatorLaunchDistributionProducer.mjs';
 import { inspectCreatorLaunchDistributionTransaction } from './creatorLaunchDistributionProtocol.mjs';
+import { mergeCreatorAcquisitionEvidence } from './creatorAcquisitionEvidenceMerge.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -54,6 +55,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    // Never mark complete without verified historical discovery and comparable evidence.
   }else if(stage==='selling'){
    state={...state,launchDistributionCoverageComplete:false,
+    ...(state.creatorAcquisitionLedger?{creatorAcquisitionLedger:{...state.creatorAcquisitionLedger,status:'INCOMPLETE',historyComplete:false,scoreEligible:false,sellThroughPct:null}}:{}),
     initialAllocationEvidence:{status:'INITIAL_ALLOCATION_INCOMPLETE',initialAttributableRaw:null,coverageComplete:false,zeroAllocationVerified:false},
     ...(state.selling?{selling:{...state.selling,creatorSellingScoreEligible:false,
      windows:(Array.isArray(state.selling.windows)?state.selling.windows:[]).map(window=>({...window,scoreEligible:false,sellThroughPct:null}))}}:{}),
@@ -73,8 +75,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    const processed=new Set(previous.creatorProcessedSignatures||[]);
    const queue=[...new Set([...outstanding,...history.signatures])].filter(sig=>!processed.has(sig));
    const decoded=await inspectCreatorHistoricalBatch({mint,creator:creators[0],signatures:queue,rpc,maxTransactions:creatorBatchSize,swapDecoder,buySettlementDecoder});
-   // Preserve conflicting launch proofs for rejection downstream; never last-wins.
-   const creatorVerifiedAcquisitionEvents=[...new Map([...(previous.creatorVerifiedAcquisitionEvents||[]),...decoded.verifiedAcquisitionEvents].map(item=>[item.signature+':'+item.instructionIndex+':'+String(item.innerInstructionIndex??'outer')+(item.type==='LAUNCH_DISTRIBUTION'?':'+JSON.stringify(item):''),item])).values()];
+   const creatorVerifiedAcquisitionEvents=mergeCreatorAcquisitionEvidence(previous.creatorVerifiedAcquisitionEvents||[],decoded.verifiedAcquisitionEvents);
    const verifiedSwapSales=[...new Map([...(previous.verifiedSwapSales||[]),...decoded.verifiedSales].map(x=>[x.signature,x])).values()];
    state={...state,verifiedSwapSales,creatorVerifiedAcquisitionEvents,
     creatorBuyShadowStatusCounts:Object.fromEntries(Object.entries(decoded.buyShadowStatusCounts||{}).map(([key,count])=>[key,(Number(previous.creatorBuyShadowStatusCounts?.[key])||0)+count])),
