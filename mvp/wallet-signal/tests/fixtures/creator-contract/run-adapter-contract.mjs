@@ -4,6 +4,7 @@ import {mkdirSync,rmdirSync} from 'node:fs';
 const lock='/tmp/glitch-creator-contract-test.lock';mkdirSync(lock,{mode:0o700});
 process.on('exit',()=>rmdirSync(lock));
 import {spawn,execFileSync} from 'node:child_process';
+import {runCreatorIntelligenceV2} from '../../../lib/creatorIntelligenceRunnerV2.mjs';
 import {createCreatorIntelligenceJobStoreV2} from '../../../lib/creatorIntelligenceJobStoreV2.mjs';
 const container='creator-contract-disposable',db='glitch_creator_contract_test';
 const info=JSON.parse(execFileSync('docker',['inspect',container],{encoding:'utf8'}))[0];
@@ -47,3 +48,16 @@ await sql("UPDATE creator_intelligence_jobs SET revision=revision+1,state='{\"ot
 await assert.rejects(save(store,claimed.receipt,original),{message:'CREATOR_V2_CONFLICT'});assert.equal(await sql("SELECT state->>'otherWriter' FROM creator_intelligence_jobs"),'true');let before=transportCount;await assert.rejects(save(store,claimed.receipt,original),{message:'CREATOR_V2_RECONCILIATION_REQUIRED'});assert.equal(transportCount,before);console.log('PASS stale adapter cannot overwrite or retry after SQL conflict');
 await reset();store=create();row=await store.read(mint);claimed=await store.claim({mint,owner:'synthetic-owner-a',expectedRevision:row.revision});await sql("UPDATE creator_intelligence_jobs SET lease_until=clock_timestamp()-interval '1 second'");await assert.rejects(save(store,claimed.receipt,original),{message:'CREATOR_V2_CONFLICT'});assert.equal(await sql('SELECT request_count_total FROM creator_intelligence_jobs'),'7189');console.log('PASS server expiry rejects save despite previously valid client receipt');
 console.log(JSON.stringify({passed:5,hostedAccess:false,httpRequests:0,syntheticSqlBridge:true}));
+
+await reset();await sql("UPDATE creator_intelligence_jobs SET stage='identification'");
+let providerCalls=0;
+const runner={enabled:true,mint,owner:'synthetic-runner',rpcUrl:'https://offline.invalid',maxRequests:2,indexedOriginEnabled:true,storeConfig:{url:'https://test.supabase.co',key:'disposable-only',fetchImpl:bridge},fetchImpl:async(_,o)=>{providerCalls++;return {ok:true,json:async()=>({result:JSON.parse(o.body).method==='getTransactionsForAddress'?{data:[]}:[]})};}};
+let tick=await runCreatorIntelligenceV2(runner);assert.equal(tick.revision,'4');assert.equal(providerCalls,2);
+tick=await runCreatorIntelligenceV2(runner);assert.equal(tick.revision,'6');assert.equal(providerCalls,3);assert.equal(await sql("SELECT state->>'indexedOriginLookupAttempted' FROM creator_intelligence_jobs"),'true');assert.equal(await sql('SELECT request_count_total FROM creator_intelligence_jobs'),'7192');console.log('PASS actual tick SQL reservation/revision/resume');
+await reset();await sql("UPDATE creator_intelligence_jobs SET stage='identification'");providerCalls=0;let saves=0;
+const uncertain={...runner,storeConfig:{...runner.storeConfig,fetchImpl:async(u,o)=>{const response=await bridge(u,o);if(u.includes('save_creator')&&++saves===1)throw Error('synthetic lost response after commit');return response;}}};
+await assert.rejects(runCreatorIntelligenceV2(uncertain),/WRITE_OUTCOME_UNKNOWN/);assert.equal(providerCalls,0);assert.equal(saves,1);assert.equal(await sql("SELECT state->>'indexedOriginLookupAttempted' FROM creator_intelligence_jobs"),'true');
+// Synthetic expiry represents an interrupted worker; no historical row is used.
+await sql("UPDATE creator_intelligence_jobs SET lease_until=clock_timestamp()-interval '1 second'");
+await runCreatorIntelligenceV2(runner);assert.equal(providerCalls,1);assert.equal(await sql('SELECT revision FROM creator_intelligence_jobs'),'4');console.log('PASS uncertain committed reservation survives interruption without paid lookup replay');
+console.log(JSON.stringify({runnerCases:2,hostedAccess:false,httpRequests:0}));

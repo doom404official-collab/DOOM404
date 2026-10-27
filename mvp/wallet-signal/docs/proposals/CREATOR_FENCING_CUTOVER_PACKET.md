@@ -38,7 +38,7 @@ Workflow inventory also found these distinct families (including older variants)
 
 ## Proposed coordinated sequence, requiring explicit approval
 
-1. Parent reviews the exact migration and prepared adapter plus a future runner integration commit. Confirm catalog drift, endpoint/schema-cache compatibility, clock alignment, payload limits and error reporting. Review all active/queued runs, deployed versions and direct writers against the source inventory. Do not activate the adapter merely because its tests pass.
+1. Parent reviews the exact migration and prepared adapter plus the separately prepared inactive runner integration. Confirm catalog drift, endpoint/schema-cache compatibility, clock alignment, payload limits and error reporting. Review all active/queued runs, deployed versions and direct writers against the source inventory. Do not activate the adapter merely because its tests pass.
 2. Obtain approval for a **Creator-job-only maintenance pause and permission/schema cutover**. No pause, scheduling edit or credential change is performed here. Prevent manual/queued/scheduled old runner entry; drain active workers and database statements; verify all relevant leases inactive using database wall time. Workflow concurrency alone is insufficient.
 3. Record existing job identities, stages/statuses, exact checkpoint hashes/sizes, request counters and lease metadata read-only. Stop if a prior write outcome is uncertain. Do not reset checkpoints or replay history.
 4. In one separately reviewed migration transaction, add revision, install/restrict V2 RPCs and revoke old RPC execution. Confirm preservation of every preexisting field and that old calls fail closed. The checked-in SQL cannot run on hosted storage because of its disposable guard; prepare a distinct approved migration artifact rather than removing that guard ad hoc.
@@ -54,3 +54,11 @@ Stop for unexpected catalog/row drift, active writers, uncertain outcomes, malfo
 ## Offline verification
 
 Passed: 61 adapter tests, 71 disposable PostgreSQL checks and five adapter-to-local-SQL cases; 1,196 smoke tests, 83 retained Creator scripts, build/lint/type checks and 27 compiled mock-route cases. The database suites ran sequentially with a shared overlap lock. Production imports of the new adapter remain absent. No workflows or deployment configuration changed; existing recovery push checks remain offline. These results support preparation only, not CI-14/15 acceptance or authorization to apply the proposal.
+
+## Inactive runner preparation
+
+`lib/creatorIntelligenceRunnerV2.mjs` exposes a default-disabled function only. No workflow, CLI, route or environment flag invokes it. It uses the existing tick through a revision-aware V2 bridge, preserving existing reservation/evidence/retention semantics. Every running or final save consumes the preceding receipt revision; the claim readback is the adapter-validated checkpoint, not a second unverified snapshot. The path never enqueues, renews or falls back. It retains the 500-request, 90-second tick and 180-second lease ceilings. Provider transport failures stop later transport calls, including the legacy helper's HTTP-429 retry behavior, only in this prepared path.
+
+Mock and isolated SQL tests exercise the actual tick, durable paid-lookup reservations, resume, all three uncertain-save boundaries, missing jobs, altered claim readbacks, expiry and request ceilings. A lost response after a locally committed reservation remains uncertain; a separately resumed synthetic expired job retains the reservation and does not repeat the paid lookup. This is not permission to retry any real uncertain job.
+
+This integration can safely preserve Unknown while collecting explicitly authorized evidence later, but cannot make the exhausted historical job useful by itself. Authentic allocation/ownership and complete inventory remain blocked. There is no authorization or recommendation here to resume that job. Before cutover, parent must review this integration and the operational packet; a future deployment entry point and any live validation still require separate approval.
