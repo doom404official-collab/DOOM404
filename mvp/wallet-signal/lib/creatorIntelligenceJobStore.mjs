@@ -15,6 +15,7 @@ export function createCreatorIntelligenceJobStore({url,key,fetchImpl=fetch}={}){
    assertCreatorSignal(signal);assertCreatorSignal(innerSignal);
    dispatched=true;
    const response=await fetchImpl(base+path,{method,headers:{...headers,...(prefer?{prefer}:{})},cache:'no-store',...(serialized===undefined?{}:{body:serialized}),signal:innerSignal});
+   assertCreatorSignal(signal);assertCreatorSignal(innerSignal);
    if(!response.ok)throw Error('CREATOR_STORE_HTTP_'+response.status);
    if(method==='GET'||path.startsWith('rpc/')||prefer==='return=representation')return response.json();
    return true;

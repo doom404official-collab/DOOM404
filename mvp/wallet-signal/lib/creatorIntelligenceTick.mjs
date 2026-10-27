@@ -1,4 +1,4 @@
-import {createCreatorExecutionBudget} from './creatorExecutionBudget.mjs';
+import {createCreatorExecutionBudget,assertCreatorSignal} from './creatorExecutionBudget.mjs';
 import { randomUUID } from 'node:crypto';
 import { CREATOR_RETENTION_LIMIT, assertCreatorRetention, blockCreatorRetention } from './creatorRetentionIntegrity.mjs';
 import { createCreatorHistoryBudget } from './creatorHistoryBudget.mjs';
@@ -28,6 +28,16 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  if(!Number.isInteger(creatorBatchSize)||creatorBatchSize<1||creatorBatchSize>100)throw Error('INVALID_CREATOR_BATCH_SIZE');
  if(!store||typeof store.claim!=='function'||typeof store.get!=='function'||typeof store.save!=='function')throw Error('CREATOR_STORE_REQUIRED');
  if(!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(mint||''))throw Error('INVALID_MINT');
+ if(!Number.isSafeInteger(maxDurationMs)||maxDurationMs<1||maxDurationMs>90000)throw Error('INVALID_CREATOR_DURATION');
+ if(typeof owner!=='string'||owner.length<8)throw Error('INVALID_OWNER');
+ if(typeof fetchImpl!=='function'||typeof indexedOriginEnabled!=='boolean'||
+  (swapDecoder!==null&&typeof swapDecoder!=='function')||(buySettlementDecoder!==null&&typeof buySettlementDecoder!=='function')||
+  (executionBudget!==null&&typeof executionBudget?.run!=='function'))throw Error('INVALID_CREATOR_CONFIGURATION');
+ try{if(new URL(rpcUrl).protocol!=='https:'||!new URL(rpcUrl).hostname)throw Error();}catch{throw Error('INVALID_CREATOR_RPC_URL');}
+ const budget=createCreatorHistoryBudget({maxRequests});
+ // Construct/validate the adapter before any read or lease claim. Its fetch
+ // closure resolves the bounded transport assigned below when work starts.
+ const rpc=createSolanaRpcAdapter({rpcUrl,fetchImpl:(...args)=>fetchImpl(...args),sharedBudget:budget,maxRequests,maxRetries:2,pageLimit:100,minIntervalMs:250});
  const timing=executionBudget||createCreatorExecutionBudget({maxDurationMs});
  const originalStore=store,originalFetch=fetchImpl;
  let writeFailed=false,durableState;
@@ -42,7 +52,9 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  };
  fetchImpl=(url,options)=>timing.run('PROVIDER',async signal=>{
   const response=await originalFetch(url,{...options,signal});
+  assertCreatorSignal(signal);
   const payload=response.ok?await response.json():null;
+  assertCreatorSignal(signal);
   return {ok:response.ok,status:response.status,headers:response.headers,json:async()=>payload};
  },{provider:true});
  const job=await store.get(mint);
@@ -56,9 +68,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
  if(await store.claim(mint,owner,180)!==true)return {status:'busy',requests:0};
  // Re-read the checkpoint after acquiring the lease: the pre-claim snapshot may be stale.
  const claimed=await store.get(mint);
- if(!claimed||(Object.hasOwn(claimed,'lease_owner')&&claimed.lease_owner!==owner))throw Error('CREATOR_LEASE_MISMATCH');
- const budget=createCreatorHistoryBudget({maxRequests});
- const rpc=createSolanaRpcAdapter({rpcUrl,fetchImpl,sharedBudget:budget,maxRequests,maxRetries:2,pageLimit:100,minIntervalMs:250});
+ if(!claimed||!Object.hasOwn(claimed,'lease_owner')||claimed.lease_owner!==owner)throw Error('CREATOR_LEASE_MISMATCH');
  const previous=claimed.state&&typeof claimed.state==='object'?claimed.state:{};
  durableState=previous;
  let state={...previous,lastError:null};

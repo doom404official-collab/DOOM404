@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {runCreatorIntelligenceTick} from '../lib/creatorIntelligenceTick.mjs';
+import {runCreatorIntelligenceTick} from '../tests/helpers/creatorTickMockLease.mjs';
 const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
 let state={},calls=0,saved;
 const store={async get(){return {status:'partial',stage:'identification',state}},async claim(){return true},async save(v){saved=v;state=v.state}};

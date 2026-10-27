@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {summarizeCreatorAcquisitionLedger as summarize} from '../lib/creatorAcquisitionLedger.mjs';
 import {mergeCreatorAcquisitionEvidence as merge} from '../lib/creatorAcquisitionEvidenceMerge.mjs';
-import {runCreatorIntelligenceTick} from '../lib/creatorIntelligenceTick.mjs';
+import {runCreatorIntelligenceTick} from '../tests/helpers/creatorTickMockLease.mjs';
 import {projectCreatorCheckpoint,readDashboardEvidence} from '../lib/dashboardEvidenceBridge.mjs';
 import {adaptDashboardEvidence} from '../lib/glitchDashboardEvidenceV11.mjs';
 const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump',creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';

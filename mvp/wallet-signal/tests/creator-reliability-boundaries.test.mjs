@@ -8,7 +8,7 @@ function clock(){let time=0;return {advance:n=>time+=n,budget:createCreatorExecu
 function harness(stage='selling'){
  let state={originEvidence:[{creator}],launchTimestamp:100,creatorPendingSignatures:[],creatorVerifiedAcquisitionEvents:[],priorEvidence:{unchanged:true}};
  let saves=0,claims=0;
- class Store{async get(){return {mint,status:'partial',stage,state}}async claim(){claims++;return true}async save(v){assert.ok(this instanceof Store);saves++;state=v.state;return true}}
+ class Store{owner=null;async get(){return {mint,status:'partial',stage,state,lease_owner:this.owner}}async claim(_mint,owner){claims++;this.owner=owner;return true}async save(v){assert.ok(this instanceof Store);saves++;state=v.state;return true}}
  return {store:new Store(),get state(){return state},get saves(){return saves},get claims(){return claims}};
 }
 test('provider deadline includes synchronous parsing and leaves persistence time without more provider calls',async()=>{
@@ -82,7 +82,7 @@ test('store transport and JSON errors produce redacted unknown-write outcomes wi
 
 test('atomic claim contention permits only one tick; post-claim checkpoint is authoritative',async()=>{
  const h=harness();let claimed=false,calls=0;
- h.store.claim=async()=>{if(claimed)return false;claimed=true;h.state.priorEvidence.afterClaim=true;return true;};
+ h.store.claim=async(_mint,owner)=>{if(claimed)return false;claimed=true;h.store.owner=owner;h.state.priorEvidence.afterClaim=true;return true;};
  const args={mint,store:h.store,rpcUrl:'https://offline.invalid',fetchImpl:async()=>{calls++;return {ok:true,json:async()=>({result:[]})}}};
  const results=await Promise.all([runCreatorIntelligenceTick(args),runCreatorIntelligenceTick(args)]);
  assert.equal(results.filter(r=>r.status==='busy').length,1);assert.equal(calls,1);assert.equal(h.saves,1);assert.equal(h.state.priorEvidence.afterClaim,true);
@@ -119,7 +119,7 @@ test('read errors cannot expose response text or credentials through worker erro
 test('long checkpoint serialization checks the caller deadline before transport',async()=>{
  const c=clock();let calls=0;
  const store=createCreatorIntelligenceJobStore({url:'https://test.supabase.co',key:'offline',fetchImpl:async()=>{calls++;return {ok:true,json:async()=>true}}});
- await assert.rejects(c.budget.run('SAVE',signal=>store.save({mint,owner,stage:'selling',state:{toJSON(){c.advance(16000);return {history:'retained'}}}},{signal})),/CREATOR_STORE_REQUEST_NOT_SENT/);
+ await assert.rejects(c.budget.run('SAVE',signal=>store.save({mint,owner,stage:'selling',state:{toJSON(){c.advance(16000);return {history:'retained'}}}},{signal})),/CREATOR_SAVE_TIMEOUT/);
  assert.equal(calls,0);
 });
 

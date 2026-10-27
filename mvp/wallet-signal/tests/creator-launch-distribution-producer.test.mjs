@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {produceCreatorLaunchDistributions as produce} from '../lib/creatorLaunchDistributionProducer.mjs';
 import {assessCreatorInitialAllocation as assess} from '../lib/creatorInitialAllocationEvidence.mjs';
 import {classifyVerifiedCreatorAcquisition as classify} from '../lib/creatorVerifiedAcquisitionClassifier.mjs';
-import {runCreatorIntelligenceTick} from '../lib/creatorIntelligenceTick.mjs';
+import {runCreatorIntelligenceTick} from '../tests/helpers/creatorTickMockLease.mjs';
 import {assertCreatorRetention,blockCreatorRetention} from '../lib/creatorRetentionIntegrity.mjs';
 const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump',creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
 const input={mint,creator,launchTimestamp:100};

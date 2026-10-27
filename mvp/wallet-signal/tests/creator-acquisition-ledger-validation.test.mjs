@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {summarizeCreatorAcquisitionLedger} from '../lib/creatorAcquisitionLedger.mjs';
-import {runCreatorIntelligenceTick} from '../lib/creatorIntelligenceTick.mjs';
+import {runCreatorIntelligenceTick} from '../tests/helpers/creatorTickMockLease.mjs';
 const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump',creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
 const base={mint,creator,signature:'sig',instructionIndex:0,type:'PURCHASE',amountRaw:'100',timestamp:100,independentlyVerified:true,instructionVerified:true,settlementVerified:true};
 const run=events=>summarizeCreatorAcquisitionLedger({mint,creator,events,historyComplete:true,attributionComplete:true});

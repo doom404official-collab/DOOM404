@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {PublicKey} from '@solana/web3.js';
 import {inspectCreatorLaunchDistributionTransaction as inspect} from '../lib/creatorLaunchDistributionProtocol.mjs';
 import {PUMP_PROGRAM_ID} from '../lib/pumpFunCreation.mjs';
-import {runCreatorIntelligenceTick} from '../lib/creatorIntelligenceTick.mjs';
+import {runCreatorIntelligenceTick} from '../tests/helpers/creatorTickMockLease.mjs';
 const address=n=>new PublicKey(Buffer.alloc(32,n)).toBase58(),mint=address(9),creator=address(7),signature='1'.repeat(88);
 const alphabet='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 function b58(bytes){let n=BigInt('0x'+bytes.toString('hex')),out='';while(n){out=alphabet[Number(n%58n)]+out;n/=58n;}for(const b of bytes){if(b!==0)break;out='1'+out;}return out;}

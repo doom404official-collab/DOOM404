@@ -8,16 +8,23 @@ export function createCreatorExecutionBudget({maxDurationMs=90000,now=()=>perfor
  return {async run(label,operation,{provider=false,signal}={}){
   const deadline=Math.min(provider?providerEnd:end,now()+15000);
   const error=new Error('CREATOR_'+label+'_TIMEOUT'),controller=new AbortController();
-  const check=()=>{if(now()>=deadline)controller.abort(error);};
+  const check=()=>{
+   try{assertCreatorSignal(signal);}catch(reason){controller.abort(reason);}
+   if(now()>=deadline)controller.abort(error);
+  };
   checks.set(controller.signal,check);
   const abort=()=>controller.abort(signal.reason);
+  let rejectAbort;
+  const cancelled=new Promise((_,reject)=>{rejectAbort=()=>reject(controller.signal.reason);controller.signal.addEventListener('abort',rejectAbort,{once:true});});
+  const timer=schedule(()=>controller.abort(error),Math.max(0,deadline-now()));
+  // Race cancellation itself: a fetch/store implementation need not cooperate.
+  // Attach the race before testing an already-aborted parent to avoid orphaned
+  // rejection promises. The operation checks cancellation before any work.
+  const pending=Promise.race([cancelled,Promise.resolve().then(()=>{assertCreatorSignal(controller.signal);return operation(controller.signal);})]);
   if(signal?.aborted)abort();else signal?.addEventListener('abort',abort,{once:true});
-  let timer;
-  const timeout=new Promise((_,reject)=>{timer=schedule(()=>{controller.abort(error);reject(error);},Math.max(0,deadline-now()));});
   try{
-   assertCreatorSignal(controller.signal);
-   const value=await Promise.race([Promise.resolve().then(()=>{assertCreatorSignal(controller.signal);return operation(controller.signal);}),timeout]);
+   const value=await pending;
    assertCreatorSignal(controller.signal);return value;
-  }finally{cancel(timer);signal?.removeEventListener('abort',abort);}
+  }finally{cancel(timer);signal?.removeEventListener('abort',abort);controller.signal.removeEventListener('abort',rejectAbort);}
  }};
 }
