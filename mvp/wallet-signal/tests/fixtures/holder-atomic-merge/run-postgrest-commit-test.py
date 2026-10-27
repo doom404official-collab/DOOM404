@@ -16,14 +16,14 @@ query='''WITH pgrst_source AS (SELECT "pgrst_call".* FROM (SELECT $1 AS json_dat
 quoted="'"+body.replace("'","''")+"'"
 setup="BEGIN; SET LOCAL statement_timeout='8s'; CREATE TEMP SEQUENCE invocation_count;"+definition+"UPDATE glitch_holder_scan_jobs SET checkpoint=("+quoted+"::jsonb->'p_checkpoint'),status='running',lease_owner='22222222-2222-4222-8222-222222222222',lease_expires_at=clock_timestamp()+interval '90 seconds',version=2136 WHERE id='11111111-1111-4111-8111-111111111111';"
 sql=setup+'PREPARE exact_wrapper(json,bigint,bigint) AS '+query+';EXECUTE exact_wrapper('+quoted+",1,0); SELECT 'CHECK:'||last_value FROM invocation_count; ROLLBACK;"
-t=time.monotonic();r=subprocess.run([os.environ['PSQL'],'-X','-q','-A','-t','-v','ON_ERROR_STOP=1'],input=sql,text=True,capture_output=True)
+t=time.monotonic();r=subprocess.run([os.environ.get('PSQL','psql'),'-X','-q','-A','-t','-v','ON_ERROR_STOP=1'],input=sql,text=True,capture_output=True)
 print('Local exact-wrapper elapsed seconds:',round(time.monotonic()-t,3),'response bytes:',len(r.stdout))
 assert r.returncode==0
 lines=r.stdout.splitlines();row=json.loads(lines[0].split('|')[2]);assert row['version']==2137 and row['checkpoint']==cp and row['lease_owner'] is None;assert lines[1]=='CHECK:1';print('PASS exact logged prepared wrapper, single invocation, full response equality, rollback')
 
 # Inspect local stage costs without exposing the SQL arguments or plan text.
 profile=setup+'PREPARE profile_wrapper(json,bigint,bigint) AS '+query+'; EXPLAIN (ANALYZE,BUFFERS,FORMAT JSON) EXECUTE profile_wrapper('+quoted+',1,0); ROLLBACK;'
-profile_result=subprocess.run([os.environ['PSQL'],'-X','-q','-A','-t','-v','ON_ERROR_STOP=1'],input=profile,text=True,capture_output=True)
+profile_result=subprocess.run([os.environ.get('PSQL','psql'),'-X','-q','-A','-t','-v','ON_ERROR_STOP=1'],input=profile,text=True,capture_output=True)
 assert profile_result.returncode==0, 'Local exact-wrapper profile failed'
 plan=json.loads(profile_result.stdout)[0]
 def stages(node):
@@ -35,7 +35,7 @@ print('Local profile only:',json.dumps({'executionMs':plan['Execution Time'],'st
 # A blocked write can produce the same 57014 without a payload-size defect.
 # This is a negative control, not evidence of a hosted lock at the incident time.
 def execute(sql,ok=True):
- result=subprocess.run([os.environ['PSQL'],'-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-v','VERBOSITY=verbose'],input=sql,text=True,capture_output=True)
+ result=subprocess.run([os.environ.get('PSQL','psql'),'-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-v','VERBOSITY=verbose'],input=sql,text=True,capture_output=True)
  if ok:assert result.returncode==0, 'Local SQL check failed'
  return result
 original=execute("SELECT to_jsonb(j) FROM glitch_holder_scan_jobs j WHERE id='11111111-1111-4111-8111-111111111111';").stdout.strip()
@@ -45,7 +45,7 @@ lock=None
 try:
  execute("UPDATE glitch_holder_scan_jobs SET status='running',lease_owner='22222222-2222-4222-8222-222222222222',lease_expires_at=clock_timestamp()+interval '90 seconds',version=2136 WHERE id='11111111-1111-4111-8111-111111111111';")
  before=execute("SELECT to_jsonb(j) FROM glitch_holder_scan_jobs j WHERE id='11111111-1111-4111-8111-111111111111';").stdout
- lock=subprocess.Popen([os.environ['PSQL'],'-X','-q','-A','-t','-v','ON_ERROR_STOP=1'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+ lock=subprocess.Popen([os.environ.get('PSQL','psql'),'-X','-q','-A','-t','-v','ON_ERROR_STOP=1'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
  lock.stdin.write("BEGIN; LOCK TABLE glitch_holder_scan_jobs IN SHARE MODE; SELECT 'LOCK_READY'; SELECT pg_sleep(12); ROLLBACK;\n");lock.stdin.flush()
  assert lock.stdout.readline().strip()=='LOCK_READY'
  blocked=execute("BEGIN; SET LOCAL statement_timeout='8s'; SET LOCAL lock_timeout='8s'; PREPARE blocked_wrapper(json,bigint,bigint) AS "+query+'; EXECUTE blocked_wrapper('+quoted+',1,0); ROLLBACK;',False)
