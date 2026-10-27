@@ -1,0 +1,17 @@
+# Disposable relay claim contracts
+
+No hosted target, network, real token or secret is accepted. Use the existing PostgreSQL 17 image with tmpfs, no published ports and networking disabled. Run the suites sequentially in a fresh container; do not overlap them or reuse the database for other tests.
+
+```sh
+docker run --rm --name creator-evidence-disposable --network none \
+  --tmpfs /var/lib/postgresql/data \
+  -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_USER=creator_test \
+  -e POSTGRES_DB=glitch_creator_evidence_test -d postgres:17
+docker exec creator-evidence-disposable pg_isready -U creator_test -d glitch_creator_evidence_test
+# Wait for accepting connections before continuing.
+python3 mvp/wallet-signal/tests/fixtures/creator-evidence/run-local.py
+node mvp/wallet-signal/tests/fixtures/creator-evidence/run-adapter.mjs
+docker stop creator-evidence-disposable
+```
+
+The SQL artifact has a disposable database-name guard, is outside migrations, and installs no production roles/policies. The Python fixture adds a synthetic NOLOGIN role/policies only inside the isolated database to test actual invoker permissions. Tests cover unique issuance/consumption/readback, independent connections, expiry after a lock wait, rollback and privilege denials. The JavaScript bridge exercises the actual parameterized claim adapter through local psql. It does not test a real Node database driver, hosted gateway, Storage RLS, or authentic evidence capture. No evidence rows or claims are copied from hosted storage.
