@@ -1,12 +1,12 @@
 # Creator job fencing: proposal for parent review
 
-**Status: unapplied, no client adapter, no owner activation request.** This proposal addresses CI-14/15 concurrency gaps; it does not complete either gate. The production client remains at reviewed 349272e and uses the current contract. The SQL is guarded to the disposable test database and is outside migration/autodeploy paths. It must not be edited in place to run on hosted storage; an approved migration would be prepared separately.
+**Status: unapplied; prepared adapter is default-disabled and unwired; no owner activation request.** This proposal addresses CI-14/15 concurrency gaps; it does not complete either gate. The active production client remains at reviewed 349272e behavior and uses the current contract. See the [coordinated cutover packet](CREATOR_FENCING_CUTOVER_PACKET.md) for the separately prepared, inactive adapter and source inventory. The SQL is guarded to the disposable test database and is outside migration/autodeploy paths. It must not be edited in place to run on hosted storage; an approved migration would be prepared separately.
 
 ## Evidence and scope
 
 The parent supplied read-only catalog facts on 2026-10-27: mint identifies the job; `lease_owner`/`lease_until` are nullable; there is no write revision. Claim permits active same-owner reclaims. Save requires the current owner, running status and a live lease; running saves do not renew it. State replacement and request-delta addition are atomic together, but are not conditional on the checkpoint read by the writer. Both functions use transaction-start `now()` and ordinary IF expressions that do not reject every NULL argument.
 
-Disposable PostgreSQL tests reconstruct those supplied semantics. They demonstrate possible races, not a diagnosed incident in the historical Creator job. Unreported non-lease column nullability is explicitly a model assumption; no conclusion depends on NULL state/status successfully passing an unknown hosted table constraint. The nullable-owner/duration cases and same-owner/clock behaviors follow the supplied contract.
+Disposable PostgreSQL tests reconstruct those supplied semantics. They demonstrate possible races, not a diagnosed incident in the historical Creator job. The parent subsequently verified all column types/nullability/defaults, checks, both index definitions and no non-internal triggers; the fixture now matches them. Save coalesces a NULL owner to an empty string before its length check; claim does not. The nullable-owner/duration cases and same-owner/clock behaviors follow the supplied contract.
 
 ## Proposed contract, requiring approval
 
@@ -17,11 +17,11 @@ Disposable PostgreSQL tests reconstruct those supplied semantics. They demonstra
 5. Return a compact receipt with mint, owner, decimal-string revision, status and lease expiry. No raw checkpoint is returned. A future adapter must verify identity and exact revision, preserve the lease deadline, and reread/compare the checkpoint after claim. Revision strings prevent JSON Number rounding; unsafe or mismatched metadata must fail closed.
 6. Revoke legacy RPC execution at the coordinated cutover and grant the new RPCs only to the existing authorized server role. No new credentials or broader access are proposed. Legacy endpoints left executable can bypass revision fencing. Direct table writes by privileged code also bypass the contract: the approved operational scope must prohibit them, and inventory must establish no such active writer.
 
-Exact candidate SQL: [creator-job-fencing-v2.sql](creator-job-fencing-v2.sql). It is executable only in the synthetic disposable database. There is no V2 adapter, flag or workflow integration in this change set.
+Exact candidate SQL: [creator-job-fencing-v2.sql](creator-job-fencing-v2.sql). It is executable only in the synthetic disposable database. A V2 adapter is now prepared but defaults to disabled, has no environment flag and is not imported by a runner or route. No workflow integration is added.
 
 ## Required compatibility and quiescence review
 
-Before any approval request, parent must review the full hosted table DDL (including defaults, constraints, indexes and dependent functions), compare the modeled function semantics with the exact retained definitions, and review this SQL against that catalog. The test fixture is not a substitute for those checks.
+Before any approval request, parent must review this SQL against the verified catalog and check for drift and dependent writers. Column/default/constraint/index/trigger facts have been supplied; function text remains a reconstruction of the supplied semantics. The test fixture is not a substitute for those checks.
 
 Inventory all old clients, queued/running Actions jobs and direct writers, including older branches/deployments. The known durable runner is `creator-worker-run.mjs`; workflow-level concurrency alone cannot protect against every old/manual caller. Obtain explicit authorization for any required pause/configuration/deployment or migration. No pause is performed here.
 

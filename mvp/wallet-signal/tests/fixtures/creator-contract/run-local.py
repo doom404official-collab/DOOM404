@@ -1,7 +1,10 @@
 """Synthetic contract tests. Requires the exact disposable, network-isolated Docker
 container created in README.md. No external host/credentials or SQL URI accepted.
 """
-import concurrent.futures,json,pathlib,subprocess,time
+import concurrent.futures,json,pathlib,subprocess,time,atexit
+lock=pathlib.Path("/tmp/glitch-creator-contract-test.lock")
+lock.mkdir(mode=0o700)  # Refuse overlapping suites that share the disposable DB.
+atexit.register(lock.rmdir)
 D=pathlib.Path(__file__).parent
 CONTAINER='creator-contract-disposable'
 info=json.loads(subprocess.check_output(['docker','inspect',CONTAINER],text=True))[0]
@@ -24,6 +27,19 @@ def parallel(statements):
  with concurrent.futures.ThreadPoolExecutor(len(statements)) as pool:return list(pool.map(sql,statements))
 passed=[]
 def check(name,condition):assert condition,name;passed.append(name);print('PASS',name,flush=True)
+column_catalog=json.loads(sql("SELECT jsonb_object_agg(a.attname,jsonb_build_object('type',format_type(a.atttypid,a.atttypmod),'notNull',a.attnotnull,'default',pg_get_expr(d.adbin,d.adrelid))) FROM pg_attribute a LEFT JOIN pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum WHERE a.attrelid='creator_intelligence_jobs'::regclass AND a.attnum>0 AND NOT a.attisdropped"))
+expected_columns={name:{'type':kind,'notNull':required,'default':default} for name,kind,required,default in [
+ ('mint','text',True,None),('status','text',True,"'queued'::text"),('stage','text',True,"'identification'::text"),('state','jsonb',True,"'{}'::jsonb"),('request_count_total','bigint',True,'0'),('lease_owner','text',False,None),('lease_until','timestamp with time zone',False,None),('last_error','text',False,None),('created_at','timestamp with time zone',True,'now()'),('updated_at','timestamp with time zone',True,'now()')]}
+check('V1 verified exact column types/nullability/defaults match fixture',column_catalog==expected_columns)
+indexes=json.loads(sql("SELECT jsonb_agg(jsonb_build_object('primary',i.indisprimary,'method',am.amname,'columns',ARRAY(SELECT pg_get_indexdef(i.indexrelid,n,true) FROM generate_series(1,i.indnkeyatts) n)) ORDER BY i.indisprimary DESC) FROM pg_index i JOIN pg_class c ON c.oid=i.indexrelid JOIN pg_am am ON am.oid=c.relam WHERE i.indrelid='creator_intelligence_jobs'::regclass"))
+check('V1 verified exact index keys and methods match fixture',indexes==[{'primary':True,'method':'btree','columns':['mint']},{'primary':False,'method':'btree','columns':['status','updated_at']}])
+check('V1 verified catalog has no non-internal triggers',sql("SELECT count(*)=0 FROM pg_trigger WHERE tgrelid='creator_intelligence_jobs'::regclass AND NOT tgisinternal")=='t')
+reset();before=sql('SELECT to_jsonb(j)::text FROM creator_intelligence_jobs j')
+null_save=sql(f"SELECT save_creator_intelligence_progress('{M}',NULL,'selling','partial','{{}}'::jsonb,0);",False)
+check('V1 coalesced save owner rejects NULL without mutation',null_save.returncode!=0 and 'INVALID_SAVE' in null_save.stderr and sql('SELECT to_jsonb(j)::text FROM creator_intelligence_jobs j')==before)
+for clause in ["mint='invalid'","status='invalid'","stage='invalid'",'request_count_total=-1','state=NULL']:
+ result=sql('UPDATE creator_intelligence_jobs SET '+clause,False)
+ check('V1 verified table constraint rejects '+clause,result.returncode!=0 and sql('SELECT to_jsonb(j)::text FROM creator_intelligence_jobs j')==before)
 reset();check('V1 different owners: one claim',sorted(parallel([claim(A),claim(B)]))==['f','t'])
 reset();check('V1 same owner: both claims accepted',parallel([claim(),claim()])==['t','t'])
 reset();sql(claim());check('V1 concurrent same-owner running saves both accepted',parallel([save(state='{"a":1}'),save(state='{"b":2}')])==['t','t'])

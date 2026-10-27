@@ -1,12 +1,15 @@
 -- DISPOSABLE SYNTHETIC MODEL ONLY. Reconstructed from parent catalog evidence
 -- supplied 2026-10-27, not a byte-for-byte hosted pg_get_functiondef export.
--- Non-lease column nullability/defaults below are fixture assumptions; do not
--- use their behavior as proof of unreported hosted constraints.
+-- Columns, nullability, defaults, index definitions and checks were independently
+-- verified by the parent catalog inspection. Function text remains reconstructed.
 CREATE TABLE public.creator_intelligence_jobs(
- mint text PRIMARY KEY,status text NOT NULL DEFAULT 'queued',stage text NOT NULL DEFAULT 'identification',
+ mint text PRIMARY KEY CHECK(mint ~ '^[1-9A-HJ-NP-Za-km-z]{32,44}$'),
+ status text NOT NULL DEFAULT 'queued' CHECK(status IN ('queued','running','partial','complete','failed')),
+ stage text NOT NULL DEFAULT 'identification' CHECK(stage IN ('identification','holdings','selling','previous_launches','complete')),
  state jsonb NOT NULL DEFAULT '{}'::jsonb,request_count_total bigint NOT NULL DEFAULT 0 CHECK(request_count_total>=0),
  lease_owner text,lease_until timestamptz,last_error text,created_at timestamptz NOT NULL DEFAULT now(),updated_at timestamptz NOT NULL DEFAULT now()
 );
+CREATE INDEX creator_intelligence_jobs_status_updated_at_idx ON public.creator_intelligence_jobs(status,updated_at);
 ALTER TABLE public.creator_intelligence_jobs ENABLE ROW LEVEL SECURITY;
 CREATE FUNCTION public.claim_creator_intelligence_job(p_mint text,p_owner text,p_lease_seconds integer DEFAULT 180)
 RETURNS boolean LANGUAGE plpgsql SECURITY INVOKER SET search_path=public AS $$
@@ -21,7 +24,7 @@ CREATE FUNCTION public.save_creator_intelligence_progress(p_mint text,p_owner te
 RETURNS boolean LANGUAGE plpgsql SECURITY INVOKER SET search_path=public AS $$
 DECLARE n integer;
 BEGIN
- IF p_mint !~ '^[1-9A-HJ-NP-Za-km-z]{32,44}$' OR length(p_owner)<8 OR p_stage NOT IN ('identification','holdings','selling','previous_launches','complete') OR p_status NOT IN ('queued','running','partial','complete','failed') OR jsonb_typeof(p_state)<>'object' OR p_request_delta<0 OR p_request_delta>500 THEN RAISE EXCEPTION 'INVALID_SAVE'; END IF;
+ IF p_mint !~ '^[1-9A-HJ-NP-Za-km-z]{32,44}$' OR length(coalesce(p_owner,''))<8 OR p_stage NOT IN ('identification','holdings','selling','previous_launches','complete') OR p_status NOT IN ('queued','running','partial','complete','failed') OR jsonb_typeof(p_state)<>'object' OR p_request_delta<0 OR p_request_delta>500 THEN RAISE EXCEPTION 'INVALID_SAVE'; END IF;
  UPDATE public.creator_intelligence_jobs SET stage=p_stage,status=p_status,state=p_state,request_count_total=request_count_total+p_request_delta,
  lease_owner=CASE WHEN p_status IN ('partial','complete','failed') THEN NULL ELSE lease_owner END,
  lease_until=CASE WHEN p_status IN ('partial','complete','failed') THEN NULL ELSE lease_until END,updated_at=now()
