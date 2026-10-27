@@ -349,6 +349,7 @@ function CreatorLookup() {
   const [holderConnectionsError, setHolderConnectionsError] = useState("");
   const [workerEvidence,setWorkerEvidence] = useState(null);
   const [verifiedHolderAssessment,setVerifiedHolderAssessment] = useState(null);
+  const [holderEvidenceState,setHolderEvidenceState] = useState("unknown");
   const holderReconciliation=concentration&&holderConnections
     ?reconcileHolderSnapshot(concentration.accounts||[],holderConnections.holders||[])
     :null;
@@ -397,17 +398,19 @@ function CreatorLookup() {
   },[result?.mint]);
   useEffect(() => {
     const address=result?.mint;
-    if(!address){setVerifiedHolderAssessment(null);return;}
+    if(!address){setVerifiedHolderAssessment(null);setHolderEvidenceState("unknown");return;}
     let stopped=false;
     async function refreshVerified(){
       try{
         const response=await fetch("/api/holder-assessment?mint="+encodeURIComponent(address),{cache:"no-store"});
-        if(!response.ok)return;
+        if(!response.ok)throw Error("HOLDER_EVIDENCE_UNAVAILABLE");
         const data=await response.json();
+        if(!stopped)setHolderEvidenceState(data.mint===address&&data.assessment?"ready":"unknown");
         if(!stopped)setVerifiedHolderAssessment(data.mint===address&&data.assessment?data:null);
-      }catch{/* Verified evidence is optional; never substitute candidate edges. */}
+      }catch{if(!stopped){setHolderEvidenceState("error");setVerifiedHolderAssessment(null);}}
     }
     setVerifiedHolderAssessment(null);
+    setHolderEvidenceState("loading");
     refreshVerified();
     const interval=setInterval(refreshVerified,30000);
     return ()=>{stopped=true;clearInterval(interval);};
@@ -538,7 +541,7 @@ function CreatorLookup() {
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
     {busy && <p role="status" style={{ color: "#ddd" }}>Querying Solana history. Each batch checks up to 3,000 signatures; this may take up to 45 seconds.</p>}
     {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
-      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} workerEvidence={workerEvidence} />
+      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} workerEvidence={workerEvidence} />
       {/* Previous token evidence panels retired from the layout; raw data and scan workers remain unchanged. */}
     </div>}
   </section>;
