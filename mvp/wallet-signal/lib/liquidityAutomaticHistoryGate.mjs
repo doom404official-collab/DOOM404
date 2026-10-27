@@ -1,6 +1,7 @@
 import {validateHistoryCheckpoint,HISTORY_CLASSIFICATION} from "./liquidityHistoricalDecoder.mjs";
 export function assessAutomaticHistoryCheckpoint(state,pool){
  validateHistoryCheckpoint(state,pool);
+ for(const field of ['pages','requestCount'])if(state[field]!==undefined&&(!Number.isSafeInteger(state[field])||state[field]<0))throw Error('INVALID_HISTORY_COUNTER');
  if(state.authorizationVerified!==false||state.finalScore!==null||state.withdrawalVerified!==false)throw Error("UNSAFE_AUTOMATIC_HISTORY_STATE");
  if(state.complete===true){
   if(state.historyCoverageVerified!==true||state.pendingSignatures?.length)throw Error("UNVERIFIED_HISTORY_EXHAUSTION");

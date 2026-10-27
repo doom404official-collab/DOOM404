@@ -36,7 +36,7 @@ for(const patch of [{errors:[{stage:'slot_mismatch'}]},{errors:[{stage:'retry_gu
  });
 
 test('canonical progress and exhaustion semantics preserve valid candidates',()=>{
- for(const patch of [{seen:[a,b]},{before:b},{complete:true,historyCoverageVerified:true}])
+ for(const patch of [{seen:[a,b]},{before:b,seen:[a,b]},{complete:true,historyCoverageVerified:true}])
   assert.equal(assess({prior,next:{...prior,...patch},artifactName:'liquidity-history-123'}).checkpointEligible,true);
 });
 test('retained non-blocking errors and unverified events remain acceptable',()=>{
