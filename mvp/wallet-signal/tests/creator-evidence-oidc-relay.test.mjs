@@ -8,7 +8,7 @@ import {createCreatorEvidenceRelay,createCreatorPreparedEvidenceRelay} from '../
 const {privateKey,publicKey}=generateKeyPairSync('rsa',{modulusLength:2048}); // ephemeral synthetic keys only
 const jwk={...publicKey.export({format:'jwk'}),kid:'synthetic-key',alg:'RS256',use:'sig'},jwks={keys:[jwk]},now=1800000000;
 const manifest={repository:'doom404official-collab/DOOM404',repository_id:'1405094598',repository_owner:'doom404official-collab',repository_owner_id:'335732040',ref:'refs/heads/feature/creator-history-worker-500',sha:'a'.repeat(40),workflow_sha:'a'.repeat(40),workflow_ref:'doom404official-collab/DOOM404/.github/workflows/creator-global-restricted-capture.yml@refs/heads/feature/creator-history-worker-500',run_id:'123456',run_attempt:'1',event_name:'workflow_dispatch',environment:'creator-historical-capture',runner_environment:'github-hosted',sub:'synthetic-exact-approved-subject',audience:'https://relay.invalid/upload',startsAt:now-1,expiresAt:now+299};
-const readManifest={...manifest,audience:'https://relay.invalid/readback'};
+const readManifest={...manifest,run_id:'123457',audience:'https://relay.invalid/readback'};
 const encode=v=>Buffer.from(typeof v==='string'?v:JSON.stringify(v)).toString('base64url');
 let serial=0;
 function token(policy=manifest,changes={},header={}){const {audience,startsAt,expiresAt,...identity}=policy;const claims={...identity,iss:GITHUB_ISSUER,aud:audience,iat:now,nbf:now,exp:now+299,jti:'synthetic-'+ ++serial,...changes};const input=encode({alg:'RS256',typ:'JWT',kid:jwk.kid,...header})+'.'+encode(claims);return input+'.'+sign('RSA-SHA256',Buffer.from(input),privateKey).toString('base64url');}
@@ -111,4 +111,42 @@ test('RSA key strength, usage and algorithm restrictions are independent of a ma
 });
 test('short issue-token expiry bounds capability even when upload token lasts longer',async()=>{
  const h=fixture(),cap=await h.relay.issuePrepared({token:token(manifest,{exp:now+2}),prepared});assert.equal(cap.expiresAt,now+2);h.storage.put=async()=>{h.advance(3);return true;};await assert.rejects(h.relay.upload({token:token(),capability:cap.capability,payload}),/RECONCILIATION_REQUIRED/);
+});
+
+test('invalid signed bearer is rejected before reading any HTTP body for each action',async()=>{
+ for(const action of ['issue','upload','verify']){
+  const h=fixture();let reads=0;
+  const handler=createCreatorEvidenceHttpHandler(h.options);
+  const response=await handler({url:'https://relay.invalid/api/creator-evidence/'+action,method:'POST',headers:new Headers({authorization:'Bearer '+token(manifest,{repository:'wrong'}),'content-type':'application/json'}),get body(){reads++;throw Error('body must remain unread');}});
+  assert.notEqual(response.status,200);assert.equal(reads,0);assert.deepEqual(h.counts,{puts:0,reads:0,claims:0});
+ }
+});
+
+test('malformed token or prohibited JOSE header causes no JWKS fetch or body read',async()=>{
+ for(const bearer of ['a.b.c',token(manifest,{}, {alg:'HS256'}),token(manifest,{}, {jku:'https://untrusted.invalid/keys'})]){
+  const h=fixture();let keys=0,bodies=0;
+  const handler=createCreatorEvidenceHttpHandler({...h.options,resolveJwks:async()=>{keys++;return jwks;}});
+  const result=await handler({url:'https://relay.invalid/api/creator-evidence/issue',method:'POST',headers:new Headers({authorization:'Bearer '+bearer,'content-type':'application/json'}),get body(){bodies++;throw Error();}});
+  assert.notEqual(result.status,200);assert.equal(keys,0);assert.equal(bodies,0);assert.equal(h.counts.claims,0);
+ }
+});
+test('audience change does not authorize readback: independently approved distinct run is required',async()=>{
+ const h=fixture();assert.throws(()=>createCreatorEvidenceRelay({...h.options,readManifest:{...manifest,audience:readManifest.audience}}),/REJECTED/);
+ const cap=await h.relay.issuePrepared({token:token(),prepared});await h.relay.upload({token:token(),capability:cap.capability,payload});const before=h.counts;
+ // A write job can request the read audience, but cannot claim the approved read run.
+ await assert.rejects(h.relay.verifyReadback({token:token(manifest,{aud:readManifest.audience})}));assert.deepEqual(h.counts,before);
+ let bodyReads=0;const handler=createCreatorEvidenceHttpHandler(h.options);
+ const rejected=await handler({url:'https://relay.invalid/api/creator-evidence/verify',method:'POST',headers:new Headers({authorization:'Bearer '+token(manifest,{aud:readManifest.audience}),'content-type':'application/json'}),get body(){bodyReads++;throw Error();}});
+ assert.notEqual(rejected.status,200);assert.equal(bodyReads,0);
+ assert.equal((await h.relay.verifyReadback({token:token(readManifest)})).status,'READBACK_VERIFIED');
+});
+test('direct issue authenticates before accessing capture preflight fields',async()=>{
+ const h=fixture();let accessed=0;const capture=new Proxy({}, {get(){accessed++;throw Error();}});
+ await assert.rejects(createCreatorEvidenceRelay(h.options).issue({token:token(manifest,{repository:'wrong'}),capture}));assert.equal(accessed,0);assert.equal(h.counts.claims,0);
+});
+test('expiry after authenticated body consumption rejects before any upload claim or storage',async()=>{
+ const h=fixture(),cap=await h.relay.issuePrepared({token:token(),prepared});let keys=0,reads=0;
+ const handler=createCreatorEvidenceHttpHandler({...h.options,resolveJwks:async()=>{keys++;return jwks;}});
+ const result=await handler({url:'https://relay.invalid/api/creator-evidence/upload',method:'POST',headers:new Headers({authorization:'Bearer '+token(),'content-type':'application/json','x-creator-capability':cap.capability}),get body(){assert.ok(keys>0);return {getReader(){return {async read(){reads++;if(reads===1){h.advance(300);return {done:false,value:payload};}return {done:true};},cancel(){}};}};}});
+ assert.notEqual(result.status,200);assert.equal(h.counts.puts,0);assert.equal(h.counts.claims,1);
 });

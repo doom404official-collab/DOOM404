@@ -1,5 +1,5 @@
 import {createHash,randomBytes} from 'node:crypto';
-import {verifyCreatorGithubOidc,validateCreatorOidcManifest} from './creatorEvidenceOidc.mjs';
+import {verifyCreatorGithubOidc,validateCreatorOidcManifest,screenCreatorGithubToken} from './creatorEvidenceOidc.mjs';
 import {authorizeCreatorEvidenceUpload} from './creatorSignedUploadCoordinator.mjs';
 import {verifyHistoricalEvidenceReadback} from './creatorHistoricalPrivateRetention.mjs';
 import {prepareHistoricalGlobalRetention} from './creatorHistoricalRetentionPreflight.mjs';
@@ -15,12 +15,12 @@ const denied=()=>{throw Error('CREATOR_RELAY_REJECTED');};
 export function createCreatorPreparedEvidenceRelay({enabled=false,manifest,readManifest,resolveJwks,claims,storage,now=Date.now}={}){
  if(enabled!==true)throw Error('CREATOR_RELAY_DISABLED');
  const write=validateCreatorOidcManifest(manifest),read=validateCreatorOidcManifest(readManifest);
- if(write.audience===read.audience||typeof now!=='function'||typeof resolveJwks!=='function'||['reserve','consume','consumeReadback'].some(k=>typeof claims?.[k]!=='function')||typeof storage?.put!=='function'||typeof storage?.read!=='function')denied();
+ if(write.run_id===read.run_id||write.audience===read.audience||typeof now!=='function'||typeof resolveJwks!=='function'||['reserve','consume','consumeReadback'].some(k=>typeof claims?.[k]!=='function')||typeof storage?.put!=='function'||typeof storage?.read!=='function')denied();
  const identity={objectKey,runId:write.run_id,runAttempt:write.run_attempt,commit:write.sha};
  function time(){const ms=now();if(!Number.isSafeInteger(ms)||ms<0)denied();return Math.floor(ms/1000);}
  function live(policy){const t=time();if(t<policy.startsAt||t>=policy.expiresAt)denied();return t;}
  async function authenticate(token,policy,signal){
-  try{live(policy);const jwks=await createCreatorExecutionBudget({maxDurationMs:5000}).run('JWKS',inner=>resolveJwks({signal:inner}),{signal});
+  try{screenCreatorGithubToken(token);live(policy);const jwks=await createCreatorExecutionBudget({maxDurationMs:5000}).run('JWKS',inner=>resolveJwks({signal:inner}),{signal});
   return verifyCreatorGithubOidc(token,{manifest:policy,jwks,nowSeconds:live(policy)});}catch{denied();}
  }
  function match(record){if(!record||Object.entries(identity).some(([k,v])=>record[k]!==v)||!/^[a-f0-9]{64}$/.test(record.payloadSha256)||!Number.isSafeInteger(record.byteLength)||record.byteLength<1||record.byteLength>1048576||!Number.isSafeInteger(record.expiresAt))denied();}
@@ -29,6 +29,11 @@ export function createCreatorPreparedEvidenceRelay({enabled=false,manifest,readM
   catch{throw Error(uncertain?'CREATOR_RELAY_RECONCILIATION_REQUIRED':'CREATOR_RELAY_REJECTED');}
  }
  return Object.freeze({
+  async authenticateRequest({action,token,signal}){
+   if(!['issue','upload','verify'].includes(action))denied();
+   await authenticate(token,action==='verify'?read:write,signal);
+   // No transferable proof/boolean. Operations independently verify again.
+  },
   async issuePrepared({token,prepared,signal}){
    if(prepared?.status!=='READY_FOR_RESTRICTED_REVIEW'||prepared.objectKey!==objectKey||!Buffer.isBuffer(prepared.payload)||prepared.payload.length<1||prepared.payload.length>1048576)denied();
    const bytes=Buffer.from(prepared.payload),digest=hash(bytes);if(digest!==prepared.payloadSha256)denied();
@@ -71,7 +76,7 @@ export function createCreatorPreparedEvidenceRelay({enabled=false,manifest,readM
 export function createCreatorEvidenceRelay(options={}){
  const engine=createCreatorPreparedEvidenceRelay(options);
  return Object.freeze({
-  async issue({token,capture,signal}){try{const prepared=prepareHistoricalGlobalRetention(capture);return await engine.issuePrepared({token,prepared,signal});}catch(error){if(error.message==='CREATOR_RELAY_RECONCILIATION_REQUIRED')throw error;denied();}},
-  upload:engine.upload,verifyReadback:engine.verifyReadback
+  async issue({token,capture,signal}){try{await engine.authenticateRequest({action:'issue',token,signal});const prepared=prepareHistoricalGlobalRetention(capture);return await engine.issuePrepared({token,prepared,signal});}catch(error){if(error.message==='CREATOR_RELAY_RECONCILIATION_REQUIRED')throw error;denied();}},
+  authenticateRequest:engine.authenticateRequest,upload:engine.upload,verifyReadback:engine.verifyReadback
  });
 }

@@ -27,10 +27,18 @@ export function validateCreatorOidcManifest(manifest){
  if(!Number.isSafeInteger(manifest.startsAt)||manifest.startsAt<0||!Number.isSafeInteger(manifest.expiresAt)||manifest.expiresAt<=manifest.startsAt||manifest.expiresAt-manifest.startsAt>300)fail();
  return structuredClone(manifest);
 }
+/** Syntax/header screening only; never an authentication result. Reject before JWKS I/O. */
+export function screenCreatorGithubToken(token){
+ try{
+  if(typeof token!=='string'||token.length>16384)fail();
+  const parts=token.split('.');if(parts.length!==3)fail();const header=json(parts[0]);json(parts[1]);decode(parts[2]);
+  if(header.alg!=='RS256'||header.typ!=='JWT'||typeof header.kid!=='string'||!header.kid||Object.keys(header).some(k=>!['alg','typ','kid','x5t'].includes(k)))fail();
+ }catch{fail();}
+}
 /** No trust in token-provided URLs. jwks must come from the server's pinned resolver. */
 export function verifyCreatorGithubOidc(token,{manifest,jwks,nowSeconds}={}){
  try{
-  const expected=validateCreatorOidcManifest(manifest);
+  screenCreatorGithubToken(token);const expected=validateCreatorOidcManifest(manifest);
   if(!Number.isSafeInteger(nowSeconds)||nowSeconds<expected.startsAt||nowSeconds>=expected.expiresAt||typeof token!=='string'||token.length>16384)fail();
   const parts=token.split('.');if(parts.length!==3)fail();const header=json(parts[0]),claims=json(parts[1]);
   if(header.alg!=='RS256'||header.typ!=='JWT'||typeof header.kid!=='string'||!header.kid||Object.keys(header).some(k=>!['alg','typ','kid','x5t'].includes(k)))fail();

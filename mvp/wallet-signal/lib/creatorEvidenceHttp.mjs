@@ -12,6 +12,7 @@ export function createCreatorEvidenceHttpHandler(options={}){
    const auth=request.headers.get('authorization');if(typeof auth!=='string'||!/^Bearer [A-Za-z0-9_.-]+$/.test(auth)||auth.length>16400)return response(401,{status:'REJECTED'});
    if(request.headers.get('content-type')!=='application/json'||request.headers.has('content-encoding'))return response(415,{status:'REJECTED'});
    const token=auth.slice(7),signal=request.signal;
+   await relay.authenticateRequest({action:url.pathname.split('/').at(-1),token,signal});
    const bytes=await readCreatorEvidenceBody(request,{maxBytes:url.pathname.endsWith('/verify')?2:1048576,signal});
    let result;
    if(url.pathname.endsWith('/upload'))result=await relay.upload({token,payload:bytes,capability:request.headers.get('x-creator-capability'),contentType:'application/json',signal});
