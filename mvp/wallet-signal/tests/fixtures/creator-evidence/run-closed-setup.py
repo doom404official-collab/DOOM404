@@ -26,7 +26,18 @@ try:
  sql('REVOKE SELECT ON public.historical_fixture FROM PUBLIC; CREATE ROLE creator_test_issuer NOLOGIN;')
  check('preexisting role causes rollback, never reused',sql(candidate,False).returncode!=0)
  check('collision preserves preexisting role and no schema',sql("SELECT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='creator_test_issuer') AND NOT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname='creator_relay_test_private')")=='t')
- sql('DROP ROLE creator_test_issuer;');sql(candidate)
+ sql('DROP ROLE creator_test_issuer; CREATE SCHEMA extensions; CREATE EXTENSION pg_stat_statements WITH SCHEMA extensions;')
+ check('real statistics views retain PUBLIC SELECT without schema USAGE',sql("SELECT count(*)=2 AND bool_and(EXISTS(SELECT 1 FROM aclexplode(c.relacl) a WHERE a.grantee=0 AND a.privilege_type='SELECT')) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='extensions' AND c.relname IN('pg_stat_statements','pg_stat_statements_info')")=='t')
+ sql(candidate)
+ audit=candidate[candidate.index('-- Fail rather'):candidate.index('COMMIT;')]
+ for view in ['pg_stat_statements','pg_stat_statements_info']:
+  check(view+' table ACL is true but effective schema access false',sql("SELECT has_table_privilege('creator_test_issuer_login','extensions."+view+"','SELECT') AND NOT has_schema_privilege('creator_test_issuer_login','extensions','USAGE')")=='t')
+  denied=sql('SET ROLE creator_test_issuer_login; SELECT * FROM extensions.'+view,False)
+  check(view+' actual SELECT is schema-denied',denied.returncode!=0 and 'permission denied for schema extensions' in denied.stderr)
+ check('later schema USAGE grant triggers the unchanged outside-access failure',sql('BEGIN; GRANT USAGE ON SCHEMA extensions TO PUBLIC;'+audit,False).returncode!=0)
+ check('failed schema grant audit rolls back',sql("SELECT NOT has_schema_privilege('creator_test_issuer_login','extensions','USAGE')")=='t')
+ check('accessible wrapper view is still rejected',sql('BEGIN; CREATE VIEW public.stats_wrapper AS SELECT * FROM extensions.pg_stat_statements; GRANT SELECT ON public.stats_wrapper TO PUBLIC;'+audit,False).returncode!=0)
+
  check('six roles created without passwords/elevated attributes',sql("SELECT count(*)=6 AND bool_and(rolpassword IS NULL AND NOT rolsuper AND NOT rolcreatedb AND NOT rolcreaterole AND NOT rolreplication AND NOT rolbypassrls) FROM pg_authid WHERE rolname LIKE 'creator_test_%'")=='t')
  check('three logins have zero connection admission',sql("SELECT count(*)=3 AND bool_and(rolconnlimit=0) FROM pg_roles WHERE rolname LIKE 'creator_test_%' AND rolcanlogin")=='t')
  for role in ['issuer','consumer','verifier']:

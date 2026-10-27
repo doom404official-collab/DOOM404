@@ -88,7 +88,8 @@ CREATE POLICY closed_setup_guard ON creator_relay_test_private.relay_reservation
 CREATE POLICY closed_setup_guard ON creator_relay_test_private.relay_consumptions AS RESTRICTIVE FOR ALL TO creator_test_issuer,creator_test_consumer,creator_test_verifier USING(false) WITH CHECK(false);
 CREATE POLICY closed_setup_guard ON creator_relay_test_private.relay_readbacks AS RESTRICTIVE FOR ALL TO creator_test_issuer,creator_test_consumer,creator_test_verifier USING(false) WITH CHECK(false);
 -- Fail rather than silently widening/removing existing permissions. Owner audit
--- must resolve inherited PUBLIC grants outside this schema before setup proceeds.
+-- must resolve reachable inherited PUBLIC grants outside this schema before setup
+-- proceeds. Relation ACLs alone do not permit access without schema USAGE.
 DO $$
 DECLARE item text; login_oid oid; group_oid oid; r record;
 BEGIN
@@ -104,6 +105,7 @@ BEGIN
   THEN RAISE EXCEPTION 'CLOSED_ROLE_CONTRACT_FAILED'; END IF;
   IF EXISTS(SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
    WHERE c.relkind IN('r','p','v','m','f') AND n.nspname NOT IN('pg_catalog','information_schema','creator_relay_test_private') AND n.nspname NOT LIKE 'pg_toast%'
+   AND has_schema_privilege(login_oid,n.oid,'USAGE')
    AND has_table_privilege(login_oid,c.oid,'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER'))
   THEN RAISE EXCEPTION 'OUTSIDE_TABLE_ACCESS_REQUIRES_PARENT_AUDIT'; END IF;
   IF EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
