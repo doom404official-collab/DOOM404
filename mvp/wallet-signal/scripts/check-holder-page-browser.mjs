@@ -3,6 +3,7 @@ import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
 import {setTimeout as delay} from 'node:timers/promises';
 import {mkdir} from 'node:fs/promises';
+import {HOLDER_RETAIN19_POLICY as frozenPolicy} from '../lib/holderEligibleViewPolicy.mjs';
 import {assessVerifiedHolderConcentration} from '../lib/verifiedHolderConcentrationAssessment.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const base=process.env.HOLDER_PAGE_BASE_URL||'http://127.0.0.1:3110';
@@ -23,7 +24,7 @@ const wait=async predicate=>{for(let n=0;n<500;n++){if(await predicate())return;
 let checks=0;
 try{for(const width of [390,1280]){
  const context=await browser.newContext({viewport:{width,height:900},serviceWorkers:'block'}),page=await context.newPage();
- const forbidden=[],errors=[],pending=[],requests=[];let holdAssessments=true,holdStatus=false,emptyEvidence=false;const pendingStatus=[];
+ const forbidden=[],errors=[],pending=[],requests=[];let holdAssessments=true,holdStatus=false,emptyEvidence=false,frozenMode='valid';const pendingStatus=[];
  page.on('pageerror',e=>errors.push(e.message));await page.clock.install({time:new Date(updatedAt)});
  const response=(route,body,status=200)=>route.fulfill({status,contentType:'application/json',body:JSON.stringify(body)});
  await context.route('**/*',async route=>{
@@ -36,6 +37,11 @@ try{for(const width of [390,1280]){
   requests.push(pathname);
   if(route.request().method()!=='GET'||/start|worker|tick|scheduler|recovery|merge|live-holder/.test(pathname)){forbidden.push(pathname);return route.abort();}
   const mint=u.searchParams.get('mint'),f=fixture(mint);
+  if(pathname==='/api/holder-frozen-observation'){
+   const snapshot={id:frozenPolicy.snapshotId,mint:mintA,slot:frozenPolicy.slot,status:'frozen',supply_raw:'1000',excluded_wallets:['1nc1nerator11111111111111111111111111111111'],holder_ranking:[frozenPolicy.infrastructurePool,...Array.from({length:19},(_,i)=>wallet(i))].map(wallet=>({wallet,balance:'10'}))};
+   if(frozenMode==='wrong')snapshot.slot++;
+   return frozenMode==='error'?response(route,{status:'unavailable'},503):response(route,{mint,status:'observed_only',snapshot});
+  }
   if(pathname==='/api/holder-assessment'){
    if(emptyEvidence)return response(route,{mint,status:'not_started'});
    if(holdAssessments){pending.push({route,mint});return;}
@@ -85,6 +91,9 @@ try{for(const width of [390,1280]){
   const second=page.getByRole('button',{name:/Wallet .*observed supply/}).nth(1);await second.focus();await page.keyboard.press('Space');assert.equal(await second.getAttribute('aria-pressed'),'true');
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),'actual page must fit viewport');
  assert.ok(await page.locator('img').count()>0,'original mascot remains');await page.screenshot({path:`${artifacts}/page-${width}.png`,fullPage:true});
+ await page.getByTestId('frozen-concentration').waitFor();assert.match(await page.getByTestId('frozen-concentration').innerText(),/20%.*19%.*1000/);checks++;
+ frozenMode='wrong';await inspect(mintB);await inspect(mintA);await delay(100);assert.equal(await page.getByTestId('frozen-concentration').count(),0);await page.getByText(/matching frozen raw inputs are unavailable/).waitFor();checks++;
+ frozenMode='error';await inspect(mintB);await inspect(mintA);await delay(100);assert.equal(await page.getByTestId('frozen-concentration').count(),0);checks++;
  emptyEvidence=true;await inspect(mintB);await page.getByText(/Historical coverage and wallet independence remain Unknown/).waitFor();assert.equal(await page.getByRole('button',{name:'Connection map',exact:true}).count(),0);checks++;
  assert.deepEqual(forbidden,[]);assert.deepEqual(errors,[]);assert.ok(requests.length>0);checks++;await context.close();
  }

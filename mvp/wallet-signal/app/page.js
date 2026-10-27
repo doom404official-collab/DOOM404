@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import HolderBubbleMap from "./HolderBubbleMap";
+import {HOLDER_RETAIN19_POLICY,assessApprovedHolderEligibleConcentration} from '../lib/holderEligibleViewPolicy.mjs';
 import GlitchV11Dashboard from "./GlitchV11Dashboard";
 import {reconcileHolderSnapshot} from "../lib/reconcileHolderSnapshot.mjs";
 import {scoreHolderIntelligenceForDisplay as scoreHolderConcentration} from "../lib/holderIntelligenceDisplayV11.mjs";
@@ -349,6 +350,7 @@ function CreatorLookup() {
   const [holderConnectionsError, setHolderConnectionsError] = useState("");
   const [workerEvidence,setWorkerEvidence] = useState(null);
   const [verifiedHolderAssessment,setVerifiedHolderAssessment] = useState(null);
+  const [frozenHolderObservation,setFrozenHolderObservation]=useState(null);
   const [holderEvidenceState,setHolderEvidenceState] = useState("unknown");
   const holderReconciliation=concentration&&holderConnections
     ?reconcileHolderSnapshot(concentration.accounts||[],holderConnections.holders||[])
@@ -418,6 +420,22 @@ function CreatorLookup() {
     refreshVerified();
     const interval=setInterval(refreshVerified,30000);
     return ()=>{stopped=true;requestSequence++;clearInterval(interval);};
+  },[result?.mint]);
+  useEffect(()=>{
+    const address=result?.mint;setFrozenHolderObservation(null);
+    if(address!==HOLDER_RETAIN19_POLICY.mint)return;
+    let stopped=false;const controller=new AbortController();
+    async function readFrozen(){
+      try{
+        const response=await fetch('/api/holder-frozen-observation?mint='+encodeURIComponent(address),{cache:'no-store',signal:controller.signal});
+        if(!response.ok)throw Error('FROZEN_UNAVAILABLE');
+        const data=await response.json();
+        // Recompute from exact raw inputs; response diagnostics never promote job evidence.
+        const observation=data.mint===address&&data.status==='observed_only'?assessApprovedHolderEligibleConcentration(data.snapshot):null;
+        if(!stopped)setFrozenHolderObservation(observation);
+      }catch{if(!stopped)setFrozenHolderObservation(null);}
+    }
+    readFrozen();return ()=>{stopped=true;controller.abort();};
   },[result?.mint]);
   useEffect(() => {
     const address=result?.mint;
@@ -538,7 +556,7 @@ function CreatorLookup() {
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
     {busy && <p role="status" style={{ color: "#ddd" }}>Querying Solana history. Each batch checks up to 3,000 signatures; this may take up to 45 seconds.</p>}
     {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
-      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} workerEvidence={workerEvidence} />
+      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} frozenHolderObservation={frozenHolderObservation} workerEvidence={workerEvidence} />
       {/* Previous token evidence panels retired from the layout; raw data and scan workers remain unchanged. */}
     </div>}
   </section>;
