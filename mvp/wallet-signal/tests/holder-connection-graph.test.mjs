@@ -24,3 +24,12 @@ test("indirect chains form connected groups but not ownership evidence",()=>{
  assert.equal(r.edges.length,2);
  assert.equal(r.commonOwnershipEstablished,false);
 });
+test('multi-party record cannot become a direct pair by filtering an intermediary',()=>{
+ for(const participants of [['A','B','outside'],['A','B','A'],['A','A']]){
+  const r=buildHolderConnectionGraph({holders,transactions:[{confirmed:true,directInteraction:true,signature:'tx',participants}]});assert.equal(r.edges.length,0);
+ }
+});
+test('reverse and duplicated observations retain one unordered pair and unique signatures',()=>{
+ const transactions=[['A','B'],['B','A'],['A','B']].map(participants=>({confirmed:true,directInteraction:true,signature:'tx',participants}));
+ const r=buildHolderConnectionGraph({holders,transactions});assert.equal(r.edges.length,1);assert.deepEqual(r.edges[0].signatures,['tx']);assert.equal(r.connectedWalletCount,2);
+});

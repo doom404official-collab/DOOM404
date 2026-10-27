@@ -18,7 +18,7 @@ export function buildHolderConnectionGraph({holders=[],transactions=[],historyCo
   if(tx?.confirmed!==true||typeof tx?.signature!=="string"||!Array.isArray(tx?.participants))continue;
   // Only explicit direct wallet-to-wallet interaction; shared fee payer, program
   // invocation or appearance in the same transaction is insufficient.
-  if(tx.directInteraction!==true)continue;
+  if(tx.directInteraction!==true||tx.participants.length!==2||tx.participants[0]===tx.participants[1])continue;
   const pair=[...new Set(tx.participants.filter(x=>eligible.has(x)))];
   if(pair.length!==2)continue;
   pair.sort();
