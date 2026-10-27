@@ -75,6 +75,7 @@ export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,page
   if(shouldDiscover&&used<maxRequests){
    for(const wallet of nextHolderScanOrder(checkpoint)){
     if(used>=maxRequests)break;
+    if(checkpoint.wallets[wallet].pageReplay?.stalledCursor)throw Error('PAGINATION_REPLAY_REVIEW_REQUIRED');
     const page=await collectWalletSignaturePage({wallet,cursor:checkpoint.wallets[wallet].cursor,cursorSlot:checkpoint.wallets[wallet].oldestSlot??null,limit:pageLimit,
      fetchPage:(address,opts)=>limitedRpc("getSignaturesForAddress",[address,{limit:opts.limit,
       ...(opts.before?{before:opts.before}:{}),commitment:"confirmed"}])});

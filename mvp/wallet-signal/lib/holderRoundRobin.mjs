@@ -18,7 +18,9 @@ export function holderScanCoverage(checkpoint){
  return {walletsTotal:wallets.length,
   walletsWithPages:wallets.filter(([,s])=>s.pages>0).length,
   walletsProviderExhausted:wallets.filter(([,s])=>s.exhausted).length,
-  perWallet:wallets.map(([wallet,s])=>({wallet,pages:s.pages,signaturesSeen:s.signaturesSeen,providerExhausted:s.exhausted})),
+  perWallet:wallets.map(([wallet,s])=>({wallet,pages:s.pages,signaturesSeen:s.signaturesSeen,providerExhausted:s.exhausted,
+   pageReplayCoverage:s.pageReplay?"bounded_recent_cursors_only":"legacy_unverified",
+   pageReplayHistoryVerified:false,pageReplayStalled:Boolean(s.pageReplay?.stalledCursor),recentPageCursorCount:Array.isArray(s.pageReplay?.cursors)?s.pageReplay.cursors.length:0})),
   nextWalletIndex:checkpoint.nextWalletIndex??0,
   archivalCompletenessProven:false};
 }

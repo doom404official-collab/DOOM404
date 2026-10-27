@@ -2,6 +2,19 @@
  * Versioned, portable read-only investigation checkpoint.
  * JSON is intended for GitHub Actions artifacts, never as an attribution write.
  */
+// Operational replay metadata only: no historical evidence is pruned or rebuilt.
+export const HOLDER_PAGE_REPLAY_WINDOW=16;
+function pageReplayWindow(state){
+ const cursor=value=>typeof value==='string'&&value.length>0&&value.length<=88;
+ if(!Object.hasOwn(state,'pageReplay')){
+  if(state.cursor!==null&&state.cursor!==undefined&&!cursor(state.cursor))throw Error('INVALID_PAGE_REPLAY_WINDOW');
+  return state.cursor?[state.cursor]:[];
+ }
+ const replay=state.pageReplay;
+ if(!replay||replay.version!==1||replay.priorHistoryVerified!==false||!Array.isArray(replay.cursors)||replay.cursors.length<1||replay.cursors.length>HOLDER_PAGE_REPLAY_WINDOW||replay.cursors.some(value=>!cursor(value))||new Set(replay.cursors).size!==replay.cursors.length||replay.cursors.at(-1)!==state.cursor)throw Error('INVALID_PAGE_REPLAY_WINDOW');
+ if(Object.hasOwn(replay,'stalledCursor')&&(!cursor(replay.stalledCursor)||!replay.cursors.includes(replay.stalledCursor)))throw Error('INVALID_PAGE_REPLAY_WINDOW');
+ return replay.cursors;
+}
 export function createHolderHistoryCheckpoint({mint,holders=[]}={}){
  if(typeof mint!=="string"||!mint||!Array.isArray(holders)||holders.length<1||holders.length>20)throw Error("INVALID_HOLDER_SET");
  const wallets=[...new Set(holders.map(h=>h.ownerWallet))];
@@ -15,6 +28,19 @@ export function recordHistoryPage(checkpoint,{wallet,page}){
  if(!state||state.exhausted)throw Error("WALLET_NOT_PENDING");
  if(!page||page.wallet!==wallet||!Array.isArray(page.signatures))throw Error("INVALID_PAGE");
  if(state.cursor&&state.cursor===page.nextCursor&&!page.providerPageExhausted)throw Error("PAGINATION_STALLED");
+ const recent=pageReplayWindow(state);
+ if(state.pageReplay?.stalledCursor)throw Error('PAGINATION_REPLAY_REVIEW_REQUIRED');
+ if(!Number.isSafeInteger(page.entriesSeen)||page.entriesSeen<0)throw Error('INVALID_PAGE');
+ if(page.entriesSeen>0){
+  if(typeof page.nextCursor!=='string'||!page.nextCursor||page.nextCursor.length>88)throw Error('INVALID_PAGE_CURSOR');
+  if(recent.includes(page.nextCursor)){
+   state.pageReplay={version:1,cursors:[...recent],priorHistoryVerified:false,stalledCursor:page.nextCursor};
+   throw Error('PAGINATION_REPLAY_DETECTED');
+  }
+  // Seed only the already persisted boundary for legacy state, never old pages.
+  // A bounded window cannot prove that older/unobserved history is replay-free.
+  state.pageReplay={version:1,cursors:[...recent,page.nextCursor].slice(-HOLDER_PAGE_REPLAY_WINDOW),priorHistoryVerified:false};
+ }
  state.cursor=page.nextCursor;
  if(page.oldestSlot!==null&&page.oldestSlot!==undefined)state.oldestSlot=page.oldestSlot;
  state.pages++;
