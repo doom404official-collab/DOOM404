@@ -259,3 +259,38 @@ The new disposable test uses the exact logged parameterized PostgREST SQL wrappe
 A controlled local table lock reproduces the exact 57014 statement-timeout message inside the same wrapper and leaves the entire job unchanged. This is a negative control, not evidence that the hosted incident involved a lock. Both successful execution and timeout rollback are covered; no automatic retry occurs. A separate exploratory composite-expansion query invoked the function repeatedly, but that is not the actual logged lateral wrapper and is not attributed to this incident.
 
 No deterministic wrapper/contract defect has been demonstrated, so no timeout increase, weaker response verification, smaller evidence payload, schema change or new live attempt is justified by these tests. Remaining diagnosis requires evidence of the hosted statement's wait/execution/serialization costs or resource contention; present logs do not distinguish those stages. The earlier no-advancement reconciliation and requirement for fresh approval remain unchanged. Only offline tests, existing disposable CI and these registers changed in this follow-up; production code is still the reviewed diagnostic implementation at 0360e8b.
+
+
+## Second separately approved attempt and catalog comparison — 2026-10-27
+Parent alone dispatched run [40507295652](https://github.com/doom404official-collab/DOOM404/actions/runs/40507295652) at `d4abe69` under a separate owner approval. It stopped after the first job's 20 calls, with no second-job attempt or retry. Redacted commit diagnostics were phase `transport`, category `deadline`, requestBytes **8065874**, httpStatus null. The PostgreSQL log again confirms commit statement timeout (57014) at **12:53:46.458 UTC**.
+
+A read-only activity sample at 12:53:45.969962 UTC found the active Holder query at elapsed 7.546472 seconds, null wait event/type and no blocking PIDs. This single sample cannot exclude earlier waiting or identify a CPU bottleneck. Database checkpoint activity overlapping 12:53:39–41 wrote five buffers in 2.604 seconds; temporal overlap does not establish causality. Final parent reconciliation at **12:55:12.763976 UTC** established versions **2138/1812**, inactive leases, and both original checkpoint hashes unchanged. No historical advancement persisted, and no further live attempt is authorized.
+
+Fresh parent catalog evidence confirms the same simple commit function as the fixture, no non-internal triggers, and exactly three btree indexes: unique id, unique (mint,holder_set_hash), and (status,lease_expires_at,updated_at). There is no JSON index. The original disposable fixture represented only the primary key; the exact-wrapper performance regression now adds the other two indexes inside its rollback-only local transaction. The catalog-matched probe still returns the full exact checkpoint with one invocation. This excludes a deterministic fixture/wrapper failure in the tested local setting, not hosted resource limitations. No production function, index, schema, configuration, deadline or request budget changed.
+
+Remaining parent-only read-only comparisons are below. They expose sizes/configuration metadata rather than checkpoint contents, do not invoke the commit RPC, and perform no settings changes. Tuple statistics are estimates/cumulative values, not incident-time proof. The row-size query is bounded to the two existing IDs. If PostgreSQL is older than 14, omit the compression-specific fields/functions rather than changing configuration.
+
+```sql
+-- Proposed parent-only reads. No RPC invocation, checkpoint contents or settings changes.
+SELECT current_setting('server_version') AS server_version,
+       current_setting('default_toast_compression',true) AS default_toast_compression;
+SELECT attname,attstorage,attcompression
+FROM pg_attribute
+WHERE attrelid='public.glitch_holder_scan_jobs'::regclass
+  AND attname IN ('checkpoint','summary') AND NOT attisdropped;
+SELECT c.oid::regclass::text AS relation,c.reloptions,
+       pg_relation_size(c.oid) AS heap_bytes,
+       pg_total_relation_size(c.oid) AS total_bytes,
+       s.n_live_tup,s.n_dead_tup,s.n_tup_upd,s.n_tup_hot_upd,
+       s.last_autovacuum,s.last_autoanalyze
+FROM pg_class c LEFT JOIN pg_stat_all_tables s ON s.relid=c.oid
+WHERE c.oid='public.glitch_holder_scan_jobs'::regclass
+   OR c.oid=(SELECT reltoastrelid FROM pg_class WHERE oid='public.glitch_holder_scan_jobs'::regclass);
+SELECT id,pg_column_size(checkpoint) AS stored_checkpoint_bytes,
+       pg_column_compression(checkpoint) AS checkpoint_compression,
+       pg_column_size(summary) AS stored_summary_bytes
+FROM public.glitch_holder_scan_jobs
+WHERE id IN ('c670f393-31b0-470c-a01f-cb2b813a1219','d07c0256-b472-4089-a237-99ed5e5c8cc4');
+```
+
+Existing database dashboard CPU, memory, storage latency/throughput and database-log metrics for approximately 12:53:35–12:53:50 UTC would help distinguish resource pressure, if retained and accessible read-only. Do not enable tracing/extensions, run EXPLAIN ANALYZE on the hosted mutating function, vacuum/reindex, alter compression/settings, or launch another live reproduction as part of these checks. No meaningful production optimization is proposed without evidence identifying the expensive hosted stage.
