@@ -35,10 +35,6 @@ export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,page
    if(tx===null){decodeUnavailable++;continue;}
    // Reuse the existing envelope/identity decoder before marking anything checked.
    // Unavailable, malformed or wrong-signature responses remain unresolved.
-   if(tx?.version!==undefined&&!['legacy',0,1].includes(tx.version)){decodeUnverified++;continue;}
-   const instruction=ix=>ix!==null&&typeof ix==='object'&&!Array.isArray(ix)&&typeof ix.programId==='string'&&ix.programId.length>0;
-   const message=tx?.transaction?.message;
-   if(Array.isArray(message?.instructions)&&message.instructions.some(ix=>!instruction(ix))||Array.isArray(tx?.meta?.innerInstructions)&&tx.meta.innerInstructions.some(group=>Array.isArray(group?.instructions)&&group.instructions.some(ix=>!instruction(ix)))){decodeUnverified++;continue;}
    const parsed=extractHolderNetworkTransfers({transaction:tx,signature});
    if(!parsed.valid){decodeUnverified++;continue;}
    if(parsed.transfers.length>NETWORK_RETENTION_LIMITS.transfers)throw Error('NETWORK_RETENTION_LIMIT');

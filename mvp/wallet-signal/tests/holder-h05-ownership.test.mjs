@@ -87,3 +87,43 @@ test('unresolved historical ownership remains unavailable in both evidence valid
  let saved;await processEvidenceBatch({jobId:'offline',checkpoint,rpc:async()=>t,store:{seed:async()=>1,claim:async()=>[{signature,attempts:0}],finish:async(_j,_s,_w,result)=>{saved=result;return true;}}});
  assert.equal(saved.status,'unavailable');assert.equal(saved.evidence.networkExtraction.unresolvedTokenTransfers,1);
 });
+
+async function validateBoth(transaction,{failure=false}={}){
+ const checkpoint={wallets:{[A]:{},[B]:{}},holders:[],edges:{[A+'|'+B]:{walletA:A,walletB:B,signatures:[signature]}}};
+ const before=JSON.stringify(transaction),network=extract(transaction);
+ assert.equal(network.valid,false);assert.deepEqual(network.transfers,[]);assert.equal(network.definitiveFailure===true,failure);
+ const r=await validateHolderEvidence({checkpoint,rpc:async()=>transaction});
+ assert.equal(r.results[0].status,failure?'rejected':'unverified');assert.equal(r.complete,failure);
+ assert.deepEqual(r.results[0].rejectedSignatures,failure?[signature]:[]);
+ assert.deepEqual(r.results[0].unavailableSignatures,failure?[]:[signature]);
+ let saved,calls=0;await processEvidenceBatch({jobId:'offline',checkpoint,rpc:async()=>{calls++;return transaction;},store:{seed:async()=>1,claim:async()=>[{signature,attempts:0}],finish:async(_j,_s,_w,result)=>{saved=result;return true;}}});
+ assert.equal(calls,1);assert.equal(saved.status,failure?'rejected':'unavailable');assert.equal(saved.evidence.networkExtraction.definitiveFailure,failure);
+ assert.equal(saved.evidence.reason,failure?'TRANSACTION_FAILED':'TRANSFER_EVIDENCE_UNVERIFIED');
+ assert.equal(JSON.stringify(transaction),before);
+}
+for(const [name,entry] of [['null',null],['missing program',{}],['array',[]],['string','transfer'],['invalid program',{programId:'bad'}]]){
+ for(const inner of [false,true])test(`shared decoder and both validators preserve Unknown for ${inner?'inner':'outer'} ${name}`,async()=>{
+  const t=fixture();if(inner)t.meta.innerInstructions=[{index:0,instructions:[entry]}];else t.transaction.message.instructions=[entry];
+  await validateBoth(t);
+ });
+}
+for(const version of [2,-1,'0',null,{},[]])test(`unsupported version ${JSON.stringify(version)} is Unknown across both validators`,async()=>{
+ const t=fixture();t.version=version;await validateBoth(t);
+});
+for(const error of ['AccountNotFound',{InstructionError:[0,{Custom:6001}]},{InstructionError:[0,'InvalidArgument']},{DuplicateInstruction:0},{InsufficientFundsForRent:{account_index:1}}])test(`recognized failure ${JSON.stringify(error)} rejects without retry`,async()=>{
+ const t=fixture();t.meta.err=error;await validateBoth(t,{failure:true});
+});
+for(const [name,change] of [
+ ['wrong signature',t=>t.transaction.signatures=['9'.repeat(64)]],['missing signature',t=>delete t.transaction.signatures],
+ ['missing slot',t=>delete t.slot],['negative slot',t=>t.slot=-1],['unsupported version',t=>t.version=7],
+ ['missing err',t=>delete t.meta.err],['malformed meta',t=>t.meta=[]]
+])test(`failed response with ${name} is not definitive negative evidence`,async()=>{
+ const t=fixture();t.meta.err={InstructionError:[0,{Custom:1}]};change(t);await validateBoth(t);
+});
+for(const error of [undefined,{},[],true,1,'','unknown-error',{InstructionError:[0,'Custom']},{InstructionError:[-1,{Custom:1}]},{InstructionError:[0,{Custom:-1}]},{InstructionError:[0,{Custom:1},'extra']},{InstructionError:[0,{Custom:1}],extra:true}])test(`malformed error ${JSON.stringify(error)} remains Unknown`,async()=>{
+ const t=fixture();t.meta.err=error;await validateBoth(t);
+});
+test('definitive failure does not depend on decoding unsettled instructions',async()=>{
+ const t=fixture();t.meta.err={InstructionError:[0,{Custom:1}]};delete t.transaction.message;delete t.meta.innerInstructions;
+ await validateBoth(t,{failure:true});
+});

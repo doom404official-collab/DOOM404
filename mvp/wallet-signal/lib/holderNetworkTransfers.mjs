@@ -1,3 +1,4 @@
+import {isRecognizedHolderTransactionError} from './holderTransactionError.mjs';
 import {holderTransferContext} from './holderTransferContext.mjs';
 // Confirmed parsed transfer instructions only. Co-occurrence and balance deltas
 // are not transfers. Token owners come from transaction-local balance metadata.
@@ -7,11 +8,15 @@ const programs={SOL:'11111111111111111111111111111111',SPL:'TokenkegQfeZyiNwAJbN
 const uint=x=>(typeof x==='string'&&/^\d+$/.test(x))||(Number.isSafeInteger(x)&&x>=0);
 const positive=x=>(typeof x==='string'&&/^\d+$/.test(x)&&BigInt(x)>0n)||(Number.isSafeInteger(x)&&x>0);
 export function extractHolderNetworkTransfers({transaction:tx,signature}={}){
- if(!signatureValid(signature)||!Number.isSafeInteger(tx?.slot)||tx.slot<0||!tx.meta||!Object.hasOwn(tx.meta,'err')||tx.meta.err!==null||tx.transaction?.signatures?.[0]!==signature)
+ if(!signatureValid(signature)||!Number.isSafeInteger(tx?.slot)||tx.slot<0||!tx.meta||typeof tx.meta!=='object'||Array.isArray(tx.meta)||!Object.hasOwn(tx.meta,'err')||!Array.isArray(tx.transaction?.signatures)||tx.transaction.signatures[0]!==signature)
   return {valid:false,transfers:[],reason:'CONFIRMED_TRANSACTION_UNVERIFIED'};
+ if(tx.version!==undefined&&!['legacy',0,1].includes(tx.version))return {valid:false,transfers:[],reason:'TRANSACTION_VERSION_UNSUPPORTED'};
+ if(tx.meta.err!==null)return {valid:false,transfers:[],definitiveFailure:isRecognizedHolderTransactionError(tx.meta.err),reason:isRecognizedHolderTransactionError(tx.meta.err)?'TRANSACTION_FAILED':'TRANSACTION_ERROR_UNVERIFIED'};
  const message=tx.transaction.message;
  if(!message||!Array.isArray(message.accountKeys)||!Array.isArray(message.instructions)||!Array.isArray(tx.meta.innerInstructions)||tx.meta.innerInstructions.some(x=>!Array.isArray(x?.instructions)))
   return {valid:false,transfers:[],reason:'TRANSACTION_INSTRUCTIONS_UNAVAILABLE'};
+ const instruction=ix=>ix!==null&&typeof ix==='object'&&!Array.isArray(ix)&&address(ix.programId);
+ if(message.instructions.some(ix=>!instruction(ix))||tx.meta.innerInstructions.some(group=>group.instructions.some(ix=>!instruction(ix))))return {valid:false,transfers:[],reason:'TRANSACTION_INSTRUCTION_UNVERIFIED'};
  const context=holderTransferContext(tx,signature,address);
  if(!context)return {valid:false,transfers:[],reason:'TRANSACTION_CONTEXT_UNVERIFIED'};
  const {instructions,owners,conflicts,opaqueOwnership}=context;

@@ -33,10 +33,11 @@ export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}=
     // instruction identities and unresolved ownership; never reject missing proof.
     try{
      const network=extractHolderNetworkTransfers({transaction:tx,signature:item.signature});
-     if(!transfers.length&&(!network.valid||network.unresolvedTokenTransfers>0)){
+     if(network.definitiveFailure===true){status='rejected';evidence.reason='TRANSACTION_FAILED';}
+     else if(!transfers.length&&(!network.valid||network.unresolvedTokenTransfers>0)){
       status='unavailable';evidence.reason='TRANSFER_EVIDENCE_UNVERIFIED';
      }
-     evidence.networkExtraction={version:1,valid:network.valid===true,
+     evidence.networkExtraction={version:1,valid:network.valid===true,definitiveFailure:network.definitiveFailure===true,
       unresolvedTokenTransfers:network.unresolvedTokenTransfers??0,
       unresolvedReasons:network.unresolvedReasons??{},
       unresolvedAccounts:network.unresolvedAccounts??[],

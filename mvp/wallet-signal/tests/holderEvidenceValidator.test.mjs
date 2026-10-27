@@ -25,9 +25,9 @@ test("missing RPC evidence stays unverified",async()=>{
  assert.equal(result.complete,false);
 });
 test("failed transaction is not valid evidence",async()=>{
- const tx=transfer();tx.meta.err={InstructionError:[0,"Custom"]};
+ const tx=transfer();tx.meta.err={InstructionError:[0,{Custom:1}]};
  const result=await validateHolderEvidence({checkpoint:checkpoint(["2".repeat(64)]),rpc:async()=>tx});
- assert.equal(result.results[0].status,"unverified");
+ assert.equal(result.results[0].status,"rejected");
 });
 test("request budget preserves unknown rather than rejecting",async()=>{
  const result=await validateHolderEvidence({checkpoint:checkpoint(["2".repeat(64),"3".repeat(64)]),maxRequests:1,rpc:async(_method,[signature])=>transfer(A,B,signature)});

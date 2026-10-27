@@ -37,7 +37,8 @@ export async function validateHolderEvidence({checkpoint,rpc,maxRequests=24}={})
    if(transfers.some(t=>t.participants.join("|")===key))verified.push(sig);
    else {
     const network=extractHolderNetworkTransfers({transaction:evidence.tx,signature:sig});
-    if(!network.valid||network.unresolvedTokenTransfers>0)unavailable.push(sig);
+    if(network.definitiveFailure===true)rejected.push(sig);
+    else if(!network.valid||network.unresolvedTokenTransfers>0)unavailable.push(sig);
     else rejected.push(sig);
    }
   }

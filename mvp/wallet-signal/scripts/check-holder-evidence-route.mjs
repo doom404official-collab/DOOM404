@@ -13,6 +13,10 @@ const checkpoint={version:1,mint:"mint-a",holders:[{ownerWallet:A},{ownerWallet:
 const job={...selected,status:"partial",checkpoint};
 const health={total:1,pending:0,verified:1,rejected:0,unavailable:0,active_leases:0,expired_leases:0,retry_exhausted:0};
 const cases=[
+ {name:"identified failed transaction persists rejected",failed:true,selection:[selected],rows:[job],http:200,status:"processed"},
+ {name:"wrong-signature failure persists unavailable",unknown:"failedIdentity",selection:[selected],rows:[job],http:200,status:"processed"},
+ {name:"malformed instruction persists unavailable",unknown:"instruction",selection:[selected],rows:[job],http:200,status:"processed"},
+ {name:"unsupported version persists unavailable",unknown:"version",selection:[selected],rows:[job],http:200,status:"processed"},
  {name:"missing identity persists unavailable, never rejection",unknown:"identity",selection:[selected],rows:[job],http:200,status:"processed"},
  {name:"unresolved ownership persists unavailable, never rejection",unknown:"ownership",selection:[selected],rows:[job],http:200,status:"processed"},
  {name:"valid lease contention is explicit no-claims",selection:[selected],rows:[job],claim:[],http:200,status:"no_claims"},
@@ -64,7 +68,7 @@ for(const fixture of cases){
     case "/rest/v1/rpc/glitch_claim_holder_evidence":assert.equal(body.p_job_id,selected.id);result=fixture.claim??[{signature,attempts:0}];break;
     case "/rest/v1/rpc/glitch_finish_holder_evidence":
      assert.equal(body.p_job_id,selected.id);assert.equal(body.p_signature,signature);
-     assert.equal(body.p_status,fixture.unknown?"unavailable":"verified");assert.deepEqual(body.p_evidence.pairs,fixture.unknown?[]:[A+"|"+B]);result=Object.hasOwn(fixture,"finish")?fixture.finish:true;break;
+     assert.equal(body.p_status,fixture.unknown?"unavailable":fixture.failed?"rejected":"verified");assert.deepEqual(body.p_evidence.pairs,fixture.unknown||fixture.failed?[]:[A+"|"+B]);result=Object.hasOwn(fixture,"finish")?fixture.finish:true;break;
     default:assert.fail("Unexpected database call in no-network test: "+parsed.pathname);
    }
   }else if(parsed.host==="rpc.invalid"){
@@ -72,6 +76,10 @@ for(const fixture of cases){
    result={result:{slot:12,meta:{err:null,innerInstructions:[]},transaction:{signatures:[signature],message:{accountKeys:[],instructions:[
     {programId:"11111111111111111111111111111111",program:"system",parsed:{type:"transfer",info:{source:A,destination:B,lamports:100}}}
    ]}}}};
+   if(fixture.failed||fixture.unknown==='failedIdentity')result.result.meta.err={InstructionError:[0,{Custom:1}]};
+   if(fixture.unknown==='failedIdentity')result.result.transaction.signatures=['9'.repeat(64)];
+   if(fixture.unknown==='instruction')result.result.transaction.message.instructions=[null];
+   if(fixture.unknown==='version')result.result.version=2;
    if(fixture.unknown==='identity')delete result.result.transaction.signatures;
    if(fixture.unknown==='ownership')result.result.transaction.message.instructions=[{programId:'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',parsed:{type:'transfer',info:{source:A,destination:B,amount:'10'}}}];
   }else assert.fail("Network forbidden: unexpected host");
