@@ -29,13 +29,14 @@ export async function POST(request){
  try{pool=new PublicKey(payload?.poolAddress);if(pool.toBase58()!==payload.poolAddress)throw Error();}catch{return NextResponse.json({error:"Invalid pool address"},{status:400});}
  const vaultAddresses=payload?.vaultAddresses??[];
  if(!Array.isArray(vaultAddresses)||vaultAddresses.length>2||vaultAddresses.some(a=>{try{return new PublicKey(a).toBase58()!==a;}catch{return true;}}))return NextResponse.json({error:"Invalid vault addresses"},{status:400});
+  const requestedSignature=payload?.signature;
+  if(requestedSignature!==undefined&&(typeof requestedSignature!=="string"||!/^[1-9A-HJ-NP-Za-km-z]{64,90}$/.test(requestedSignature)))return NextResponse.json({error:"Invalid transaction signature"},{status:400});
  try{
   const connection=createReliableConnection({timeoutMs:8000,retries:1});
   const signatures=await connection.getSignaturesForAddress(pool,{limit:50},"confirmed");
   const summary=summarizePoolSignatures(signatures);
   const selection=selectLiquidityTransactionSignatures(summary.signatures,{limit:10,exclude:Array.isArray(payload?.excludeSignatures)?payload.excludeSignatures:[]});
-  const requestedSignature=payload?.signature;
-  if(requestedSignature!==undefined&&(typeof requestedSignature!=="string"||!/^[1-9A-HJ-NP-Za-km-z]{64,90}$/.test(requestedSignature)))return NextResponse.json({error:"Invalid transaction signature"},{status:400});
+
   const selected=requestedSignature?[{signature:requestedSignature,err:null}]:selection.selected;
   const decoded=[];
   for(const entry of selected){

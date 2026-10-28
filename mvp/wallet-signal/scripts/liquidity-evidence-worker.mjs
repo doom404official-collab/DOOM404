@@ -1,3 +1,4 @@
+import {validateLiquidityStorage} from "../lib/liquidityStorageTransport.mjs";
 // First-stage liquidity evidence: pool account existence only, never a final risk score.
 import { PublicKey } from "@solana/web3.js";
 import { writeFile } from "node:fs/promises";
@@ -24,6 +25,7 @@ async function read(path,options={}) {
  if(!response.ok)throw Error("Evidence endpoint HTTP "+response.status);
  return response.json();
 }
+validateLiquidityStorage({url:process.env.SUPABASE_URL,serviceRoleKey:process.env.SUPABASE_SERVICE_ROLE_KEY});
 const report=await read("/api/token-liquidity?mint="+encodeURIComponent(mint));
 if(!Array.isArray(report.pools))throw Error("Missing pool inventory");
 const addresses=[...new Set(report.pools.map(p=>p.pairAddress).filter(Boolean))].slice(0,30);
