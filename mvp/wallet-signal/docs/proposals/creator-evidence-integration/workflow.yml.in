@@ -1,0 +1,28 @@
+# UNAPPLIED skeleton, not a registered workflow or dispatch authority.
+# Destination after review: .github/workflows/creator-evidence-relay-test.yml
+name: Creator synthetic evidence test (proposed)
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        options: [upload, readback]
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: creator-synthetic-evidence-test
+  cancel-in-progress: false
+jobs:
+  sealed-test:
+    if: ${{ false }} # mandatory closed default; no live steps prepared here
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write
+    # Exact protected environment is unresolved and must match the approved seal.
+    # Separate dispatch run IDs for upload and readback; attempt must remain 1.
+    steps:
+      - name: Closed preparation only
+        run: exit 1
