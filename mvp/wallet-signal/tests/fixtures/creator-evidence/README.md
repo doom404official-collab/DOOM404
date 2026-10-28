@@ -40,3 +40,12 @@ python3 mvp/wallet-signal/tests/fixtures/creator-evidence/run-closed-setup.py
 ```
 
 This fresh network-none/tmpfs fixture executes the exact closed setup candidate, checks audit/collision rollback, zero connection admission, exact role memberships, restrictive RLS even under hostile permissive policies, and non-destructive closeout. Its Storage/Auth stand-in supplies synthetic UIDs only locally; actual hosted UIDs are never fabricated. The harness waits for the final PostgreSQL process (not the temporary initialization server) and always stops the container.
+
+Differential sealed transition from installed closed setup:
+
+```sh
+python3 mvp/wallet-signal/tests/fixtures/creator-evidence/run-sealed-transition.py
+python3 mvp/wallet-signal/tests/fixtures/creator-evidence/run-sealed-transition.py --early-closeout
+```
+
+Each creates/stops its own network-none PostgreSQL 17 container and uses synthetic bindings only. The first checks expiry before closeout; the second closes during the active window. Both exercise concurrent sealing/claims, rollback, replay/conflict rejection and historical isolation under deliberately permissive existing Storage policies. This proves local PostgreSQL behavior, not hosted Auth/Storage transport or actual OIDC claim compatibility. No live binding is rendered or applied.
