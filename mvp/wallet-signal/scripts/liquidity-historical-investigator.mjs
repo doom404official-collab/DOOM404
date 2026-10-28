@@ -41,6 +41,13 @@ for(let page=0;requests<limit&&!state.complete;page++){
  try{batch=await retryLiquidityRateLimit(()=>call(rpc,"getSignaturesForAddress",[pool,{limit:pageSize,...(state.before?{before:state.before}:{})}]));}
  catch(e){errors.push({stage:"signatures",message:String(e.message)});break;}
  if(!Array.isArray(batch)){errors.push({stage:"signatures",message:"INVALID_RESPONSE"});break;}
+ // Validate the entire provider page before processing any entry. Never erase
+ // duplicate/conflicting observations by feeding them through the seen Set.
+ if(batch.some(item=>typeof item?.signature!=="string"||!item.signature||!Number.isSafeInteger(item.slot)||item.slot<0)){errors.push({stage:"signatures",message:"INVALID_SIGNATURE_PAGE"});break;}
+ if(new Set(batch.map(item=>item.signature)).size!==batch.length){errors.push({stage:"signatures",message:"DUPLICATE_SIGNATURE_PAGE"});break;}
+ // A terminal cursor already in retained history is a replay/regression, not
+ // page advancement. Partial-page resume with a new trailing signature remains valid.
+ if(batch.length&&(batch.at(-1).signature===state.before||seen.has(batch.at(-1).signature))){errors.push({stage:"signatures",message:"HISTORY_CURSOR_NOT_ADVANCING"});break;}
  if(batch.length===0){state.complete=pending.size===0;break;}
  for(const item of batch){
   if(requests>=limit)break;
