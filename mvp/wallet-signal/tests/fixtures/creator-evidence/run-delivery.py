@@ -29,6 +29,15 @@ try:
  else:raise RuntimeError('disposable startup timeout')
  sql((root/'docs/proposals/creator-evidence-closed-setup.sql').read_text())
  sql('CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN; CREATE ROLE service_role NOLOGIN; CREATE TABLE creator_relay_test_private.sealed_test_window(singleton boolean PRIMARY KEY,binding jsonb NOT NULL,closed_at timestamptz); ALTER TABLE creator_relay_test_private.sealed_test_window ENABLE ROW LEVEL SECURITY;')
+ # Supabase-style installation identity: existing objects transferred by fixture
+ # bootstrap only; candidate itself runs as actual nonsuperuser postgres session.
+ sql("CREATE ROLE postgres LOGIN NOSUPERUSER CREATEROLE CREATEDB BYPASSRLS INHERIT; ALTER DATABASE "+db+" OWNER TO postgres; ALTER SCHEMA creator_relay_test_private OWNER TO postgres;")
+ sql("DO $$ DECLARE r record; BEGIN FOR r IN SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='creator_relay_test_private' AND c.relkind='r' LOOP EXECUTE format('ALTER TABLE creator_relay_test_private.%I OWNER TO postgres',r.relname); END LOOP; FOR r IN SELECT p.oid::regprocedure AS signature FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='creator_relay_test_private' LOOP EXECUTE format('ALTER FUNCTION %s OWNER TO postgres',r.signature); END LOOP; END $$;")
+ for role in ['issuer','consumer','verifier']:
+  for suffix in ['', '_login']:sql('GRANT creator_test_'+role+suffix+' TO postgres WITH ADMIN TRUE, INHERIT FALSE, SET FALSE')
+ cmd[cmd.index('-U')+1]='postgres'
+ check('installer is nonsuperuser CREATEROLE CREATEDB BYPASSRLS postgres',sql("SELECT current_user='postgres' AND session_user='postgres' AND NOT rolsuper AND rolcreaterole AND rolcreatedb AND rolbypassrls FROM pg_roles WHERE rolname=current_user")=='t')
+ sql('ALTER DEFAULT PRIVILEGES GRANT ALL ON TABLES TO anon,authenticated,service_role; ALTER DEFAULT PRIVILEGES GRANT ALL ON SEQUENCES TO anon,authenticated,service_role; ALTER DEFAULT PRIVILEGES GRANT EXECUTE ON FUNCTIONS TO anon,authenticated,service_role;')
  b=binding(delay=60,duration=30)
  sql('INSERT INTO creator_relay_test_private.sealed_test_window VALUES(true,'+arg(b)+',NULL)')
  p=dict(sealedBinding=b,storageSessions=dict(upload='synthetic.upload.token',readback='synthetic.readback.token'),publishableKey='sb_publishable_synthetic')
@@ -39,6 +48,10 @@ try:
  check('mismatched seal rejects',sql(install(wrong),False).returncode!=0)
  check('rejection leaves delivery absent',sql("SELECT to_regclass('creator_relay_test_private.runtime_delivery') IS NULL")=='t')
  sql(install(p));check('exact delivery installs once',True)
+ check('delivery owner and security definer are nonsuperuser postgres',sql("SELECT (SELECT tableowner='postgres' FROM pg_tables WHERE schemaname='creator_relay_test_private' AND tablename='runtime_delivery') AND (SELECT proowner='postgres'::regrole AND prosecdef AND proconfig=ARRAY['search_path=pg_catalog, creator_relay_test_private'] FROM pg_proc WHERE oid='creator_relay_test_private.relay_runtime_configuration(jsonb)'::regprocedure)")=='t')
+ for denied in ['anon','authenticated','service_role']:
+  check(denied+' default table/function grants explicitly removed',sql("SELECT NOT has_table_privilege('"+denied+"','creator_relay_test_private.runtime_delivery','SELECT,INSERT,UPDATE,DELETE') AND NOT has_function_privilege('"+denied+"','creator_relay_test_private.relay_runtime_configuration(jsonb)','EXECUTE')")=='t')
+ check('postgres retains only expected administrative membership options',sql("SELECT count(*)=6 AND bool_and(admin_option AND NOT inherit_option AND NOT set_option) FROM pg_auth_members WHERE member='postgres'::regrole")=='t')
  check('reinstall rejects, never overwrite',sql(install(p),False).returncode!=0)
  roles=['issuer','consumer','verifier']
  for role in roles:sql('ALTER ROLE creator_test_'+role+'_login CONNECTION LIMIT 1')
