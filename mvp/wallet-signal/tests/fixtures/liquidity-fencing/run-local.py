@@ -104,6 +104,7 @@ try:
  check(sql('SELECT row_to_json(t) FROM public.liquidity_evidence_checkpoints t; SELECT row_to_json(t) FROM public.liquidity_evidence_snapshots t;')==baseline,'repository legacy table fixtures untouched')
  # Extend the same isolated database with the separate closed authority candidate.
  exec((pathlib.Path(__file__).parent/'authority-checks.py').read_text(),globals())
+ exec((pathlib.Path(__file__).parent/'closed-checks.py').read_text(),globals())
  print('LOCAL_LIQUIDITY_FENCING_CHECKS='+str(checks))
 finally:
  if container:cmd(['docker','rm','-f',container])
