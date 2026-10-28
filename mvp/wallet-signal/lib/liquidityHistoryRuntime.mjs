@@ -17,9 +17,13 @@ export async function createLiquidityHistoryPublisher(output,{fs={open,rename,un
  if(!Number.isSafeInteger(timeoutMs)||timeoutMs<1||timeoutMs>20000)throw Error('INVALID_HISTORY_PUBLICATION_TIMEOUT');
  const lock=output+'.lock',temp=output+'.pending';
  try{await fs.lstat(output);throw Error('HISTORY_OUTPUT_ALREADY_EXISTS');}catch(error){if(error.code!=='ENOENT')throw error;}
- const handle=await fs.open(lock,'wx');let failed=false;
+ const handle=await fs.open(lock,'wx');let failed=false,closed=false;
+ // Recheck while holding the local lock: another cooperating writer may have
+ // published and released its lock between our initial lstat and lock creation.
+ try{for(const path of [output,temp]){try{await fs.lstat(path);throw Error('HISTORY_EXISTING_OUTPUT_OR_PENDING_REQUIRES_REVIEW');}catch(error){if(error.code!=='ENOENT')throw error;}}}
+ catch(error){await handle.close();await fs.unlink(lock);throw error;}
  return {async save(state){
-  if(failed)throw Error('HISTORY_PUBLICATION_RECONCILIATION_REQUIRED');
+  if(failed||closed)throw Error('HISTORY_PUBLICATION_RECONCILIATION_REQUIRED');
   let timer;const end=performance.now()+timeoutMs;
   const check=()=>{if(failed||performance.now()>=end)throw Error('HISTORY_PUBLICATION_RECONCILIATION_REQUIRED');};
   const operation=async()=>{let file;
@@ -32,5 +36,5 @@ export async function createLiquidityHistoryPublisher(output,{fs={open,rename,un
   try{await Promise.race([operation(),new Promise((_,reject)=>{timer=setTimeout(()=>{failed=true;reject(Error('HISTORY_PUBLICATION_RECONCILIATION_REQUIRED'));},timeoutMs);})]);}
   catch{failed=true;throw Error('HISTORY_PUBLICATION_RECONCILIATION_REQUIRED');}
   finally{clearTimeout(timer);}
- },async close(){await handle.close();if(!failed)await fs.unlink(lock);}};
+ },async close(){if(closed)return;closed=true;await handle.close();if(!failed)await fs.unlink(lock);}};
 }
