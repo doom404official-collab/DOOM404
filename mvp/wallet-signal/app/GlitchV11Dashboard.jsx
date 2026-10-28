@@ -1,5 +1,5 @@
 "use client";
-import {useState} from "react";
+import {useEffect,useState} from "react";
 import {HOLDER_RETAIN19_POLICY} from "../lib/holderEligibleViewPolicy.mjs";
 import HolderBubbleMap from "./HolderBubbleMap";
 import {attributes,consolidate} from "../lib/glitchScoringV11.mjs";
@@ -28,12 +28,22 @@ const css=`
 .g11-data article{background:#201e23;border:1px solid #353039;border-radius:10px;padding:12px;min-width:0;min-height:116px}
 .g11-data strong{display:block;font-size:16px;overflow-wrap:anywhere;margin:5px 0}.g11-data small{font-size:11px;color:#aaaab4;line-height:1.45}
 .g11-kicker{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#b8aeb4}
-.g11 button:focus-visible{outline:3px solid #ff6b75;outline-offset:2px}
+.g11 summary:focus-visible,.g11 a:focus-visible,.g11 button:focus-visible{outline:3px solid #ff6b75;outline-offset:2px}
 .g11-map{margin-top:12px}.g11-inspector{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}.g11-inspector>article{padding:10px;border:1px solid #373039;border-radius:10px;background:#201e23}.g11-inspector strong{display:block;margin:5px 0}.g11-attribute-select{background:#21171b;color:#f5f3f3;border:1px solid #76424a;border-radius:9px;padding:10px 12px;min-height:42px;max-width:100%;flex:1}.g11-attribute-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}.g11-attribute-tabs .g11-action{font-size:12px;text-align:center;min-width:0}.g11-attribute-tabs [aria-current="page"]{border-color:#ff5967;background:#4a2029;box-shadow:inset 0 0 0 1px #a83d4c}.g11-action{border:1px solid #76424a;background:#281a20;color:#fff;border-radius:9px;padding:9px 12px;cursor:pointer;min-height:42px}.g11-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.g11-full{position:fixed;inset:0;z-index:9999;width:100vw;max-width:none;height:100dvh;overflow-y:auto;overscroll-behavior:contain;margin:0;border-radius:0;left:0;transform:none;padding:clamp(10px,2vw,22px)}body:has(.g11-full){overflow:hidden}.g11-foot{color:#b4abb0;font-size:11px;line-height:1.6;margin-top:12px}
 @media(max-width:900px){.g11-attribute-tabs{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}.g11-attribute-tabs .g11-action{flex:0 0 auto;scroll-snap-align:start;white-space:nowrap}.g11-overview{grid-template-columns:1fr}.g11-insights{grid-template-columns:repeat(3,minmax(0,1fr))}.g11-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.g11-data{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.g11{box-sizing:border-box;width:calc(100vw - 12px);padding:9px}.g11-full{width:100vw;padding:10px}.g11-head{margin-bottom:9px}.g11 h2{font-size:23px}.g11-overview{gap:8px}.g11-panel{padding:12px}.g11-verdict .g11-big{font-size:20px;margin:5px 0}.g11-insights{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.g11-insights article{font-size:10px;padding:7px}.g11-insights strong{font-size:10px}.g11-tabs{gap:6px;margin:9px 0}.g11-tab{padding:9px;min-height:63px}.g11-tab strong{font-size:12px}.g11-data{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.g11-data article{padding:9px;min-height:108px}.g11-data strong{font-size:15px}.g11-data small{font-size:10px}.g11-kicker{font-size:10px}.g11-inspector{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.g11-inspector>article{padding:7px}.g11-inspector strong{font-size:12px;overflow-wrap:anywhere}.g11-inspector small{font-size:9px}}
 `;
 export default function GlitchV11Dashboard({result,extensions,concentration,creatorEvidence,liquidity,liquidityError="",liquidityRefreshing=false,historicalHolders,holderSnapshotCompatible=false,verifiedHolderEnvelope,workerEvidence,holderEvidenceState="unknown",frozenHolderObservation=null}){
+ // Re-render at the existing freshness boundary, even without polling or interaction.
+ const [clockRevision,refreshClock]=useState(0);
+ const observedAt=liquidity?.observedAt,storedAt=workerEvidence?.liquidity?.updatedAt;
+ useEffect(()=>{
+  const now=Date.now(),deadlines=[observedAt,storedAt].map(x=>typeof x==='string'?Date.parse(x):NaN).filter(x=>Number.isFinite(x)&&x<=now&&x+3600001>now);
+  const timer=deadlines.length?setTimeout(()=>refreshClock(x=>x+1),Math.min(...deadlines)+3600001-now):null;
+  const visible=()=>{if(document.visibilityState==='visible')refreshClock(x=>x+1);};
+  document.addEventListener('visibilitychange',visible);
+  return ()=>{clearTimeout(timer);document.removeEventListener('visibilitychange',visible);};
+ },[observedAt,storedAt,clockRevision]);
  const [selected,setSelected]=useState("token_security");
  const [fullScreen,setFullScreen]=useState(false);
  const [holderView,setHolderView]=useState("overview");
@@ -65,7 +75,7 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
    row("Previous Launches",adapted.creator?.previousLaunchCount!=null?fmt(adapted.creator.previousLaunchCount)+" attributed launches":"Pending","Observed launch count is not a comparable-outcomes score")
   ],
   liquidity_quality_safety:[
-   row("Available Liquidity",adapted.reportedLiquidity.amount!==null?"$"+fmt(adapted.reportedLiquidity.amount):"Pending","Provider-reported estimate; executable depth unverified"),
+   row("Available Liquidity",adapted.reportedLiquidity.amount!==null?"$"+fmt(adapted.reportedLiquidity.amount):"Unknown","Provider-reported estimate; executable depth unverified"),
    row("Liquidity-to-Market-Cap Ratio","Pending","Requires verified liquidity and valuation denominator"),
    row("LP Security","Pending","Lock, burn, withdrawal rights and LP custody. Persisted pool checks: "+fmt(adapted.liquidity?.checkedPoolCount)),
    row("Liquidity Concentration",adapted.reportedLiquidity.poolCount!==null?fmt(adapted.reportedLiquidity.poolCount)+" reported pools":"Pending","Independent pool control and reserve shares unverified"),
@@ -73,6 +83,10 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
    row("Liquidity Stability","Pending","30-day verified reserve and withdrawal history")
   ]
  };
+ const source=liquidity?.mint===result?.mint?liquidity:null;
+ const observationTime=typeof source?.observedAt==='string'&&Number.isFinite(Date.parse(source.observedAt))?new Date(source.observedAt).toISOString():null;
+ const liquidityReason=liquidityRefreshing?'Loading provider observations':liquidityError?'Provider unavailable':!source?'No matching provider observation':!observationTime?'Observation time unavailable':!adapted.reportedLiquidity.poolCount&&adapted.reportedLiquidity.poolCount!==0?'Observation expired, future-dated or unavailable':(Array.isArray(source.pools)&&source.pools.some(p=>p?.evidenceConflict===true))?'Conflicting pool observations':adapted.reportedLiquidity.amount===null?'No numeric liquidity estimate returned':'Observed only; executable depth is Unknown';
+ const countText=value=>Number.isSafeInteger(value)&&value>=0?String(value):'Unknown';
  const current=attributes.find(a=>a.id===selected)||null;
  const currentScore=current?scores[current.id]:null;
  const insight=[
@@ -92,6 +106,13 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
   </div><div className="g11-inspector" aria-label="Evidence summary"><article><span className="g11-kicker">Attribute status</span><strong>{currentScore.complete?"Inputs assessed":"In progress"}</strong><small className="g11-muted">Final score pending</small></article><article><span className="g11-kicker">Evidence coverage</span><strong>{fmt(currentScore.coveragePct,"%")}</strong><small className="g11-muted">Not a risk score</small></article><article><span className="g11-kicker">Methodology</span><strong>GLITCH v1.1</strong><small className="g11-muted">Backend calculation</small></article></div></div>}
   {currentScore&&<p className="g11-foot">Pending components: {currentScore.components.filter(c=>c.max>0&&c.points===null).map(c=>(c.reason||c.id).replaceAll("_"," ").toLowerCase()).join("; ")||"None; calibration acceptance still required"}</p>}
   {selected==='liquidity_quality_safety'&&(liquidityRefreshing||liquidityError)&&<p role="status">{liquidityRefreshing?'Loading provider liquidity observations…':'Liquidity provider unavailable; estimates withheld.'}</p>}
+  {selected==='liquidity_quality_safety'&&<details className="g11-foot" data-testid="liquidity-evidence"><summary>Liquidity observation evidence</summary>
+   <p role="status">{liquidityReason}. Final calibrated score remains Pending.</p>
+   <p>Source: {typeof source?.provider==='string'?source.provider:'Unknown'}. Provider observation time: {observationTime?<time dateTime={observationTime}>{observationTime}</time>:'Unknown'}. Provider reports are not independently verified reserves.</p>
+   <p>Persisted account checks: {adapted.liquidity?`${adapted.liquidity.status.replaceAll('_',' ')}; ${countText(adapted.liquidity.checkedPoolCount)} checked / ${countText(adapted.liquidity.reportedPoolCount)} reported pools; ${countText(adapted.liquidity.failedBatchCount)} failed batches`:'Unknown — missing, stale or unavailable'}. Account checks do not establish complete historical coverage. Historical withdrawal coverage: Unknown.</p>
+   <p>Reported pool records below are supporting observations, not verified custody or withdrawal evidence. Expired records are retained for provenance only.</p>
+   <ul>{(Array.isArray(source?.pools)?source.pools:[]).slice(0,30).map((pool,index)=><li key={index}>{typeof pool?.pairAddress==='string'&&/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(pool.pairAddress)?<a href={'https://solscan.io/account/'+pool.pairAddress} target="_blank" rel="noopener noreferrer">Pool {pool.pairAddress}</a>:'Pool identity Unknown'} — {pool?.evidenceConflict===true?'Conflicting observations; amount Unknown':'Provider record only; reserves and authority Unknown'}</li>)}</ul>
+  </details>}
   <p className="g11-foot">{selected==="creator_intelligence"?"Still needed: "+adapted.creatorMissing.join("; "):selected==="liquidity_quality_safety"?"Still needed: "+adapted.liquidityMissing.join("; "):"Final scores require complete evidence and calibration."}</p>
   <p className="g11-foot">Transfers establish observed interactions, not common ownership. Reported liquidity is not verified executable depth. Pending values are not scored as safe or unsafe.</p>
  </section>;

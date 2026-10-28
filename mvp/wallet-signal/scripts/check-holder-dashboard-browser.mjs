@@ -35,6 +35,23 @@ try{
   await page.getByRole('button',{name:'Connection map',exact:true}).click();
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),'no horizontal overflow');
   await page.screenshot({path:path.join(artifact,`dashboard-${width}.png`),fullPage:true});
+  // Liquidity expiry must work without parent polling or another prop render.
+  await page.clock.install();const observedAt=await page.evaluate(()=>new Date().toISOString());
+  const liquidity={mint,provider:'DexScreener',observedAt,status:'pools_reported',reportedLiquidityUsd:1234,poolCountReturned:1,pools:[{pairAddress:a,liquidityUsd:1234}]};
+  await page.evaluate(p=>window.renderHolder(p),{result:{mint},liquidity});
+  await page.getByRole('button',{name:'Liquidity Quality & Safety',exact:true}).click();await page.getByText('$1,234',{exact:true}).waitFor();
+  const summary=page.getByText('Liquidity observation evidence',{exact:true});await summary.focus();await page.keyboard.press('Enter');
+  await page.getByText(/Provider observation time:/).waitFor();assert.equal(await page.locator('time').getAttribute('datetime'),observedAt);
+  assert.equal(await page.locator('a[href="https://solscan.io/account/'+a+'"]').count(),1);
+  await page.clock.fastForward(3600001);await page.getByText(/Observation expired, future-dated or unavailable/).waitFor();assert.equal(await page.getByText('$1,234',{exact:true}).count(),0);
+  await page.evaluate(p=>window.renderHolder(p),{result:{mint},liquidity:{...liquidity,observedAt:new Date(Date.parse(observedAt)+3600001).toISOString(),reportedLiquidityUsd:0}});await page.getByText('$0',{exact:true}).waitFor();
+  await page.evaluate(p=>window.renderHolder(p),{result:{mint},liquidityRefreshing:true});await page.getByText('Loading provider liquidity observations…').waitFor();assert.equal(await page.getByText('$0',{exact:true}).count(),0);
+  await page.evaluate(p=>window.renderHolder(p),{result:{mint},liquidityError:'offline'});await page.getByText('Liquidity provider unavailable; estimates withheld.').waitFor();
+  const freshAt=await page.evaluate(()=>new Date().toISOString());
+  await page.evaluate(p=>window.renderHolder(p),{result:{mint},liquidity:{...liquidity,observedAt:freshAt,reportedLiquidityUsd:null,pools:[{pairAddress:a,evidenceConflict:true,url:'javascript:alert(1)'}]},workerEvidence:{version:'1.1',mint,liquidity:{mint,status:'partial',updatedAt:freshAt,checkedPoolCount:0,reportedPoolCount:1,failedBatchCount:1}}});
+  await page.getByText(/Conflicting pool observations/).waitFor();await page.getByText(/0 checked \/ 1 reported pools; 1 failed batches/).waitFor();assert.equal(await page.locator('a[href^="javascript:"]').count(),0);
+  await page.evaluate(p=>window.renderHolder(p),{result:{mint},workerEvidence:{version:'1.1',mint,liquidity:{mint,status:'failed',updatedAt:freshAt,checkedPoolCount:10}}});await page.getByText(/Unknown — missing, stale or unavailable/).waitFor();assert.equal(await page.locator('a[href*="solscan.io/account/"]').count(),0);
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));await page.screenshot({path:path.join(artifact,`liquidity-evidence-${width}.png`),fullPage:true});
   const map={holders,groups,identityKey:'first',verifiedAssessment:{evidence:{pairs:[{walletA:a,walletB:b,signatures:[sig]}],counts:{pending:1,unavailable:0}}}};
   await page.evaluate(p=>window.renderHolder(p,true),map);
   const nodes=page.getByRole('button',{name:/Wallet .*observed supply/});await nodes.first().focus();await page.keyboard.press('Enter');
@@ -46,5 +63,5 @@ try{
   assert.equal(await page.getByRole('checkbox').isChecked(),false);assert.equal(await page.getByRole('combobox').inputValue(),'all');
   await page.close();
  }
- assert.equal(forbidden,0);assert.deepEqual(errors,[]);console.log(JSON.stringify({passed:true,widths:[390,1280],networkRequests:forbidden,artifacts:artifact}));
+ assert.equal(forbidden,0);assert.deepEqual(errors,[]);console.log(JSON.stringify({passed:true,widths:[390,1280],networkRequests:forbidden,liquidityCasesPerViewport:8,artifacts:artifact}));
 }finally{await browser.close();}
