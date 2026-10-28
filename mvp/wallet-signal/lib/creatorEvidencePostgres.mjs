@@ -1,6 +1,6 @@
 import {Client} from 'pg';
 import {X509Certificate} from 'node:crypto';
-const roles={issuer:'relay_reserve',consumer:'relay_consume',verifier:'relay_readback'};
+const roles={issuer:'relay_reserve',consumer:'relay_consume',verifier:'relay_readback',configuration:'relay_runtime_configuration'};
 const reject=()=>{throw Error('CREATOR_PG_CONFIGURATION_REJECTED');};
 /** One connection / one parameterized operation. No environment, pool or retry API.
  * Connection loss after dispatch is uncertain, even when the server may roll back.

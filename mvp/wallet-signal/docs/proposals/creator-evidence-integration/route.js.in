@@ -1,13 +1,13 @@
 // UNAPPLIED PROPOSAL ONLY. Outside app/**; no route exists at this path.
 // Candidate destination AFTER separate review: app/api/creator-evidence-test/[action]/route.js
-// Operator-supplied sealed configuration must be private server-only material,
+// Proposed immutable private runtime delivery is loaded only after later approval,
 // independently matched to installed SQL seal and immutable Preview identity.
 // No request input, ambient broad secret, Auth refresh or live default is allowed.
-import {createCreatorSealedRuntime} from '../../../../lib/creatorEvidenceSealedRuntime.mjs';
+import {createCreatorSyntheticEndpoint} from '../../../../lib/creatorEvidenceEndpoint.server.js';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 // Intentionally closed. Replacing this literal requires separately reviewed setup
 // bindings and approved windows; no environment variable silently opens it.
-const handler = createCreatorSealedRuntime({enabled:false});
+const handler = createCreatorSyntheticEndpoint({enabled:false});
 export const POST = handler;

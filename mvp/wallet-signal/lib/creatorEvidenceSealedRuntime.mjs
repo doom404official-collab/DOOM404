@@ -20,7 +20,9 @@ function session(value,uid,end){
 export function createCreatorSealedRuntime(configuration={}, {now=Date.now,fetchImpl=fetch}={}){
  if(configuration.enabled!==true)return async()=>disabled();
  try{
-  exact(configuration,['enabled','sealedBinding','deployment','postgresConfigs','storageSessions','publishableKey']);
+  const phase=Object.hasOwn(configuration,'phase')?configuration.phase:'both';
+  if(!['both','upload','readback'].includes(phase))reject();
+  exact(configuration,['enabled','sealedBinding','deployment','postgresConfigs','storageSessions','publishableKey',...(Object.hasOwn(configuration,'phase')?['phase']:[])]);
   if(typeof now!=='function'||typeof fetchImpl!=='function')reject();
   const time=()=>{const ms=now();if(!Number.isSafeInteger(ms)||ms<0)reject();return Math.floor(ms/1000);};
   const b=validateCreatorSealedBinding(configuration.sealedBinding,{phase:'runtime',nowSeconds:time()});
@@ -32,16 +34,17 @@ export function createCreatorSealedRuntime(configuration={}, {now=Date.now,fetch
    const c=postgresConfigs[purpose];exact(c,['host','port','database','user','password','ca']);
    if(c.host!==`db.${project}.supabase.co`||c.port!==5432||c.database!=='postgres'||c.user!==`creator_test_${purpose}_login`)reject();
   }
-  exact(configuration.storageSessions,['upload','readback']);
-  const upload=session(configuration.storageSessions.upload,b.uploadUid,b.upload.expiresAt);
-  const readback=session(configuration.storageSessions.readback,b.readUid,b.readback.expiresAt);
+  exact(configuration.storageSessions,phase==='both'?['upload','readback']:[phase]);
+  const upload=phase==='readback'?null:session(configuration.storageSessions.upload,b.uploadUid,b.upload.expiresAt);
+  const readback=phase==='upload'?null:session(configuration.storageSessions.readback,b.readUid,b.readback.expiresAt);
   if(upload===readback)reject();
-  const credential=(token,policy)=>async()=>{const t=time();if(t<policy.startsAt||t>=policy.expiresAt)reject();return token;};
+  const credential=(token,policy)=>async()=>{const t=time();if(!token||t<policy.startsAt||t>=policy.expiresAt)reject();return token;};
   const handler=createCreatorSyntheticRuntimeIntegration({enabled:true,manifest:b.upload,readManifest:b.readback,postgresConfigs,
    uploadIdentity:credential(upload,b.upload),readbackIdentity:credential(readback,b.readback),publishableKey:configuration.publishableKey,now,fetchImpl});
   return async request=>{
    try{
     const url=new URL(request.url),action=url.pathname.split('/').at(-1),policy=action==='verify'?b.readback:b.upload,t=time();
+    if((phase==='upload'&&action==='verify')||(phase==='readback'&&action!=='verify'))return disabled();
     if(url.origin!==b.deploymentUrl||t<policy.startsAt||t>=policy.expiresAt)return disabled();
     return await handler(request);
    }catch{return disabled();}
