@@ -51,7 +51,7 @@ export async function POST(request){
     const instructionEvidence=inspectPumpAmmParsedTransaction(tx,pool.toBase58());
     const vaultBalanceEvidence=calculateVaultTransactionDeltas(tx?.meta,keys,vaultAddresses);
     const feeSweepAccounts=extractFeeSweepAccounts(tx,pool.toBase58());
-    const feeSettlementTransfers=inspectFeeSettlementTransfers(tx,feeSweepAccounts);
+    const feeSettlementTransfers=inspectFeeSettlementTransfers(tx,feeSweepAccounts,{signature:entry.signature,slot:entry.slot});
     const feeSettlementAssessment=assessFeeSettlement({sweepAccounts:feeSweepAccounts,transferEvidence:feeSettlementTransfers,vaultBalanceEvidence});
     const feeRecipientAuthorization=assessFeeRecipientAuthorization(feeSweepAccounts.sweeps);
     const historicalFeeAuthorization=assessHistoricalFeeAuthorization({transactionSlot:tx?.slot,feeSweeps:feeSweepAccounts.sweeps});

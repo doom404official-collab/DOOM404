@@ -2,7 +2,7 @@
 // This is a protocol capability, not proof that any particular holder can withdraw.
 export function assessPumpAmmWithdrawalRights({lpMintEvidence,lpHolderEvidence}={}) {
  const mintValid=lpMintEvidence?.mintAccountVerified===true;
- const holdersVerified=lpHolderEvidence?.complete===true;
+ const holdersVerified=lpHolderEvidence?.inventoryComplete===true;
  return {
   protocol:"pump_amm",
   withdrawalInstructionAvailable:true,
