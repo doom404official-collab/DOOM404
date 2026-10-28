@@ -32,10 +32,12 @@ try:
  check(cmd(['docker','inspect','--format','{{.HostConfig.NetworkMode}}',container]).stdout.strip()=='none','no network or exposed endpoint')
  candidate=(ROOT/'docs/proposals/liquidity-fencing-disposable.sql').read_text()
  check(sql(candidate,False,db='postgres').returncode!=0,'candidate rejects wrong database')
- sql('CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN; CREATE ROLE liquidity_denied NOLOGIN;')
+ sql('CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN; CREATE ROLE liquidity_denied NOLOGIN; CREATE ROLE service_role NOLOGIN BYPASSRLS; CREATE ROLE authenticator NOLOGIN NOINHERIT; CREATE ROLE supabase_realtime_admin NOLOGIN NOINHERIT; GRANT service_role TO authenticator, supabase_realtime_admin WITH INHERIT FALSE, SET TRUE;')
  for f in ['liquidity_evidence.sql','liquidity_evidence_snapshots.sql']:sql((ROOT/'supabase'/f).read_text())
  sql("INSERT INTO public.liquidity_evidence_checkpoints(mint,status,observed_at,evidence) VALUES(repeat('1',32),'partial',clock_timestamp(),'{\"synthetic\":true}'); INSERT INTO public.liquidity_evidence_snapshots(mint,observed_at,status,evidence) VALUES(repeat('1',32),clock_timestamp(),'partial','{\"synthetic\":true}');")
  baseline=sql('SELECT row_to_json(t) FROM public.liquidity_evidence_checkpoints t; SELECT row_to_json(t) FROM public.liquidity_evidence_snapshots t;')
+ sql('GRANT ALL ON public.liquidity_evidence_checkpoints,public.liquidity_evidence_snapshots TO service_role; GRANT SELECT,USAGE,UPDATE ON public.liquidity_evidence_snapshots_id_seq TO anon,authenticated,service_role; ALTER DEFAULT PRIVILEGES FOR ROLE liquidity_local_owner GRANT ALL ON TABLES TO anon,authenticated,service_role; ALTER DEFAULT PRIVILEGES FOR ROLE liquidity_local_owner GRANT ALL ON SEQUENCES TO anon,authenticated,service_role; ALTER DEFAULT PRIVILEGES FOR ROLE liquidity_local_owner GRANT EXECUTE ON FUNCTIONS TO anon,authenticated,service_role;')
+ defaults=sql("SELECT defaclobjtype,defaclnamespace,defaclacl::text FROM pg_default_acl WHERE defaclrole='liquidity_local_owner'::regrole ORDER BY 1,2")
  sql(candidate)
  check(sql('SELECT count(*) FROM liquidity_proposal.lane')=='0','setup creates no enrolled tip or authority')
  for role in ['anon','authenticated','liquidity_denied']:
@@ -100,6 +102,8 @@ try:
  check(sql(admit(),False).returncode!=0,'terminal admission cannot replay')
  check(sql(f"SELECT liquidity_proposal.stage('{A}',1,'54321','{tip}','history_candidate')",False).returncode!=0,'terminal artifact cannot overwrite')
  check(sql('SELECT row_to_json(t) FROM public.liquidity_evidence_checkpoints t; SELECT row_to_json(t) FROM public.liquidity_evidence_snapshots t;')==baseline,'repository legacy table fixtures untouched')
+ # Extend the same isolated database with the separate closed authority candidate.
+ exec((pathlib.Path(__file__).parent/'authority-checks.py').read_text(),globals())
  print('LOCAL_LIQUIDITY_FENCING_CHECKS='+str(checks))
 finally:
  if container:cmd(['docker','rm','-f',container])
