@@ -1,4 +1,4 @@
-import {decodeHistoricalCandidate,validateHistoryCheckpoint,classifyHistoricalTransaction,inspectHistoricalSignerEvidence,historicalRoleAssessment} from "../lib/liquidityHistoricalDecoder.mjs";
+import {validateHistoryCheckpoint,extractHistoricalTransactionCandidates} from "../lib/liquidityHistoricalDecoder.mjs";
 import {retryLiquidityRateLimit} from "../lib/liquidityHistoricalRateLimit.mjs";
 import {retrieveHistoricalTransaction} from "../lib/liquidityHistoricalTransactionCompat.mjs";
 import {writeFile,readFile} from "node:fs/promises";
@@ -32,10 +32,6 @@ async function call(url,method,params){
  if(!response.ok)throw Error("RPC_HTTP_"+response.status);
  const body=await response.json();if(body.error){const detail=String(body.error.message||"").slice(0,240);throw Error("RPC_"+body.error.code+": "+detail);}return body.result;
 }
-function extract(tx,signature,slot,provider){
- const instructions=[...(tx?.transaction?.message?.instructions||[]),...(tx?.meta?.innerInstructions||[]).flatMap(x=>x.instructions||[])];
- return instructions.map(i=>decodeHistoricalCandidate(i,signature,slot,provider)).filter(Boolean).map(event=>({...event,transactionExecution:classifyHistoricalTransaction(tx),signerEvidence:inspectHistoricalSignerEvidence(tx,event),roleAssessment:historicalRoleAssessment(event,tx,pool),eligibleForAuthorizationReview:classifyHistoricalTransaction(tx)==="EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED"}));
-}
 for(let page=0;requests<limit&&!state.complete;page++){
  let batch;
  try{batch=await retryLiquidityRateLimit(()=>call(rpc,"getSignaturesForAddress",[pool,{limit:pageSize,...(state.before?{before:state.before}:{})}]));}
@@ -63,7 +59,10 @@ for(let page=0;requests<limit&&!state.complete;page++){
   }
   if(!tx){const reason=requests>=limit?"REQUEST_BUDGET_EXHAUSTED":"RPC_TRANSACTION_UNAVAILABLE";errors.push({stage:"unresolved",signature:item.signature,reason});pending.add(item.signature);unresolvedReasons.set(item.signature,reason);break;}
   if(tx.slot!==item.slot){errors.push({stage:"slot_mismatch",signature:item.signature,expectedSlot:item.slot,returnedSlot:tx.slot});pending.add(item.signature);unresolvedReasons.set(item.signature,"TRANSACTION_SLOT_MISMATCH");break;}
-  state.events.push(...extract(tx,item.signature,item.slot,provider));
+  let events;
+  try{events=extractHistoricalTransactionCandidates(tx,item.signature,item.slot,provider,pool);}
+  catch(error){const reason=String(error.message);errors.push({stage:'transaction_proof',signature:item.signature,reason});pending.add(item.signature);unresolvedReasons.set(item.signature,reason);break;}
+  state.events.push(...events);
   seen.add(item.signature);pending.delete(item.signature);unresolvedReasons.delete(item.signature);
  }
  // Do not advance cursor past unresolved signatures or unprocessed items.

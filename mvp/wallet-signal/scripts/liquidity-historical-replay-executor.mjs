@@ -1,6 +1,6 @@
 import {verifyHistoricalReplaySource} from "../lib/liquidityHistoricalReplaySource.mjs";
 import {readFile,writeFile} from "node:fs/promises";
-import {decodeHistoricalCandidate,classifyHistoricalTransaction,PUMP_AMM_PROGRAM,HISTORY_CLASSIFICATION} from "../lib/liquidityHistoricalDecoder.mjs";
+import {extractHistoricalTransactionCandidates,classifyHistoricalTransaction,PUMP_AMM_PROGRAM,HISTORY_CLASSIFICATION} from "../lib/liquidityHistoricalDecoder.mjs";
 import {retrieveHistoricalTransaction} from "../lib/liquidityHistoricalTransactionCompat.mjs";
 import {retryLiquidityRateLimit} from "../lib/liquidityHistoricalRateLimit.mjs";
 const pool=process.env.GLITCH_LIQUIDITY_POOL;
@@ -29,8 +29,7 @@ for(const signature of [...new Set(plan.signaturesToReplay)]){
  try{
   const tx=await retryLiquidityRateLimit(()=>retrieveHistoricalTransaction(call,rpc,signature));
   if(!tx){report.unresolved.push({signature,reason:"RPC_RETURNED_NULL"});break;}
-  const instructions=[...(tx.transaction?.message?.instructions||[]),...(tx.meta?.innerInstructions||[]).flatMap(x=>x.instructions||[])];
-  const candidates=instructions.map(i=>decodeHistoricalCandidate(i,signature,tx.slot,"helius")).filter(Boolean);
+  const candidates=extractHistoricalTransactionCandidates(tx,signature,tx.slot,"helius",pool);
   report.transactions.push({signature,slot:tx.slot,execution:classifyHistoricalTransaction(tx),programId:PUMP_AMM_PROGRAM,candidates});
  }catch(error){report.unresolved.push({signature,reason:String(error.message).slice(0,160)});break;}
 }

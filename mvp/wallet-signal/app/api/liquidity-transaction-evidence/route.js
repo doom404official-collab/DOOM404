@@ -1,3 +1,4 @@
+import {inspectHistoricalTransactionProof} from "../../../lib/liquidityHistoricalDecoder.mjs";
 import {NextResponse} from "next/server";
 import {PublicKey} from "@solana/web3.js";
 import {createReliableConnection} from "../../../lib/reliableConnection.js";
@@ -42,6 +43,9 @@ export async function POST(request){
     const retrieval=await retrieveLiquidityTransaction(entry.signature,{primaryConnection:connection});
     if(retrieval.error){decoded.push({signature:entry.signature,status:"unavailable",...describeLiquidityRpcFailure(retrieval.error),versionProbe:inspectVersionRejection(retrieval.error),fallbackAttempted:retrieval.fallbackAttempted,fallbackSkipped:retrieval.fallbackSkipped??null,primaryErrorCode:retrieval.primaryError?describeLiquidityRpcFailure(retrieval.primaryError).errorCode:null,provider:retrieval.provider,candidateOperations:[],withdrawalConfirmed:false});continue;}
     const tx=retrieval.transaction;
+    const proof=inspectHistoricalTransactionProof(tx,entry.signature,entry.slot);
+    if(!proof.valid)throw Error(proof.reason);
+    if(proof.execution==='FAILED_TRANSACTION'){decoded.push({signature:entry.signature,slot:tx.slot,status:'failed_execution',candidateOperations:[],authorizationVerified:false,settlementVerified:false,withdrawalConfirmed:false});continue;}
     const message=tx?.transaction?.message;
     const keys=[...(message?.staticAccountKeys??message?.accountKeys??[]),...(tx?.meta?.loadedAddresses?.writable??[]),...(tx?.meta?.loadedAddresses?.readonly??[])].map(k=>typeof k==="string"?k:k?.pubkey?.toBase58?.()??k?.toBase58?.()??String(k));
     const instructionEvidence=inspectPumpAmmParsedTransaction(tx,pool.toBase58());
