@@ -1,4 +1,4 @@
-import {TEST_WORKFLOW} from './creatorEvidenceTestProfile.mjs';
+import {TEST_WORKFLOW,TEST_REF} from './creatorEvidenceTestProfile.mjs';
 import {readCreatorEvidenceBody} from './creatorEvidenceBody.mjs';
 import {createPublicKey,verify,createHash} from 'node:crypto';
 export const GITHUB_ISSUER='https://token.actions.githubusercontent.com';
@@ -62,4 +62,26 @@ export function createCreatorGithubJwksResolver({enabled=false,fetchImpl=fetch}=
    if(!response.ok)fail();const bytes=await readCreatorEvidenceBody(response,{maxBytes:65536,signal});const keys=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));if(!Array.isArray(keys.keys)||keys.keys.length>20)fail();return keys;
   }catch{fail();}
  };
+}
+
+/** Stage one authenticates the fixed deployment/workflow principal, NOT run admission.
+ * run_id is signer-asserted here; the installed seal must independently match it.
+ * The one-second manifest interval is a verification instant, never an approved window.
+ */
+export function verifyCreatorGithubBootstrap(token,{deployment,action,jwks,nowSeconds}={}){
+ try{
+  screenCreatorGithubToken(token);
+  if(!['issue','upload','verify'].includes(action)||!Number.isSafeInteger(nowSeconds)||nowSeconds<0)fail();
+  const claims=json(token.split('.')[1]);
+  const repository='doom404official-collab/DOOM404',environment='creator-evidence-synthetic-test';
+  return verifyCreatorGithubOidc(token,{jwks,nowSeconds,manifest:{
+   repository,repository_id:'1405094598',repository_owner:'doom404official-collab',repository_owner_id:'335732040',
+   ref:TEST_REF,sha:deployment.commit,workflow_sha:deployment.commit,
+   workflow_ref:repository+'/.github/workflows/'+TEST_WORKFLOW+'@'+TEST_REF,
+   run_id:claims.run_id,run_attempt:'1',event_name:'workflow_dispatch',environment,runner_environment:'github-hosted',
+   sub:'repo:'+repository+':environment:'+environment,
+   audience:deployment.url+'/api/creator-evidence-test/'+(action==='verify'?'verify':'upload'),
+   startsAt:nowSeconds,expiresAt:nowSeconds+1
+  }});
+ }catch{fail();}
 }

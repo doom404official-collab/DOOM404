@@ -1,7 +1,7 @@
 // Preparation only; exported through server-only entrypoint, no active app import.
 import {createCreatorEnvironmentRuntime,readCreatorPreviewIdentity} from './creatorEvidenceEnvironment.mjs';
 import {createCreatorEvidencePostgres} from './creatorEvidencePostgres.mjs';
-import {screenCreatorGithubToken} from './creatorEvidenceOidc.mjs';
+import {screenCreatorGithubToken,createCreatorGithubJwksResolver,verifyCreatorGithubBootstrap} from './creatorEvidenceOidc.mjs';
 import {createCreatorExecutionBudget,assertCreatorSignal} from './creatorExecutionBudget.mjs';
 const closed=()=>Response.json({status:'DISABLED'},{status:404,headers:{'cache-control':'no-store'}});
 export function createCreatorSyntheticEndpoint(options={},dependencies={}){
@@ -17,6 +17,10 @@ export function createCreatorSyntheticEndpoint(options={},dependencies={}){
    const auth=request.headers.get('authorization');if(!auth?.startsWith('Bearer '))return closed();screenCreatorGithubToken(auth.slice(7));
    const read=dependencies.readVariable??(name=>process.env[name]),deployment=readCreatorPreviewIdentity(read);
    if(url.origin!==deployment.url)return closed();assertCreatorSignal(request.signal);
+   const now=dependencies.now??Date.now;
+   const jwks=await createCreatorExecutionBudget({maxDurationMs:6000}).run('BOOTSTRAP_AUTH',signal=>createCreatorGithubJwksResolver({enabled:true,fetchImpl:dependencies.fetchImpl??fetch})({signal}),{signal:request.signal});
+   assertCreatorSignal(request.signal);
+   verifyCreatorGithubBootstrap(auth.slice(7),{deployment,action,jwks,nowSeconds:Math.floor(now()/1000)});
    const purpose=action==='verify'?'verifier':'issuer';
    const client=createCreatorEvidencePostgres({enabled:true,purpose:'configuration',config:{host:'db.acwmtobcbpkjfqiatyke.supabase.co',port:5432,database:'postgres',user:'creator_test_'+purpose+'_login',password:read('CREATOR_TEST_DB_'+purpose.toUpperCase()+'_PASSWORD'),ca:read('CREATOR_TEST_DB_CA_PEM')}});
    const result=await createCreatorExecutionBudget({maxDurationMs:6000}).run('CONFIGURATION',signal=>client.query({text:'SELECT creator_relay_test_private.relay_runtime_configuration($1::jsonb) AS result',values:[JSON.stringify({...deployment,action})],signal}),{signal:request.signal});
