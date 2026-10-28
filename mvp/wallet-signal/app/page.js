@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import {createLiquidityReadController} from '../lib/liquidityReadController.mjs';
 import HolderBubbleMap from "./HolderBubbleMap";
 import {HOLDER_RETAIN19_POLICY,assessApprovedHolderEligibleConcentration} from '../lib/holderEligibleViewPolicy.mjs';
 import GlitchV11Dashboard from "./GlitchV11Dashboard";
@@ -372,6 +373,9 @@ function CreatorLookup() {
   const [liquidity, setLiquidity] = useState(null);
   const [liquidityError, setLiquidityError] = useState("");
   const [liquidityRefreshing, setLiquidityRefreshing] = useState(false);
+  const liquidityReader=useRef(null);
+  if(!liquidityReader.current)liquidityReader.current=createLiquidityReadController({publish:state=>{setLiquidity(state.data);setLiquidityError(state.error);setLiquidityRefreshing(state.loading);}});
+  useEffect(()=>()=>liquidityReader.current.reset('',true),[]);
   const [poolEvidence, setPoolEvidence] = useState(null);
   const [poolEvidenceError, setPoolEvidenceError] = useState("");
   const [poolEvidenceBusy, setPoolEvidenceBusy] = useState(false);
@@ -456,23 +460,8 @@ function CreatorLookup() {
   },[result?.mint]);
   const MAX_HISTORY_BATCHES = 5;
   async function refreshLiquidity(address = mint.trim()) {
-    if (!address || liquidityRefreshing) return;
-    setLiquidityRefreshing(true);
-    setLiquidityError("");
-    setPoolEvidence(null); setPoolEvidenceError("");
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 12000);
-      let response;
-      try {
-        response = await fetch("/api/token-liquidity?mint=" + encodeURIComponent(address), { cache: "no-store", signal: controller.signal });
-      } finally { clearTimeout(timeout); }
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.reason || "Liquidity data unavailable");
-      if (address === mint.trim()) setLiquidity(data);
-    } catch (failure) {
-      setLiquidityError(failure.name === "AbortError" ? "Liquidity refresh timed out" : failure.message);
-    } finally { setLiquidityRefreshing(false); }
+    setPoolEvidence(null);setPoolEvidenceError('');
+    await liquidityReader.current.read(address);
   }
   async function verifyPoolAccounts() {
     const addresses = (liquidity?.pools || []).slice(0, 5).map(pool => pool.pairAddress).filter(Boolean);
@@ -498,7 +487,7 @@ function CreatorLookup() {
   }
   async function inspect(event, cursor = null) {
     event.preventDefault();
-    setBusy(true); setError(""); if (!cursor) { setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
+    setBusy(true); setError(""); if (!cursor) { liquidityReader.current.reset(mint.trim()); setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 45000);
@@ -550,13 +539,13 @@ function CreatorLookup() {
     <h2 style={{ marginTop: 8 }}>Inspect a Solana token</h2>
     <p style={{ color: "#bbb", lineHeight: 1.6 }}>Enter a Solana token address to explore security, holder connections, creator activity, and liquidity intelligence in one assessment.</p>
     <form onSubmit={inspect} style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-      <input aria-label="Solana token mint address" value={mint} onChange={e => setMint(e.target.value)} placeholder="Paste Solana token mint address" required style={{ flex: "1 1 260px", minWidth: 0, padding: 12, background: "#101010", border: "1px solid #555", borderRadius: 8, color: "white" }} />
+      <input aria-label="Solana token mint address" value={mint} onChange={e => {liquidityReader.current.reset(e.target.value.trim());setMint(e.target.value);}} placeholder="Paste Solana token mint address" required style={{ flex: "1 1 260px", minWidth: 0, padding: 12, background: "#101010", border: "1px solid #555", borderRadius: 8, color: "white" }} />
       <button type="submit" disabled={busy} style={{ padding: "12px 18px", border: 0, borderRadius: 8, background: "#a52222", color: "white", cursor: "pointer" }}>{busy ? "INSPECTING..." : "INSPECT TOKEN"}</button>
     </form>
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
     {busy && <p role="status" style={{ color: "#ddd" }}>Querying Solana history. Each batch checks up to 3,000 signatures; this may take up to 45 seconds.</p>}
     {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
-      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} frozenHolderObservation={frozenHolderObservation} workerEvidence={workerEvidence} />
+      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} liquidityError={liquidityError} liquidityRefreshing={liquidityRefreshing} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} frozenHolderObservation={frozenHolderObservation} workerEvidence={workerEvidence} />
       {/* Previous token evidence panels retired from the layout; raw data and scan workers remain unchanged. */}
     </div>}
   </section>;

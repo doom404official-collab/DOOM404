@@ -24,7 +24,7 @@ const wait=async predicate=>{for(let n=0;n<500;n++){if(await predicate())return;
 let checks=0;
 try{for(const width of [390,1280]){
  const context=await browser.newContext({viewport:{width,height:900},serviceWorkers:'block'}),page=await context.newPage();
- const forbidden=[],errors=[],pending=[],requests=[];let holdAssessments=true,holdStatus=false,emptyEvidence=false,frozenMode='valid';const pendingStatus=[];
+ const forbidden=[],errors=[],pending=[],requests=[];let holdAssessments=true,holdStatus=false,emptyEvidence=false,frozenMode='valid',liquidityMode='error';const pendingStatus=[];
  page.on('pageerror',e=>errors.push(e.message));await page.clock.install({time:new Date(updatedAt)});
  const response=(route,body,status=200)=>route.fulfill({status,contentType:'application/json',body:JSON.stringify(body)});
  await context.route('**/*',async route=>{
@@ -54,7 +54,7 @@ try{for(const width of [390,1280]){
   if(pathname==='/api/holder-scan-status'&&holdStatus){pendingStatus.push({route,mint});return;}
   if(pathname==='/api/holder-scan-status')return response(route,{status:'partial',jobId:'job-'+mint,scan:f.scan});
   if(pathname==='/api/scoring-evidence')return response(route,{mint});
-  if(pathname==='/api/token-liquidity')return response(route,{mint,status:'unavailable'});
+  if(pathname==='/api/token-liquidity')return liquidityMode==='error'?response(route,{mint,status:'unavailable'},503):response(route,{mint,status:'pools_reported',observedAt:liquidityMode==='stale'?'2020-01-01T00:00:00Z':updatedAt,reportedLiquidityUsd:1234,poolCountReturned:2});
   forbidden.push(pathname);return route.abort();
  });
  await page.goto(base,{waitUntil:'networkidle'});
@@ -95,6 +95,9 @@ try{for(const width of [390,1280]){
  frozenMode='wrong';await inspect(mintB);await inspect(mintA);await delay(100);assert.equal(await page.getByTestId('frozen-concentration').count(),0);await page.getByText(/matching frozen raw inputs are unavailable/).waitFor();checks++;
  frozenMode='error';await inspect(mintB);await inspect(mintA);await delay(100);assert.equal(await page.getByTestId('frozen-concentration').count(),0);checks++;
  emptyEvidence=true;await inspect(mintB);await page.getByText(/Historical coverage and wallet independence remain Unknown/).waitFor();assert.equal(await page.getByRole('button',{name:'Connection map',exact:true}).count(),0);checks++;
+ liquidityMode='reported';await inspect(mintA);await page.getByRole('button',{name:'Liquidity Quality & Safety',exact:true}).click();await page.getByText('$1,234',{exact:true}).waitFor();checks++;
+ liquidityMode='error';await inspect(mintA);await page.getByRole('button',{name:'Liquidity Quality & Safety',exact:true}).click();await page.getByText(/Liquidity provider unavailable; estimates withheld/).waitFor();assert.equal(await page.getByText('$1,234',{exact:true}).count(),0);checks++;
+ liquidityMode='stale';await inspect(mintA);await page.getByRole('button',{name:'Liquidity Quality & Safety',exact:true}).click();assert.equal(await page.getByText('$1,234',{exact:true}).count(),0);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));await page.screenshot({path:`${artifacts}/liquidity-${width}.png`,fullPage:true});checks++;
  assert.deepEqual(forbidden,[]);assert.deepEqual(errors,[]);assert.ok(requests.length>0);checks++;await context.close();
  }
  console.log(JSON.stringify({passed:true,checks,artifacts,mode:process.env.HOLDER_EXPECT_STALE==='1'?'reproduction':'regression'}));

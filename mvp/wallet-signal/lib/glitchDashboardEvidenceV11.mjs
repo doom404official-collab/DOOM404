@@ -10,7 +10,7 @@ export function evidenceFresh(updatedAt,now=Date.now()){
  const at=typeof updatedAt==='string'?Date.parse(updatedAt):NaN;
  return Number.isFinite(at)&&at<=now&&now-at<=60*60*1000;
 }
-export function adaptDashboardEvidence({result,extensions,concentration,creatorEvidence,historicalHolders,verifiedHolderEnvelope,workerEvidence,now=Date.now()}={}){
+export function adaptDashboardEvidence({liquidity:reportedLiquidity,result,extensions,concentration,creatorEvidence,historicalHolders,verifiedHolderEnvelope,workerEvidence,now=Date.now()}={}){
  const mint=result?.mint;
  const same=x=>Boolean(mint&&x?.mint===mint);
  const authorities=mintAuthorityEvidence(result,{parsed:!!mint&&result.authorityDetailsStatus!=='not_parsed'});
@@ -46,8 +46,11 @@ export function adaptDashboardEvidence({result,extensions,concentration,creatorE
  const creatorCompatible=creatorVerified&&same(creator)&&creator.creator===creatorEvidence.creator&&evidenceFresh(creator.updatedAt,now);
  const selling=creatorCompatible&&creator.selling?.historyComplete===true&&Array.isArray(creator.selling.percentages)&&creator.selling.percentages.length===3&&creator.selling.percentages.every(x=>finite(x))?creator.selling.percentages:null;
  const creatorScore=scoreCreatorIntelligence({creatorVerified,creatorHistoryComplete:!!selling,soldPct1h:selling?.[0],soldPct24h:selling?.[1],soldPct7d:selling?.[2]});
+ const providerLiquidity=same(reportedLiquidity)&&evidenceFresh(reportedLiquidity.observedAt,now)&&['pools_reported','no_pools_reported'].includes(reportedLiquidity.status)?reportedLiquidity:null;
+ const reported={amount:finite(providerLiquidity?.reportedLiquidityUsd,Number.MAX_SAFE_INTEGER)?providerLiquidity.reportedLiquidityUsd:null,poolCount:Number.isSafeInteger(providerLiquidity?.poolCountReturned)&&providerLiquidity.poolCountReturned>=0?providerLiquidity.poolCountReturned:null};
+ const freshLiquidity=same(liquidity)&&evidenceFresh(liquidity.updatedAt,now)&&['partial','account_checks_completed'].includes(liquidity.status)?liquidity:null;
  const liquidityScore=scoreLiquidityQuality({}); // Stage-1 producer explicitly has no verified scoring inputs.
  return {scores:{token_security:security,holder_intelligence:holder,creator_intelligence:creatorScore,liquidity_quality_safety:liquidityScore},
-  fee, effectiveFee, top20,creatorVerified,matchedHolder,creator:creatorVerified&&same(creator)&&creator.creator===creatorEvidence.creator?creator:null,liquidity:same(liquidity)?liquidity:null,
-  creatorCompatible,creatorMissing:creator?.missing||['Persisted creator evidence unavailable'],liquidityMissing:liquidity?.missing||['Persisted liquidity evidence unavailable']};
+  fee, effectiveFee, top20,creatorVerified,matchedHolder,creator:creatorVerified&&same(creator)&&creator.creator===creatorEvidence.creator?creator:null,liquidity:freshLiquidity,
+  reportedLiquidity:reported,creatorCompatible,creatorMissing:creator?.missing||['Persisted creator evidence unavailable'],liquidityMissing:freshLiquidity?.missing||['Persisted liquidity evidence unavailable or stale']};
 }
