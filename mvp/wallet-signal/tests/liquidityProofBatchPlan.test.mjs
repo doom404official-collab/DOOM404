@@ -21,3 +21,11 @@ test('invalid candidates prevent all planned review',()=>{
   assert.equal(result.action,'PAUSE_INVALID_CANDIDATES');
   assert.equal(result.targets.length,0);
 });
+
+test('zero historical candidate events pauses rather than implying completeness',()=>{
+  const f=checkpoint(); f.events=[];
+  const result=planLiquidityProofBatch(f,'pool');
+  assert.equal(result.action,'PAUSE_NO_CANDIDATE_EVIDENCE');
+  assert.equal(result.targets.length,0);
+  assert.equal(result.liveRpcAuthorized,false);
+});
