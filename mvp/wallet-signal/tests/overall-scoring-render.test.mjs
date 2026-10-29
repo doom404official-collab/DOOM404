@@ -39,3 +39,11 @@ test('actual GET missing/error evidence remains Pending',async()=>{
  assert.doesNotMatch(JSON.stringify(response.body),/SYNTHETIC_PRIVATE_ERROR|synthetic-only/);
  const props={result,workerEvidence:response.body};assert.equal(consolidate(adaptDashboardEvidence(props).scores).score,null);assert.match(renderToStaticMarkup(createElement(Dashboard,props)),/Overall Score: Pending/);
 });
+
+test('dashboard observations do not invent running scans, ranking or missing numeric evidence',()=>{
+ const html=renderToStaticMarkup(createElement(Dashboard,{result}));
+ assert.match(html,/Evidence observations · not ranked/);
+ assert.doesNotMatch(html,/Top 3 Overall Findings|Historical scanning continues|evidence is still being collected/);
+ assert.match(html,/Overall Score: Pending/);
+ assert.match(html,/Verified program\/extension evidence: no transfer-fee extension applies/);
+});

@@ -97,3 +97,52 @@ with unchanged formula/output and inherited-flag rejection. Final offline-guarde
 hosted persistence check reported `SKIPPED_NOT_OPTED_IN`; no live acceptance is
 claimed. API/render coverage uses the actual GET projection and server-rendered
 components with synthetic transport, not a live browser or deployment.
+
+## Dashboard integration review — October 29, local only
+
+Reconciled draft PR #72 (`3120957926c52c93b7e47bff83eef388879cc785`):
+existing border-box, map focus and cluster sizing changes were already present.
+Only the missing fullscreen containing-block correction was selectively reused.
+Later Holder map, frozen observation, Liquidity freshness and Token Security
+literal-evidence guards remain intact. No blanket merge was performed.
+
+The actual-page regression reproduced an inspection stuck after mint editing.
+Inspection now has request ownership, cancellation on edit/unmount, exact returned
+mint checks and a 45-second client deadline covering headers and bodies. Late
+non-cooperative responses cannot publish, release a newer request's busy state or
+restore an old assessment. Server work already dispatched is not guaranteed to
+stop by browser cancellation. No retry, worker start or new provider call is added.
+Persisted-scoring polling now rejects older same-mint responses. Rendering refreshes
+at the existing one-hour boundaries for fee, Creator, Holder and Liquidity inputs;
+stale Creator balance/launch observations are withheld.
+
+Navigation order is Token Security, Holder, Liquidity, Creator, independently of
+canonical scoring order. Black/red theme, original mascot, existing scan/ready-glow
+styles and map are preserved. Static observations no longer claim to be ranked
+Top 3 findings or assert an active historical scan. O03's ranking policy stays open.
+Verified fee N/A explanatory text now agrees with its label.
+
+Verification: final offline-guarded `npm run build` passed 1,752 tests, compilation,
+lint and types. Hosted persistence validation was SKIPPED_NOT_OPTED_IN. New actual
+page browser script passed 42 checks at 320/393/1440 widths: delayed primary response,
+mint edits, repeated navigation, keyboard focus, fullscreen bounds, wrong-mint/error
+responses, body timeout, late completion, unmount/return, scoring poll ordering and
+fee expiry. Retained Holder/Liquidity page script passed 32 checks at 390/1280,
+including map drilldown, repeated navigation, partial history, frozen observation
+mismatch, provider errors and stale Liquidity. All API responses were synthetic;
+server outbound/API handlers were independently blocked. Zero browser exceptions
+or forbidden requests. Screenshots are review artifacts, not real Android evidence.
+The initial full run caught one outdated exact-call regex in the existing smoke
+suite; it was updated for the scoped cancellation race. Final runs have no failures.
+
+| Gate | Retained status | Remaining acceptance |
+|---|---|---|
+| D01 | Accepted | GET-only whitelisted bridge unchanged. |
+| D02 | Accepted | Existing identity/Unknown gates retained; new client ordering and expiry guards await review. |
+| D03 | Open | Scoped labels/order fixed offline; full evidence-label acceptance remains subject to review. |
+| D04 | Open | Retained synthetic graph/drilldown tests pass; authentic graph/snapshot acceptance remains open. |
+| D05 | Open | Reproducible desktop/mobile-width mock QA passes; actual Android, assistive-technology and owner UX acceptance not established. |
+| D06 | Open | Authentic persisted producer → API → dashboard acceptance requires the separate evidence/access gates. |
+
+Fixed denominator remains six, accepted 2/6. No push, Preview/production deployment,
+workflow dispatch, scoring policy, hosted mutation or authentic scan occurred.

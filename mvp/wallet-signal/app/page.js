@@ -343,6 +343,9 @@ function CreatorLookup() {
   const [creatorEvidenceDiagnostic, setCreatorEvidenceDiagnostic] = useState("not_requested");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const inspection = useRef(null);
+  function cancelInspection() { inspection.current?.abort(); inspection.current=null; }
+  useEffect(()=>()=>cancelInspection(),[]);
   const [historyCursor, setHistoryCursor] = useState(null);
   const [concentration, setConcentration] = useState(null);
   const [concentrationError, setConcentrationError] = useState("");
@@ -447,12 +450,14 @@ function CreatorLookup() {
     if(!address)return;
     let stopped=false;
     const controller=new AbortController();
+    let sequence=0;
     async function refresh(){
+      const request=++sequence;
       try{
         const response=await fetch("/api/scoring-evidence?mint="+encodeURIComponent(address),{cache:"no-store",signal:controller.signal});
         const data=await response.json();
-        if(!stopped)setWorkerEvidence(response.ok&&data.mint===address?data:null);
-      }catch{if(!stopped)setWorkerEvidence(null);}
+        if(!stopped&&request===sequence)setWorkerEvidence(response.ok&&data.mint===address?data:null);
+      }catch{if(!stopped&&request===sequence)setWorkerEvidence(null);}
     }
     refresh();
     const interval=setInterval(refresh,30000);
@@ -487,59 +492,65 @@ function CreatorLookup() {
   }
   async function inspect(event, cursor = null) {
     event.preventDefault();
-    setBusy(true); setError(""); if (!cursor) { liquidityReader.current.reset(mint.trim()); setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
+    cancelInspection();
+    const controller=new AbortController();inspection.current=controller;
+    const address=mint.trim(),current=()=>inspection.current===controller;
+    let cancel;
+    const cancelled=new Promise((_,reject)=>{cancel=()=>reject(Object.assign(Error('Inspection cancelled'),{name:'AbortError'}));controller.signal.addEventListener('abort',cancel,{once:true});});
+    // Bound both headers and body, including a non-cooperative late response.
+    async function read(path){
+      if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
+      return Promise.race([(async()=>{
+        const response=await fetch(path,{cache:'no-store',signal:controller.signal});
+        if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
+        const data=await response.json();
+        if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
+        if(!response.ok)throw Error('Token evidence unavailable');
+        if(data?.mint!==address)throw Error('Token evidence identity mismatch');
+        return data;
+      })(),cancelled]);
+    }
+    const timer=setTimeout(()=>controller.abort(),45000);
+    setBusy(true); setError(""); if (!cursor) { liquidityReader.current.reset(address); setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
     try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 45000);
-      let response;
-      try { response = await fetch("/api/creator?mint=" + encodeURIComponent(mint.trim()) + (cursor ? "&before=" + encodeURIComponent(cursor) : ""), { cache: "no-store", signal: controller.signal }); }
-      finally { clearTimeout(timer); }
-      const data = await response.json();
-      if (!response.ok) throw new Error([data.error, data.detail].filter(Boolean).join(" " ) || "Token lookup failed");
+      const data=await read('/api/creator?mint='+encodeURIComponent(address)+(cursor?'&before='+encodeURIComponent(cursor):''));
+      if(!current())return;
       setResult(data);
       if (!cursor) {
         try {
-          const evidenceResponse = await fetch("/api/creator-evidence?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
-          if (evidenceResponse.ok) {
-            const record = await evidenceResponse.json();
-            setCreatorEvidence(record);
-            setCreatorEvidenceDiagnostic(record?.creator && ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(record.status) ? "record_available" : record?.status === "INDEXED_UNVERIFIED" ? "indexed_candidate" : record?.status === "CACHE_MISS" ? "cache_miss" : record?.status === "EVIDENCE_INCOMPLETE" ? "evidence_incomplete" : record?.status === "CONFLICT" ? "evidence_conflict" : "record_not_established");
-          } else {
-            setCreatorEvidenceDiagnostic(evidenceResponse.status === 503 ? "vault_unavailable" : "lookup_failed");
-          }
-        } catch { setCreatorEvidenceDiagnostic("network_failure"); }
+          const record=await read('/api/creator-evidence?mint='+encodeURIComponent(address));
+          if(!current())return;
+          setCreatorEvidence(record);
+          setCreatorEvidenceDiagnostic(record?.creator && ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(record.status) ? "record_available" : record?.status === "INDEXED_UNVERIFIED" ? "indexed_candidate" : record?.status === "CACHE_MISS" ? "cache_miss" : record?.status === "EVIDENCE_INCOMPLETE" ? "evidence_incomplete" : record?.status === "CONFLICT" ? "evidence_conflict" : "record_not_established");
+        } catch { if(!current()||controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});setCreatorEvidenceDiagnostic("lookup_failed"); }
       }
       if (!cursor) {
         try {
-          const concentrationResponse = await fetch("/api/token-concentration?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
-          const accountData = await concentrationResponse.json();
-          if (!concentrationResponse.ok) throw new Error(accountData.error || "Token-account balances unavailable");
+          const accountData=await read('/api/token-concentration?mint='+encodeURIComponent(address));
+          if(!current())return;
           setConcentration(accountData);
-          // The mint-scoped Holder status effect owns this request. A second
-          // unscoped fetch here could overwrite a newer mint's observations.
-
-        } catch (concentrationFailure) { setConcentrationError(concentrationFailure.message); }
+        } catch (failure) { if(!current()||controller.signal.aborted)throw failure;setConcentrationError('Token-account balances unavailable'); }
       }
       if (!cursor && data.tokenProgram === "spl-token-2022") {
         try {
-          const extensionResponse = await fetch("/api/token-extensions?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
-          const extensionData = await extensionResponse.json();
-          if (!extensionResponse.ok) throw new Error(extensionData.error || "Extension data unavailable");
+          const extensionData=await read('/api/token-extensions?mint='+encodeURIComponent(address));
+          if(!current())return;
           setExtensions(extensionData);
-        } catch (extensionFailure) { setExtensionsError(extensionFailure.message); }
+        } catch (failure) { if(!current()||controller.signal.aborted)throw failure;setExtensionsError('Extension data unavailable'); }
       }
-      if (!cursor) await refreshLiquidity(mint.trim());
+      if (!cursor) await Promise.race([refreshLiquidity(address),cancelled]);
+      if(!current()||controller.signal.aborted)return;
       setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
       setHistoryBatches(n => cursor ? n + 1 : 1);
-    } catch (failure) { setError(failure.name === "AbortError" ? "Historical scan timed out after 45 seconds. Retry the same batch or use an archival data provider." : failure.message); }
-    finally { setBusy(false); }
+    } catch (failure) { if(current()){setResult(null);setError(failure.name === "AbortError" ? "Token inspection timed out. Evidence remains incomplete; no automatic retry was made." : "Token inspection unavailable or mismatched. Evidence remains Unknown.");} }
+    finally { clearTimeout(timer);controller.signal.removeEventListener('abort',cancel);if(current()){inspection.current=null;setBusy(false);} }
   }
   return <section aria-label="GLITCH Scanner Token Analysis" className="doom-token-inspect" style={{ ...cardStyle, border: "none", boxShadow: "none" }}>
     <p style={{ color: "#ff7777", fontSize: 12, fontWeight: 700, letterSpacing: 2 }}>DOOM404 // GLITCH SCANNER · TOKEN ANALYSIS</p>
     <h2 style={{ marginTop: 8 }}>Inspect a Solana token</h2>
     <p style={{ color: "#bbb", lineHeight: 1.6 }}>Enter a Solana token address to explore security, holder connections, creator activity, and liquidity intelligence in one assessment.</p>
     <form onSubmit={inspect} style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-      <input aria-label="Solana token mint address" value={mint} onChange={e => {liquidityReader.current.reset(e.target.value.trim());setMint(e.target.value);}} placeholder="Paste Solana token mint address" required style={{ flex: "1 1 260px", minWidth: 0, padding: 12, background: "#101010", border: "1px solid #555", borderRadius: 8, color: "white" }} />
+      <input aria-label="Solana token mint address" value={mint} onChange={e => {cancelInspection();setBusy(false);setError("");setResult(null);liquidityReader.current.reset(e.target.value.trim());setMint(e.target.value);}} placeholder="Paste Solana token mint address" required style={{ flex: "1 1 260px", minWidth: 0, padding: 12, background: "#101010", border: "1px solid #555", borderRadius: 8, color: "white" }} />
       <button type="submit" disabled={busy} style={{ padding: "12px 18px", border: 0, borderRadius: 8, background: "#a52222", color: "white", cursor: "pointer" }}>{busy ? "INSPECTING..." : "INSPECT TOKEN"}</button>
     </form>
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
