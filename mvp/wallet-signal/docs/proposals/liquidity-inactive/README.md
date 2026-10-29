@@ -76,7 +76,9 @@ supplied execution object is NOT cryptographic GitHub identity.
 fixed direct GLITCH hostname, postgres database, port 5432 and exact executor or
 reviewer role, plus explicitly supplied password and CA. No environment/URL/pgpass
 fallback, role switching, arbitrary SQL, pooling or retry is exposed. Reviewer
-transport only reads manifest/receipts; it cannot claim, stage or admit. Executor
+transport initially only read manifest/receipts; the separate local artifact-review
+preparation below now permits fixed record_review/admit calls for that role only.
+It still cannot claim, reserve or stage. Executor
 uses fixed typed parameterized claim/reserve/stage calls. Every connection verifies
 TLS, database and session/current identity before its requested query. Connection
 and server/client query deadlines are bounded; pg query AbortSignal is not assumed
@@ -159,3 +161,68 @@ remained SKIPPED_NOT_OPTED_IN. No hosted operations, active entrypoint changes,
 push or deployment. Liquidity remains 7/15 accepted; authentic evidence, approved
 hosted setup, authenticated run provenance, writer quiescence and independent
 artifact readback/admission remain open.
+
+## Local artifact collection and independent review preparation
+
+`collect.mjs` reads only the actual CLI main filename and its `.pending`/`.lock`
+sidecars from a dedicated quiescent private directory. It rejects symlink directory
+aliases, non-regular files, symlinks, hardlinks and unexpected entries. Fixed-size
+positional reads, a second byte read, inode/size/ctime/mtime checks and a final
+entry/inode check detect observed concurrent changes. It writes nothing. Stable
+concurrent readers are permitted; a lock/partial/cancelled bundle stays quarantined.
+These checks are not an OS snapshot or protection against a malicious process with
+control over parent directories. The operator must stop writers and protect the
+collection root. Non-cooperating filesystem changes after collection do not change
+the copied bytes, but preservation of original files is not asserted by the API.
+
+`review.mjs` reuses installed manifest/receipt reads and the retained lineage and
+sidecar validators. The reviewer separately reads the artifact by staged immutable
+ID, requires exactly one matching nonexpired successful quarantine artifact and
+one main file, verifies raw and semantic parent identity, hashes the returned bytes,
+and checks lineage before calling existing `record_review` and then `admit` SQL.
+The executor transport cannot call either function. The reviewer cannot claim,
+reserve or stage. No canonical artifact is published, and SQL admission is not
+archive completeness, fee/withdrawal authority, calibrated scoring or release.
+
+The injected artifact reader is a trusted, INACTIVE service boundary, not a caller
+assertion or implemented GitHub authentication. Its normalized response is:
+`{artifacts:[{artifactId,name,repository,ref,commit,run,attempt,expired,conclusion}],
+files:[{name,bytes:Buffer}]}`. A future authenticated GitHub adapter must obtain run
+metadata independently of executor output, reject duplicate/foreign artifacts and
+limit archive/download/extracted size before allocation; no ZIP extraction or live
+API client is introduced here. Exact run provenance remains unverified. Likewise,
+`execution` is trusted input pending real workflow authentication, not evidence of
+cryptographic identity. Database session separation is actually exercised locally.
+
+Both new paths are disabled before dependency access. Collection and the whole
+review operation have a conservative 20-second preparation deadline. `maxBytes`
+must be explicit and cannot exceed 16 MiB; that local defensive ceiling is not an
+approved live retention/download policy. No live request budget is expanded.
+Current receipt JSON uses numeric bigint epochs: unsafe numbers are rejected,
+not rounded. No SQL schema or either pending proposal hash changes in this slice.
+
+Every dispatched review/admission write is uncertain until validated acknowledgment.
+Cancellation after a possible or confirmed review also requires reconciliation;
+there is no retry, refresh, overwrite, delete, canonical rename or automated resume.
+An admission can commit despite a lost response; separate `read_receipt` resolves
+that case. The existing reader does not expose the reviews row, so an uncertain
+review write requires separately authorized operator inspection; it must not be
+replayed automatically. This limitation does not authorize a new hosted read.
+
+Verification uses real local FileHandles plus synthetic service responses and the
+exact unapplied SQL in owned disposable PostgreSQL. It covers changed bytes during
+read, concurrent stable readers, paths/links/limits, sidecars and cancellation,
+foreign/duplicate artifact identities, digest/lineage failure, roles, replay,
+concurrent reviewers, missing-review denial and committed-but-unacknowledged
+admission. No actual artifacts, GitHub API, hosted SQL or real credentials are used.
+Activation still requires approved setup/identities, authenticated service/run
+binding, collection quiescence and an explicit bounded window. Canonical discovery
+integration remains separate and disabled. Liquidity stays 7/15 accepted.
+
+Final slice results: `node --test tests/liquidity-inactive*.test.mjs
+ tests/liquidity-quarantine-discovery.test.mjs` passed 46 tests. The disposable
+`python3 tests/fixtures/liquidity-fencing/run-manifest-local.py` passed 79 checks
+(34 unchanged setup checks plus 45 runtime checks, including 12 new integration
+checks). Network-blocked `npm run build` passed 1,720 application tests, build,
+lint and types; persistence remained SKIPPED_NOT_OPTED_IN. No exact-head hosted
+CI/Preview was run because publication remains prohibited.

@@ -1,6 +1,9 @@
 // Runs only in run-manifest-local.py's network-none container, with local TLS DNS.
 import {Client} from 'pg';
 import {readFileSync} from 'node:fs';
+import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises';
+import {collectLiquidityArtifact} from '../../../docs/proposals/liquidity-inactive/collect.mjs';
+import {reviewLiquidityArtifact} from '../../../docs/proposals/liquidity-inactive/review.mjs';
 import {createHash,randomUUID} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {createInactiveLiquidityPostgres} from '../../../docs/proposals/liquidity-inactive/postgres.mjs';
@@ -70,5 +73,48 @@ try{
  check((await admin.query('SELECT epoch::text FROM liquidity_fencing_private.lane')).rows[0].epoch===String(reconciled),'cancelled mutation has no automatic second claim');
  const wrongCa=ca.replace('CERTIFICATE','INVALID');assert.throws(()=>createInactiveLiquidityPostgres({enabled:true,purpose:'executor',config:{...common,user:'liquidity_fencing_executor',ca:wrongCa}}));check(true,'invalid CA fails before connection');
  await assert.rejects(createInactiveLiquidityPostgres({enabled:true,purpose:'executor',config:{...common,user:'liquidity_fencing_executor',password:'wrong-synthetic',ca}}).query({text:readerText,values:[o.binding.operation]}));check(true,'actual SCRAM failure redacted and no fallback');
+
+ // Real filesystem, SQL staging and separately authenticated local reviewer.
+ async function stagedFixture(){
+  const o=await fixture(),directory=await mkdtemp('/tmp/lq-artifact-');let bundle;
+  try{
+   o.publish=async({name,bytes,digest})=>{
+    await writeFile(directory+'/liquidity-history-evidence.json',bytes,{flag:'wx'});
+    bundle=await collectLiquidityArtifact({enabled:true,directory,run:o.binding.run,conclusion:'success',maxBytes:10000});
+    assert.equal(bundle.artifactName,name);assert.equal(bundle.entries[0].sha256,digest);
+    return {name,digest,artifactId:'12345'};
+   };
+   const staged=await composeLiquidityQuarantine(o);assert.equal(staged.status,'STAGED_QUARANTINED');
+   const response={artifacts:[{...o.binding,artifactId:'12345',name:bundle.artifactName,expired:false,conclusion:'success'}],files:bundle.files};
+   return {o,staged,directory,response,review:{enabled:true,operation:o.binding.operation,reviewId:randomUUID(),sourceBytes:bytes,execution:o.execution,maxBytes:10000,session:adapter('reviewer'),readArtifact:async()=>response}};
+  }catch(e){await rm(directory,{recursive:true,force:true});throw e;}
+ }
+ let f=await stagedFixture();
+ try{
+  const admitText='SELECT liquidity_fencing_private.admit($1::uuid,$2::bigint,$3::text) AS result';
+  await assert.rejects(adapter('executor').query({text:admitText,values:[f.o.binding.operation,f.staged.epoch,digest]}));check(true,'executor adapter cannot admit');
+  await assert.rejects(adapter('reviewer').query({text:admitText,values:[f.o.binding.operation,f.staged.epoch,digest]}));
+  check((await admin.query('SELECT count(*)::int n FROM liquidity_fencing_private.admissions')).rows[0].n===0,'real SQL refuses admission without independent review');
+  await assert.rejects(adapter('executor').query({text:'SELECT liquidity_fencing_private.record_review($1::uuid,$2::uuid,$3::text,$4::text,$5::text,$6::text,$7::bigint,$8::integer,$9::text,$10::boolean,$11::boolean) AS result',values:[f.o.binding.operation,randomUUID(),'12345',f.staged.digest,digest,f.o.binding.commit,f.o.binding.run,1,'success',true,true]}));check(true,'executor adapter cannot write independent review');
+  const reviewed=await reviewLiquidityArtifact(f.review);check(reviewed.status==='ADMITTED_RECEIPT'&&!reviewed.canonicalPublished,'real collected lineage + service readback + independent SQL review admits receipt only');
+  check((await admin.query('SELECT tip FROM liquidity_fencing_private.lane')).rows[0].tip===f.staged.digest,'admitted tip equals independently hashed bytes');
+  check(createHash('sha256').update(await readFile(f.directory+'/liquidity-history-evidence.json')).digest('hex')===f.staged.digest,'local source untouched after admission');
+  check((await reviewLiquidityArtifact({...f.review,session:adapter('reviewer')})).status==='REVIEW_REJECTED','restart replay cannot admit again');
+ }finally{await rm(f.directory,{recursive:true,force:true});}
+ f=await stagedFixture();try{
+  const result=await Promise.all([reviewLiquidityArtifact(f.review),reviewLiquidityArtifact({...f.review,reviewId:randomUUID(),session:adapter('reviewer')})]);
+  check(result.filter(r=>r.status==='ADMITTED_RECEIPT').length===1,'concurrent reviewers admit once');
+  check((await admin.query('SELECT count(*)::int n FROM liquidity_fencing_private.reviews')).rows[0].n===1&&(await admin.query('SELECT count(*)::int n FROM liquidity_fencing_private.admissions')).rows[0].n===1,'one durable review and admission across competing sessions');
+ }finally{await rm(f.directory,{recursive:true,force:true});}
+ f=await stagedFixture();try{
+  const original=f.review.session;f.review.session={async query(q){const r=await original.query(q);if(q.text.includes('.admit('))throw Error('SYNTHETIC_LOST_ACK');return r;}};
+  const r=await reviewLiquidityArtifact(f.review);check(r.status==='RECONCILIATION_REQUIRED'&&r.phase==='admit'&&r.retries===0,'committed admission with lost response stays uncertain');
+  const reconciled=await adapter('reviewer').query({text:'SELECT liquidity_fencing_private.read_receipt($1::uuid) AS result',values:[f.o.binding.operation]});
+  check(reconciled.rows[0].result.admission.successor_digest===f.staged.digest,'separate readback resolves admission without retry');
+ }finally{await rm(f.directory,{recursive:true,force:true});}
+ f=await stagedFixture();try{
+  f.response.files[0].bytes=Buffer.from('{}');const r=await reviewLiquidityArtifact(f.review);
+  check(r.status==='REVIEW_REJECTED'&&(await admin.query('SELECT count(*)::int n FROM liquidity_fencing_private.reviews')).rows[0].n===0,'digest mismatch leaves SQL review/admission untouched');
+ }finally{await rm(f.directory,{recursive:true,force:true});}
  console.log('MANIFEST_RUNTIME_CHECKS='+count);
 }finally{await admin.end();}

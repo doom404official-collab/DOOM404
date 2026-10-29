@@ -11,9 +11,11 @@ const queries=new Map([
  [identity,{read:true,valid:v=>v.length===0}],
  [prefix+'read_manifest($1::uuid) AS result',{read:true,valid:v=>v.length===1&&uuid(v[0])}],
  [prefix+'read_receipt($1::uuid) AS result',{read:true,valid:v=>v.length===1&&uuid(v[0])}],
- [prefix+'claim($1::uuid,$2::text) AS result',{valid:v=>v.length===2&&uuid(v[0])&&digest(v[1])}],
- [prefix+'reserve($1::uuid,$2::bigint,$3::integer) AS result',{valid:v=>v.length===3&&uuid(v[0])&&decimal(v[1])&&Number.isSafeInteger(v[2])&&v[2]>0&&v[2]<=60}],
- [prefix+'stage($1::uuid,$2::bigint,$3::text,$4::text,$5::text) AS result',{valid:v=>v.length===5&&uuid(v[0])&&decimal(v[1])&&decimal(v[2])&&digest(v[3])&&['history_candidate','replay_diagnostic','stage1_observation'].includes(v[4])}]
+ [prefix+'claim($1::uuid,$2::text) AS result',{purpose:'executor',valid:v=>v.length===2&&uuid(v[0])&&digest(v[1])}],
+ [prefix+'reserve($1::uuid,$2::bigint,$3::integer) AS result',{purpose:'executor',valid:v=>v.length===3&&uuid(v[0])&&decimal(v[1])&&Number.isSafeInteger(v[2])&&v[2]>0&&v[2]<=60}],
+ [prefix+'stage($1::uuid,$2::bigint,$3::text,$4::text,$5::text) AS result',{purpose:'executor',valid:v=>v.length===5&&uuid(v[0])&&decimal(v[1])&&decimal(v[2])&&digest(v[3])&&['history_candidate','replay_diagnostic','stage1_observation'].includes(v[4])}],
+ [prefix+'record_review($1::uuid,$2::uuid,$3::text,$4::text,$5::text,$6::text,$7::bigint,$8::integer,$9::text,$10::boolean,$11::boolean) AS result',{purpose:'reviewer',valid:v=>v.length===11&&uuid(v[0])&&uuid(v[1])&&decimal(v[2])&&digest(v[3])&&digest(v[4])&&typeof v[5]==='string'&&/^[a-f0-9]{40}$/.test(v[5])&&decimal(v[6])&&v[7]===1&&v[8]==='success'&&v[9]===true&&v[10]===true}],
+ [prefix+'admit($1::uuid,$2::bigint,$3::text) AS result',{purpose:'reviewer',valid:v=>v.length===3&&uuid(v[0])&&decimal(v[1])&&digest(v[2])}]
 ]);
 export function createInactiveLiquidityPostgres(options={}){
  if(options.enabled!==true)throw Error('LIQUIDITY_PG_DISABLED');
@@ -26,7 +28,7 @@ export function createInactiveLiquidityPostgres(options={}){
  let busy=false;
  return Object.freeze({async query(request){
   const spec=queries.get(request?.text),signal=request?.signal;
-  if(!spec||(!spec.read&&purpose!=='executor')||!Array.isArray(request.values)||JSON.stringify(request.values).length>8192||!spec.valid(request.values)||(signal!==undefined&&!(signal instanceof AbortSignal)))throw Error('LIQUIDITY_PG_REQUEST');
+  if(!spec||(!spec.read&&purpose!==spec.purpose)||!Array.isArray(request.values)||JSON.stringify(request.values).length>8192||!spec.valid(request.values)||(signal!==undefined&&!(signal instanceof AbortSignal)))throw Error('LIQUIDITY_PG_REQUEST');
   if(busy||signal?.aborted)throw Error('LIQUIDITY_PG_NOT_DISPATCHED');
   const text=request.text,values=[...request.values];busy=true;
   let client,dispatched=false,timer,end,closed=false;

@@ -297,3 +297,14 @@ postconditions and early transport cleanup are covered by 23 focused tests and
 types. See docs/proposals/liquidity-inactive/README.md for exact scope and hashes.
 No active route/workflow or historical checkpoint changed. Accepted gates remain
 7/15; this is local engineering preparation, not hosted or evidence acceptance.
+
+The next local-only Liquidity preparation connects real filesystem collection to
+independent synthetic artifact readback and existing reviewer SQL admission.
+Executor publications remain quarantine-only; no canonical publication or active
+workflow/route is added. Separate reviewer sessions validate installed identity,
+hashes and retained lineage before immutable review/admission. Missing review,
+concurrent/replayed reviewers and uncertain writes fail closed. The existing
+reader cannot resolve an uncertain review-row write without approved operator
+inspection; no automatic retry is allowed. See the existing inactive proposal
+README for precise transport/authentication and filesystem limits. Both pending
+SQL hashes remain unchanged/unapplied; accepted gates remain 7/15.
