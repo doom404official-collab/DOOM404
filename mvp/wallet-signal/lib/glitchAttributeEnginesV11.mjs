@@ -1,3 +1,4 @@
+import {normalizeMintAuthority} from "./mintAuthorityEvidence.mjs";
 import {attributes,version} from "./glitchScoringV11.mjs";
 const round=n=>Math.round(n*100)/100;
 const valid=(n,max=100)=>typeof n==="number"&&Number.isFinite(n)&&n>=0&&n<=max;
@@ -11,13 +12,16 @@ function result(id,parts,{calibrated=false}={}){
  return {version,attribute:id,components:parts,score:complete?round(eligible.reduce((s,p)=>s+p.points,0)*100/maximum):null,complete,calibrated,coveragePct:maximum?round(assessed*100/maximum):0};
 }
 export function scoreTokenSecurity({tokenProgram,authoritiesParsed=false,mintAuthority,freezeAuthority,feeExtensionVerified=false,feeApplicable,feePercent,feeConfigAuthorityReported=false,feeConfigAuthority}={}){
- const feeNA=tokenProgram==="spl-token"||(feeExtensionVerified&&feeApplicable===false);
+ mintAuthority=normalizeMintAuthority(mintAuthority);
+ freezeAuthority=normalizeMintAuthority(freezeAuthority);
+ feeConfigAuthority=normalizeMintAuthority(feeConfigAuthority);
+ const feeNA=tokenProgram==="spl-token"||(feeExtensionVerified===true&&feeApplicable===false);
  const schedule=feeNA?null:valid(feePercent)?feePercent===0?25:feePercent<=1?20:feePercent<=3?12:feePercent<=5?5:0:null;
  const parts=[
   component("transfer_fee_schedule",feeNA?0:25,schedule,feeNA?"not_applicable":undefined),
-  component("fee_configuration_authority",feeNA?0:25,feeNA?null:feeConfigAuthorityReported?(feeConfigAuthority?0:25):null,feeNA?"not_applicable":undefined),
-  component("mint_authority",25,authoritiesParsed&&mintAuthority!==undefined?(mintAuthority?0:25):null),
-  component("freeze_authority",25,authoritiesParsed&&freezeAuthority!==undefined?(freezeAuthority?0:25):null)
+  component("fee_configuration_authority",feeNA?0:25,feeNA?null:feeConfigAuthorityReported===true&&feeConfigAuthority!==undefined?(feeConfigAuthority===null?25:0):null,feeNA?"not_applicable":undefined),
+  component("mint_authority",25,authoritiesParsed===true&&mintAuthority!==undefined?(mintAuthority?0:25):null),
+  component("freeze_authority",25,authoritiesParsed===true&&freezeAuthority!==undefined?(freezeAuthority?0:25):null)
  ];
  return result("token_security",parts);
 }
