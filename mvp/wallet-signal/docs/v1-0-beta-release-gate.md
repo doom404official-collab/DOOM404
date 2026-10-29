@@ -24,8 +24,10 @@ This section supersedes the older Wallet-only scope above for the GLITCH candida
 it does not retire the existing Wallet product or authorize release. Source candidate
 `a15f89818dcc72f4e5f5d1bb9c4693bf8ea5aba8` is exactly 16 commits ahead, zero behind
 published `a47b8a46929c61b9cb4a56f128b303337e85725b` by local ancestry. Clean at audit
-start. No remote ref refresh, hosted configuration read or live probe occurred.
-The remote SHA must be reread before any separately authorized publication.
+start. This engineering audit performed no remote ref refresh, hosted configuration
+read or live probe. Parent subsequently confirmed PR74 head
+`a47b8a46929c61b9cb4a56f128b303337e85725b` at 2026-10-29 12:12:31 UTC.
+Recheck that expected head immediately before any separately authorized publication.
 
 ### Reconciliation and activation boundary
 
@@ -74,14 +76,24 @@ checkout credential persistence and `npm install` despite a committed lockfile.
 These are reproducibility/least-privilege hardening items, not evidence of compromise.
 Do not claim the workflow has a network sandbox: this audit's outbound guard is local.
 
-Vercel automatic builds are a separate secret-bearing boundary. Parent previously
-verified four sensitive `CREATOR_TEST_DB_*` values scoped to **wallet-signal Preview,
-recovery branch**, and global Preview Supabase/Helius configuration. Values were never
-read here. The root DOOM404 project's current secret scope is unverified. Both projects
-historically create Previews on branch publication; neither may be assumed harmless
-because a route is disabled. Build/dependency/test code executes with its configured
-build environment. No public client module references the new machine/DB credentials;
-server configuration is lazy and disabled factories do not read secrets.
+Vercel automatic builds are a separate secret-bearing boundary. Parent's read-only,
+non-decrypted metadata refresh at 2026-10-29 12:12 UTC confirmed:
+- `doom404-wallet-signal` (`prj_AbsbiTw8Kc8axGpZ3FFpH9VvDS4e`) retains four sensitive
+  `CREATOR_TEST_DB_*` variables scoped to Preview/recovery branch. Global Preview also
+  lists SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL, HELIUS_RPC_URL, SOLANA_RPC_URL,
+  ALCHEMY_SOLANA_ARCHIVE_RPC_URL, SOLSCAN_API_KEY, GLITCH_LIQUIDITY_PROBE_TOKEN and a
+  legacy test token. Sensitive GLITCH_EVIDENCE_WORKER_ENABLED and
+  GLITCH_HOLDER_SCAN_START_ENABLED values are UNKNOWN with decrypt=false.
+- Root `doom404` (`prj_TQgncXWd4dgwQQEc9qUMgPBiMVO4`) returned envs=[] and
+  hiddenProductionEnvCount=0. Shared/global inherited scope was not established.
+
+No values were decrypted or read here. Existing runtime activation is unverified;
+do not describe all deployed workers as disabled. Existing read APIs can spend RPC
+when invoked. Both projects historically create Previews on branch publication.
+Build/dependency/test code executes with its configured build environment. New prepared
+Creator/Liquidity paths remain unwired; that does not establish global runtime closure.
+No public client module references the new machine/DB credentials; server configuration
+is lazy and disabled factories do not read secrets.
 
 `npm run build` still includes a legacy persistence probe, but it requires the exact
 `feature/creator-origin-cb02e` Preview ref AND `CREATOR_EVIDENCE_PERSIST_ONCE=true`.
@@ -108,6 +120,10 @@ permission to deploy.
   not the executable choice. Reader extension SHA256
   `fea52ca3bca09e2044f0af77ed67b27ea0b228d8cc29c3ab3dfafc7bbf1e7e3c`;
   accounting extension SHA256 `61d926973cc0380ea399413636904cb0a3bf0307ffebe9a4a472f4ce9ca569b2`.
+  Parent reviewed the full accounting extension source: locked reservation-count
+  comparison, reviewer-only accounted admission, revoked old admission and exact
+  role/function/ACL preconditions/postconditions. This is offline source review only;
+  hosted catalog compatibility and separate apply approval remain mandatory.
   All are unapplied. Retained-admin trust, narrow identities/TLS, catalog drift, grants,
   writer quiescence and admission require approval/verification. No broad table grant fixes.
 - Holder: do not retry the two reconciled timeout runs. Preserve both original checkpoint
@@ -157,12 +173,14 @@ bounded live acceptance. Infrastructure provisioning is not implicit in code rev
    inactive proposals. Freshly verify remote expected head and both Vercel project scopes
    using non-decrypted metadata only; stop on drift.
 2. Obtain explicit approval for that exact commit's guarded fast-forward publication and
-   normal secret-bearing disabled Preview builds. No route/workflow registration, migration,
-   flag, credential change, manual dispatch or production release is bundled.
+   normal Preview builds. New prepared Creator/Liquidity paths remain unwired; existing
+   runtime activation is unverified. No live validation or worker dispatch is included.
+   No route/workflow registration, migration, flag, credential change or production
+   release is bundled.
 3. After approved push only, verify exact remote SHA, the four applicable PR workflows and
-   both Preview results. Check that disabled synthetic/recovery paths remain closed without
-   executing providers or workers. A deployment or CI failure is not permission to retry
-   mutations or broaden configuration.
+   both Preview results. Verify new prepared paths remain unwired using source/build
+   evidence, without invoking existing live endpoints or workers. A deployment or CI
+   failure is not permission to retry mutations or broaden configuration.
 4. Present separate finite access/cutover and bounded integration approvals. Actual Auth,
    Storage, DB, provider and reference-token acceptance remains outside this offline package.
 
@@ -204,7 +222,9 @@ changed in this audit. No new defect justified runtime/workflow/schema modificat
 
 Proposed publication approval wording: “Publish the exact reviewed local audit candidate
 by guarded fast-forward to the existing recovery branch/PR74 and allow its normal
-CI and disabled Preview builds in the two existing Vercel projects, after confirming
-non-decrypted secret scopes and the expected remote head. No activation, migration,
-credential change, live validation, worker dispatch, production promotion or merge.”
+CI and normal Preview builds in the two existing Vercel projects, after confirming
+non-decrypted secret scopes and the expected remote head. New prepared Creator/Liquidity
+paths remain unwired; existing runtime activation is unverified. No live validation or
+worker dispatch, activation change, migration, credential change, production promotion
+or merge is included.”
 This wording is a proposal only; no approval is inferred and nothing was published.
