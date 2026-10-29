@@ -146,3 +146,52 @@ suite; it was updated for the scoped cancellation race. Final runs have no failu
 
 Fixed denominator remains six, accepted 2/6. No push, Preview/production deployment,
 workflow dispatch, scoring policy, hosted mutation or authentic scan occurred.
+
+### Focused follow-up: hierarchy, cancellation and expiry
+
+Retained hierarchy evidence is narrower than final product approval. Commit
+`fbfa0560a61ebbb69ec69978c9e09ae4b678c6bb` mounted the four-attribute dashboard
+inside Token Analysis. `205196d896a9ffa257f5b99a4f920a52f4bbf007` and
+`cfe2dc4913fa460c6547bd96d3a07d023efff994` removed duplicate inner assessment,
+insight/security/creator/liquidity/holder panels, not the outer Wallet/Token modes.
+`43fe719916411f324e269ccc8b1781f43bcf1a11` renamed the token section GLITCH
+Scanner while retaining the Wallet Signal shell. PR #72 explicitly navigates through
+TOKEN ANALYSIS in its retained browser harness; it approves layout/focus corrections,
+not a final product navigation decision. The retained authoritative scoring spec
+names GLITCH Token Analysis but does not resolve the outer shell's final disposition.
+Thus the outer modes are existing separate code surfaces, not newly reintroduced
+removed panels. Whether the final GLITCH entry must replace that shell, or coexist
+with a separately located Wallet product, remains an explicit hierarchy acceptance
+question for the parent to resolve against owner-approved design. No new navigation
+policy or deletion of the Wallet surface is inferred here.
+
+The inspection's abort now forwards to the existing Liquidity reader. Its generation
+fence already rejected stale same-mint reads after reset; parent cancellation additionally
+aborts the child request immediately and prevents late publication after the 45-second
+inspection deadline. Tests cover delayed headers/body, timeout, same-mint restart,
+and a late $999 response that cannot replace the new $0 observation.
+
+Persisted scoring polls had no bounded response/body lifetime. A focused GET helper
+now caps each at 12 seconds, propagates cancellation, rejects late parsing/publication,
+and checks returned mint. Polling remains every 30 seconds with no retry; each refresh
+also aborts its predecessor. Non-cooperative promises can remain pending internally,
+but cannot publish, and the client sends abort rather than claiming physical server
+termination. No provider/worker selection or RPC ceiling changes.
+
+Creator and Holder expiry are tested in the real component without any parent polling:
+Creator holdings and launch counts become Pending, and stale Holder assessment coverage
+falls back to the still-available concentration component (100% to 35%), never a final
+score. The map retains historical observations without promoting stale verification.
+On narrow screens observation and evidence-summary cards now stack with 12px minimum
+body text; desktop layout and intentionally scrollable attribute navigation are retained.
+Chromium captures remain emulation, not actual Android or assistive-technology acceptance.
+
+Final follow-up verification: 15 focused unit tests passed; full guarded build passed
+1,756 tests, lint/types and compilation. Actual-page inspection script passed 48 checks
+at 320/393/1440; retained page script passed 32 checks at 390/1280. Isolated component
+suite passed existing map/Liquidity checks plus Creator/Holder expiry at both widths,
+zero network requests/exceptions. One new test initially expected three-decimal display
+precision; corrected to the existing two-decimal format, with no numerical policy change.
+D01/D02 retain acceptance; D03/D04 remain review/authentic-evidence dependent, D05 needs
+final hierarchy/real-device/accessibility acceptance, and D06 authentic persisted delivery.
+Accepted remains 2/6. No infrastructure phase, publication or live operation was started.

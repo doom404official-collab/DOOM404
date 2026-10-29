@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import {readDashboardEvidenceResponse} from '../lib/dashboardEvidenceRead.mjs';
 import {createLiquidityReadController} from '../lib/liquidityReadController.mjs';
 import HolderBubbleMap from "./HolderBubbleMap";
 import {HOLDER_RETAIN19_POLICY,assessApprovedHolderEligibleConcentration} from '../lib/holderEligibleViewPolicy.mjs';
@@ -449,24 +450,23 @@ function CreatorLookup() {
     setWorkerEvidence(null);
     if(!address)return;
     let stopped=false;
-    const controller=new AbortController();
+    let controller;
     let sequence=0;
     async function refresh(){
-      const request=++sequence;
+      const request=++sequence;controller?.abort();controller=new AbortController();
       try{
-        const response=await fetch("/api/scoring-evidence?mint="+encodeURIComponent(address),{cache:"no-store",signal:controller.signal});
-        const data=await response.json();
-        if(!stopped&&request===sequence)setWorkerEvidence(response.ok&&data.mint===address?data:null);
+        const data=await readDashboardEvidenceResponse(address,{signal:controller.signal});
+        if(!stopped&&request===sequence)setWorkerEvidence(data);
       }catch{if(!stopped&&request===sequence)setWorkerEvidence(null);}
     }
     refresh();
     const interval=setInterval(refresh,30000);
-    return ()=>{stopped=true;controller.abort();clearInterval(interval);};
+    return ()=>{stopped=true;controller?.abort();clearInterval(interval);};
   },[result?.mint]);
   const MAX_HISTORY_BATCHES = 5;
-  async function refreshLiquidity(address = mint.trim()) {
+  async function refreshLiquidity(address = mint.trim(), signal) {
     setPoolEvidence(null);setPoolEvidenceError('');
-    await liquidityReader.current.read(address);
+    await liquidityReader.current.read(address,{signal});
   }
   async function verifyPoolAccounts() {
     const addresses = (liquidity?.pools || []).slice(0, 5).map(pool => pool.pairAddress).filter(Boolean);
@@ -538,7 +538,7 @@ function CreatorLookup() {
           setExtensions(extensionData);
         } catch (failure) { if(!current()||controller.signal.aborted)throw failure;setExtensionsError('Extension data unavailable'); }
       }
-      if (!cursor) await Promise.race([refreshLiquidity(address),cancelled]);
+      if (!cursor) await Promise.race([refreshLiquidity(address,controller.signal),cancelled]);
       if(!current()||controller.signal.aborted)return;
       setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
       setHistoryBatches(n => cursor ? n + 1 : 1);

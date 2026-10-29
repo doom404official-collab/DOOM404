@@ -52,6 +52,17 @@ try{
   await page.getByText(/Conflicting pool observations/).waitFor();await page.getByText(/0 checked \/ 1 reported pools; 1 failed batches/).waitFor();assert.equal(await page.locator('a[href^="javascript:"]').count(),0);
   await page.evaluate(p=>window.renderHolder(p),{result:{mint},workerEvidence:{version:'1.1',mint,liquidity:{mint,status:'failed',updatedAt:freshAt,checkedPoolCount:10}}});await page.getByText(/Unknown — missing, stale or unavailable/).waitFor();assert.equal(await page.locator('a[href*="solscan.io/account/"]').count(),0);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));await page.screenshot({path:path.join(artifact,`liquidity-evidence-${width}.png`),fullPage:true});
+  // Creator and Holder freshness must expire without parent polling/prop changes.
+  const creatorTime=await page.evaluate(()=>new Date().toISOString());
+  await page.evaluate(p=>window.renderHolder(p),{result:{mint},creatorEvidence:{mint,creator:a,status:'VERIFIED',independentlyReviewed:true},workerEvidence:{version:'1.1',mint,creator:{mint,creator:a,updatedAt:creatorTime,holdings:{supplySharePct:1.2345,observedAt:creatorTime},previousLaunchCount:7}}});
+  await page.getByRole('button',{name:'Creator Intelligence',exact:true}).click();await page.getByText('7 attributed launches',{exact:true}).waitFor();
+  assert.match(await page.locator('.g11-data article').filter({hasText:'Creator Holdings'}).innerText(),/1.23% observed/);
+  await page.clock.fastForward(3600001);await page.waitForFunction(()=>[...document.querySelectorAll('.g11-data article')].find(e=>e.textContent.includes('Creator Holdings'))?.querySelector('strong').textContent==='Pending');assert.equal(await page.getByText('7 attributed launches',{exact:true}).count(),0);
+  const holderTime=await page.evaluate(()=>new Date().toISOString()),alphabet='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  const fullHolders=Array.from({length:20},(_,i)=>({ownerWallet:'3'.repeat(31)+alphabet[i],tokenAccount:'4'.repeat(31)+alphabet[i],sharePct:1}));
+  const assessment={version:'1.1',attribute:'holder_intelligence',components:Object.entries({top20_holder_concentration:35,connected_wallet_network:35,creator_team_exposure:20,holder_breadth_independence:10}).map(([id,max])=>({id,max,points:max})),evidence:{pairs:[],counts:{pending:0,unavailable:0}}};
+  await page.evaluate(p=>window.renderHolder(p),{result:{mint},concentration:{mint,accounts:fullHolders,top20TokenAccountSharePct:20},historicalHolders:{...historical,holders:fullHolders,updatedAt:holderTime},verifiedHolderEnvelope:{mint,jobId:historical.jobId,updatedAt:holderTime,assessment}});
+  await page.getByRole('button',{name:'Holder Intelligence',exact:true}).click();await page.locator('.g11-inspector').getByText('100%',{exact:true}).waitFor();await page.clock.fastForward(3600001);await page.locator('.g11-inspector').getByText('35%',{exact:true}).waitFor();await page.getByText('Overall Score: Pending',{exact:true}).waitFor();
   const map={holders,groups,identityKey:'first',verifiedAssessment:{evidence:{pairs:[{walletA:a,walletB:b,signatures:[sig]}],counts:{pending:1,unavailable:0}}}};
   await page.evaluate(p=>window.renderHolder(p,true),map);
   const nodes=page.getByRole('button',{name:/Wallet .*observed supply/});await nodes.first().focus();await page.keyboard.press('Enter');
@@ -63,5 +74,5 @@ try{
   assert.equal(await page.getByRole('checkbox').isChecked(),false);assert.equal(await page.getByRole('combobox').inputValue(),'all');
   await page.close();
  }
- assert.equal(forbidden,0);assert.deepEqual(errors,[]);console.log(JSON.stringify({passed:true,widths:[390,1280],networkRequests:forbidden,liquidityCasesPerViewport:8,artifacts:artifact}));
+ assert.equal(forbidden,0);assert.deepEqual(errors,[]);console.log(JSON.stringify({passed:true,widths:[390,1280],networkRequests:forbidden,liquidityCasesPerViewport:8,creatorHolderExpiryCasesPerViewport:2,artifacts:artifact}));
 }finally{await browser.close();}

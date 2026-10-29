@@ -2,10 +2,11 @@
 export function createLiquidityReadController({fetchImpl=fetch,publish,timeoutMs=12000}={}){
  let scope='',generation=0,controller;
  function reset(mint='',silent=false){generation++;controller?.abort();scope=mint;if(!silent)publish({data:null,error:'',loading:false});}
- async function read(mint){
-  if(!mint||mint!==scope)return;
+ async function read(mint,{signal}={}){
+  if(!mint||mint!==scope||signal?.aborted)return;
   const id=++generation;controller?.abort();const active=new AbortController();controller=active;
   const current=()=>generation===id&&scope===mint;
+  const parentAbort=()=>active.abort();signal?.addEventListener('abort',parentAbort,{once:true});
   publish({data:null,error:'',loading:true});
   let timer,cancel;
   const aborted=new Promise((_,reject)=>{cancel=()=>reject(Object.assign(Error('Liquidity refresh timed out or cancelled'),{name:'AbortError'}));active.signal.addEventListener('abort',cancel,{once:true});});
@@ -18,7 +19,7 @@ export function createLiquidityReadController({fetchImpl=fetch,publish,timeoutMs
    })(),aborted]);
    if(current()&&!active.signal.aborted)publish({data,error:'',loading:false});
   }catch(error){if(current())publish({data:null,error:error.name==='AbortError'?'Liquidity refresh timed out':'Liquidity data unavailable',loading:false});}
-  finally{clearTimeout(timer);active.signal.removeEventListener('abort',cancel);}
+  finally{signal?.removeEventListener('abort',parentAbort);clearTimeout(timer);active.signal.removeEventListener('abort',cancel);}
  }
  return {reset,read};
 }
