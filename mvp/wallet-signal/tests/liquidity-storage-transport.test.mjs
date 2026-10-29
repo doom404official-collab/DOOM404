@@ -51,3 +51,24 @@ test('actual stage-1 worker preserves local artifact and stops after uncertain s
   assert.equal(child.status,0,child.stderr);const receipt=JSON.parse(child.stdout.trim());assert.equal(receipt.reconciliationRequired,true);assert.match(receipt.message,/OUTCOME_UNKNOWN/);assert.equal(receipt.calls.length,3);const saved=JSON.parse(await readFile(output,'utf8'));assert.equal(saved.finalScore,null);assert.equal(saved.poolInventoryComplete,false);
  }finally{await rm(dir,{recursive:true,force:true});}
 });
+
+test('actual stage-1 endpoint rejects stalled or late responses before downstream work',()=>{
+ for(const mode of ['headers','body','late-headers','late-body']){
+  const code=`
+   const realTimer=global.setTimeout;let calls=0,parses=0;
+   global.setTimeout=(fn,ms,...args)=>realTimer(fn,ms<=20000?5:ms,...args);
+   global.fetch=()=>{calls++;if(calls!==1)throw Error('UNEXPECTED_DOWNSTREAM');
+    const response={ok:true,json:()=>{parses++;return ${JSON.stringify(mode)}==='body'?new Promise(()=>{}):new Promise(resolve=>realTimer(()=>resolve({pools:[],poolCountReturned:0}),20));}};
+    if(${JSON.stringify(mode)}==='headers')return new Promise(()=>{});
+    if(${JSON.stringify(mode)}==='late-headers')return new Promise(resolve=>realTimer(()=>resolve(response),20));
+    return Promise.resolve(response);
+   };
+   try{await import('./scripts/liquidity-evidence-worker.mjs');throw Error('UNEXPECTED_SUCCESS');}
+   catch(error){await new Promise(resolve=>realTimer(resolve,40));console.log(JSON.stringify({message:error.message,calls,parses}));}
+  `;
+  const child=spawnSync(process.execPath,['--input-type=module','-e',code],{cwd:new URL('..',import.meta.url),encoding:'utf8',timeout:5000,env:{PATH:process.env.PATH,GLITCH_PREVIEW_URL:'https://offline.vercel.app',GLITCH_LIQUIDITY_MINT:evidence.mint,SUPABASE_URL:config.url,SUPABASE_SERVICE_ROLE_KEY:config.serviceRoleKey}});
+  assert.equal(child.status,0,child.stderr);const receipt=JSON.parse(child.stdout.trim());
+  assert.equal(receipt.message,'LIQUIDITY_ENDPOINT_DEADLINE',mode);assert.equal(receipt.calls,1,mode);
+  assert.equal(receipt.parses,mode.includes('headers')?0:1,mode);
+ }
+});

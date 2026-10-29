@@ -1,4 +1,5 @@
 import {validateLiquidityStorage} from "../lib/liquidityStorageTransport.mjs";
+import {createLiquidityHistoryDeadline} from "../lib/liquidityHistoryRuntime.mjs";
 // First-stage liquidity evidence: pool account existence only, never a final risk score.
 import { PublicKey } from "@solana/web3.js";
 import { writeFile } from "node:fs/promises";
@@ -21,9 +22,18 @@ if (target.protocol !== "https:" || !target.hostname.endsWith(".vercel.app") || 
 if (new PublicKey(mint).toBase58() !== mint) throw Error("Invalid mint");
 const headers = {Accept:"application/json",...(bypass?{"x-vercel-protection-bypass":bypass}:{})};
 async function read(path,options={}) {
- const response=await fetch(base+path,{...options,headers:{...headers,...options.headers},signal:AbortSignal.timeout(20000),redirect:"error"});
- if(!response.ok)throw Error("Evidence endpoint HTTP "+response.status);
- return response.json();
+ // Preserve the existing per-endpoint ceiling through response/body parsing,
+ // even when a transport ignores abort. This is not a shared RPC budget.
+ const deadline=createLiquidityHistoryDeadline({durationMs:20000,signal:options.signal});
+ try{return await deadline.run(async(signal,check)=>{
+  const response=await fetch(base+path,{...options,headers:{...headers,...options.headers},signal,redirect:"error"});
+  check();
+  if(!response.ok)throw Error("Evidence endpoint HTTP "+response.status);
+  const body=await response.json();check();return body;
+ });}catch(error){
+  if(error.message==='HISTORY_INTERRUPTED_OR_DEADLINE')throw Error('LIQUIDITY_ENDPOINT_DEADLINE');
+  throw error;
+ }
 }
 validateLiquidityStorage({url:process.env.SUPABASE_URL,serviceRoleKey:process.env.SUPABASE_SERVICE_ROLE_KEY});
 const report=await read("/api/token-liquidity?mint="+encodeURIComponent(mint));

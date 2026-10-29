@@ -33,6 +33,38 @@ Signals:
 
 MVP development started.
 
+## Liquidity current acceptance reconciliation — October 29, 2026
+
+Issue #55 remains canonical: **7 of 15 top-level gates accepted**, LQ-08–15 open. Its October 22 body is older than the reviewed implementation recorded in [Issue #66](https://github.com/doom404official-collab/DOOM404/issues/66#issuecomment-6466802373). The rows below reconcile that existing register; they do not create new gates, count LQ-08A/B/C as top-level acceptance, or promote checkboxes. Earlier dated slice notes and their “next” tasks are historical, superseded where later sections record completion. Creator is paused at local 6d013328; its unsigned Windows rehearsal was blocked by RemoteSigned policy before execution. No bypass or Creator change is part of this slice.
+
+| Gate | Acceptance and retained implementation evidence | Remaining acceptance requirement |
+| --- | --- | --- |
+| LQ-01 | Accepted: recovery foundation, PR #48 / 5953920 | Retain existing evidence; no repeat work. |
+| LQ-02 | Accepted: dependencies/selection, PR #49 / aac95a0 | Retain existing evidence. |
+| LQ-03 | Accepted: static workflow/failure tests, run 39723708806 | Retain existing evidence. |
+| LQ-04 | Accepted: isolated synthetic uploads, run 39724301979 | Does not establish real failed-worker upload. |
+| LQ-05 | Accepted: 60-signature baseline, run 39594375245 | Preserve predecessor; do not reset. |
+| LQ-06 | Accepted: PR #57 / e8b0b11, run 39726255361 | Retain existing evidence. |
+| LQ-07 | Accepted: credential-free CLI/artifact flow, run 39727779947 | Real failed live worker remains unverified. |
+| LQ-08 | Open: reviewed duplicate/selector/continuation guards through 3306f63, 8ebe946, 947910a; 87-signature successor run 39729408869 preserves the 60-signature predecessor | Authentic coverage or reviewed explicit Unknown; safe authenticated continuation/admission and separately authorized bounded collection. No automatic restart. |
+| LQ-09 | Open: transaction identity/execution and fee-authority withholding, 010af37 | Slot-matched historical owner/schema, instruction roles, eligible recipient and destination proof. Amount agreement is not authority. |
+| LQ-10 | Open: LP/vault/raw-amount/conflict/inner-instruction safeguards, ea29782 | Authentic custody, lock/burn, control and executed removal evidence; fees are not withdrawals. |
+| LQ-11 | Open: deterministic deduplication, Unknown and stale-score withholding, 5503103 | Independently accepted inputs and calibration; no new weights/thresholds/fallback score. inventoryComplete is not supplyReconciled. |
+| LQ-12 | Open: provenance/expiry/accessibility/mobile/desktop mock flow, 802ac5f | Owner/device UX and authentic evidence acceptance. Retain 32 page checks, eight component scenarios per viewport and prior compiled-route evidence. |
+| LQ-13 | Open: storage uncertainty dd85026, investigator/replay interruption 8ebe946/947910a, local authority/closed-schema proposals through ac65c786 | Approved authority policy/setup, authenticated transport, complete deployed-writer quiescence, runtime integration and bounded concurrency/reconciliation acceptance. See limits below. |
+| LQ-14 | Open: offline API/browser validation is preparation only | Separately approved controlled Preview end-to-end test with exact identities/window/budgets and closeout. |
+| LQ-15 | Open: rollback/observability plan exists, no release | Explicit production/release authorization plus smoke, monitoring and evidence-to-score/rollback acceptance. |
+
+**Concrete remaining offline correction in this slice:** stage-1 endpoint reads used only AbortSignal.timeout(20000), with no post-fetch/body deadline check. Non-cooperative transport/body mocks could remain unsettled or return late evidence. The worker now reuses the existing deadline helper with the same 20-second per-endpoint ceiling, checks before parsing and after body resolution, and reports LIQUIDITY_ENDPOINT_DEADLINE. Four actual-worker mock cases cover stalled/late headers and bodies with no downstream work after initial-inventory timeout. No request/retry ceiling, workflow, provider policy or historical schema changed. This does not make endpoint count equal RPC count, supply a shared run-wide budget, or cancel provider-side work already dispatched.
+
+Validation for this October 29 correction: `node --test tests/liquidity-storage-transport.test.mjs tests/liquidity-history-runtime.test.mjs` passed 17 tests. The new actual-worker regression fails against the original worker (unsettled top-level await) and passes after the correction. `NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS='--require=/tmp/holder-offline-guard.cjs' npm run build` passed 1,673 tests, build, lint and types; persistence remained SKIPPED_NOT_OPTED_IN. The guard blocks outbound sockets/fetch; the new child fixtures replace fetch with synthetic responses. Existing UI, compiled-route and disposable SQL evidence is reused because those sources are unchanged. Exact-head CI/Preview is intentionally not run: this slice is local-only.
+
+**Current prerequisites, not completed work:** ac65c786's exact retained-admin alternative remains unapplied and owner approval pending (SHA-256 8877e82ebe545f25f35f03e638b998145684dc6fea092bf13f3710834a62f811). Original zero-membership hosted candidate remains blocked; do not substitute it or broaden grants. The October 28 approved catalog read and local 178/17/41-check results remain evidence, not current hosted drift/identity proof. No catalog or artifact download was repeated. Existing service-role writers are not fenced by an unapplied private schema.
+
+Independent preparation is not globally exhausted: a disabled authenticated transport adapter and exact workflow-sidecar/quarantine integration still need a selected, reviewed connection/session-identity and cutover contract; neither is implemented or accepted. Before that next slice, parent should select the existing direct-TLS executor/reviewer proposal and review the integration scope, keeping all hosted grants/credentials/enrollment and live validation separately gated. Stage-1 nested API/SDK calls still lack shared global RPC accounting; do not invent or expand an authorized aggregate budget from the historical 60-call contract. Current endpoint timeout enforcement is only a local safety correction. Source inventory cannot establish external writer quiescence.
+
+No independent phase is started or recommended as mandatory while these preparation boundaries remain. After parent review, either commission that bounded inactive integration or hold Liquidity for the exact authority/evidence decisions; Token Security is the next independent phase only if the parent elects the user's sequential exception. Historical authorization/withdrawals remain Unknown. Artifact retention is recorded through November 21, not freshly verified. No hosted writes, scans, publication, CI dispatch, metadata update, deployment or score promotion occurred.
+
 ## Liquidity offline evidence review — October 28, 2026
 
 The canonical LQ-01–LQ-15 acceptance tracker remains [Issue #55](https://github.com/doom404official-collab/DOOM404/issues/55); there is no separate repository Liquidity checklist. This implementation note does not change its acceptance boxes or the consolidated Issue #66. Metadata updates remain parent-owned.
