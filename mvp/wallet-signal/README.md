@@ -73,6 +73,12 @@ Sixteen synthetic composition tests cover disabled zero dependency reads, identi
 
 Verification: `node --test tests/liquidity-inactive-composition.test.mjs tests/liquidity-storage-transport.test.mjs` passed 24 tests. The network-blocked `npm run build` passed 1,690 tests, build, lint and types; persistence remained SKIPPED_NOT_OPTED_IN. No active importer was found. Existing SQL and browser evidence is reused unchanged; no SQL/hosted/CI/Preview test was run in this local-only slice.
 
+### Installed manifest/TLS and sidecar contract — October 29, 2026
+
+The next local-only extension adds an operation-scoped immutable manifest reader as a separate unapplied SQL proposal, plus a fixed-query direct-TLS executor/read-only-reviewer transport and a pure quarantine bundle contract under docs/proposals/liquidity-inactive. Composition now compares installed operation/run/SHA/window/budget/source identity before claim. Existing ac65c786 bytes and all active workflows/routes remain unchanged. No authenticated GitHub run provenance is inferred from an execution object; no admission, credential loading, enrollment or hosted activation is added. Failed/unknown/cancelled or sidecar-bearing bundles stay outside automatic history naming. Full contract, permission/transport limits and operator sequence are recorded in that proposal's existing README.
+
+Validation: 20 focused tests; 44 exact-proposal disposable PostgreSQL checks (11 setup, 33 real pg/TLS/runtime); 1,694 full tests/build/lint/types with outbound blocked and persistence SKIPPED_NOT_OPTED_IN. Actual cancelled mutation readback found a committed claim after client disconnect; uncertainty/no-retry handling is retained. No hosted acceptance or gate promotion: Liquidity remains 7/15. SQL extension SHA-256 5d1b7eeaf81058502225a658608c03b3d9ee3029f4e8df4dc5fc054f9777da34; original ac65c786 hash unchanged.
+
 ## Liquidity offline evidence review — October 28, 2026
 
 The canonical LQ-01–LQ-15 acceptance tracker remains [Issue #55](https://github.com/doom404official-collab/DOOM404/issues/55); there is no separate repository Liquidity checklist. This implementation note does not change its acceptance boxes or the consolidated Issue #66. Metadata updates remain parent-owned.

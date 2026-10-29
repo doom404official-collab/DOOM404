@@ -38,6 +38,8 @@ export async function composeLiquidityQuarantine(options={}){
   // No SET ROLE or service-role fallback. Hosted identity is not inferred from mocks.
   const identity=await query('SELECT json_build_object(\'session\',session_user,\'current\',current_user) AS result',[]);
   if(identity.session!=='liquidity_fencing_executor'||identity.current!==identity.session)reject();
+  phase='manifest';const installed=await query('SELECT liquidity_fencing_private.read_manifest($1::uuid) AS result',[b.operation]);
+  if(!installed||['operation','repository','ref','commit','run','attempt','purpose','pool','parentDigest','semanticSourceDigest','requestCeiling','startsAt','expiresAt'].some(k=>installed[k]!==b[k]))reject();
   phase='claim';epoch=await query('SELECT liquidity_fencing_private.claim($1::uuid,$2::text) AS result',[b.operation,b.parentDigest],true);
   if(!decimal(epoch))throw Error('LIQUIDITY_INACTIVE_EPOCH');uncertain=false;
   const request=async operation=>{

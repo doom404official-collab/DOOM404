@@ -49,3 +49,70 @@ reservation uncertainty, expiry, partial quarantine, late cancellation/errors an
 lost stage acknowledgement. They do not prove actual distributed locking or TLS.
 The retained isolated SQL checks remain separate evidence; SQL is unchanged and
 was not rerun for this JavaScript-only preparation. Liquidity remains 7/15 accepted.
+
+## Installed binding and transport extension (local preparation)
+
+`manifest-reader.sql` is a distinct UNAPPLIED extension; ac65c786 is unchanged.
+It requires the reviewed closed schema/roles, exact existing authorize-function
+body/search path/owner, RLS tables, retained administrator memberships and no direct
+runtime table grants. It adds only operation-authorized read_manifest(uuid), owned
+by the existing non-login code owner. Temporary setup SET/schema CREATE is removed
+in the same transaction; new-function default grants are explicitly revoked and
+postchecked. The modeled nonsuperuser cannot read pg_authid: no password-catalog
+privilege was added. Existing NOLOGIN/connection-limit-zero guards remain enforced;
+password absence is a separate retained setup audit, not asserted by this extension.
+Read-only manifest access may return expired bindings for reconciliation; the
+composition and SQL claim/reserve enforce expiry before work. No rows are enrolled.
+
+The composition now checks every returned installed field before claim: operation,
+repository/ref/SHA/run/attempt/purpose/pool, raw/semantic source digests, request
+ceiling and start/expiry. Run IDs remain decimal strings. The old paragraph naming
+the absent manifest reader is superseded by this proposed extension; actual hosted
+installation and authenticated execution provenance remain unverified. A caller-
+supplied execution object is NOT cryptographic GitHub identity.
+
+`postgres.mjs` is default-disabled and outside active paths. It accepts only the
+fixed direct GLITCH hostname, postgres database, port 5432 and exact executor or
+reviewer role, plus explicitly supplied password and CA. No environment/URL/pgpass
+fallback, role switching, arbitrary SQL, pooling or retry is exposed. Reviewer
+transport only reads manifest/receipts; it cannot claim, stage or admit. Executor
+uses fixed typed parameterized claim/reserve/stage calls. Every connection verifies
+TLS, database and session/current identity before its requested query. Connection
+and server/client query deadlines are bounded; pg query AbortSignal is not assumed
+supported. Cancellation destroys the stream and dispatched mutations stay unknown.
+A real local test observed a claim commit after client cancellation and subsequent
+lock release: client disconnect is not proof of rollback. Separate receipt readback
+is mandatory before any future action; there is no automatic retry.
+
+Official driver reference: https://node-postgres.com/features/ssl . Explicit SSL
+options avoid connection-string SSL settings replacing the reviewed CA configuration.
+No claim is made about hosted connectivity, CA availability or secret provisioning.
+The public changelog markdown reader was unavailable; no hosted query was substituted.
+
+`sidecars.mjs` defines the inactive workflow bundle contract. Trusted collection must
+capture the exact main filename and any .pending/.lock files, record byte hashes,
+and label failed/cancelled/unknown, missing/malformed-main or sidecar-bearing bundles
+liquidity-quarantine-<run>. That name remains outside automatic history discovery.
+Even a success-only main bundle requires independent lineage/publication review and
+is never automatically checkpointEligible. Actual collector atomicity, artifact
+upload, retention and separate reviewer admission still need reviewed integration.
+Proposed workflow handling: capture worker conclusion; collect/quarantine with an
+always-run step if the runner is alive; upload a distinct immutable bundle; reconcile
+by artifact ID/full digest. Do not rename failed output into success, reuse an old
+run ID, delete sidecars, auto-resume, or assume SIGKILL/storage loss can upload files.
+No YAML/route/environment or retention setting is changed here.
+
+Verification for this extension: `node --test tests/liquidity-inactive*.test.mjs`
+passed 20 tests; network-blocked `npm run build` passed 1,694 tests plus build/lint/
+types, persistence SKIPPED_NOT_OPTED_IN. `python3 tests/fixtures/liquidity-fencing/
+run-manifest-local.py` passed 11 setup and 33 runtime checks in owned network-none
+PostgreSQL 17. Exact proposed SQL ran under a nonsuperuser installer; direct table
+reads/DML/role escalation stayed denied. Real pg/TLS/SCRAM verified manifest matching,
+concurrent claims, redacted auth failure, blocked query timeout, cancellation and
+separate readback. Initial fixture reload permission and cancellation-rollback
+assumptions were corrected without broadening the proposal. Final cancelled-claim
+readback found one committed row, no second claim. Fixture-local TLS setup used its
+bootstrap administrator; this is not an operation available to the proposed roles.
+Manifest-reader SQL SHA-256:
+5d1b7eeaf81058502225a658608c03b3d9ee3029f4e8df4dc5fc054f9777da34.
+No hosted SQL, credentials, RPC, workflow dispatch, push or deployment occurred.

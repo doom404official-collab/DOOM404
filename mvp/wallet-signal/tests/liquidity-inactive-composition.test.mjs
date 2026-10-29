@@ -11,6 +11,7 @@ function fixture(){
  session:{async query({text,values}){const op=text.includes('json_build')?'identity':text.match(/private\.(\w+)/)[1];trace.push(op);
  if(op==='identity')return {rows:[{result:{session:'liquidity_fencing_executor',current:'liquidity_fencing_executor'}}]};
  assert.equal(values[0],binding.operation);
+ if(op==='read_manifest')return {rows:[{result:{...binding}}]};
  if(op==='claim'){if(claimed)throw Error('BUSY');claimed=true;return {rows:[{result:'9007199254740993'}]};}
  assert.equal(values[1],'9007199254740993');return {rows:[{result:op==='reserve'?values[2]:''}]};}},
  cycle:async({source,request})=>{await request(async()=>{trace.push('lookup');return {};});return {...source,seen:[a,b],requestCount:1};},
@@ -23,7 +24,7 @@ test('inactive composition default reads no dependencies',async()=>{
 test('exact parameterized claim/reserve/publish/stage order never admits or changes prior',async()=>{
  const {o,trace}=fixture(),source=Buffer.from(o.sourceBytes);const result=await run(o);
  assert.equal(result.status,'STAGED_QUARANTINED');assert.equal(result.checkpointEligible,false);assert.equal(result.epoch,'9007199254740993');
- assert.deepEqual(trace,['identity','claim','reserve','lookup','publish','stage']);assert.deepEqual(source,o.sourceBytes);
+ assert.deepEqual(trace,['identity','read_manifest','claim','reserve','lookup','publish','stage']);assert.deepEqual(source,o.sourceBytes);
 });
 test('invalid scope/window/source rejects before SQL',async()=>{
  for(const patch of [{run:'01'},{attempt:2},{purpose:'replay'},{startsAt:3000},{expiresAt:2000},{expiresAt:500000},{requestCeiling:61},{parentDigest:'b'.repeat(64)},{semanticSourceDigest:'a'.repeat(64)}]){
