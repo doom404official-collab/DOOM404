@@ -1,4 +1,7 @@
-// Offline tentative layout hypothesis; authoritative versioned IDL mapping is not yet verified.
+// Account order corroborated by official Pump documentation (COLLECT_CREATOR_FEE.md).
+// This is a structural check only; versioned IDL, PDA and token ownership still need validation.
+// Official documentation describes this instruction as permissionless: the transaction
+// submitter need not be the coin creator. Never require a creator signature here.
 // This is NOT signer/ownership/PDA verification and cannot authorize a score.
 import {PUMP_AMM_PROGRAM} from './liquidityHistoricalDecoder.mjs';
 export const COLLECT_FEE_ACCOUNTS = Object.freeze([
@@ -21,8 +24,8 @@ export function inspectCollectFeeLayout(event) {
   if (keys[7]!==PUMP_AMM_PROGRAM) {
     return {status:'PROGRAM_ACCOUNT_MISMATCH',proofVerified:false};
   }
-  return {status:'STRUCTURAL_LAYOUT_CANDIDATE',proofVerified:false,
+  return {status:'DOCUMENTED_LAYOUT_CANDIDATE',proofVerified:false,
     accountRoles:Object.fromEntries(COLLECT_FEE_ACCOUNTS.map((role,i)=>[role,keys[i]])),
     needs:['historical_idl_version','pda_derivation','token_account_ownership',
-      'execution_and_signer_authorization']};
+      'transaction_execution','recipient_binding']};
 }
