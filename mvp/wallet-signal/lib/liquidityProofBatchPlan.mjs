@@ -9,7 +9,7 @@ export function planLiquidityProofBatch(checkpoint, pool, maxTransactions=10) {
     return Object.freeze({action:'PAUSE_INVALID_CANDIDATES',targets:Object.freeze([]),
       remaining:plan.distinctTransactions,liveRpcAuthorized:false});
   }
-  return Object.freeze({action:plan.distinctTransactions?'REVIEW_OFFLINE_BATCH':'NO_TARGETED_CANDIDATES',
+  return Object.freeze({action:plan.distinctTransactions?'REVIEW_OFFLINE_BATCH':'PAUSE_NO_CANDIDATE_EVIDENCE',
     targets:Object.freeze(plan.targets.slice(0,maxTransactions)),
     remaining:Math.max(0,plan.distinctTransactions-maxTransactions),
     liveRpcAuthorized:false});
