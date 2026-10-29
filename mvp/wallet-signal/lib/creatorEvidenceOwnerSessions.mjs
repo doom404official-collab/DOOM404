@@ -7,7 +7,7 @@ const identities={upload:'4b4d628a-d0cc-438e-bf04-661d1a5ea546',readback:'3393db
 const emails={upload:'doom404official@gmail.com',readback:'vijayananthrajkumar@gmail.com'};
 const reject=()=>{throw Error('CREATOR_OWNER_AUTH_REJECTED');};
 const text=v=>typeof v==='string'&&v.length>0&&v.length<=4096&&!/[\r\n\0]/.test(v);
-function checkedToken(response,uid,end,time){
+export function validateCreatorAuthSession(response,uid,end,time){
  const token=response?.access_token;
  if(typeof token!=='string'||token.length>16384||!/^[-\w]+\.[-\w]+\.[-\w]+$/.test(token))reject();
  const claims=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Buffer.from(token.split('.')[1],'base64url')));
@@ -47,7 +47,7 @@ export async function obtainCreatorOwnerSessions(options={},dependencies={}){
     const parsed=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));
     // Never retain/use refresh_token or return the original response.
     delete parsed.refresh_token;
-    try{return checkedToken(parsed,identities[phase],b[phase].expiresAt,live());}
+    try{return validateCreatorAuthSession(parsed,identities[phase],b[phase].expiresAt,live());}
     finally{delete parsed.access_token;bytes.fill(0);}
    },{signal});}finally{email=undefined;password=undefined;}
   }

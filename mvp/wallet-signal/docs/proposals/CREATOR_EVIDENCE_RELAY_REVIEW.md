@@ -270,3 +270,92 @@ Validation for this local slice: 25 new helper tests / 123 focused tests pass; f
 ### Local email-scope correction
 
 Before either password prompt or Auth POST, the owner helper trims surrounding whitespace and compares the phase email case-insensitively against the fixed upload/readback addresses supplied for this task. It sends only the canonical allowed address. Exact response UID checks remain unchanged. Wrong/swapped upload email causes zero sign-ins; wrong/swapped reader email after uploader success causes one prior sign-in and AUTH_OUTCOME_RECONCILIATION_REQUIRED, with no reader password prompt or request. Synthetic rehearsal now uses those fixed email identifiers with fake passwords and blocked transports; it never uses real credentials. This is local-only preparation, not account/session activity or publication authority.
+
+### Proposed server-managed session lifecycle — local preparation, 2026-10-29
+
+This supersedes manual owner session/token delivery as the recommended operational
+path. It does not approve machine-principal designation, secrets, grants, deployment
+or a test window. Prior owner helper, installer and runtime-delivery SQL remain
+retained review evidence; do not apply the token-table proposal for this path. The
+old endpoint template still describes that prior design and must not be armed.
+No active route or workflow imports the new provider.
+
+`creatorEvidenceServerSession.mjs` is a default-disabled Storage identity callback.
+Trusted composition supplies the separately installed non-secret seal, deployment
+identity and caller OIDC token; none may come from request configuration. It verifies
+the pinned GitHub signature and exact phase/run/window/deployment before reserving
+or reading an Auth password. The separate SQL claim then compares the full seal
+against the installed row, serializes against closeout and permanently consumes one
+phase. Only a definite `true` permits credential access. The same narrow pg driver
+has an `authAttempt` purpose with one fixed parameterized statement, no retries.
+Upload uses the consumer database login; readback uses verifier. Issuer receives no
+Auth-attempt function privilege.
+
+Proposed variable names (not created/read): `CREATOR_MACHINE_UPLOAD_PASSWORD` and
+`CREATOR_MACHINE_READBACK_PASSWORD`. They bind only the retained exact upload and
+readback UIDs/emails. Passwords belong in server-only sensitive configuration for
+one separately approved deployment scope, never NEXT_PUBLIC, Actions, chat or
+service-role fallback. No production scope is implied. Public key remains a pinned
+project publishable key, not an authorization substitute.
+
+The new unapplied `creator-evidence-server-session.sql` alternative requires the
+reviewed sealed transition and rejects an existing runtime token-delivery table.
+It creates only a private permanent `auth_attempts` table and one narrowly granted
+function. Broad inherited table/function defaults are explicitly revoked. No
+credential, run, window, Storage permission, connection limit or login is installed.
+It is outside migration paths. The exact candidate currently supports only the
+fixed 75-byte synthetic seal; a production historical admission must retain the
+existing authentic preflight and receive its own reviewed binding policy. Do not
+use the synthetic seal as authority for real historical objects.
+
+One invocation makes at most one Auth password-grant request after reservation.
+The claim is committed before dispatch and deliberately remains `UNKNOWN` even
+when no request could be sent. A lost SQL response, bad password, lost Auth response,
+late response, cancellation or expiry never releases it. Fresh processes and new
+JWT jti values cannot retry the phase. This prevents duplicate application attempts,
+not exactly-once network delivery. SDK refresh, retries and cross-request caches are
+absent; refresh tokens are discarded and access tokens are returned only in memory
+to the existing Storage callback. JS strings cannot promise forensic erasure.
+
+Storage's no-overwrite policy and independently expiring admission remain mandatory.
+A completed reservation cannot stop an already dispatched request. Closeout must
+first deny new admission, reconcile uncertain Auth/Storage operations, and retain
+claims. Discarding a refresh token does not terminate its server session. Session
+termination/credential rotation is an explicit owner-admin closeout task; access
+JWTs can survive sign-out until expiry unless the separately reviewed RLS admission
+blocks them. No automatic logout, deletion, password rotation or privileged admin
+operation is implemented. Do not infer authentication acceptance from these mocks.
+
+Finite remaining approval package:
+1. Approve the existing two UIDs as dedicated machine principals and a secure
+   one-time password provisioning channel. Supported Auth admin password assignment
+   needs trusted administrative access; no such channel has been verified here.
+   Keep broad service-role keys out of the relay/Actions. Windows tooling remains
+   unverified and is not required for routine server operation.
+2. Review/apply only the exact alternative schema/function grants and Storage
+   admission/closeout policy, then privately provision the two narrowly scoped
+   secrets. Audit effective permissions. No historical-path access is implicit.
+3. Review the final disabled composition replacing the prior endpoint's token-table
+   lookup with a non-secret seal lookup after crypto bootstrap; pass the authenticated
+   exact-run token into these callbacks. Register routes/workflow only after separate
+   approval. Existing body/preflight/claim guards must remain upstream of Storage.
+4. Approve an immutable deployment and two independent run/window bindings for one
+   synthetic upload/readback, <=5 minutes each, then verify denial and reconciliation
+   after closeout. No scan or authentic-history acceptance follows from this test.
+
+This slice implements the session boundary and SQL reservation, not the final
+endpoint replacement or hosted integration. Existing authentic preflight, permanent
+Storage claims, Unknown evidence and historical data remain unchanged. No new
+infrastructure or recurring work is proposed. Costs remain subject to existing
+Auth/Storage/function quotas, not guaranteed zero.
+
+Local validation for this slice: 40 new provider cases (including cryptographic
+negative cases, durable-store mocks and both existing Storage callbacks), 1,668
+application tests passed with network blocked. Build/lint/type checks passed with
+telemetry disabled; the first build attempt hit read-only telemetry configuration
+before compilation, after all tests passed. The exact alternative SQL passed 26
+checks in disposable network-disabled PostgreSQL 17 under a nonsuperuser postgres
+administrator and broad default ACL fixture. Eight concurrent connections produced
+one winner; fresh connections could not replay, wrong role/seal/deployment/expiry
+failed, and closed admission rejected an otherwise unconsumed readback. These are
+not hosted Auth/Storage/RLS acceptance or Windows validation. No push or CI dispatch.
