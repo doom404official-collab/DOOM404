@@ -6,7 +6,7 @@ const candidate=()=>({operation:'collect_coin_creator_fee',programId:PUMP_AMM_PR
  rawInstruction:{accounts:['q','token','creator','authority','vault','destination','event',PUMP_AMM_PROGRAM]}});
 test('recognizes structural candidate without proof promotion',()=>{
  const result=inspectCollectFeeLayout(candidate());
- assert.equal(result.status,'STRUCTURAL_LAYOUT_CANDIDATE');
+ assert.equal(result.status,'DOCUMENTED_LAYOUT_CANDIDATE');
  assert.equal(result.accountRoles.coinCreator,'creator');
  assert.equal(result.proofVerified,false);
 });
