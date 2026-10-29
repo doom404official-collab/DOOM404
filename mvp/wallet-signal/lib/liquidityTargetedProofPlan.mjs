@@ -7,6 +7,7 @@ export function planLiquidityTargetedProof(checkpoint, pool) {
   const signatures = new Set(checkpoint.seen);
   const targets = new Map();
   let invalidCandidates = 0;
+  const conflictedSignatures = new Set();
   for (const event of checkpoint.events) {
     if (event?.eligibleForAuthorizationReview !== true) continue;
     if (typeof event.signature !== 'string' || !signatures.has(event.signature) ||
@@ -16,10 +17,12 @@ export function planLiquidityTargetedProof(checkpoint, pool) {
       continue;
     }
     const key = event.signature;
+    if (conflictedSignatures.has(key)) { invalidCandidates++; continue; }
     const prior = targets.get(key);
     if (prior && prior.slot !== event.slot) {
       invalidCandidates++;
       targets.delete(key);
+      conflictedSignatures.add(key);
       continue;
     }
     if (!prior) targets.set(key, {signature:key, slot:event.slot, operations:[]});
