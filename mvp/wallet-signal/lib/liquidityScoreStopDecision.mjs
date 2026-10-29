@@ -1,4 +1,6 @@
 // Pure offline sufficiency assessment. Not wired to any historical worker or score engine.
+// These are assertions supplied by the caller, NOT independent proof validation.
+// A STOP_SCORE_RESOLVED decision is advisory until a trusted evidence adapter exists.
 export const LIQUIDITY_STOP_QUESTIONS = Object.freeze([
   'poolIdentity', 'amountReconciliation', 'accountRoles',
   'signerAuthorization', 'recipientAttribution', 'scoreImpact'
@@ -18,6 +20,5 @@ export function assessLiquidityScoreStop(evidence) {
   if (missing.length) {
     return { action: 'CONTINUE_TARGETED', reason: 'SCORING_QUESTIONS_OPEN', missing, requests: 0 };
   }
-  // This offline predicate is NOT permission to promote a score or change classification.
-  return { action: 'STOP_SCORE_RESOLVED', reason: 'ALL_REQUIRED_EVIDENCE_VERIFIED', requests: 0 };
+  return { action: 'STOP_CANDIDATE_REQUIRES_TRUSTED_PROOF', reason: 'ASSERTIONS_COMPLETE_PROOF_NOT_INDEPENDENTLY_VALIDATED', requests: 0 };
 }
