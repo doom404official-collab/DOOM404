@@ -32,7 +32,7 @@ test('verified positive controls retain fee applicability and authority points',
  assert.equal(score({...valid,mintAuthority:active,freezeAuthority:active,feeConfigAuthority:active}).score,25);
  assert.equal(score({...valid,feeApplicable:'false',feePercent:undefined}).score,null);
 });
-test('valid boolean inputs match frozen assessment output across every fee threshold (6,912 cases)',()=>{
+test('verified valid inputs match frozen assessment output across every fee threshold (2,880 cases)',()=>{
  let count=0;
  for(const tokenProgram of ['spl-token','token-2022'])
  for(const authoritiesParsed of [false,true])
@@ -43,10 +43,11 @@ test('valid boolean inputs match frozen assessment output across every fee thres
  for(const freezeAuthority of [null,active])
  for(const feeConfigAuthority of [null,active])
  for(const feePercent of [undefined,0,0.01,1,1.01,3,3.01,5,5.01,100,-1,101,NaN,Infinity,'0',null,0.99,4.99]) {
+  if(tokenProgram==='spl-token'?!authoritiesParsed:!feeExtensionVerified||typeof feeApplicable!=='boolean')continue;
   const input={tokenProgram,authoritiesParsed,feeExtensionVerified,feeConfigAuthorityReported,feeApplicable,mintAuthority,freezeAuthority,feeConfigAuthority,feePercent};
   assert.deepEqual(score(input),baseline(input));count++;
  }
- assert.equal(count,6912);
+ assert.equal(count,2880);
 });
 test('verified flags do not turn malformed or absent authorities into revoked points',()=>{
  for(const field of ['mintAuthority','freezeAuthority','feeConfigAuthority'])for(const value of [undefined,'',false,true,0,1,{},[],'invalid-key']){
@@ -55,4 +56,18 @@ test('verified flags do not turn malformed or absent authorities into revoked po
   const id={mintAuthority:'mint_authority',freezeAuthority:'freeze_authority',feeConfigAuthority:'fee_configuration_authority'}[field];
   assert.equal(out.components.find(c=>c.id===id).points,null);
  }
+});
+test('unverified or unknown-program fees cannot earn points or a final score',()=>{
+ for(const feeExtensionVerified of malformed)for(const feePercent of [0,1,3,5,100]){
+  const out=score({...valid,feeExtensionVerified,feePercent});assert.deepEqual(out.components.slice(0,2).map(x=>x.points),[null,null]);assert.equal(out.score,null);
+ }
+ for(const tokenProgram of [undefined,null,'unknown','SPL-TOKEN',{},true]){
+  const out=score({...valid,tokenProgram});assert.deepEqual(out.components.slice(0,2).map(x=>[x.max,x.points]),[[25,null],[25,null]]);assert.equal(out.score,null);
+ }
+ for(const feeApplicable of [undefined,null,'true','false',1,{}])assert.equal(score({...valid,feeApplicable}).components[0].points,null);
+});
+test('malformed fee numbers remain Unknown, while verified zero and upper bound keep policy',()=>{
+ for(const feePercent of [-1,NaN,Infinity,-Infinity,'0',null,undefined,101])assert.equal(score({...valid,feePercent}).components[0].points,null);
+ assert.equal(score({...valid,feePercent:0}).components[0].points,25);assert.equal(score({...valid,feePercent:100}).components[0].points,0);
+ for(const authoritiesParsed of malformed){const out=score({...valid,tokenProgram:'spl-token',authoritiesParsed});assert.deepEqual(out.components.slice(0,2).map(x=>x.max),[25,25]);}
 });

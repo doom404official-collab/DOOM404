@@ -15,7 +15,7 @@ export function adaptDashboardEvidence({liquidity:reportedLiquidity,result,exten
  const same=x=>Boolean(mint&&x?.mint===mint);
  const authorities=mintAuthorityEvidence(result,{parsed:!!mint&&result.authorityDetailsStatus!=='not_parsed'});
  const parsed=authorities.authorityDetailsStatus==='available';
- const ext=same(extensions)&&extensions?.verified===true&&evidenceFresh(extensions.observedAt,now)?extensions:null,fee=ext?.transferFee;
+ const ext=['token-2022','spl-token-2022'].includes(result?.tokenProgram)&&same(extensions)&&extensions?.verified===true&&evidenceFresh(extensions.observedAt,now)?extensions:null,fee=ext?.transferFee;
  const context=ext?.epochContext;
  const epochVerified=context?.commitment==='confirmed'&&consistentEpochContext({epoch:context.epoch,absoluteSlot:context.beforeSlot},{epoch:context.epoch,absoluteSlot:context.afterSlot},context.accountSlot);
  const effectiveFee=fee?.status==='observed'&&epochVerified?resolveEpochFee({...fee,epoch:context.epoch}):null;

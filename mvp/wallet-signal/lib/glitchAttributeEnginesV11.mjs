@@ -15,11 +15,13 @@ export function scoreTokenSecurity({tokenProgram,authoritiesParsed=false,mintAut
  mintAuthority=normalizeMintAuthority(mintAuthority);
  freezeAuthority=normalizeMintAuthority(freezeAuthority);
  feeConfigAuthority=normalizeMintAuthority(feeConfigAuthority);
- const feeNA=tokenProgram==="spl-token"||(feeExtensionVerified===true&&feeApplicable===false);
- const schedule=feeNA?null:valid(feePercent)?feePercent===0?25:feePercent<=1?20:feePercent<=3?12:feePercent<=5?5:0:null;
+ const token2022=tokenProgram==="token-2022"||tokenProgram==="spl-token-2022";
+ const verifiedFee=token2022&&feeExtensionVerified===true;
+ const feeNA=(tokenProgram==="spl-token"&&authoritiesParsed===true)||(verifiedFee&&feeApplicable===false);
+ const schedule=feeNA?null:verifiedFee&&feeApplicable===true&&valid(feePercent)?feePercent===0?25:feePercent<=1?20:feePercent<=3?12:feePercent<=5?5:0:null;
  const parts=[
   component("transfer_fee_schedule",feeNA?0:25,schedule,feeNA?"not_applicable":undefined),
-  component("fee_configuration_authority",feeNA?0:25,feeNA?null:feeConfigAuthorityReported===true&&feeConfigAuthority!==undefined?(feeConfigAuthority===null?25:0):null,feeNA?"not_applicable":undefined),
+  component("fee_configuration_authority",feeNA?0:25,feeNA?null:verifiedFee&&feeApplicable===true&&feeConfigAuthorityReported===true&&feeConfigAuthority!==undefined?(feeConfigAuthority===null?25:0):null,feeNA?"not_applicable":undefined),
   component("mint_authority",25,authoritiesParsed===true&&mintAuthority!==undefined?(mintAuthority?0:25):null),
   component("freeze_authority",25,authoritiesParsed===true&&freezeAuthority!==undefined?(freezeAuthority?0:25):null)
  ];

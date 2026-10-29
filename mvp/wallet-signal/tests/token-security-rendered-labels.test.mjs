@@ -74,3 +74,16 @@ test('Token Security excludes legacy largest-account rows and weights',()=>{
  assert.doesNotMatch(render(r),/Largest Token Account/i);
  assert.equal(adapted.scores.token_security.calibrated,false);
 });
+test('fee labels withhold unknown program/unverified evidence and SPL label alone is not N/A',()=>{
+ const extensions={mint,verified:true,observedAt:new Date().toISOString(),transferFee:{status:'observed',configAuthorityReported:true,configAuthority:null}};
+ for(const tokenProgram of ['unknown',undefined])for(const field of ['Transfer Fee Schedule','Fee Configuration Authority'])assert.equal(label(render(result({tokenProgram}),extensions),field),'Pending');
+ for(const verified of [false,'true',1,undefined])assert.equal(label(render(result({tokenProgram:'token-2022'}),{...extensions,verified}),'Fee Configuration Authority'),'Pending');
+ assert.equal(label(render(result({authorityDetailsStatus:'not_parsed'})),'Transfer Fee Schedule'),'Pending');
+ assert.equal(label(render(result({})),'Transfer Fee Schedule'),'Not applicable');
+});
+test('resolved schedule is labelled as observation while numeric scoring stays withheld',()=>{
+ const r=result({tokenProgram:'spl-token-2022'}),fee={epoch:'20',basisPoints:200,maximumFeeRaw:'9007199254740993'};
+ const extensions={mint,verified:true,observedAt:new Date().toISOString(),epochContext:{epoch:'20',beforeSlot:'100',accountSlot:'101',afterSlot:'102',commitment:'confirmed'},transferFee:{status:'observed',olderFee:fee,newerFee:fee,configAuthorityReported:true,configAuthority:null}};
+ const html=render(r,extensions);assert.equal(label(html,'Transfer Fee Schedule'),'2%');assert.match(html,/Transfer behavior not verified; scoring pending/);assert.equal(adaptDashboardEvidence({result:r,extensions}).scores.token_security.components[0].points,null);
+ for(const basisPoints of [-1,NaN,Infinity,'invalid']){const malformed={...extensions,transferFee:{...extensions.transferFee,newerFee:{...fee,basisPoints}}};assert.equal(label(render(r,malformed),'Transfer Fee Schedule'),'Pending');}
+});

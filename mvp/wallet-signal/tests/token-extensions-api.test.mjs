@@ -40,3 +40,19 @@ test('API distinguishes absent extension, unparsed array and malformed authority
   assert.equal(out.body.transferFee.configAuthorityReported,false);
  }
 });
+test('actual GET through dashboard and compatibility adapters never scores nominal fee evidence',async()=>{
+ const {adaptDashboardEvidence}=await import('../lib/glitchDashboardEvidenceV11.mjs');
+ const {assessTokenControls}=await import('../lib/tokenControlsDisplayV11.mjs');
+ const result={mint,tokenProgram:'spl-token-2022',authorityDetailsStatus:'available',mintAuthority:null,freezeAuthority:null};
+ for(const config of [{},{epochAfter:21},{epochFails:true},{extensions:null}]){
+  const extensions=(await handler(rpc(config))(new Request(`https://example.com?mint=${mint}`))).body;
+  for(const payload of [extensions,JSON.parse(JSON.stringify(extensions))]){
+   const dashboard=adaptDashboardEvidence({result,extensions:payload});const compatibility=assessTokenControls({result,extensions:payload});
+   assert.equal(dashboard.scores.token_security.components[0].points,null);assert.equal(dashboard.scores.token_security.score,null);assert.equal(compatibility.provisionalScore,null);assert.equal(compatibility.calibrated,false);
+  }
+ }
+ const extensions=(await handler(rpc({extensions:[]}))(new Request(`https://example.com?mint=${mint}`))).body;
+ assert.equal(adaptDashboardEvidence({result,extensions}).scores.token_security.components[0].reason,'not_applicable');
+ for(const patch of [{verified:'true'},{mint:'foreign'},{observedAt:'2000-01-01T00:00:00Z'}])assert.equal(adaptDashboardEvidence({result,extensions:{...extensions,...patch}}).scores.token_security.score,null);
+ assert.equal(adaptDashboardEvidence({result:{...result,tokenProgram:'unknown'},extensions}).scores.token_security.score,null);
+});

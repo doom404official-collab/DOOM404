@@ -76,3 +76,59 @@ SKIPPED_NOT_OPTED_IN. Two new negatives were observed failing before the fix.
 One earlier full run failed only on the non-address `active` fixture; the final
 full run passed with its canonical-key positive control. No hosted CI or Preview
 status is claimed for this local-only commit.
+
+## Fee evidence gates — follow-up review
+
+Public-engine reproduction at 1a757d9 returned a complete numeric 100 for supplied
+feePercent=0 with feeExtensionVerified=false or the string "false", and for an
+unknown token program. This is a synthetic library-boundary defect; the current
+main dashboard deliberately never supplies feePercent. Negative/nonfinite/out-of-
+range values already returned Unknown and their numeric validation is unchanged.
+
+The producer contract was traced: creator GET derives tokenProgram from the known
+account owner program and records parsed/raw/supply mint verification; normalized
+mint/freeze fields produce the adapter's literal authoritiesParsed gate. Extension
+GET reports literal verified only after parsing an unambiguous Token-2022 extension
+array, with mint identity, timestamp and epoch context. These are observed parsed
+RPC facts, not verified transfer behavior. No new token-program attestation API
+or verification claim is invented by this change.
+
+The engine now recognizes only spl-token and the retained token-2022/spl-token-2022
+aliases. SPL fee N/A requires authoritiesParsed===true as well as its program label;
+this conservative use of the existing gate does not invent an independent program
+proof. Token-2022 fee N/A requires feeExtensionVerified===true and feeApplicable===false.
+Applicable fee points require that same literal verified flag, feeApplicable===true,
+a known Token-2022 program, and a finite numeric percentage in [0,100]. Configuration
+authority points additionally require the literal reported flag and normalized
+null/address value. Unknown programs never earn fee points or fee N/A. These
+scalar flags remain trusted caller evidence assertions, not cryptographic proofs.
+
+The dashboard adapter now rejects extension evidence for an unknown/incompatible
+program before exposing labels or scores. Existing identity, one-hour freshness,
+epoch and literal verification guards remain. The legacy assessTokenControls
+consumer previously passed newerFee.percentage directly; it now reuses the same
+adapter, removing that nominal-fee scoring path. The current page imports but does
+not render this retired compatibility panel. No API/provider behavior changed.
+
+Verification includes the actual extension GET with mock RPC through both adapters,
+JSON round trips, unknown/foreign/stale/unverified evidence, rendered Pending/N/A,
+and resolved observation labels with points still withheld. The differential oracle
+now compares only verified valid input combinations (2,880 cases): unverified cases
+from the older 6,912 set intentionally change to Unknown and are negative tests.
+The boundary-formula fixture now explicitly supplies the required verified/applicable
+flags; weights and all valid numeric thresholds remain unchanged. A verified fee
+scalar is still an internal caller contract; no production adapter manufactures one
+until TS07 methodology and TS08 authentic behavior requirements are met.
+
+Result semantics remain unchanged: max=0 N/A components are excluded from the
+applicable denominator; unknown positive-weight components keep score null and
+complete false. Zero points are valid observed points, not Unknown. coveragePct
+counts assessed applicable weights. calibrated remains false, so a complete internal
+numeric result is not calibrated acceptance or permission for final promotion.
+TS01–TS09 denominator remains nine, retained acceptance 4/9; no live verification.
+
+Final follow-up validation: 75 focused tests passed, including 2,880 verified-input
+oracle comparisons. Network-blocked npm run build passed 1,740 tests and Next
+compilation/lint/types. One additional rendered-observation assertion was then
+added without production changes; the final complete smoke suite passed 1,741/1,741.
+Persistence was SKIPPED_NOT_OPTED_IN. No hosted CI/Preview or real-token test ran.
