@@ -5,6 +5,7 @@ import {verifyCreatorGithubOidc,screenCreatorGithubToken,createCreatorGithubJwks
 import {validateCreatorAuthSession} from './creatorEvidenceOwnerSessions.mjs';
 import {createCreatorExecutionBudget,assertCreatorSignal} from './creatorExecutionBudget.mjs';
 import {readCreatorEvidenceBody} from './creatorEvidenceBody.mjs';
+import {CreatorEvidenceReconciliation} from './creatorEvidenceUncertainty.mjs';
 const origin='https://acwmtobcbpkjfqiatyke.supabase.co';
 const identities={upload:['4b4d628a-d0cc-438e-bf04-661d1a5ea546','doom404official@gmail.com','CREATOR_MACHINE_UPLOAD_PASSWORD'],readback:['3393dbd5-209f-4e3b-934d-57006fcdc4fa','vijayananthrajkumar@gmail.com','CREATOR_MACHINE_READBACK_PASSWORD']};
 const rejected=()=>Error('CREATOR_SERVER_SESSION_REJECTED');
@@ -55,6 +56,6 @@ export function createCreatorServerSession(options={},dependencies={}){
      }finally{bytes.fill(0);}
     }finally{password=undefined;}
    },{signal});
-  }catch{throw Error(reserved?'CREATOR_AUTH_ATTEMPT_RECONCILIATION_REQUIRED':'CREATOR_SERVER_SESSION_REJECTED');}
+  }catch{if(reserved)throw new CreatorEvidenceReconciliation();throw rejected();}
  };
 }

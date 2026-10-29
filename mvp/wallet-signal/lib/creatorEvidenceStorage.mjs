@@ -1,3 +1,4 @@
+import {CreatorEvidenceReconciliation} from './creatorEvidenceUncertainty.mjs';
 import {TEST_OBJECT,testBytes} from './creatorEvidenceTestProfile.mjs';
 import {readCreatorEvidenceBody} from './creatorEvidenceBody.mjs';
 import {assertCreatorSignal} from './creatorExecutionBudget.mjs';
@@ -19,14 +20,14 @@ function createStorage({enabled=false,uploadIdentity,readbackIdentity,publishabl
    try{const token=await credential(uploadIdentity,signal);assertCreatorSignal(signal);dispatched=true;
     const result=await fetchImpl(base+'creator-historical-evidence/'+target,{method:'POST',redirect:'error',cache:'no-store',headers:{apikey:publishableKey,authorization:'Bearer '+token,'content-type':'application/json','x-upsert':'false'},body:payload,signal});
     assertCreatorSignal(signal);if(!result.ok)throw Error();return true;
-   }catch{throw Error(dispatched?'CREATOR_STORAGE_RECONCILIATION_REQUIRED':'CREATOR_STORAGE_REJECTED');}
+   }catch(error){if(error instanceof CreatorEvidenceReconciliation)throw error;throw Error(dispatched?'CREATOR_STORAGE_RECONCILIATION_REQUIRED':'CREATOR_STORAGE_REJECTED');}
   },
   async read(key,{signal}={}){
    if(key!==target)throw Error('CREATOR_STORAGE_REJECTED');
    try{const token=await credential(readbackIdentity,signal);assertCreatorSignal(signal);
     const result=await fetchImpl(base+'authenticated/creator-historical-evidence/'+target,{method:'GET',redirect:'error',cache:'no-store',headers:{apikey:publishableKey,authorization:'Bearer '+token,'accept-encoding':'identity'},signal});
     assertCreatorSignal(signal);if(!result.ok)throw Error();return await readCreatorEvidenceBody(result,{maxBytes:synthetic?1024:1048576,signal});
-   }catch{throw Error('CREATOR_STORAGE_REJECTED');}
+   }catch(error){if(error instanceof CreatorEvidenceReconciliation)throw error;throw Error('CREATOR_STORAGE_REJECTED');}
   }
  });
 }

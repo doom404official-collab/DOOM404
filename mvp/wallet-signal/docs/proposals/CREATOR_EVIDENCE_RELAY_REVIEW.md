@@ -359,3 +359,68 @@ administrator and broad default ACL fixture. Eight concurrent connections produc
 one winner; fresh connections could not replay, wrong role/seal/deployment/expiry
 failed, and closed admission rejected an otherwise unconsumed readback. These are
 not hosted Auth/Storage/RLS acceptance or Windows validation. No push or CI dispatch.
+
+### Completed inactive endpoint composition — local-only follow-up
+
+This section supersedes the earlier remaining-composition item. The existing
+`createCreatorSyntheticEndpoint` now uses `relay_session_binding`, not the old
+runtime-delivery function/table. The endpoint remains unimported by active app
+routes and has no environment enable flag. Existing inactive route/workflow
+proposals remain inactive. No additional parallel endpoint or manual token installer
+is needed for this synthetic path.
+
+Ordering is executable in the composed handler: fixed cryptographic bootstrap
+before database credentials; private non-secret seal lookup; exact signed run,
+window, deployment and fixed UID validation before body or Auth credentials; then
+existing HTTP body/preflight and claim handling. Issue has no session callback.
+Upload consumes its Storage claim before reserving its Auth attempt and reading
+only the upload password. Readback consumes its independent claim before reserving
+its Auth attempt and reading only the reader password. All callbacks are request
+scoped and lazy. `CREATOR_MACHINE_PUBLISHABLE_KEY` is a non-secret project
+publishable key; the two password names and existing database/CA names are unchanged.
+No caller configuration or authenticated boolean is introduced.
+
+Typed `CreatorEvidenceReconciliation` carries only a fixed redacted message through
+Storage and relay to HTTP 409. Readback cancellation/timeouts after its durable claim
+also require reconciliation, even if an outer cancellation race settles before the
+provider can throw its typed error. Late Auth completion never leads to a Storage
+read. No attempt or evidence claim is released automatically.
+
+The SQL alternative now contains the non-secret reader plus installation checks:
+exact nonsuperuser postgres administrator/schema/seal ownership; expected runtime
+role attributes and memberships/grantors; no runtime schema CREATE, seal-table
+access or existing mutation privileges; no unexpected reachable outside access;
+only known default ACL grantees followed by explicit revokes and effective privilege
+postconditions. It accepts closed connection limit 0 or the retained transition's
+limit 1 with exactly the sealed phase expiry. It never changes limits itself.
+Unexpected installed token-delivery state, objects, memberships or permissions abort
+the transaction. The new objects are owned by the explicitly required installer.
+
+Disposable test limitation: stock PostgreSQL cannot demote its bootstrap OID10 role
+as Supabase does. The fixture creates nonsuperuser postgres and explicitly models
+the supplied bootstrap grantor catalog before executing the candidate. This fixture
+setup is not executable deployment guidance. The end-to-end harness runs the actual
+endpoint, driver statement contract and claim SQL under separate local database
+logins; Docker/psql substitutes only the network transport. Auth/JWKS/Storage use
+synthetic responses and real local RSA signatures. Claim-admission policies are a
+bounded local model, not proof of hosted Storage RLS or the entire sealed-transition
+migration. Existing driver TLS/cancellation and sealed-transition suites remain
+separate evidence; hosted catalog compatibility must be reviewed before application.
+
+Remaining finite live prerequisites: reviewed candidate SQL/policies and effective
+permissions; secure one-time provisioning of the two existing proposed machine
+identities and exact server secret scope; separately authorized publication and
+inactive route/workflow registration; immutable deployment and two independently
+approved run/windows; then one synthetic upload/readback and explicit admission,
+session and uncertainty closeout. No historical RPC, production activation or score
+acceptance is part of that test. The authentic historical wrapper remains unchanged
+and required for any future historical-object integration.
+
+Observed follow-up verification: 149 focused tests passed; full 1,671 application
+tests and build/lint/type stage passed with network blocked and telemetry disabled,
+persistence SKIPPED_NOT_OPTED_IN. The hardened exact SQL passed 38 disposable checks,
+including owner/grantor/admin/inherit/set/default-ACL drift rollback. Two fresh
+local database compositions passed: concurrent upload plus independent readback,
+and uncertain readback Auth with no GET/retry. Ordered traces contain operation and
+variable names only, never values. No active route/workflow references were found.
+All publication, hosted integration and acceptance gates remain unchanged.

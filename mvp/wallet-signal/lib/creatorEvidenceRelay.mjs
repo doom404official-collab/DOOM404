@@ -1,3 +1,4 @@
+import {CreatorEvidenceReconciliation} from './creatorEvidenceUncertainty.mjs';
 import {TEST_OBJECT,TEST_HASH,TEST_WORKFLOW,TEST_REF,testBytes} from './creatorEvidenceTestProfile.mjs';
 import {createHash,randomBytes} from 'node:crypto';
 import {verifyCreatorGithubOidc,validateCreatorOidcManifest,screenCreatorGithubToken} from './creatorEvidenceOidc.mjs';
@@ -30,7 +31,7 @@ function createRelay({enabled=false,manifest,readManifest,resolveJwks,claims,sto
  function match(record){if(!record||Object.entries(identity).some(([k,v])=>record[k]!==v)||!/^[a-f0-9]{64}$/.test(record.payloadSha256)||!Number.isSafeInteger(record.byteLength)||record.byteLength<1||record.byteLength>1048576||!Number.isSafeInteger(record.expiresAt))denied();}
  async function bounded(label,policy,operation,{uncertain=false,signal:parentSignal}={}){
   live(policy);try{return await createCreatorExecutionBudget({maxDurationMs:Math.max(1,Math.min(15000,policy.expiresAt*1000-now()))}).run(label,async signal=>{live(policy);assertCreatorSignal(signal);const value=await operation(signal);assertCreatorSignal(signal);live(policy);return value;},{signal:parentSignal});}
-  catch{throw Error(uncertain?'CREATOR_RELAY_RECONCILIATION_REQUIRED':'CREATOR_RELAY_REJECTED');}
+  catch(error){if(error instanceof CreatorEvidenceReconciliation)throw error;throw Error(uncertain?'CREATOR_RELAY_RECONCILIATION_REQUIRED':'CREATOR_RELAY_REJECTED');}
  }
  return Object.freeze({
   async authenticateRequest({action,token,signal}){
@@ -69,7 +70,7 @@ function createRelay({enabled=false,manifest,readManifest,resolveJwks,claims,sto
   async verifyReadback({token,signal}){
    const auth=await authenticate(token,read,signal),scope={...read,expiresAt:auth.expiresAt};
    const record=await bounded('READBACK_CLAIM',scope,signal=>claims.consumeReadback({...identity,tokenHash:auth.tokenIdHash,nowSeconds:time(),deadlineSeconds:scope.expiresAt},{signal}),{uncertain:true,signal});match(record);
-   const returned=await bounded('READBACK',scope,signal=>storage.read(target,{signal}),{signal});
+   const returned=await bounded('READBACK',scope,signal=>storage.read(target,{signal}),{uncertain:true,signal});
    if(verifyHistoricalEvidenceReadback({objectKey:target,payloadSha256:record.payloadSha256,payloadLength:record.byteLength},returned).status!=='READBACK_VERIFIED')denied();
    live(scope);assertCreatorSignal(signal);
    return {status:'READBACK_VERIFIED',payloadSha256:record.payloadSha256,eligibleForLivePromotion:false};
