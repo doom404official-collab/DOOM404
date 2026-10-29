@@ -45,3 +45,55 @@ Remaining producer work, not claimed fixed:
 All calibration flags and final-score gates remain unchanged. Unit tests and a
 Next build do not prove live database visibility, persistence, archival history,
 or a successful Preview deployment. No production rollout is authorized here.
+
+## Overall Scoring boundary review — October 29 local preparation
+
+Canonical register remains Issue #66 O01–O05, five top-level gates. Retained
+acceptance is 2/5; local fixes do not promote additional gates. The approved formula
+remains four equal 25% attributes, with final score withheld unless every required
+attribute is complete, calibrated and finite within [0,100]. No ranking policy,
+weights, thresholds or Unknown-to-zero fallback is introduced.
+
+Reproduced before correction: four differently keyed rows all declaring the same
+attribute could score 100; inherited map entries could score 100; exported weights
+were mutable; mutating nested output metadata changed the original input. Canonical
+attribute/component definitions are now frozen. consolidate reads only own data
+properties from ordinary keyed maps, rejects arrays/inherited rows/accessors,
+rejects explicit foreign attribute or methodology version, and detaches returned
+metadata. Existing legacy scalar records without declared identity/version remain
+supported; caller id/weight metadata still cannot override canonical id/25% weights.
+Duplicate map keys already discarded by an upstream JSON parser cannot be detected
+here. Arrays are not a supported assessment contract. Explicit duplicated attribute
+identities under different canonical keys fail closed rather than being relabelled.
+
+No universal timestamp/provenance schema is invented at consolidation: these are
+existing producer-adapter gates. The public scalar API still trusts literal complete
+and calibrated assertions; it is not an authentication/provenance verifier. All
+current real attribute adapters remain calibrated:false. The actual persisted
+GET projection, adapter and rendered dashboard tests prove forged stored scalar
+scores are not forwarded, independentlyReviewed must be literal true, stale creator
+identity/evidence is not compatible, and unavailable evidence stays Pending. They
+use synthetic storage only, with no hosted credentials or calls. Component-level
+source/timestamp/coverage and authentic calibration remain release prerequisites.
+
+| Gate | Retained status | Remaining acceptance / scoped work |
+|---|---|---|
+| O01 | Accepted | Four canonical attributes and 25% weights preserved; definitions now immutable. |
+| O02 | Accepted | Existing withholding retained; identity/version/accessor/immutability defects fixed locally, pending parent review. |
+| O03 | Open | Three findings remain hardcoded. Need an approved evidence eligibility, cross-attribute priority and tie-breaking rule, including how Unknown/contradictory/stale evidence affects selection. No consequential ranking chosen. |
+| O04 | Open | Diverse authentic token calibration and independent false-positive/negative review. |
+| O05 | Open | Approved end-to-end assessment against reference evidence and release checks. |
+
+The smallest O03 decision is a versioned rule for selecting and ordering at most
+three supported findings across the four attributes, including deterministic ties
+and whether an Unknown coverage finding may outrank an observed finding. Existing
+hardcoded concentration/history/coverage text is not evidence that such a policy
+was approved. Ranking implementation and live validation remain separate from this
+boundary correction. No automatic scan, publication, production or score promotion.
+
+Verification: 23 focused tests passed, including 1,296 valid scalar combinations
+with unchanged formula/output and inherited-flag rejection. Final offline-guarded
+`npm run build` passed 1,751 tests, compilation, lint and type checks. The optional
+hosted persistence check reported `SKIPPED_NOT_OPTED_IN`; no live acceptance is
+claimed. API/render coverage uses the actual GET projection and server-rendered
+components with synthetic transport, not a live browser or deployment.
