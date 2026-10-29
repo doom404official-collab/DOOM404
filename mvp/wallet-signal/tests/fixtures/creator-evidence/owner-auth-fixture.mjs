@@ -9,3 +9,5 @@ export function response(uid,time,claims={},extra={}){
  const enc=v=>Buffer.from(JSON.stringify(v)).toString('base64url');
  return {access_token:enc({alg:'RS256'})+'.'+enc({iss:'https://acwmtobcbpkjfqiatyke.supabase.co/auth/v1',sub:uid,role:'authenticated',aud:'authenticated',is_anonymous:false,aal:'aal1',iat:time,exp:time+600,...claims})+'.c3ludGhldGlj',refresh_token:'SYNTHETIC_REFRESH_NEVER_RETAIN',token_type:'bearer',expires_in:600,expires_at:time+600,user:{id:uid,role:'authenticated',is_anonymous:false},...extra};
 }
+
+export const emails={upload:'doom404official@gmail.com',readback:'vijayananthrajkumar@gmail.com'};

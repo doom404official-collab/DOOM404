@@ -4,6 +4,7 @@ import {createCreatorExecutionBudget,assertCreatorSignal} from './creatorExecuti
 import {readCreatorEvidenceBody} from './creatorEvidenceBody.mjs';
 const origin='https://acwmtobcbpkjfqiatyke.supabase.co';
 const identities={upload:'4b4d628a-d0cc-438e-bf04-661d1a5ea546',readback:'3393dbd5-209f-4e3b-934d-57006fcdc4fa'};
+const emails={upload:'doom404official@gmail.com',readback:'vijayananthrajkumar@gmail.com'};
 const reject=()=>{throw Error('CREATOR_OWNER_AUTH_REJECTED');};
 const text=v=>typeof v==='string'&&v.length>0&&v.length<=4096&&!/[\r\n\0]/.test(v);
 function checkedToken(response,uid,end,time){
@@ -32,7 +33,9 @@ export async function obtainCreatorOwnerSessions(options={},dependencies={}){
   const sessions={};
   for(const phase of ['upload','readback']){
    live();let email=await promptSecret(phase+' identity email'),password;
-   if(!text(email)||!/^\S+@\S+\.\S+$/.test(email))reject();
+   if(typeof email!=='string')reject();
+   email=email.trim().toLowerCase();
+   if(!text(email)||email!==emails[phase])reject();
    live();password=await promptSecret(phase+' identity password');if(!text(password))reject();
    live();
    try{sessions[phase]=await createCreatorExecutionBudget({maxDurationMs:10000}).run('OWNER_AUTH',async inner=>{
