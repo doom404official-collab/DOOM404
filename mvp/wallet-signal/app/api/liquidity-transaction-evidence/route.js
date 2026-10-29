@@ -30,11 +30,11 @@ export async function POST(request){
  if(!Array.isArray(vaultAddresses)||vaultAddresses.length>2||vaultAddresses.some(a=>{try{return new PublicKey(a).toBase58()!==a;}catch{return true;}}))return NextResponse.json({error:"Invalid vault addresses"},{status:400});
  try{
   const connection=createReliableConnection({timeoutMs:8000,retries:1});
-  const signatures=await connection.getSignaturesForAddress(pool,{limit:50},"confirmed");
-  const summary=summarizePoolSignatures(signatures);
-  const selection=selectLiquidityTransactionSignatures(summary.signatures,{limit:10,exclude:Array.isArray(payload?.excludeSignatures)?payload.excludeSignatures:[]});
   const requestedSignature=payload?.signature;
   if(requestedSignature!==undefined&&(typeof requestedSignature!=="string"||!/^[1-9A-HJ-NP-Za-km-z]{64,90}$/.test(requestedSignature)))return NextResponse.json({error:"Invalid transaction signature"},{status:400});
+  // A focused signature is already known: avoid an unnecessary pool-history listing.
+  const summary=requestedSignature?{signatures:[],total:0}:summarizePoolSignatures(await connection.getSignaturesForAddress(pool,{limit:50},"confirmed"));
+  const selection=requestedSignature?{selected:[],excludedCount:0}:selectLiquidityTransactionSignatures(summary.signatures,{limit:10,exclude:Array.isArray(payload?.excludeSignatures)?payload.excludeSignatures:[]});
   const selected=requestedSignature?[{signature:requestedSignature,err:null}]:selection.selected;
   const decoded=[];
   for(const entry of selected){
