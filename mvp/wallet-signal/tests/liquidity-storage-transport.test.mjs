@@ -72,3 +72,26 @@ test('actual stage-1 endpoint rejects stalled or late responses before downstrea
   assert.equal(receipt.parses,mode.includes('headers')?0:1,mode);
  }
 });
+
+test('later stage-1 timeouts persist only partial or account-check observations, never verified custody',async()=>{
+ for(const mode of ['pool','lp']){
+  const dir=await mkdtemp(join(tmpdir(),'liquidity-later-')),output=join(dir,'evidence.json');
+  try{
+   const code=`const realTimer=setTimeout;global.setTimeout=(fn,ms,...args)=>realTimer(fn,ms<=20000?5:ms,...args);
+    const mint=${JSON.stringify(evidence.mint)},pool='11111111111111111111111111111111';
+    global.fetch=async(url,options={})=>{const p=new URL(url).pathname;
+     if(p==='/api/token-liquidity')return Response.json({pools:[{pairAddress:pool}],poolCountReturned:1});
+     if(p==='/rest/v1/liquidity_evidence_checkpoints'&&options.method!=='POST')return Response.json([]);
+     if(p==='/api/pool-account-evidence'){if(${JSON.stringify(mode)}==='pool')return new Promise(()=>{});return Response.json({mint,pools:[{pairAddress:pool,accountExists:true,decodedPumpAmmCandidate:{lpMint:pool}}]});}
+     if(p==='/api/lp-holder-evidence')return {ok:true,json:()=>new Promise(()=>{})};
+     if(p.startsWith('/rest/v1/')&&options.method==='POST')return new Response('',{status:201});
+     throw Error('UNEXPECTED_CALL');};await import('./scripts/liquidity-evidence-worker.mjs');`;
+   const child=spawnSync(process.execPath,['--input-type=module','-e',code],{cwd:new URL('..',import.meta.url),encoding:'utf8',timeout:5000,env:{PATH:process.env.PATH,GLITCH_PREVIEW_URL:'https://offline.vercel.app',GLITCH_LIQUIDITY_MINT:evidence.mint,GLITCH_EVIDENCE_OUTPUT:output,SUPABASE_URL:config.url,SUPABASE_SERVICE_ROLE_KEY:config.serviceRoleKey}});
+   assert.equal(child.status,mode==='pool'?1:0,child.stderr);
+   const saved=JSON.parse(await readFile(output,'utf8'));assert.equal(saved.status,mode==='pool'?'partial':'account_checks_completed');
+   assert.equal(saved.finalScore,null);assert.equal(saved.verifiedDepth,false);assert.equal(saved.lpSecurityVerified,false);assert.equal(saved.poolInventoryComplete,false);
+   if(mode==='lp'){assert.equal(saved.lpHolderEvidence[0].status,'unavailable');assert.equal(saved.lpHolderEvidence[0].error,'LIQUIDITY_ENDPOINT_DEADLINE');}
+   else assert.equal(saved.batchErrors[0].error,'LIQUIDITY_ENDPOINT_DEADLINE');
+  }finally{await rm(dir,{recursive:true,force:true});}
+ }
+});
