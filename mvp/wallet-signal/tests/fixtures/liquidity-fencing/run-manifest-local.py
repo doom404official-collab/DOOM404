@@ -64,6 +64,12 @@ try:
   check(sql("SELECT has_function_privilege('"+role+"','liquidity_fencing_private.read_manifest(uuid)','EXECUTE')")=='f',role+' cannot read manifest')
  check(sql("SELECT count(*) FROM pg_auth_members WHERE roleid IN ('liquidity_fencing_code_owner'::regrole,'liquidity_fencing_executor'::regrole,'liquidity_fencing_reviewer'::regrole) AND member='postgres'::regrole AND grantor=10 AND admin_option AND NOT inherit_option AND NOT set_option")=='3','temporary authority removed')
  check(sql('SELECT row_to_json(t) FROM public.liquidity_evidence_checkpoints t')==baseline,'legacy evidence unchanged')
+ accounting=(ROOT/'docs/proposals/liquidity-inactive/reservation-admission.sql').read_text()
+ check(sql(accounting,False,'fixture_bootstrap').returncode!=0,'accounting rejects wrong installer')
+ sql(accounting)
+ check(sql(accounting,False).returncode!=0,'accounting extension replay rejected')
+ check(sql("SELECT has_function_privilege('liquidity_fencing_reviewer','liquidity_fencing_private.admit(uuid,bigint,text)','EXECUTE')")=='f','old uncounted admission denied')
+ check(sql("SELECT has_function_privilege('liquidity_fencing_executor','liquidity_fencing_private.admit_accounted(uuid,bigint,text,integer)','EXECUTE')")=='f','executor cannot use counted admission')
  # Local fixture-only TLS/login setup; never part of either proposal.
  cmd(['docker','exec',container,'sh','-c',"openssl req -x509 -newkey rsa:2048 -nodes -keyout /var/lib/postgresql/data/runtime.key -out /var/lib/postgresql/data/runtime.crt -days 1 -subj /CN=db.acwmtobcbpkjfqiatyke.supabase.co -addext subjectAltName=DNS:db.acwmtobcbpkjfqiatyke.supabase.co >/dev/null 2>&1 && chown postgres:postgres /var/lib/postgresql/data/runtime.* && chmod 600 /var/lib/postgresql/data/runtime.key"]).check_returncode()
  for q in ["ALTER SYSTEM SET ssl='on'","ALTER SYSTEM SET ssl_cert_file='runtime.crt'","ALTER SYSTEM SET ssl_key_file='runtime.key'"]:sql(q,role='fixture_bootstrap')

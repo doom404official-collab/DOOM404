@@ -91,9 +91,9 @@ try{
  }
  let f=await stagedFixture();
  try{
-  const admitText='SELECT liquidity_fencing_private.admit($1::uuid,$2::bigint,$3::text) AS result';
-  await assert.rejects(adapter('executor').query({text:admitText,values:[f.o.binding.operation,f.staged.epoch,digest]}));check(true,'executor adapter cannot admit');
-  await assert.rejects(adapter('reviewer').query({text:admitText,values:[f.o.binding.operation,f.staged.epoch,digest]}));
+  const admitText='SELECT liquidity_fencing_private.admit_accounted($1::uuid,$2::bigint,$3::text,$4::integer) AS result';
+  await assert.rejects(adapter('executor').query({text:admitText,values:[f.o.binding.operation,f.staged.epoch,digest,1]}));check(true,'executor adapter cannot admit');
+  await assert.rejects(adapter('reviewer').query({text:admitText,values:[f.o.binding.operation,f.staged.epoch,digest,1]}));
   check((await admin.query('SELECT count(*)::int n FROM liquidity_fencing_private.admissions')).rows[0].n===0,'real SQL refuses admission without independent review');
   await assert.rejects(adapter('executor').query({text:'SELECT liquidity_fencing_private.record_review($1::uuid,$2::uuid,$3::text,$4::text,$5::text,$6::text,$7::bigint,$8::integer,$9::text,$10::boolean,$11::boolean) AS result',values:[f.o.binding.operation,randomUUID(),'12345',f.staged.digest,digest,f.o.binding.commit,f.o.binding.run,1,'success',true,true]}));check(true,'executor adapter cannot write independent review');
   const reviewed=await reviewLiquidityArtifact(f.review);check(reviewed.status==='ADMITTED_RECEIPT'&&!reviewed.canonicalPublished,'real collected lineage + service readback + independent SQL review admits receipt only');
@@ -107,10 +107,15 @@ try{
   check((await admin.query('SELECT count(*)::int n FROM liquidity_fencing_private.reviews')).rows[0].n===1&&(await admin.query('SELECT count(*)::int n FROM liquidity_fencing_private.admissions')).rows[0].n===1,'one durable review and admission across competing sessions');
  }finally{await rm(f.directory,{recursive:true,force:true});}
  f=await stagedFixture();try{
-  const original=f.review.session;f.review.session={async query(q){const r=await original.query(q);if(q.text.includes('.admit('))throw Error('SYNTHETIC_LOST_ACK');return r;}};
+  const original=f.review.session;f.review.session={async query(q){const r=await original.query(q);if(q.text.includes('.admit_accounted('))throw Error('SYNTHETIC_LOST_ACK');return r;}};
   const r=await reviewLiquidityArtifact(f.review);check(r.status==='RECONCILIATION_REQUIRED'&&r.phase==='admit'&&r.retries===0,'committed admission with lost response stays uncertain');
   const reconciled=await adapter('reviewer').query({text:'SELECT liquidity_fencing_private.read_receipt($1::uuid) AS result',values:[f.o.binding.operation]});
   check(reconciled.rows[0].result.admission.successor_digest===f.staged.digest,'separate readback resolves admission without retry');
+ }finally{await rm(f.directory,{recursive:true,force:true});}
+ f=await stagedFixture();try{
+  const original=f.review.session;f.review.session={async query(q){const r=await original.query(q);if(q.text.includes('.record_review('))await adapter('executor').query({text:'SELECT liquidity_fencing_private.reserve($1::uuid,$2::bigint,$3::integer) AS result',values:[f.o.binding.operation,f.staged.epoch,2]});return r;}};
+  const r=await reviewLiquidityArtifact(f.review);check(r.status==='RECONCILIATION_REQUIRED'&&r.phase==='admit','reservation after review prevents stale accounted admission');
+  check((await admin.query('SELECT count(*)::int n FROM liquidity_fencing_private.admissions')).rows[0].n===0,'accounting mismatch never advances tip');
  }finally{await rm(f.directory,{recursive:true,force:true});}
  f=await stagedFixture();try{
   f.response.files[0].bytes=Buffer.from('{}');const r=await reviewLiquidityArtifact(f.review);

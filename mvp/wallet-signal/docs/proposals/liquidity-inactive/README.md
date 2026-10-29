@@ -226,3 +226,35 @@ Final slice results: `node --test tests/liquidity-inactive*.test.mjs
 checks). Network-blocked `npm run build` passed 1,720 application tests, build,
 lint and types; persistence remained SKIPPED_NOT_OPTED_IN. No exact-head hosted
 CI/Preview was run because publication remains prohibited.
+
+## Reservation-to-candidate accounting correction
+
+Review confirmed the original read_receipt/admit contract did not bind requestCount
+advancement to durable reservations. The reviewer previously enforced only the
+ceiling. `reservation-admission.sql` is a DISTINCT UNAPPLIED extension after the
+manifest reader; neither existing pending proposal was edited. It adds authorized
+read_accounting and reviewer-only admit_accounted, revokes reviewer access to the
+old uncounted admit entry point, and retains closed-role/effective-privilege guards.
+The existing underlying admit function remains available only to the code owner.
+The reviewer requires exact nonnegative safe prior/next requestCount values and
+exact equality of their delta to the durable count. Missing legacy counters stay
+unreviewable; no counter is fabricated or historical data rewritten.
+
+The admission wrapper takes the same lane lock as reserve, compares the count
+again under that lock and invokes existing admission in the same transaction.
+A reservation arriving after readback/review therefore blocks stale admission.
+Missing review, lineage/digest/identity, lease and tip checks remain in force.
+The count is bound through the trusted reviewer to the independently hashed
+candidate; a privileged malicious reviewer is not treated as untrusted runtime.
+No new table, enrollment, role, credential or active caller is introduced.
+Exact source/owner/search-path checks protect the reused admit/read_receipt code.
+
+New extension SHA-256:
+61d926973cc0380ea399413636904cb0a3bf0307ffebe9a4a472f4ce9ca569b2.
+This extension needs its own review/approval before any hosted application.
+Original closed setup and manifest reader hashes remain unchanged. No hosted
+acceptance, canonical publication or top-level gate promotion follows from tests.
+Verification: 47 focused tests; 85 disposable PostgreSQL checks (38 setup and
+47 runtime); network-blocked full build passed 1,721 tests, build/lint/types.
+Persistence stayed SKIPPED_NOT_OPTED_IN. Liquidity is parked at 7/15 accepted,
+with setup/identity/authentic-evidence and activation gates explicitly pending.

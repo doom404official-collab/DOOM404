@@ -28,7 +28,9 @@ export async function reviewLiquidityArtifact(options={}){
   check();if(hash(source)!==manifest.parentDigest)reject();
   const prior=JSON.parse(source.toString('utf8'));
   if(prior.pool!==manifest.pool||buildHistoricalReplayPlan(prior,{pool:manifest.pool,maxSignatures:1}).sourceDigest!==manifest.semanticSourceDigest||assessAutomaticHistoryCheckpoint(prior,manifest.pool).action!=='CONTINUE_BOUNDED')reject();
-  phase='receipt';const receipt=await query('SELECT liquidity_fencing_private.read_receipt($1::uuid) AS result',[operation]);
+  phase='receipt';const accounting=await query('SELECT liquidity_fencing_private.read_accounting($1::uuid) AS result',[operation]);
+  const receipt=accounting?.receipt,reserved=accounting?.reservationCount;
+  if(!Number.isSafeInteger(reserved)||reserved<0||reserved>manifest.requestCeiling)reject();
   const a=receipt?.artifact,c=receipt?.claim;
   // Existing SQL JSON receipt has numeric bigint epochs: reject lossy values.
   const epoch=Number.isSafeInteger(c?.epoch)&&c.epoch>0?String(c.epoch):c?.epoch;
@@ -46,11 +48,11 @@ export async function reviewLiquidityArtifact(options={}){
   const next=JSON.parse(files[0].bytes.toString('utf8'));
   const assessment=assessOfflineEvidencePreservation({prior,next,artifactName:'liquidity-history-'+manifest.run});
   if(!assessment.checkpointEligible)reject();
-  if(prior.requestCount!==undefined&&(!Number.isSafeInteger(prior.requestCount)||!Number.isSafeInteger(next.requestCount)||next.requestCount<prior.requestCount||next.requestCount-prior.requestCount>manifest.requestCeiling))reject();
+  if(!Number.isSafeInteger(prior.requestCount)||prior.requestCount<0||!Number.isSafeInteger(next.requestCount)||next.requestCount<prior.requestCount||next.requestCount-prior.requestCount!==reserved)reject();
   check();phase='record_review';
   const recorded=await query('SELECT liquidity_fencing_private.record_review($1::uuid,$2::uuid,$3::text,$4::text,$5::text,$6::text,$7::bigint,$8::integer,$9::text,$10::boolean,$11::boolean) AS result',[operation,reviewId,a.artifact_id,a.digest,manifest.parentDigest,manifest.commit,manifest.run,1,'success',true,true],true);
   if(recorded!=='')reject();uncertain=false;reviewRecorded=true;
-  phase='admit';const admitted=await query('SELECT liquidity_fencing_private.admit($1::uuid,$2::bigint,$3::text) AS result',[operation,epoch,manifest.parentDigest],true);
+  phase='admit';const admitted=await query('SELECT liquidity_fencing_private.admit_accounted($1::uuid,$2::bigint,$3::text,$4::integer) AS result',[operation,epoch,manifest.parentDigest,reserved],true);
   if(admitted!==a.digest)reject();uncertain=false;
   // SQL admission is not canonical publication, archive coverage or score approval.
   return {status:'ADMITTED_RECEIPT',operation,reviewId,digest:admitted,canonicalPublished:false,checkpointEligible:false};
