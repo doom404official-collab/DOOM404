@@ -1,7 +1,7 @@
 import {NextResponse} from "next/server";
 import {PublicKey} from "@solana/web3.js";
 import {createReliableConnection} from "../../../lib/reliableConnection.js";
-import {summarizePoolSignatures} from "../../../lib/liquidityTransactionEvidence.mjs";
+import {selectFocusedLiquiditySignatures} from "../../../lib/liquidityFocusedSignatureSelection.mjs";
 import {inspectPumpAmmParsedTransaction} from "../../../lib/pumpAmmParsedTransactionEvidence.mjs";
 import {describeLiquidityRpcFailure} from "../../../lib/liquidityRpcFailure.mjs";
 import {inspectVersionRejection} from "../../../lib/liquidityVersionProbe.mjs";
@@ -9,7 +9,7 @@ import {calculateVaultTransactionDeltas} from "../../../lib/liquidityVaultTransa
 import {assessSwapReserveDirection} from "../../../lib/liquiditySwapDirection.mjs";
 import {diagnoseSwapAmbiguity} from "../../../lib/liquidityAmbiguityDiagnostics.mjs";
 import {assessPoolTransactionRelevance} from "../../../lib/liquidityTransactionRelevance.mjs";
-import {selectLiquidityTransactionSignatures} from "../../../lib/liquidityTransactionSelection.mjs";
+
 import {retrieveLiquidityTransaction} from "../../../lib/liquidityRpcVersionFallback.mjs";
 import {extractFeeSweepAccounts} from "../../../lib/liquidityFeeSweepAccounts.mjs";
 import {inspectFeeSettlementTransfers} from "../../../lib/liquidityFeeSettlementTransfers.mjs";
@@ -32,10 +32,13 @@ export async function POST(request){
   const connection=createReliableConnection({timeoutMs:8000,retries:1});
   const requestedSignature=payload?.signature;
   if(requestedSignature!==undefined&&(typeof requestedSignature!=="string"||!/^[1-9A-HJ-NP-Za-km-z]{64,90}$/.test(requestedSignature)))return NextResponse.json({error:"Invalid transaction signature"},{status:400});
-  // A focused signature is already known: avoid an unnecessary pool-history listing.
-  const summary=requestedSignature?{signatures:[],total:0}:summarizePoolSignatures(await connection.getSignaturesForAddress(pool,{limit:50},"confirmed"));
-  const selection=requestedSignature?{selected:[],excludedCount:0}:selectLiquidityTransactionSignatures(summary.signatures,{limit:10,exclude:Array.isArray(payload?.excludeSignatures)?payload.excludeSignatures:[]});
-  const selected=requestedSignature?[{signature:requestedSignature,err:null}]:selection.selected;
+  // Exact-signature requests never fetch the pool's recent signature list.
+  const plan=selectFocusedLiquiditySignatures({
+    requestedSignature,
+    poolSignatures:requestedSignature?undefined:await connection.getSignaturesForAddress(pool,{limit:50},"confirmed"),
+    excludeSignatures:payload?.excludeSignatures
+  });
+  const {summary,selection,selected}=plan;
   const decoded=[];
   for(const entry of selected){
    try{
