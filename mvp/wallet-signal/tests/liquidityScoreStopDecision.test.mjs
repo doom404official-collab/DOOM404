@@ -8,9 +8,9 @@ const complete = () => Object.fromEntries([
   ...LIQUIDITY_STOP_QUESTIONS.map(question => [question,true])
 ]);
 
-test('stops without RPC when all independently verified questions are resolved', () => {
+test('returns advisory candidate without RPC when all assertions are true', () => {
   assert.deepEqual(assessLiquidityScoreStop(complete()), {
-    action:'STOP_SCORE_RESOLVED', reason:'ALL_REQUIRED_EVIDENCE_VERIFIED', requests:0
+    action:'STOP_CANDIDATE_REQUIRES_TRUSTED_PROOF', reason:'ASSERTIONS_COMPLETE_PROOF_NOT_INDEPENDENTLY_VALIDATED', requests:0
   });
 });
 test('each missing scoring question prevents resolved stop', () => {
