@@ -56,15 +56,16 @@ export async function composeLiquidityQuarantine(options={}){
   check();if(busy)throw Error('LIQUIDITY_INACTIVE_UNAWAITED_REQUEST');
   phase='validate';
   if(prior.requestCount!==undefined&&next?.requestCount!==prior.requestCount+requests)throw Error('LIQUIDITY_INACTIVE_ACCOUNTING');
-  const name='liquidity-history-'+b.run;
-  const assessment=assessOfflineEvidencePreservation({prior,next,artifactName:name});
+  // Canonical naming is used only by the retained validator, never publication.
+  const assessment=assessOfflineEvidencePreservation({prior,next,artifactName:'liquidity-history-'+b.run});
+  const name='liquidity-quarantine-'+b.run;
   const bytes=Buffer.from(JSON.stringify(next)),candidateDigest=hash(bytes);check();
   // Existing CLIs still own incremental diagnostics. This final publication is
   // immutable and quarantined; failed/partial output never calls stage/admit.
   const partial=!assessment.checkpointEligible;
   phase='publish';uncertain=true;
-  const receipt=await deadline.run(async(signal,verify)=>{const r=await publish({name:partial?'liquidity-history-partial-'+b.run:name,bytes:Buffer.from(bytes),digest:candidateDigest,signal});verify();check();return r;});
-  if(!receipt||!decimal(receipt.artifactId)||receipt.digest!==candidateDigest||receipt.name!==(partial?'liquidity-history-partial-'+b.run:name))throw Error('LIQUIDITY_INACTIVE_PUBLICATION');
+  const receipt=await deadline.run(async(signal,verify)=>{const r=await publish({name,bytes:Buffer.from(bytes),digest:candidateDigest,signal});verify();check();return r;});
+  if(!receipt||!decimal(receipt.artifactId)||receipt.digest!==candidateDigest||receipt.name!==name)throw Error('LIQUIDITY_INACTIVE_PUBLICATION');
   uncertain=false;
   if(partial)return {status:'PARTIAL_QUARANTINED',artifactId:receipt.artifactId,digest:candidateDigest,requests,checkpointEligible:false};
   phase='stage';const staged=await query('SELECT liquidity_fencing_private.stage($1::uuid,$2::bigint,$3::text,$4::text,$5::text) AS result',[b.operation,epoch,receipt.artifactId,candidateDigest,'history_candidate'],true);

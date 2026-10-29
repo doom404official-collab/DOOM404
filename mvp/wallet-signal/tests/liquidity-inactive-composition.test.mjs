@@ -15,7 +15,7 @@ function fixture(){
  if(op==='claim'){if(claimed)throw Error('BUSY');claimed=true;return {rows:[{result:'9007199254740993'}]};}
  assert.equal(values[1],'9007199254740993');return {rows:[{result:op==='reserve'?values[2]:''}]};}},
  cycle:async({source,request})=>{await request(async()=>{trace.push('lookup');return {};});return {...source,seen:[a,b],requestCount:1};},
- publish:async({name,bytes,digest})=>{trace.push('publish');assert.equal(createHash('sha256').update(bytes).digest('hex'),digest);return {name,digest,artifactId:'12345'};}};
+ publish:async({name,bytes,digest})=>{trace.push('publish');assert.equal(name,'liquidity-quarantine-'+binding.run);assert.equal(createHash('sha256').update(bytes).digest('hex'),digest);return {name,digest,artifactId:'12345'};}};
  return {o,trace};
 }
 test('inactive composition default reads no dependencies',async()=>{

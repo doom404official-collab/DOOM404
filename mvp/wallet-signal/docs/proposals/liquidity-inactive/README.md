@@ -14,8 +14,9 @@ The proposed executor session/current identity must match before claim. Claim ep
 stays a strict decimal string; each request gets an atomic reservation before the
 callback. No retry, refresh, takeover, enrollment, direct DML or admission exists.
 Canonical successor and request accounting checks precede immutable publication.
-Partial output uses the existing isolated partial-name pattern and never stages;
-valid candidates stage only as quarantined, always checkpointEligible false.
+All pre-review output uses liquidity-quarantine-<run>, including successful valid
+candidates. Partial output never stages; valid candidates stage only as quarantined,
+always checkpointEligible false. Canonical publication/admission is not implemented.
 
 The session contract is a trusted parameterized `query({text,values,signal})` adapter
 returning node-postgres-shaped rows, not caller-controlled HTTP data. Proposed SQL
@@ -91,8 +92,8 @@ The public changelog markdown reader was unavailable; no hosted query was substi
 
 `sidecars.mjs` defines the inactive workflow bundle contract. Trusted collection must
 capture the exact main filename and any .pending/.lock files, record byte hashes,
-and label failed/cancelled/unknown, missing/malformed-main or sidecar-bearing bundles
-liquidity-quarantine-<run>. That name remains outside automatic history discovery.
+and label EVERY pre-review bundle liquidity-quarantine-<run>, including a successful
+single-main-file bundle. That name remains outside automatic history discovery.
 Even a success-only main bundle requires independent lineage/publication review and
 is never automatically checkpointEligible. Actual collector atomicity, artifact
 upload, retention and separate reviewer admission still need reviewed integration.
@@ -113,6 +114,48 @@ separate readback. Initial fixture reload permission and cancellation-rollback
 assumptions were corrected without broadening the proposal. Final cancelled-claim
 readback found one committed row, no second claim. Fixture-local TLS setup used its
 bootstrap administrator; this is not an operation available to the proposed roles.
-Manifest-reader SQL SHA-256:
+Historical extension SQL SHA-256 (superseded by the correction below):
 5d1b7eeaf81058502225a658608c03b3d9ee3029f4e8df4dc5fc054f9777da34.
 No hosted SQL, credentials, RPC, workflow dispatch, push or deployment occurred.
+
+## Quarantine discovery and privilege correction
+
+Retained main fe5b845b8f0ecb618ff00770881ded26c0ee0e96 controlled-worker and
+checkpoint-discovery-shadow definitions recognize canonical history/reconciled
+names, then validate and select without a trusted admission receipt. Other retained
+historical/replay/reconciliation paths download exact canonical names; recovery
+investigator/replay paths likewise do not enforce the proposed SQL receipt.
+The shared state selector validates lineage, not artifact admission. This is a
+source audit, not proof of current deployed writers or quiescence.
+
+The end-to-end regression uses the retained actual discovery validator/selector
+CLI and workflow name filter. It first demonstrates that a newer valid canonical
+candidate is selected without admission. With the corrected quarantine name,
+legacy evidence remains selected; directly feeding that quarantine name to the
+validator is also rejected. Successful and sidecar-bearing bundles are covered.
+Fixtures and their provenance hashes are in tests/fixtures/liquidity-discovery.
+No legacy evidence is renamed. Manual operator input is not authenticated by this
+name filter. Canonical publication remains a separate, unimplemented admission step.
+The pure descriptor no longer asserts sourcePreserved: hashes alone cannot prove
+filesystem preservation, collector atomicity or immutable hosted publication.
+
+The SQL extension now checks effective table AND column access before and after
+installation, exact incoming/outgoing memberships, closed role attributes, schema
+CREATE absence, and the reader's owner/security/search path. Unexpected default
+function grants fail and roll back. Fault injection tests require the specific
+expected rejection code, so unrelated SQL errors cannot count as a successful test.
+The original ac65c786 proposal remains unchanged. Corrected reader SQL SHA-256:
+fea52ca3bca09e2044f0af77ed67b27ea0b228d8cc29c3ab3dfafc7bbf1e7e3c.
+
+Transport constructor/listener/connect failures are now inside the redaction and
+cleanup boundary. Cleanup tolerates early missing streams and synchronous or
+asynchronous close failures, releases the busy flag, and never retries a mutation.
+The original constructor failure was reproduced with a synthetic throwing driver.
+
+Latest verification: 23 focused tests; 67 disposable PostgreSQL checks (34 setup/
+permission/rollback checks plus 33 real pg/TLS/runtime checks); network-blocked
+npm run build passed all 1,697 tests, compilation, lint and type checks. Persistence
+remained SKIPPED_NOT_OPTED_IN. No hosted operations, active entrypoint changes,
+push or deployment. Liquidity remains 7/15 accepted; authentic evidence, approved
+hosted setup, authenticated run provenance, writer quiescence and independent
+artifact readback/admission remain open.

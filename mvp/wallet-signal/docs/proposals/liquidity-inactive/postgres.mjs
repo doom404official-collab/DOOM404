@@ -29,20 +29,24 @@ export function createInactiveLiquidityPostgres(options={}){
   if(!spec||(!spec.read&&purpose!=='executor')||!Array.isArray(request.values)||JSON.stringify(request.values).length>8192||!spec.valid(request.values)||(signal!==undefined&&!(signal instanceof AbortSignal)))throw Error('LIQUIDITY_PG_REQUEST');
   if(busy||signal?.aborted)throw Error('LIQUIDITY_PG_NOT_DISPATCHED');
   const text=request.text,values=[...request.values];busy=true;
-  const client=new Client({host,port:5432,database:'postgres',user,password:c.password,
+  let client,dispatched=false,timer,end,closed=false;
+  const close=()=>{
+   if(closed)return;closed=true;
+   try{client?.connection?.stream?.destroy();}catch{}
+   try{void Promise.resolve(client?.end()).catch(()=>{});}catch{}
+  };
+  let cancel;const cancelled=new Promise((_,reject)=>{cancel=()=>{close();reject(Error('CANCELLED'));};});
+  const arm=ms=>{clearTimeout(timer);end=performance.now()+ms;timer=setTimeout(cancel,ms);};
+  const check=()=>{if(closed||signal?.aborted||performance.now()>=end)throw Error('DEADLINE');};
+  try{
+   client=new Client({host,port:5432,database:'postgres',user,password:c.password,
    ssl:{ca:c.ca,rejectUnauthorized:true,minVersion:'TLSv1.2',servername:host},sslnegotiation:'postgres',
    options:'-c search_path=pg_catalog -c row_security=on',client_encoding:'UTF8',replication:'false',
    application_name:'liquidity-inactive-fencing',fallback_application_name:'liquidity-inactive-fencing',
    connectionTimeoutMillis:connectMs,statement_timeout:queryMs,lock_timeout:queryMs,idle_in_transaction_session_timeout:queryMs,
    query_timeout:0,pipeline:false,keepAlive:false});
-  let dispatched=false,timer,end,closed=false;
-  client.on('error',()=>{});
-  const close=()=>{if(closed)return;closed=true;client.connection.stream.destroy();void client.end().catch(()=>{});};
-  let cancel;const cancelled=new Promise((_,reject)=>{cancel=()=>{close();reject(Error('CANCELLED'));};});
-  const arm=ms=>{clearTimeout(timer);end=performance.now()+ms;timer=setTimeout(cancel,ms);};
-  const check=()=>{if(closed||signal?.aborted||performance.now()>=end)throw Error('DEADLINE');};
-  signal?.addEventListener('abort',cancel,{once:true});
-  try{
+   client.on('error',()=>{});
+   signal?.addEventListener('abort',cancel,{once:true});
    arm(connectMs);await Promise.race([client.connect(),cancelled]);check();
    arm(queryMs);
    const probe=await Promise.race([client.query("SELECT session_user AS s,current_user AS c,current_database() AS d,(SELECT ssl FROM pg_stat_ssl WHERE pid=pg_backend_pid()) AS tls"),cancelled]);check();
@@ -50,6 +54,6 @@ export function createInactiveLiquidityPostgres(options={}){
    // pg does not honor query AbortSignal: race plus stream destruction is explicit.
    dispatched=true;const result=await Promise.race([client.query({text,values}),cancelled]);check();return result;
   }catch{throw Object.assign(Error(dispatched&&!spec.read?'LIQUIDITY_PG_OUTCOME_UNKNOWN':'LIQUIDITY_PG_NOT_CONFIRMED'),{reconciliationRequired:dispatched&&!spec.read,retries:0});}
-  finally{clearTimeout(timer);signal?.removeEventListener('abort',cancel);close();busy=false;}
+  finally{clearTimeout(timer);signal?.removeEventListener('abort',cancel);busy=false;close();}
  }});
 }

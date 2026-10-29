@@ -33,6 +33,30 @@ try:
  broken=extension.rsplit('COMMIT;',1)[0]+"DO $$ BEGIN RAISE EXCEPTION 'ROLLBACK_TEST'; END $$; COMMIT;"
  check(sql(broken,False).returncode!=0,'injected post-install failure rolls back')
  check(sql("SELECT to_regprocedure('liquidity_fencing_private.read_manifest(uuid)') IS NULL")=='t','reader absent after rollback')
+ # Exact pre/postcondition adverse cases, owned local fixture only.
+ sql('GRANT SELECT(operation) ON liquidity_fencing_private.manifests TO liquidity_fencing_executor')
+ p=sql(extension,False);check(p.returncode!=0 and 'LQ_READER_EFFECTIVE_ACCESS_DRIFT' in p.stderr,'column-only effective runtime access rejected')
+ sql('REVOKE SELECT(operation) ON liquidity_fencing_private.manifests FROM liquidity_fencing_executor')
+ sql('CREATE ROLE fixture_default_reader NOLOGIN; ALTER DEFAULT PRIVILEGES GRANT EXECUTE ON FUNCTIONS TO fixture_default_reader')
+ p=sql(extension,False);check(p.returncode!=0 and 'LQ_READER_POSTCONDITION' in p.stderr,'unexpected default function grantee rolls back')
+ check(sql("SELECT to_regprocedure('liquidity_fencing_private.read_manifest(uuid)') IS NULL")=='t','default ACL rejection leaves no reader')
+ sql('ALTER DEFAULT PRIVILEGES REVOKE EXECUTE ON FUNCTIONS FROM fixture_default_reader')
+ sql("CREATE FUNCTION public.reader_fixture_fault(text) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN EXECUTE $1; END $$; GRANT EXECUTE ON FUNCTION public.reader_fixture_fault(text) TO postgres",role='fixture_bootstrap')
+ marker='DO $$ BEGIN'
+ for label,fault in [
+  ('outgoing membership','GRANT fixture_default_reader TO liquidity_fencing_executor WITH ADMIN FALSE, INHERIT FALSE, SET FALSE'),
+  ('unexpected incoming member','GRANT liquidity_fencing_executor TO anon WITH ADMIN FALSE, INHERIT FALSE, SET FALSE'),
+  ('grantor drift',"UPDATE pg_auth_members SET grantor='postgres'::regrole WHERE roleid='liquidity_fencing_executor'::regrole"),
+  ('SET drift',"UPDATE pg_auth_members SET set_option=true WHERE roleid='liquidity_fencing_executor'::regrole"),
+  ('INHERIT drift',"UPDATE pg_auth_members SET inherit_option=true WHERE roleid='liquidity_fencing_executor'::regrole"),
+  ('ADMIN drift',"UPDATE pg_auth_members SET admin_option=false WHERE roleid='liquidity_fencing_executor'::regrole"),
+  ('runtime CREATE','GRANT CREATE ON SCHEMA liquidity_fencing_private TO liquidity_fencing_reviewer'),
+  ('column privilege','GRANT SELECT(operation) ON liquidity_fencing_private.manifests TO liquidity_fencing_executor'),
+  ('runtime LOGIN','ALTER ROLE liquidity_fencing_executor LOGIN'),
+  ('incorrect reader owner','ALTER FUNCTION liquidity_fencing_private.read_manifest(uuid) OWNER TO fixture_bootstrap')]:
+  injected=extension.replace(marker,"SELECT public.reader_fixture_fault($fault$"+fault+"$fault$);\n"+marker)
+  p=sql(injected,False);expected='LQ_READER_EFFECTIVE_ACCESS_DRIFT' if label=='column privilege' else 'LQ_READER_POSTCONDITION';check(p.returncode!=0 and expected in p.stderr,label+' fails exact postcondition')
+  check(sql("SELECT to_regprocedure('liquidity_fencing_private.read_manifest(uuid)') IS NULL")=='t',label+' full rollback')
  sql(extension)
  check(True,'exact extension commits under nonsuperuser administrator')
  check(sql(extension,False).returncode!=0,'extension replay rejected')

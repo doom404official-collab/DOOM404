@@ -13,5 +13,5 @@ export function describeLiquidityPublication({run,conclusion,files}={}){
  }
  entries.sort((a,b)=>a.name.localeCompare(b.name,'en'));
  const candidate=conclusion==='success'&&main&&seen.size===1;
- return {artifactName:candidate?'liquidity-history-'+run:'liquidity-quarantine-'+run,status:candidate?'REQUIRES_INDEPENDENT_REVIEW':'QUARANTINED',entries,checkpointEligible:false,automaticResume:false,sourcePreserved:true};
+ return {artifactName:'liquidity-quarantine-'+run,status:candidate?'REQUIRES_INDEPENDENT_REVIEW':'QUARANTINED',entries,checkpointEligible:false,automaticResume:false};
 }

@@ -21,6 +21,8 @@ DO $$ DECLARE r record; BEGIN
  OR NOT EXISTS(SELECT FROM pg_proc WHERE oid='liquidity_fencing_private.authorize(uuid,text)'::regprocedure AND NOT prosecdef AND proowner='postgres'::regrole AND md5(prosrc)='08a29d35998d58cdc4e8a32de6ff3cdd' AND proconfig=ARRAY['search_path=pg_catalog, liquidity_fencing_private'])
  OR (SELECT count(*) FROM pg_class WHERE relnamespace='liquidity_fencing_private'::regnamespace AND relkind='r' AND relrowsecurity AND relowner='postgres'::regrole)<>8 THEN RAISE EXCEPTION 'LQ_READER_CONTRACT_DRIFT'; END IF;
  IF EXISTS(SELECT FROM pg_class c CROSS JOIN LATERAL aclexplode(coalesce(c.relacl,acldefault('r',c.relowner))) a WHERE c.relnamespace='liquidity_fencing_private'::regnamespace AND c.relkind='r' AND a.grantee NOT IN ('postgres'::regrole,'liquidity_fencing_code_owner'::regrole)) THEN RAISE EXCEPTION 'LQ_READER_TABLE_ACCESS_DRIFT'; END IF;
+
+ IF EXISTS(SELECT FROM pg_class c CROSS JOIN pg_roles checked_role WHERE c.relnamespace='liquidity_fencing_private'::regnamespace AND c.relkind='r' AND checked_role.rolname IN ('liquidity_fencing_executor','liquidity_fencing_reviewer') AND (has_table_privilege(checked_role.oid,c.oid,'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') OR has_any_column_privilege(checked_role.oid,c.oid,'SELECT,INSERT,UPDATE,REFERENCES'))) THEN RAISE EXCEPTION 'LQ_READER_EFFECTIVE_ACCESS_DRIFT'; END IF;
 END $$;
 CREATE TEMP TABLE lq_reader_acl_before ON COMMIT DROP AS SELECT oid,relacl FROM pg_class WHERE relnamespace='liquidity_fencing_private'::regnamespace AND relkind='r';
 GRANT liquidity_fencing_code_owner TO postgres WITH ADMIN FALSE,INHERIT FALSE,SET TRUE;
@@ -45,10 +47,14 @@ RESET ROLE;
 REVOKE CREATE ON SCHEMA liquidity_fencing_private FROM liquidity_fencing_code_owner;
 REVOKE liquidity_fencing_code_owner FROM postgres;
 DO $$ BEGIN
+
+ IF EXISTS(SELECT FROM pg_class c CROSS JOIN pg_roles checked_role WHERE c.relnamespace='liquidity_fencing_private'::regnamespace AND c.relkind='r' AND checked_role.rolname IN ('liquidity_fencing_executor','liquidity_fencing_reviewer') AND (has_table_privilege(checked_role.oid,c.oid,'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') OR has_any_column_privilege(checked_role.oid,c.oid,'SELECT,INSERT,UPDATE,REFERENCES'))) THEN RAISE EXCEPTION 'LQ_READER_EFFECTIVE_ACCESS_DRIFT'; END IF;
  IF EXISTS(SELECT FROM lq_reader_acl_before b JOIN pg_class c USING(oid) WHERE c.relacl IS DISTINCT FROM b.relacl)
  OR (SELECT count(*) FROM pg_auth_members WHERE roleid IN ('liquidity_fencing_code_owner'::regrole,'liquidity_fencing_executor'::regrole,'liquidity_fencing_reviewer'::regrole))<>3
  OR EXISTS(SELECT FROM pg_auth_members WHERE roleid IN ('liquidity_fencing_code_owner'::regrole,'liquidity_fencing_executor'::regrole,'liquidity_fencing_reviewer'::regrole) AND (member<>'postgres'::regrole OR grantor<>10 OR NOT admin_option OR inherit_option OR set_option))
- OR has_schema_privilege('liquidity_fencing_code_owner','liquidity_fencing_private','CREATE')
+ OR EXISTS(SELECT FROM pg_auth_members WHERE member IN ('liquidity_fencing_code_owner'::regrole,'liquidity_fencing_executor'::regrole,'liquidity_fencing_reviewer'::regrole))
+ OR EXISTS(SELECT FROM pg_roles WHERE rolname IN ('liquidity_fencing_code_owner','liquidity_fencing_executor','liquidity_fencing_reviewer') AND (rolcanlogin OR rolconnlimit<>0 OR rolsuper OR rolbypassrls OR rolcreaterole OR rolcreatedb OR rolinherit OR rolreplication OR has_schema_privilege(oid,'liquidity_fencing_private','CREATE')))
+ OR NOT EXISTS(SELECT FROM pg_proc WHERE oid='liquidity_fencing_private.read_manifest(uuid)'::regprocedure AND proowner='liquidity_fencing_code_owner'::regrole AND prosecdef AND proconfig=ARRAY['search_path=pg_catalog, liquidity_fencing_private'])
  OR EXISTS(SELECT FROM pg_proc p CROSS JOIN LATERAL aclexplode(p.proacl) a WHERE p.oid='liquidity_fencing_private.read_manifest(uuid)'::regprocedure AND (a.grantee NOT IN ('liquidity_fencing_code_owner'::regrole,'liquidity_fencing_executor'::regrole,'liquidity_fencing_reviewer'::regrole) OR a.privilege_type<>'EXECUTE' OR a.is_grantable))
  THEN RAISE EXCEPTION 'LQ_READER_POSTCONDITION'; END IF;
 END $$;

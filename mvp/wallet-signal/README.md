@@ -286,3 +286,14 @@ The trust boundary is explicit: postgres already owns the tables and has BYPASSR
 **Exact proposed approval wording:** “I approve applying only liquidity-hosted-retained-admin-alternative.sql, SHA-256 8877e82ebe545f25f35f03e638b998145684dc6fea092bf13f3710834a62f811, to GLITCH project acwmtobcbpkjfqiatyke after verifying the connector target. I explicitly accept the three unavoidable bootstrap-granted postgres ADMIN TRUE / INHERIT FALSE / SET FALSE memberships and the documented trusted-administrator boundary. Create only the documented closed schema, eight empty tables/functions and three non-login passwordless roles with connection limit zero; apply only the specified private grants and anon/authenticated snapshot-sequence revoke. Do not provision credentials, enable logins, enroll checkpoints/runs/windows, wire runtime code, dispatch scans, alter workflows or deploy. Verify the exact postconditions and report before requesting activation.” This is draft wording for owner review, not approval received.
 
 The operator must stop on any target/hash/catalog mismatch or transaction error, never weaken postconditions or seek helper escalation. After a successful separately approved setup, leave objects inert; do not automatically drop them, restore unnecessary sequence rights or resume legacy writers. Transport validation, credential scope and legacy/external writer quiescence remain distinct later decisions. No hosted change occurred. Liquidity remains 7/15 and all prior evidence limitations remain.
+
+
+Liquidity inactive preparation correction: all pre-review publications now use
+non-discoverable quarantine names, including successful candidates. The actual
+retained discovery pipeline regression proves unreviewed candidates and sidecars
+cannot replace legacy selected evidence. Effective SQL privileges, exact role
+postconditions and early transport cleanup are covered by 23 focused tests and
+67 disposable database checks; full offline build passed 1,697 tests plus lint/
+types. See docs/proposals/liquidity-inactive/README.md for exact scope and hashes.
+No active route/workflow or historical checkpoint changed. Accepted gates remain
+7/15; this is local engineering preparation, not hosted or evidence acceptance.
