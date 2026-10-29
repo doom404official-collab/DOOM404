@@ -1,4 +1,4 @@
-// Offline structural check against Pump's published collect_coin_creator_fee account order.
+// Offline tentative layout hypothesis; authoritative versioned IDL mapping is not yet verified.
 // This is NOT signer/ownership/PDA verification and cannot authorize a score.
 import {PUMP_AMM_PROGRAM} from './liquidityHistoricalDecoder.mjs';
 export const COLLECT_FEE_ACCOUNTS = Object.freeze([
