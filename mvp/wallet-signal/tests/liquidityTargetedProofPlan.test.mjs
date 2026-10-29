@@ -28,3 +28,22 @@ test('checkpoint validation and pool binding are mandatory',()=>{
   const f=fixture(); f.events[0].authorizationVerified=true;
   assert.throws(()=>planLiquidityTargetedProof(f,'pool'),/UNSAFE_HISTORY_EVENT_PROMOTION/);
 });
+
+test('conflicting slots quarantine a signature even if it appears again',()=>{
+  const f=fixture();
+  f.events.push({signature:'s1',slot:11,operation:'set_coin_creator',
+    classification:'UNVERIFIED_CANDIDATE',eligibleForAuthorizationReview:true});
+  f.events.push({signature:'s1',slot:10,operation:'collect_coin_creator_fee',
+    classification:'UNVERIFIED_CANDIDATE',eligibleForAuthorizationReview:true});
+  const result=planLiquidityTargetedProof(f,'pool');
+  assert.equal(result.action,'PAUSE_INVALID_CANDIDATES');
+  assert.equal(result.distinctTransactions,0);
+  assert.equal(result.invalidCandidates,2);
+});
+test('no eligible events does not imply a safe or promotable score',()=>{
+  const f=fixture(); f.events=[];
+  const result=planLiquidityTargetedProof(f,'pool');
+  assert.equal(result.distinctTransactions,0);
+  assert.equal(result.scorePromotable,false);
+  assert.equal(result.liveRpcAuthorized,false);
+});
