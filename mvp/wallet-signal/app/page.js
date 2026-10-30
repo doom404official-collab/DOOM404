@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import {readDashboardEvidenceResponse} from '../lib/dashboardEvidenceRead.mjs';
+import {createLiquidityReadController} from '../lib/liquidityReadController.mjs';
 import HolderBubbleMap from "./HolderBubbleMap";
+import {HOLDER_RETAIN19_POLICY,assessApprovedHolderEligibleConcentration} from '../lib/holderEligibleViewPolicy.mjs';
 import GlitchV11Dashboard from "./GlitchV11Dashboard";
 import {reconcileHolderSnapshot} from "../lib/reconcileHolderSnapshot.mjs";
 import {scoreHolderIntelligenceForDisplay as scoreHolderConcentration} from "../lib/holderIntelligenceDisplayV11.mjs";
@@ -341,6 +344,9 @@ function CreatorLookup() {
   const [creatorEvidenceDiagnostic, setCreatorEvidenceDiagnostic] = useState("not_requested");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const inspection = useRef(null);
+  function cancelInspection() { inspection.current?.abort(); inspection.current=null; }
+  useEffect(()=>()=>cancelInspection(),[]);
   const [historyCursor, setHistoryCursor] = useState(null);
   const [concentration, setConcentration] = useState(null);
   const [concentrationError, setConcentrationError] = useState("");
@@ -349,6 +355,8 @@ function CreatorLookup() {
   const [holderConnectionsError, setHolderConnectionsError] = useState("");
   const [workerEvidence,setWorkerEvidence] = useState(null);
   const [verifiedHolderAssessment,setVerifiedHolderAssessment] = useState(null);
+  const [frozenHolderObservation,setFrozenHolderObservation]=useState(null);
+  const [holderEvidenceState,setHolderEvidenceState] = useState("unknown");
   const holderReconciliation=concentration&&holderConnections
     ?reconcileHolderSnapshot(concentration.accounts||[],holderConnections.holders||[])
     :null;
@@ -369,6 +377,9 @@ function CreatorLookup() {
   const [liquidity, setLiquidity] = useState(null);
   const [liquidityError, setLiquidityError] = useState("");
   const [liquidityRefreshing, setLiquidityRefreshing] = useState(false);
+  const liquidityReader=useRef(null);
+  if(!liquidityReader.current)liquidityReader.current=createLiquidityReadController({publish:state=>{setLiquidity(state.data);setLiquidityError(state.error);setLiquidityRefreshing(state.loading);}});
+  useEffect(()=>()=>liquidityReader.current.reset('',true),[]);
   const [poolEvidence, setPoolEvidence] = useState(null);
   const [poolEvidenceError, setPoolEvidenceError] = useState("");
   const [poolEvidenceBusy, setPoolEvidenceBusy] = useState(false);
@@ -380,74 +391,82 @@ function CreatorLookup() {
   useEffect(() => {
     const address=result?.mint;
     if(!address)return;
+    setHolderConnections(null);setHolderConnectionsError("");setHolderConnectionsBusy(true);
     let stopped=false;
     let timer;
     async function refresh(){
       try{
         const response=await fetch("/api/holder-scan-status?mint="+encodeURIComponent(address),{cache:"no-store"});
-        if(!response.ok)return;
+        if(!response.ok)throw Error("Saved holder intelligence unavailable");
         const data=await response.json();
         if(stopped)return;
         if(data.scan?.mint===address)setHolderConnections({...data.scan,jobId:data.jobId,observedAt:data.scan.updatedAt});
         if(["not_started","queued","running","partial"].includes(data.status))timer=setTimeout(refresh,12000);
-      }catch{/* Retain last verified result rather than replacing it with an error. */}
+      }catch{if(!stopped)setHolderConnectionsError("Saved holder intelligence unavailable");}
+      finally{if(!stopped)setHolderConnectionsBusy(false);}
     }
     refresh();
     return ()=>{stopped=true;clearTimeout(timer);};
   },[result?.mint]);
   useEffect(() => {
     const address=result?.mint;
-    if(!address){setVerifiedHolderAssessment(null);return;}
+    if(!address){setVerifiedHolderAssessment(null);setHolderEvidenceState("unknown");return;}
     let stopped=false;
+    let requestSequence=0;
     async function refreshVerified(){
+      const sequence=++requestSequence;
       try{
         const response=await fetch("/api/holder-assessment?mint="+encodeURIComponent(address),{cache:"no-store"});
-        if(!response.ok)return;
+        if(!response.ok)throw Error("HOLDER_EVIDENCE_UNAVAILABLE");
         const data=await response.json();
-        if(!stopped)setVerifiedHolderAssessment(data.mint===address&&data.assessment?data:null);
-      }catch{/* Verified evidence is optional; never substitute candidate edges. */}
+        if(!stopped&&sequence===requestSequence)setHolderEvidenceState(data.mint===address&&data.assessment?"ready":"unknown");
+        if(!stopped&&sequence===requestSequence)setVerifiedHolderAssessment(data.mint===address&&data.assessment?data:null);
+      }catch{if(!stopped&&sequence===requestSequence){setHolderEvidenceState("error");setVerifiedHolderAssessment(null);}}
     }
     setVerifiedHolderAssessment(null);
+    setHolderEvidenceState("loading");
     refreshVerified();
     const interval=setInterval(refreshVerified,30000);
-    return ()=>{stopped=true;clearInterval(interval);};
+    return ()=>{stopped=true;requestSequence++;clearInterval(interval);};
+  },[result?.mint]);
+  useEffect(()=>{
+    const address=result?.mint;setFrozenHolderObservation(null);
+    if(address!==HOLDER_RETAIN19_POLICY.mint)return;
+    let stopped=false;const controller=new AbortController();
+    async function readFrozen(){
+      try{
+        const response=await fetch('/api/holder-frozen-observation?mint='+encodeURIComponent(address),{cache:'no-store',signal:controller.signal});
+        if(!response.ok)throw Error('FROZEN_UNAVAILABLE');
+        const data=await response.json();
+        // Recompute from exact raw inputs; response diagnostics never promote job evidence.
+        const observation=data.mint===address&&data.status==='observed_only'?assessApprovedHolderEligibleConcentration(data.snapshot):null;
+        if(!stopped)setFrozenHolderObservation(observation);
+      }catch{if(!stopped)setFrozenHolderObservation(null);}
+    }
+    readFrozen();return ()=>{stopped=true;controller.abort();};
   },[result?.mint]);
   useEffect(() => {
     const address=result?.mint;
     setWorkerEvidence(null);
     if(!address)return;
     let stopped=false;
-    const controller=new AbortController();
+    let controller;
+    let sequence=0;
     async function refresh(){
+      const request=++sequence;controller?.abort();controller=new AbortController();
       try{
-        const response=await fetch("/api/scoring-evidence?mint="+encodeURIComponent(address),{cache:"no-store",signal:controller.signal});
-        const data=await response.json();
-        if(!stopped)setWorkerEvidence(response.ok&&data.mint===address?data:null);
-      }catch{if(!stopped)setWorkerEvidence(null);}
+        const data=await readDashboardEvidenceResponse(address,{signal:controller.signal});
+        if(!stopped&&request===sequence)setWorkerEvidence(data);
+      }catch{if(!stopped&&request===sequence)setWorkerEvidence(null);}
     }
     refresh();
     const interval=setInterval(refresh,30000);
-    return ()=>{stopped=true;controller.abort();clearInterval(interval);};
+    return ()=>{stopped=true;controller?.abort();clearInterval(interval);};
   },[result?.mint]);
   const MAX_HISTORY_BATCHES = 5;
-  async function refreshLiquidity(address = mint.trim()) {
-    if (!address || liquidityRefreshing) return;
-    setLiquidityRefreshing(true);
-    setLiquidityError("");
-    setPoolEvidence(null); setPoolEvidenceError("");
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 12000);
-      let response;
-      try {
-        response = await fetch("/api/token-liquidity?mint=" + encodeURIComponent(address), { cache: "no-store", signal: controller.signal });
-      } finally { clearTimeout(timeout); }
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.reason || "Liquidity data unavailable");
-      if (address === mint.trim()) setLiquidity(data);
-    } catch (failure) {
-      setLiquidityError(failure.name === "AbortError" ? "Liquidity refresh timed out" : failure.message);
-    } finally { setLiquidityRefreshing(false); }
+  async function refreshLiquidity(address = mint.trim(), signal) {
+    setPoolEvidence(null);setPoolEvidenceError('');
+    await liquidityReader.current.read(address,{signal});
   }
   async function verifyPoolAccounts() {
     const addresses = (liquidity?.pools || []).slice(0, 5).map(pool => pool.pairAddress).filter(Boolean);
@@ -473,72 +492,71 @@ function CreatorLookup() {
   }
   async function inspect(event, cursor = null) {
     event.preventDefault();
-    setBusy(true); setError(""); if (!cursor) { setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
+    cancelInspection();
+    const controller=new AbortController();inspection.current=controller;
+    const address=mint.trim(),current=()=>inspection.current===controller;
+    let cancel;
+    const cancelled=new Promise((_,reject)=>{cancel=()=>reject(Object.assign(Error('Inspection cancelled'),{name:'AbortError'}));controller.signal.addEventListener('abort',cancel,{once:true});});
+    // Bound both headers and body, including a non-cooperative late response.
+    async function read(path){
+      if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
+      return Promise.race([(async()=>{
+        const response=await fetch(path,{cache:'no-store',signal:controller.signal});
+        if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
+        const data=await response.json();
+        if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
+        if(!response.ok)throw Error('Token evidence unavailable');
+        if(data?.mint!==address)throw Error('Token evidence identity mismatch');
+        return data;
+      })(),cancelled]);
+    }
+    const timer=setTimeout(()=>controller.abort(),45000);
+    setBusy(true); setError(""); if (!cursor) { liquidityReader.current.reset(address); setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
     try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 45000);
-      let response;
-      try { response = await fetch("/api/creator?mint=" + encodeURIComponent(mint.trim()) + (cursor ? "&before=" + encodeURIComponent(cursor) : ""), { cache: "no-store", signal: controller.signal }); }
-      finally { clearTimeout(timer); }
-      const data = await response.json();
-      if (!response.ok) throw new Error([data.error, data.detail].filter(Boolean).join(" " ) || "Token lookup failed");
+      const data=await read('/api/creator?mint='+encodeURIComponent(address)+(cursor?'&before='+encodeURIComponent(cursor):''));
+      if(!current())return;
       setResult(data);
       if (!cursor) {
         try {
-          const evidenceResponse = await fetch("/api/creator-evidence?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
-          if (evidenceResponse.ok) {
-            const record = await evidenceResponse.json();
-            setCreatorEvidence(record);
-            setCreatorEvidenceDiagnostic(record?.creator && ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(record.status) ? "record_available" : record?.status === "INDEXED_UNVERIFIED" ? "indexed_candidate" : record?.status === "CACHE_MISS" ? "cache_miss" : record?.status === "EVIDENCE_INCOMPLETE" ? "evidence_incomplete" : record?.status === "CONFLICT" ? "evidence_conflict" : "record_not_established");
-          } else {
-            setCreatorEvidenceDiagnostic(evidenceResponse.status === 503 ? "vault_unavailable" : "lookup_failed");
-          }
-        } catch { setCreatorEvidenceDiagnostic("network_failure"); }
+          const record=await read('/api/creator-evidence?mint='+encodeURIComponent(address));
+          if(!current())return;
+          setCreatorEvidence(record);
+          setCreatorEvidenceDiagnostic(record?.creator && ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(record.status) ? "record_available" : record?.status === "INDEXED_UNVERIFIED" ? "indexed_candidate" : record?.status === "CACHE_MISS" ? "cache_miss" : record?.status === "EVIDENCE_INCOMPLETE" ? "evidence_incomplete" : record?.status === "CONFLICT" ? "evidence_conflict" : "record_not_established");
+        } catch { if(!current()||controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});setCreatorEvidenceDiagnostic("lookup_failed"); }
       }
       if (!cursor) {
         try {
-          const concentrationResponse = await fetch("/api/token-concentration?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
-          const accountData = await concentrationResponse.json();
-          if (!concentrationResponse.ok) throw new Error(accountData.error || "Token-account balances unavailable");
+          const accountData=await read('/api/token-concentration?mint='+encodeURIComponent(address));
+          if(!current())return;
           setConcentration(accountData);
-          setHolderConnections(null);
-          setHolderConnectionsError("");
-          setHolderConnectionsBusy(true);
-          // Read existing persisted intelligence; never launch an expensive
-          // synchronous two-transaction scan as a substitute for deep history.
-          fetch("/api/holder-scan-status?mint="+encodeURIComponent(mint.trim()),{cache:"no-store"})
-            .then(async response=>{const payload=await response.json();if(!response.ok)throw Error(payload.error||"Saved holder intelligence unavailable");return payload;})
-            .then(payload=>{if(payload.scan)setHolderConnections({...payload.scan,jobId:payload.jobId,observedAt:payload.scan.updatedAt});})
-            .catch(e=>setHolderConnectionsError(e.message))
-            .finally(()=>setHolderConnectionsBusy(false));
-        } catch (concentrationFailure) { setConcentrationError(concentrationFailure.message); }
+        } catch (failure) { if(!current()||controller.signal.aborted)throw failure;setConcentrationError('Token-account balances unavailable'); }
       }
       if (!cursor && data.tokenProgram === "spl-token-2022") {
         try {
-          const extensionResponse = await fetch("/api/token-extensions?mint=" + encodeURIComponent(mint.trim()), { cache: "no-store" });
-          const extensionData = await extensionResponse.json();
-          if (!extensionResponse.ok) throw new Error(extensionData.error || "Extension data unavailable");
+          const extensionData=await read('/api/token-extensions?mint='+encodeURIComponent(address));
+          if(!current())return;
           setExtensions(extensionData);
-        } catch (extensionFailure) { setExtensionsError(extensionFailure.message); }
+        } catch (failure) { if(!current()||controller.signal.aborted)throw failure;setExtensionsError('Extension data unavailable'); }
       }
-      if (!cursor) await refreshLiquidity(mint.trim());
+      if (!cursor) await Promise.race([refreshLiquidity(address,controller.signal),cancelled]);
+      if(!current()||controller.signal.aborted)return;
       setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
       setHistoryBatches(n => cursor ? n + 1 : 1);
-    } catch (failure) { setError(failure.name === "AbortError" ? "Historical scan timed out after 45 seconds. Retry the same batch or use an archival data provider." : failure.message); }
-    finally { setBusy(false); }
+    } catch (failure) { if(current()){setResult(null);setError(failure.name === "AbortError" ? "Token inspection timed out. Evidence remains incomplete; no automatic retry was made." : "Token inspection unavailable or mismatched. Evidence remains Unknown.");} }
+    finally { clearTimeout(timer);controller.signal.removeEventListener('abort',cancel);if(current()){inspection.current=null;setBusy(false);} }
   }
   return <section aria-label="GLITCH Scanner Token Analysis" className="doom-token-inspect" style={{ ...cardStyle, border: "none", boxShadow: "none" }}>
     <p style={{ color: "#ff7777", fontSize: 12, fontWeight: 700, letterSpacing: 2 }}>DOOM404 // GLITCH SCANNER · TOKEN ANALYSIS</p>
     <h2 style={{ marginTop: 8 }}>Inspect a Solana token</h2>
     <p style={{ color: "#bbb", lineHeight: 1.6 }}>Enter a Solana token address to explore security, holder connections, creator activity, and liquidity intelligence in one assessment.</p>
     <form onSubmit={inspect} style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-      <input aria-label="Solana token mint address" value={mint} onChange={e => setMint(e.target.value)} placeholder="Paste Solana token mint address" required style={{ flex: "1 1 260px", minWidth: 0, padding: 12, background: "#101010", border: "1px solid #555", borderRadius: 8, color: "white" }} />
+      <input aria-label="Solana token mint address" value={mint} onChange={e => {cancelInspection();setBusy(false);setError("");setResult(null);liquidityReader.current.reset(e.target.value.trim());setMint(e.target.value);}} placeholder="Paste Solana token mint address" required style={{ flex: "1 1 260px", minWidth: 0, padding: 12, background: "#101010", border: "1px solid #555", borderRadius: 8, color: "white" }} />
       <button type="submit" disabled={busy} style={{ padding: "12px 18px", border: 0, borderRadius: 8, background: "#a52222", color: "white", cursor: "pointer" }}>{busy ? "INSPECTING..." : "INSPECT TOKEN"}</button>
     </form>
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
     {busy && <p role="status" style={{ color: "#ddd" }}>Querying Solana history. Each batch checks up to 3,000 signatures; this may take up to 45 seconds.</p>}
     {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
-      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} workerEvidence={workerEvidence} />
+      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} liquidityError={liquidityError} liquidityRefreshing={liquidityRefreshing} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} frozenHolderObservation={frozenHolderObservation} workerEvidence={workerEvidence} />
       {/* Previous token evidence panels retired from the layout; raw data and scan workers remain unchanged. */}
     </div>}
   </section>;

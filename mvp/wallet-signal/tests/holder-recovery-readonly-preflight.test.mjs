@@ -1,0 +1,13 @@
+import {createHolderHistoryCheckpoint} from '../lib/holderHistoryCheckpoint.mjs';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readPinnedHolderRecoveryPreflight} from '../lib/holderRecoveryReadOnlyPreflight.mjs';
+const jobId='d07c0256-b472-4089-a237-99ed5e5c8cc4',mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+const now=new Date('2026-10-27T04:00:00Z');
+const job=()=>({id:jobId,mint,version:1812,status:'running',lease_owner:null,lease_expires_at:null,checkpoint:createHolderHistoryCheckpoint({mint,holders:Array.from({length:20},(_,i)=>({ownerWallet:'wallet'+i,tokenAccount:'token'+i,sharePct:1}))})});
+const check=readJob=>readPinnedHolderRecoveryPreflight({readJob,jobId,mint,expectedVersion:1812,now});
+test('complete lease metadata accepted',async()=>assert.equal((await check(async()=>job())).jobId,jobId));
+test('missing lease owner fails closed',async()=>{const j=job();delete j.lease_owner;await assert.rejects(()=>check(async()=>j),/LEASE_METADATA/)});
+test('missing lease expiry fails closed',async()=>{const j=job();delete j.lease_expires_at;await assert.rejects(()=>check(async()=>j),/LEASE_METADATA/)});
+test('active lease fails closed',async()=>{const j=job();j.lease_owner='worker';j.lease_expires_at='2026-10-28T00:00:00Z';await assert.rejects(()=>check(async()=>j),/LEASE_ACTIVE/)});
+test('wrong version fails closed',async()=>{const j=job();j.version=1813;await assert.rejects(()=>check(async()=>j),/IDENTITY_MISMATCH/)});

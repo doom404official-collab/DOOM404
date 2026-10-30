@@ -1,18 +1,18 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {processEvidenceBatch} from "../lib/holderEvidenceBatch.mjs";
-const checkpoint={wallets:{walletA:{},walletB:{}},holders:[],edges:{"walletA|walletB":{walletA:"walletA",walletB:"walletB",signatures:["sig1"]}}};
-const tx={slot:12,meta:{err:null,innerInstructions:[]},transaction:{message:{instructions:[{program:"system",parsed:{type:"transfer",info:{source:"walletA",destination:"walletB",lamports:100}}}]}}};
+const checkpoint={wallets:{"33333333333333333333333333333333":{},"44444444444444444444444444444444":{}},holders:[],edges:{"33333333333333333333333333333333|44444444444444444444444444444444":{walletA:"33333333333333333333333333333333",walletB:"44444444444444444444444444444444",signatures:["2222222222222222222222222222222222222222222222222222222222222222"]}}};
+const tx={slot:12,meta:{err:null,innerInstructions:[]},transaction:{signatures:["2222222222222222222222222222222222222222222222222222222222222222"],message:{accountKeys:[],instructions:[{programId:"11111111111111111111111111111111",program:"system",parsed:{type:"transfer",info:{source:"33333333333333333333333333333333",destination:"44444444444444444444444444444444",lamports:100}}}]}}};
 function store(overrides={}){
  const saved=[];
- return {saved,seed:async()=>0,claim:async()=>[{signature:"sig1",attempts:0}],finish:async(_job,sig,_worker,result)=>{saved.push({sig,...result});return true;},...overrides};
+ return {saved,seed:async()=>0,claim:async()=>[{signature:"2222222222222222222222222222222222222222222222222222222222222222",attempts:0}],finish:async(_job,sig,_worker,result)=>{saved.push({sig,...result});return true;},...overrides};
 }
 test("successful transfer is persisted as verified",async()=>{
  const s=store();
  const r=await processEvidenceBatch({jobId:"test",checkpoint,store:s,rpc:async()=>tx});
  assert.equal(r.processed,1);
  assert.equal(s.saved[0].status,"verified");
- assert.deepEqual(s.saved[0].evidence.pairs,["walletA|walletB"]);
+ assert.deepEqual(s.saved[0].evidence.pairs,["33333333333333333333333333333333|44444444444444444444444444444444"]);
 });
 test("transient RPC failure remains retryable",async()=>{
  const s=store();
@@ -45,7 +45,7 @@ test("malformed seed, claims, and finish cannot fabricate validation progress",a
  for(const value of [null,{},true,"1",-1,0.5]){
   await assert.rejects(processEvidenceBatch({jobId:"test",checkpoint,store:store({seed:async()=>value}),rpc:()=>assert.fail("Unexpected RPC")}),{message:"EVIDENCE_SEED_INVALID_RESPONSE"});
  }
- const good={signature:"sig1",attempts:0};
+ const good={signature:"2222222222222222222222222222222222222222222222222222222222222222",attempts:0};
  for(const value of [null,{},[null],[{}],[{...good,signature:" "}],[{...good,attempts:-1}],[{...good,attempts:5}],
   [{...good,attempts:0.5}],[{...good,job_id:"other"}],[good,good],Array(7).fill(good)]){
   await assert.rejects(processEvidenceBatch({jobId:"test",checkpoint,store:store({claim:async()=>value}),rpc:()=>assert.fail("Unexpected RPC")}),{message:"EVIDENCE_CLAIM_INVALID_RESPONSE"});
@@ -56,7 +56,7 @@ test("malformed seed, claims, and finish cannot fabricate validation progress",a
 });
 
 test("mixed successful and lost finishes report actual saved progress only",async()=>{
- const s=store({claim:async()=>[{signature:"sig1",attempts:0},{signature:"sig2",attempts:0}],finish:async(_id,signature)=>signature==="sig1"});
+ const s=store({claim:async()=>[{signature:"2222222222222222222222222222222222222222222222222222222222222222",attempts:0},{signature:"3333333333333333333333333333333333333333333333333333333333333333",attempts:0}],finish:async(_id,signature)=>signature==="2222222222222222222222222222222222222222222222222222222222222222"});
  const r=await processEvidenceBatch({jobId:"test",checkpoint,store:s,rpc:async()=>tx});
  assert.equal(r.claimed,2);assert.equal(r.processed,1);assert.equal(r.leaseLost,1);
 });

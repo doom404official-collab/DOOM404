@@ -1,3 +1,4 @@
+import {summarizeCreatorAcquisitionLedger} from '../lib/creatorAcquisitionLedger.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {projectCreatorCheckpoint,projectLiquidityCheckpoint,readDashboardEvidence} from '../lib/dashboardEvidenceBridge.mjs';
@@ -16,6 +17,9 @@ test('observed holdings and launch counts are not scores',()=>{
 });
 test('selling requires complete matched fresh evidence and all3windows',()=>{
  const ready={...row,state:{...row.state,creatorHistoryComplete:true,initialAllocationEvidence:{status:'INITIAL_ALLOCATION_EVIDENCE_COMPLETE',coverageComplete:true,initialAttributableRaw:'100'},selling:{methodology:'CREATOR_SELLING_V1_1',creatorSellingScoreEligible:true,windows:[3600,86400,604800].map(seconds=>({seconds,historyComplete:true,scoreEligible:true,verifiedSoldRaw:'0',sellThroughPct:0}))}}};
+ ready.state.creatorVerifiedAcquisitionEvents=[{mint,creator,signature:'launch',instructionIndex:0,innerInstructionIndex:null,type:'LAUNCH_DISTRIBUTION',amountRaw:'100',timestamp:100,independentlyVerified:true,instructionVerified:true,launchInstructionVerified:true}];
+ ready.state.creatorAcquisitionAttributionComplete=true;
+ ready.state.creatorAcquisitionLedger=summarizeCreatorAcquisitionLedger({mint,creator,events:ready.state.creatorVerifiedAcquisitionEvents,historyComplete:true,attributionComplete:true});
  const c=projectCreatorCheckpoint(ready,mint);
  const args={...base,creatorEvidence:{mint,creator,status:'VERIFIED',independentlyReviewed:true},workerEvidence:{version:'1.1',mint,creator:c}};
  assert.equal(adaptDashboardEvidence(args).scores.creator_intelligence.components[2].points,30);

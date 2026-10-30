@@ -1,0 +1,50 @@
+-- UNAPPLIED REVIEW TEMPLATE. Not a migration. Deliberately unresolved bindings.
+-- Requires separately reviewed schema above; remove its disposable guard ONLY in
+-- an explicitly approved migration. Never execute this template on a hosted DB.
+-- All bindings below must be sealed to the reviewed runs, SHA and absolute windows.
+DO $$ BEGIN
+ IF '{{UPLOAD_RUN}}' !~ '^[1-9][0-9]*$' OR '{{READ_RUN}}' !~ '^[1-9][0-9]*$' OR '{{UPLOAD_RUN}}'='{{READ_RUN}}' OR '{{SHA}}' !~ '^[a-f0-9]{40}$'
+ OR '{{UPLOAD_UID}}'::uuid='{{READ_UID}}'::uuid
+ OR '{{UPLOAD_END}}'::timestamptz<='{{UPLOAD_START}}'::timestamptz OR '{{UPLOAD_END}}'::timestamptz>'{{UPLOAD_START}}'::timestamptz+interval '5 minutes'
+ OR '{{READ_END}}'::timestamptz<='{{READ_START}}'::timestamptz OR '{{READ_END}}'::timestamptz>'{{READ_START}}'::timestamptz+interval '5 minutes'
+ THEN RAISE EXCEPTION 'SEALED_TEST_BINDINGS_REQUIRED'; END IF;
+END $$;
+CREATE ROLE creator_test_issuer NOLOGIN;
+CREATE ROLE creator_test_consumer NOLOGIN;
+CREATE ROLE creator_test_verifier NOLOGIN;
+GRANT USAGE ON SCHEMA creator_relay_test_private TO creator_test_issuer,creator_test_consumer,creator_test_verifier;
+GRANT EXECUTE ON FUNCTION creator_relay_test_private.relay_reserve(jsonb) TO creator_test_issuer;
+GRANT EXECUTE ON FUNCTION creator_relay_test_private.relay_consume(jsonb) TO creator_test_consumer;
+GRANT EXECUTE ON FUNCTION creator_relay_test_private.relay_readback(jsonb,bigint) TO creator_test_verifier;
+GRANT INSERT ON creator_relay_test_private.relay_reservations TO creator_test_issuer;
+GRANT SELECT ON creator_relay_test_private.relay_reservations TO creator_test_consumer,creator_test_verifier;
+GRANT INSERT ON creator_relay_test_private.relay_consumptions TO creator_test_consumer;
+GRANT SELECT ON creator_relay_test_private.relay_consumptions TO creator_test_verifier;
+GRANT INSERT ON creator_relay_test_private.relay_readbacks TO creator_test_verifier;
+CREATE POLICY test_issue ON creator_relay_test_private.relay_reservations FOR INSERT TO creator_test_issuer WITH CHECK (
+ object_key='relay-tests/creator-auth-flow-v1.json' AND record->>'runId'='{{UPLOAD_RUN}}' AND record->>'runAttempt'='1' AND record->>'commit'='{{SHA}}'
+ AND clock_timestamp() >= '{{UPLOAD_START}}'::timestamptz AND clock_timestamp() < '{{UPLOAD_END}}'::timestamptz
+ AND expires_at <= '{{UPLOAD_END}}'::timestamptz);
+CREATE POLICY test_consume_read ON creator_relay_test_private.relay_reservations FOR SELECT TO creator_test_consumer USING (
+ object_key='relay-tests/creator-auth-flow-v1.json' AND clock_timestamp() >= '{{UPLOAD_START}}'::timestamptz AND clock_timestamp() < '{{UPLOAD_END}}'::timestamptz);
+CREATE POLICY test_consume ON creator_relay_test_private.relay_consumptions FOR INSERT TO creator_test_consumer WITH CHECK (
+ object_key='relay-tests/creator-auth-flow-v1.json' AND clock_timestamp() >= '{{UPLOAD_START}}'::timestamptz AND clock_timestamp() < '{{UPLOAD_END}}'::timestamptz);
+CREATE POLICY test_verify_read ON creator_relay_test_private.relay_reservations FOR SELECT TO creator_test_verifier USING (
+ object_key='relay-tests/creator-auth-flow-v1.json' AND clock_timestamp() >= '{{READ_START}}'::timestamptz AND clock_timestamp() < '{{READ_END}}'::timestamptz);
+CREATE POLICY test_verify_consumption ON creator_relay_test_private.relay_consumptions FOR SELECT TO creator_test_verifier USING (
+ object_key='relay-tests/creator-auth-flow-v1.json' AND clock_timestamp() >= '{{READ_START}}'::timestamptz AND clock_timestamp() < '{{READ_END}}'::timestamptz);
+CREATE POLICY test_verify ON creator_relay_test_private.relay_readbacks FOR INSERT TO creator_test_verifier WITH CHECK (
+ object_key='relay-tests/creator-auth-flow-v1.json' AND clock_timestamp() >= '{{READ_START}}'::timestamptz AND clock_timestamp() < '{{READ_END}}'::timestamptz);
+-- Two proposed Supabase Auth identities; UUIDs must be approved and substituted.
+-- Existing policies/grants must first be audited: permissive policies combine OR.
+CREATE POLICY creator_test_object_insert ON storage.objects FOR INSERT TO authenticated WITH CHECK (
+ auth.uid()='{{UPLOAD_UID}}'::uuid AND bucket_id='creator-historical-evidence' AND name='relay-tests/creator-auth-flow-v1.json'
+ AND clock_timestamp() >= '{{UPLOAD_START}}'::timestamptz AND clock_timestamp() < '{{UPLOAD_END}}'::timestamptz);
+CREATE POLICY creator_test_object_read ON storage.objects FOR SELECT TO authenticated USING (
+ auth.uid()='{{READ_UID}}'::uuid AND bucket_id='creator-historical-evidence' AND name='relay-tests/creator-auth-flow-v1.json'
+ AND clock_timestamp() >= '{{READ_START}}'::timestamptz AND clock_timestamp() < '{{READ_END}}'::timestamptz);
+-- NO UPDATE/DELETE policy, no grant to anon/PUBLIC, no service_role fallback.
+-- Existing Storage API authenticated INSERT/SELECT privileges are a compatibility
+-- prerequisite, not permission to add broad privileges here. No LOGIN/password or
+-- Auth users are created. Three distinct server connection principals and their
+-- exact memberships require separate approval; none may be table owner/BYPASSRLS.

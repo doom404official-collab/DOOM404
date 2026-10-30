@@ -21,12 +21,13 @@ export async function GET(request) {
     const rows = normalizeReportedPools(payload, mint);
     const reported = rows.filter(x => x.liquidityUsd !== null);
     const sum = reported.reduce((total, row) => total + row.liquidityUsd, 0);
-    const largestShare = sum > 0 ? reported[0].liquidityUsd / sum * 100 : null;
+    const coherent=rows.every(x=>x.evidenceConflict!==true)&&Number.isFinite(sum);
+    const largestShare = coherent&&sum > 0 ? reported[0].liquidityUsd / sum * 100 : null;
     return NextResponse.json({
       status: rows.length ? "pools_reported" : "no_pools_reported",
       mint, observedAt: new Date().toISOString(), provider: "DexScreener",
       poolCountReturned: rows.length, pools: rows.slice(0, 30),
-      reportedLiquidityUsd: reported.length ? sum : null,
+      reportedLiquidityUsd: coherent&&reported.length ? sum : null,
       largestReportedPoolSharePct: largestShare,
       coverage: {
         scope: "Deduplicated, syntactically valid Solana pool addresses returned by DexScreener; not an exhaustive on-chain pool inventory",

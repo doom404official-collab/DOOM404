@@ -1,0 +1,68 @@
+# UNAPPLIED; outside .github/workflows. No dispatchable workflow is created.
+# Proposed destination: .github/workflows/creator-evidence-relay-test.yml
+name: Creator synthetic evidence test (proposed)
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        options: [upload, readback]
+        required: true
+      deployment_url:
+        type: string
+        required: true
+      reviewed_sha:
+        type: string
+        required: true
+      starts_at:
+        type: string
+        required: true
+      expires_at:
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  sealed-test:
+    if: ${{ false }} # closed; parent must separately review any enabled revision
+    environment: creator-evidence-synthetic-test # PROPOSED protected gate, not configured
+    concurrency:
+      group: creator-synthetic-${{ github.run_id }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate immutable dispatch and construct this run's public manifest
+        env:
+          INPUT_ACTION: ${{ inputs.action }}
+          INPUT_URL: ${{ inputs.deployment_url }}
+          INPUT_SHA: ${{ inputs.reviewed_sha }}
+          INPUT_START: ${{ inputs.starts_at }}
+          INPUT_END: ${{ inputs.expires_at }}
+        run: |
+          node --input-type=module <<'NODE'
+          import {appendFileSync} from 'node:fs';
+          const e=process.env,ref='refs/heads/fix/glitch-recovery-preflight-20261027';
+          if(e.GITHUB_REPOSITORY!=='doom404official-collab/DOOM404'||e.GITHUB_REF!==ref||e.GITHUB_SHA!==e.INPUT_SHA||e.GITHUB_RUN_ATTEMPT!=='1'||e.GITHUB_EVENT_NAME!=='workflow_dispatch'||!['upload','readback'].includes(e.INPUT_ACTION))throw Error('DISPATCH_REJECTED');
+          if(!/^https:\/\/doom404-wallet-signal-[a-z0-9]+-doom-404\.vercel\.app$/.test(e.INPUT_URL)||!/^\d{1,12}$/.test(e.INPUT_START)||!/^\d{1,12}$/.test(e.INPUT_END))throw Error('DISPATCH_REJECTED');
+          const m={repository:e.GITHUB_REPOSITORY,repository_id:'1405094598',repository_owner:'doom404official-collab',repository_owner_id:'335732040',ref,sha:e.GITHUB_SHA,workflow_ref:e.GITHUB_WORKFLOW_REF,workflow_sha:e.GITHUB_SHA,run_id:e.GITHUB_RUN_ID,run_attempt:'1',event_name:'workflow_dispatch',environment:'creator-evidence-synthetic-test',runner_environment:'github-hosted',sub:'repo:doom404official-collab/DOOM404:environment:creator-evidence-synthetic-test',audience:e.INPUT_URL+'/api/creator-evidence-test/'+(e.INPUT_ACTION==='upload'?'upload':'verify'),startsAt:Number(e.INPUT_START),expiresAt:Number(e.INPUT_END)};
+          // Default GitHub environment subject proposed; actual claim compatibility
+          // must be independently verified, never broadened to accommodate mismatch.
+          appendFileSync(e.GITHUB_ENV,'CREATOR_TEST_RUN_MANIFEST='+JSON.stringify(m)+'\nCREATOR_TEST_ACTION='+e.INPUT_ACTION+'\n');
+          NODE
+      - name: One synthetic attempt, no retry
+        run: node mvp/wallet-signal/scripts/creator-evidence-synthetic-run.mjs
+# Two separate runs wait at the protected environment gate before ANY step.
+# Parent installs exact actual run IDs/windows after deployment, then releases
+# upload and independently readback. No shared pending-run group cancels either.
+# No DB/Auth secrets, capture, schedules, resets, uploads of sensitive artifacts.
