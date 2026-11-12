@@ -41,11 +41,19 @@ let bg=g.createLinearGradient(0,0,0,ground);bg.addColorStop(0,'#09010e');bg.addC
 if(backdrop.complete&&backdrop.naturalWidth){g.globalAlpha=.98;g.drawImage(backdrop,0,79,480,248);g.globalAlpha=1}
 // cinematic illuminated skyline, three independently scrolling layers
 for(let layer=0;layer<3;layer++){let step=layer===0?83:layer===1?70:59;let shift=(runTime*speed*(.045+layer*.065))%step;for(let i=-2;i<11;i++){
-let x=i*step-shift;/* Low-rise parallax silhouettes: keep the cinematic city and red moon visible. */let hh=(layer===0?48:layer===1?65:78)+((i*73+layer*59+3000)%49);let top=ground-hh;
-rect(x,top,step-9,hh,['#100819','#17091b','#210a1b'][layer]);
-rect(x,top,step-9,3,layer===2?'#bc1c3b':'#461328');
-for(let j=0;j<Math.floor((hh-14)/21);j++)for(let k=0;k<3;k++)if((i*11+j*7+k*3+layer)%5===0){rect(x+9+k*16,top+17+j*21,5,9,layer===2?'#fa3156':'#81213b')}
-if(layer===2){line(x+22,top-21,x+22,top,'#fc2853',1);rect(x+19,top-24,6,4,'#fc2853')}
+let x=i*step-shift;
+// Varied low-rise skyline with occasional small rooftop structures.
+const hash=((i*127+layer*83+391)%97+97)%97;
+const hh=(layer===0?43:layer===1?56:68)+Math.floor(hash*.62);
+const top=ground-hh;
+const width=step-10-(hash%8);
+rect(x,top,width,hh,['#120819','#190b1e','#210b1b'][layer]);
+rect(x,top,width,2,layer===2?'#a8203c':'#482035');
+for(let j=0;j<Math.floor((hh-16)/19);j++)for(let k=0;k<3;k++){
+ if((i*11+j*7+k*3+layer)%5===0)rect(x+8+k*15,top+13+j*19,4,6,layer===2?'#ef3658':'#78223c');
+}
+if(layer===2&&hash%3===0){line(x+width*.55,top-11,x+width*.55,top,'#dc3152',1);rect(x+width*.55-2,top-13,4,3,'#ff5471');}
+if(layer===2&&hash%7===0){rect(x+5,top-7,Math.min(20,width-10),7,'#291023');line(x+5,top-7,x+Math.min(25,width-5),top-7,'#ff315d',2);}
 }}
 for(let i=0;i<18;i++){let x=(i*97+runTime*(i%3+1)*7)%480,y=105+(i*53)%380;rect(x,y,2,2,i%3?'#f4315680':'#58f8f899')}
 // glowing bridge and segmented high-speed road
