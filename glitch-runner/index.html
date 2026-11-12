@@ -3,10 +3,10 @@
 #hero3d{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}#buttons{z-index:5}#game{position:relative;z-index:1}#loadStatus{position:absolute;top:11%;left:8%;right:8%;text-align:center;font-size:12px;color:#ffd4dd;z-index:3;pointer-events:none} </style></head><body><div id="shell"><canvas id="game" width="480" height="800" aria-label="DOOM404 crypto pitfall runner"></canvas><canvas id="hero3d" aria-hidden="true"></canvas><section id="lessonPanel" style="position:absolute;z-index:4;left:50%;bottom:clamp(95px,14vh,145px);transform:translateX(-50%);width:min(90vw,760px);max-height:35vh;overflow:auto;padding:12px 16px;border:2px solid #ff3656;border-radius:12px;background:#130715f5;text-align:center;display:none"><h2 style="color:#ff526e;margin:2px 0 6px;font-size:clamp(20px,3vh,28px)">GAME OVER</h2><h3 id="lessonTitle" style="margin:4px 0 8px;font-size:clamp(16px,2.3vh,21px)"></h3><p id="lessonDesc" style="margin:5px 0 9px;line-height:1.35;font-size:clamp(13px,1.9vh,17px)"></p><strong style="color:#55efdd">HOW TO AVOID IT</strong><p id="lessonTip" style="margin:5px 0;line-height:1.35;font-size:clamp(13px,1.9vh,17px)"></p></section><aside id="missions" style="position:absolute;z-index:6;top:12%;right:2%;width:min(78%,320px);background:#100716ed;border:1px solid #ff426b;border-radius:12px;padding:12px;display:none;box-shadow:0 0 24px #f24a5c55"><div style="display:flex;justify-content:space-between;align-items:center"><strong style="color:#ff6b87">DAILY MISSIONS</strong><button id="closeMissions" style="flex:none;font-size:15px;padding:3px 9px;min-width:0">×</button></div><div id="missionRows" style="font-size:13px;line-height:1.6;margin-top:8px"></div><small style="color:#8ddfd4">Progress saved on this device · resets daily</small></aside><button id="missionToggle" style="position:absolute;z-index:6;top:12%;right:2%;width:auto;min-width:0;height:36px;padding:0 10px;font-size:12px;transform:none">MISSIONS</button><div id="loadStatus">Loading DOOM404 3D mascot…</div><div id="buttons"><button id="start"><span>⟳ START / RESTART</span></button><button id="jump"><span>⇧ JUMP</span></button></div></div><script>
 const c=document.getElementById('game'),g=c.getContext('2d');const W=480,H=800;let state='ready',score=0,bonus=0,streak=0,collectCount=0,shield=0,shieldFlash=0,coins=[],pickupFx=[],best=Number(localStorage.getItem('doom404-best-v2')||0),elapsed=0,runTime=0,last=0,speed=340,spawn=1.0,obstacles=[],particles=[],seq=0,dead=null,py=0,vy=0,jumps=0,near=0,level=1,levelFlash=0,previousHazard=-1,patternIndex=0;
 // Daily missions use local calendar dates and persist independently of runs.
-const missionDefs=[{key:'tokens',title:'Collect Knowledge Tokens',goal:10,reward:100},{key:'hazards',title:'Clear crypto hazards',goal:15,reward:150},{key:'survive',title:'Survive 90 seconds in one run',goal:90,reward:200}];
+const missionDefs=[{key:'tokens',title:'Knowledge Hunter · collect 30 tokens',goal:30,reward:75},{key:'hazards',title:'Risk Master · clear 60 hazards',goal:60,reward:100},{key:'survive',title:'Endurance Runner · reach Level 5',goal:5,reward:150}];
 const missionDate=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
-function readMissions(){try{const v=JSON.parse(localStorage.getItem('doom404-daily-missions-v1')||'null');if(v&&v.date===missionDate())return v;}catch(e){}return {date:missionDate(),progress:{tokens:0,hazards:0,survive:0},claimed:{},earned:0};}
-let daily=readMissions(),missionToast='',missionToastTime=0,runSeconds=0;
+function readMissions(){try{const v=JSON.parse(localStorage.getItem('doom404-daily-missions-v2')||'null');if(v&&v.date===missionDate())return v;}catch(e){}return {date:missionDate(),progress:{tokens:0,hazards:0,survive:0},claimed:{},earned:0};}
+let daily=readMissions(),missionToast='',missionToastTime=0,runSeconds=0,survivalScore=0;
 function saveMissions(){try{localStorage.setItem('doom404-daily-missions-v1',JSON.stringify(daily))}catch(e){}}
 function refreshMissions(){if(daily.date!==missionDate()){daily=readMissions();saveMissions()}const root=document.getElementById('missionRows');if(!root)return;const completed=missionDefs.filter(m=>daily.claimed[m.key]).length;const toggle=document.getElementById('missionToggle');if(toggle)toggle.textContent=completed===3?'✓ 3/3 DONE':'MISSIONS '+completed+'/3';root.innerHTML=missionDefs.map(m=>{const n=Math.min(m.goal,daily.progress[m.key]||0);return '<div style="margin:7px 0"><strong>'+m.title+'</strong> <span style="color:#ffdd80">'+Math.floor(n)+'/'+m.goal+'</span><div style="height:5px;background:#30202f;border-radius:5px"><div style="height:5px;background:#48ead6;border-radius:5px;width:'+(n/m.goal*100)+'%"></div></div><small>'+(daily.claimed[m.key]?'✓ COMPLETED':('+'+m.reward+' points'))+'</small></div>'}).join('')}
 function missionProgress(key,value){if(daily.date!==missionDate())daily=readMissions();const m=missionDefs.find(x=>x.key===key);if(!m)return;const old=daily.progress[key]||0;daily.progress[key]=Math.min(m.goal,Math.max(old,value));if(daily.progress[key]>=m.goal&&!daily.claimed[key]){daily.claimed[key]=true;daily.earned+=m.reward;bonus+=m.reward;missionToast='MISSION COMPLETE +'+m.reward;missionToastTime=2.4;}saveMissions();refreshMissions()}
@@ -29,7 +29,7 @@ const pitfalls=[
 {id:'volatility',name:'VOLATILITY CRASH',icon:'bolt',headline:'VOLATILITY WIPED YOU OUT!',description:'A rapid move overwhelmed your position size or exit plan.',tip:'Use smaller positions, avoid concentration, and plan for gaps beyond stop prices.',color:'#ff5c5c'}
 ];
 const ground=515,heroX=62,heroW=94,heroH=118;py=ground-heroH;
-function start(){state='play';score=0;runTime=0;elapsed=0;speed=340;spawn=1.35;obstacles=[];particles=[];coins=[];seq=0;py=ground-heroH;vy=0;jumps=0;dead=null;near=0;bonus=0;streak=0;collectCount=0;shield=0;shieldFlash=0;coins=[];pickupFx=[];level=1;levelFlash=0;previousHazard=-1;patternIndex=0;runSeconds=0;setMissionOpen(false)}
+function start(){state='play';score=0;runTime=0;elapsed=0;speed=340;spawn=1.35;obstacles=[];particles=[];coins=[];seq=0;py=ground-heroH;vy=0;jumps=0;dead=null;near=0;bonus=0;streak=0;collectCount=0;shield=0;shieldFlash=0;coins=[];pickupFx=[];level=1;levelFlash=0;previousHazard=-1;patternIndex=0;runSeconds=0;survivalScore=0;setMissionOpen(false)}
 function jump(){if(state==='dead'||state==='ready'){start();return}if(state!=='play')return;if(jumps<2){vy=jumps===0?-590:-535;jumps++;for(let i=0;i<8;i++)particles.push({x:heroX+25,y:py+heroH-5,vx:(Math.random()-.5)*110,vy:Math.random()*80,life:.4,color:'#ff4a64'})}}
 function die(o){if(shield>0){shield--;shieldFlash=1;streak=0;obstacles=obstacles.filter(h=>h!==o);return;}state='dead';dead=o.type;best=Math.max(best,score);try{localStorage.setItem('doom404-best-v2',best)}catch(e){};for(let i=0;i<20;i++)particles.push({x:heroX+35,y:py+35,vx:(Math.random()-.5)*230,vy:(Math.random()-.5)*220,life:.8,color:'#ff314f'})}
 function rect(x,y,w,h,color){g.fillStyle=color;g.fillRect(x,y,w,h)}
@@ -99,10 +99,10 @@ function draw(){const panel=document.getElementById('lessonPanel');panel.style.d
 function tick(t){
  let dt=Math.min((t-last)/1000||0,.034);last=t;runTime+=dt;
  if(state==='play'){
-  elapsed+=dt;missionToastTime=Math.max(0,missionToastTime-dt);const seconds=Math.floor(elapsed);if(seconds>runSeconds){runSeconds=seconds;missionProgress('survive',Math.max(daily.progress.survive||0,seconds));}const newLevel=1+Math.floor(elapsed/45);
+  elapsed+=dt;missionToastTime=Math.max(0,missionToastTime-dt);const seconds=Math.floor(elapsed);if(seconds>runSeconds){runSeconds=seconds;missionProgress('survive',Math.max(daily.progress.survive||0,1+Math.floor(seconds/45)));}const newLevel=1+Math.floor(elapsed/45);
   if(newLevel!==level){level=newLevel;levelFlash=2.4;for(let i=0;i<20;i++)particles.push({x:240,y:170,vx:(Math.random()-.5)*240,vy:(Math.random()-.5)*140,life:.8,color:'#ffcc68'});}
   levelFlash=Math.max(0,levelFlash-dt);
-  score=Math.floor(elapsed*16+near*5+bonus);
+  const pointsPerSecond=Math.min(53,level<=5?[0,5,8,12,17,23][level]:23+6*(level-5));survivalScore+=pointsPerSecond*dt;score=Math.floor(survivalScore+near*(2+level)+bonus);
   shieldFlash=Math.max(0,shieldFlash-dt);
   // Stepped 45-second difficulty, with a capped speed for fair reaction time.
   speed=Math.min(610,340+(level-1)*35+Math.min(18,(elapsed%45)*.4));
@@ -140,14 +140,14 @@ function tick(t){
   }
   for(const o of obstacles){
    o.x-=speed*dt;
-   if(!o.passed&&o.x+o.w<heroX){o.passed=true;near++;streak++;missionProgress('hazards',(daily.progress.hazards||0)+1);if(streak%3===0)bonus+=15;}
+   if(!o.passed&&o.x+o.w<heroX){o.passed=true;near++;streak++;missionProgress('hazards',(daily.progress.hazards||0)+1);if(streak%3===0)bonus+=5*level;}
    if(heroX+17<o.x+o.w-8&&heroX+heroW-14>o.x+8&&py+heroH-12>ground-o.h+13&&py+14<ground-5){die(o);break;}
   }
   obstacles=obstacles.filter(o=>o.x+o.w>-40);
   for(const q of coins){
    q.x-=speed*dt;
    if(!q.taken&&Math.abs(q.x-(heroX+heroW/2))<32&&q.y>py&&q.y<py+heroH){
-    q.taken=true;collectCount++;missionProgress('tokens',(daily.progress.tokens||0)+1);const earned=20*Math.min(4,1+Math.floor(streak/3));bonus+=earned;
+    q.taken=true;collectCount++;missionProgress('tokens',(daily.progress.tokens||0)+1);const earned=(5+level*3)*Math.min(3,1+Math.floor(streak/4));bonus+=earned;
     pickupFx.push({x:q.x,y:q.y,life:.8,points:earned});
     if(collectCount%3===0)shield=Math.min(1,shield+1);
    }
