@@ -30,7 +30,8 @@ const pitfalls=[
 ];
 const ground=515,heroX=62,heroW=94,heroH=118;py=ground-heroH;
 function start(){missionPaused=false;resumeCountdown=0;state='play';score=0;runTime=0;elapsed=0;speed=340;spawn=1.35;obstacles=[];particles=[];coins=[];seq=0;py=ground-heroH;vy=0;jumps=0;dead=null;near=0;bonus=0;streak=0;collectCount=0;shield=0;shieldFlash=0;coins=[];pickupFx=[];level=1;levelFlash=0;previousHazard=-1;patternIndex=0;runSeconds=0;survivalScore=0;setMissionOpen(false)}
-function jump(){if(state==='dead'||state==='ready'){start();return}if(state!=='play'||missionPaused||resumeCountdown>0)return;if(jumps<2){vy=jumps===0?-590:-535;jumps++;for(let i=0;i<8;i++)particles.push({x:heroX+25,y:py+heroH-5,vx:(Math.random()-.5)*110,vy:Math.random()*80,life:.4,color:'#ff4a64'})}}
+function jump(){// Jump inputs must never start or restart a run. Only START / RESTART may do that.
+if(state!=='play'||missionPaused||resumeCountdown>0)return;if(jumps<2){vy=jumps===0?-590:-535;jumps++;for(let i=0;i<8;i++)particles.push({x:heroX+25,y:py+heroH-5,vx:(Math.random()-.5)*110,vy:Math.random()*80,life:.4,color:'#ff4a64'})}}
 function die(o){if(shield>0){shield--;shieldFlash=1;streak=0;obstacles=obstacles.filter(h=>h!==o);return;}state='dead';dead=o.type;best=Math.max(best,score);try{localStorage.setItem('doom404-best-v2',best)}catch(e){};for(let i=0;i<20;i++)particles.push({x:heroX+35,y:py+35,vx:(Math.random()-.5)*230,vy:(Math.random()-.5)*220,life:.8,color:'#ff314f'})}
 function rect(x,y,w,h,color){g.fillStyle=color;g.fillRect(x,y,w,h)}
 function line(x,y,x2,y2,color,width=2){g.strokeStyle=color;g.lineWidth=width;g.beginPath();g.moveTo(x,y);g.lineTo(x2,y2);g.stroke()}
