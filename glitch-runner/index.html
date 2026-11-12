@@ -39,13 +39,18 @@ function wrapText(str,x,y,maxWidth,lineHeight,size=15,color='#fff',maxLines=5){g
 function skyline(){
 let bg=g.createLinearGradient(0,0,0,ground);bg.addColorStop(0,'#09010e');bg.addColorStop(.55,'#2b061d');bg.addColorStop(1,'#640c2b');rect(0,0,W,H,bg);
 if(backdrop.complete&&backdrop.naturalWidth){
- // Cover the complete skyline area without stretching the source image.
+ // Contain the full cinematic composition: never crop the red moon.
+ // Scale uniformly to preserve circles and character proportions.
  const targetW=480,targetH=ground-79,srcW=backdrop.naturalWidth,srcH=backdrop.naturalHeight;
- const cover=Math.max(targetW/srcW,targetH/srcH);
- const cropW=targetW/cover,cropH=targetH/cover;
- const cropX=(srcW-cropW)/2,cropY=(srcH-cropH)/2;
+ const fit=Math.min(targetW/srcW,targetH/srcH);
+ const imageW=srcW*fit,imageH=srcH*fit;
+ const imageX=(targetW-imageW)/2,imageY=79+(targetH-imageH)/2;
+ // A subtle underlying atmosphere fills the narrow letterbox margin.
+ const atmosphere=g.createLinearGradient(0,79,0,ground);
+ atmosphere.addColorStop(0,'#100519');atmosphere.addColorStop(.65,'#2a071d');atmosphere.addColorStop(1,'#200716');
+ rect(0,79,targetW,targetH,atmosphere);
  g.globalAlpha=.98;
- g.drawImage(backdrop,cropX,cropY,cropW,cropH,0,79,targetW,targetH);
+ g.drawImage(backdrop,imageX,imageY,imageW,imageH);
  g.globalAlpha=1;
  // Soft atmospheric depth, not an opaque horizontal band.
  const haze=g.createLinearGradient(0,ground-155,0,ground);
