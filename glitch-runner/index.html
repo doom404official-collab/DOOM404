@@ -99,21 +99,32 @@ function tick(t){
   if(py>=ground-heroH){py=ground-heroH;vy=0;jumps=0}
   spawn-=dt;
   if(spawn<=0){
-   // Unpredictable order, without repeating the previous hazard.
-   let index=Math.floor(Math.random()*pitfalls.length);
-   if(index===previousHazard)index=(index+1+Math.floor(Math.random()*(pitfalls.length-1)))%pitfalls.length;
-   previousHazard=index;
-   const type=pitfalls[index];
-   const h=42+Math.floor(Math.random()*17)+Math.min(12,(level-1)*3);
-   const w=48+Math.floor(Math.random()*14);
-   obstacles.push({x:505,w,h,type,passed:false});
+   // Pattern director: levels 1–2 use singles, level 3+ adds jumpable
+   // staggered pairs and compact double-hazard clusters.
+   // All collision geometry stays grounded; no unavoidable ceiling traps.
+   const chooseHazard=()=>{
+    let index=Math.floor(Math.random()*pitfalls.length);
+    if(index===previousHazard)index=(index+1+Math.floor(Math.random()*(pitfalls.length-1)))%pitfalls.length;
+    previousHazard=index;return pitfalls[index];
+   };
+   const makeHazard=(x,h,w)=>({x,w,h,type:chooseHazard(),passed:false});
    patternIndex++;
-   // Later levels occasionally create paired obstacles; gaps remain wide
-   // enough to permit a timed jump / double jump.
-   const paired=level>=3&&patternIndex%4===0;
-   const minGap=paired?0.78:Math.max(.94,1.28-(level-1)*.075);
-   spawn=minGap+Math.random()*(paired?.12:.34);
-   // Pickups are elevated so collecting them requires deliberate jumps.
+   const patternRoll=Math.random();
+   const pair=level>=3&&patternRoll<Math.min(.52,.22+(level-3)*.07);
+   const cluster=level>=5&&patternRoll>=.52&&patternRoll<.67;
+   const baseH=43+Math.floor(Math.random()*19)+Math.min(16,(level-1)*3);
+   const baseW=47+Math.floor(Math.random()*16);
+   obstacles.push(makeHazard(505,baseH,baseW));
+   if(pair||cluster){
+    // 145–205px between hazards: a well-timed single jump can clear
+    // the whole pair; double-jump offers a recovery option.
+    const distance=145+Math.floor(Math.random()*61);
+    obstacles.push(makeHazard(505+distance,40+Math.floor(Math.random()*28),45+Math.floor(Math.random()*15)));
+   }
+   // Recovery after demanding patterns; spacing is in seconds and scales
+   // with speed, so each pattern remains physically reachable.
+   const recover=pair||cluster?1.43:Math.max(.99,1.31-(level-1)*.055);
+   spawn=recover+Math.random()*((pair||cluster)?.18:.31);
    if(patternIndex%2===0)coins.push({x:530,y:ground-105-Math.floor(Math.random()*45)});
   }
   for(const o of obstacles){
