@@ -24,3 +24,28 @@ test('exhaustion never invokes cycle',async()=>{
  const result=await execute({pool,candidates:[{runId:39729408869,state:done}],artifactName,cycle:async()=>{called=true;}});
  assert.equal(called,false);assert.equal(result.requests,0);
 });
+
+test('awaited caller mutation cannot rewrite validated provenance',async()=>{
+ const input=[{runId:39729408869,state:structuredClone(state)}];
+ await assert.rejects(execute({pool,candidates:input,artifactName,cycle:async({source})=>{
+  await Promise.resolve();
+  input[0].state.reconciliation.sourceDigest='b'.repeat(64);
+  return {requests:1,state:{...source,seen:[a,b],reconciliation:{...source.reconciliation,sourceDigest:'b'.repeat(64)}}};
+ }}),/EVIDENCE_PROVENANCE_DRIFT/);
+});
+test('awaited mutation preserves original source identity and valid successor',async()=>{
+ const input=[{runId:39729408869,state:structuredClone(state)}];
+ const result=await execute({pool,candidates:input,artifactName,cycle:async({source})=>{
+  await Promise.resolve();
+  input[0].runId=1;input[0].state.seen.push(b);
+  return {requests:1,state:{...source,seen:[a,b]}};
+ }});
+ assert.equal(result.sourceRunId,39729408869);assert.equal(result.checkpointEligible,true);
+});
+test('failed callback retains source identity even when caller mutates it',async()=>{
+ const input=[{runId:39729408869,state:structuredClone(state)}];
+ const result=await execute({pool,candidates:input,artifactName,cycle:async()=>{
+  await Promise.resolve();input[0].runId=1;throw Error('SYNTHETIC_FAILURE');
+ }});
+ assert.equal(result.sourceRunId,39729408869);assert.equal(result.status,'PAUSE_CYCLE_FAILURE');
+});
