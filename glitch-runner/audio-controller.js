@@ -1,7 +1,8 @@
 /* DOOM404 Runner audio adapter. Read-only gameplay integration. */
 (()=>{
 'use strict';
-const root='../audio/';
+const root='https://raw.githubusercontent.com/doom404official-collab/DOOM404/d67088d1e3e536d5155003b068eae32001ffa8a1/audio/';
+// Audio assets are pinned to the verified GitHub upload commit because Vercel's isolated game root excludes sibling /audio.
 const files={l1:'level_1_dark_intro_loop_8s.wav',l2:'level_2_rising_danger_loop_8s.wav',l3:'level_3_heavy_metal_loop_8s.wav',boss:'boss_final_rush_loop_8s.wav',jump:'jump.wav',land:'land.wav',hit:'obstacle_hit.wav',level:'level_complete.wav',victory:'victory.wav',over:'game_over.wav',menu:'menu_select.wav',restart:'restart.wav'};
 const music={};let unlocked=false,current=null,previous=null,previousLevel=1,previousJumps=0,previousVy=0,previousY=null,wasPaused=false;
 const load=(key,loop=false)=>{const a=new Audio(root+files[key]);a.preload=loop?'auto':'none';a.loop=loop;a.volume=loop?.28:.45;return a};
