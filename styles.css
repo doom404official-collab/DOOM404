@@ -75,3 +75,12 @@ label {
   .verify-grid small { font-size: 12px; }
   .gates span, .status, .launch-state, .ca, .ca code { font-size: 11px; }
 }
+
+/* Homepage final spacing and alignment refinement */
+#credibility .verify-grid{align-items:stretch}
+#credibility .verify-grid>div{min-width:0;overflow-wrap:anywhere}
+.section.center{padding-top:58px;padding-bottom:58px}
+.section.center h2{margin-bottom:22px}
+.section.center .buttons{margin-top:24px}
+.risk{margin-bottom:40px}
+@media(max-width:700px){.section.center{padding-top:42px;padding-bottom:42px}.section.center h2{margin-bottom:16px}.section.center .buttons{margin-top:18px}.risk{margin-bottom:28px}#credibility .verify-grid>div{padding-top:24px;padding-bottom:24px}}
