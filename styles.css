@@ -75,3 +75,57 @@ label {
   .verify-grid small { font-size: 12px; }
   .gates span, .status, .launch-state, .ca, .ca code { font-size: 11px; }
 }
+
+/* Homepage final spacing and alignment refinement */
+#credibility .verify-grid{align-items:stretch}
+#credibility .verify-grid>div{min-width:0;overflow-wrap:anywhere}
+.section.center{padding-top:58px;padding-bottom:58px}
+.section.center h2{margin-bottom:22px}
+.section.center .buttons{margin-top:24px}
+.risk{margin-bottom:40px}
+@media(max-width:700px){.section.center{padding-top:42px;padding-bottom:42px}.section.center h2{margin-bottom:16px}.section.center .buttons{margin-top:18px}.risk{margin-bottom:28px}#credibility .verify-grid>div{padding-top:24px;padding-bottom:24px}}
+
+/* Compact content rhythm: remove oversized empty panels and section gaps. */
+.section{padding-top:64px;padding-bottom:64px}
+.section h2,.universe-tease h2{margin:10px 0 22px}
+.cards article{min-height:0;padding:22px}
+.cards h3,.status-grid h3{margin:10px 0 6px;line-height:1.18}
+.cards p,.status-grid p,.verify-grid p{margin:8px 0 0;line-height:1.48}
+.status-grid{margin-top:22px}
+.status-grid>div{padding:20px}
+.verify-grid>div{padding:20px}
+.verify-grid small{margin-bottom:7px}
+.verify-grid a{margin-top:9px}
+.universe-tease{padding-top:65px;padding-bottom:65px}
+.gates{margin-top:25px}
+#glitch .copy p{margin:0 0 14px}
+#community .intro{margin:0 0 14px}
+#community .intro+div{margin-top:16px!important}
+@media(max-width:780px){
+ .hero{min-height:0;padding:38px 7vw 35px;gap:14px}
+ .hero h1{margin:18px 0 20px;line-height:.94}
+ .hero-copy>p{margin:12px 0 18px;line-height:1.45}
+ .hero .buttons{margin-top:16px}
+ .mascot{margin-top:0;max-width:390px}
+ .section,.universe-tease{padding:34px 7vw}
+ .section h2,.universe-tease h2{font-size:clamp(35px,9vw,54px);line-height:1.06;letter-spacing:-1.8px;margin:9px 0 16px}
+ .two{gap:12px}
+ .two .copy{margin-top:0}
+ .copy,.intro{font-size:16px;line-height:1.48}
+ .cards,.status-grid,.verify-grid{gap:10px}
+ .cards article{min-height:0;padding:17px 18px}
+ .cards h3,.status-grid h3{font-size:23px;margin:9px 0 6px}
+ .cards p,.status-grid p,.verify-grid p{margin:7px 0 0;line-height:1.43}
+ .status-grid{margin-top:14px}
+ .status-grid>div{padding:17px 18px}
+ .verify-grid>div,#credibility .verify-grid>div{padding:17px 18px}
+ .verify-grid small{margin-bottom:7px}
+ .verify-grid a{margin-top:8px}
+ .gates{margin-top:16px}
+ .mini-map{height:280px}
+ .universe-tease{gap:18px}
+ .section.center{padding:30px 7vw}
+ .risk{margin:0 7vw 24px;padding:19px}
+ #community .intro+div{margin-top:14px!important}
+ #community .intro+div>div{padding:12px 14px!important;gap:10px!important}
+}
