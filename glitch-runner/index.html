@@ -90,7 +90,7 @@ rect(0,ground+7,480,19,'#130817');for(let i=0;i<19;i++){let x=((i*36-runTime*spe
 rect(0,ground+30,480,H-ground-30,'#0c0610');for(let i=0;i<9;i++)line(i*65,ground+31,240+(i-4)*140,H,'#3c1428',1);
 }
 function drawHazard(o){
- const x=o.x,y=o.kind==='overhead'?ground-148:ground-o.h+(o.kind==='moving'?Math.sin(elapsed*5+o.phase)*18:0),t=runTime*7,col=o.type.color,cx=x+o.w/2;g.save();g.fillStyle='rgba(5,4,13,.8)';g.strokeStyle=col;g.lineWidth=2;g.shadowColor=col;g.shadowBlur=13;g.beginPath();g.roundRect(x-7,y-10,o.w+14,o.kind==='overhead'?83:o.h+13,9);g.fill();g.stroke();g.restore();
+ const x=o.x,y=o.kind==='overhead'?ground-148:ground-o.h+(o.kind==='moving'?Math.sin(elapsed*5+o.phase)*18:0),t=runTime*7,col=o.type.color,cx=x+o.w/2;if(o.kind==='gap'){g.save();g.shadowColor='#ff3050';g.shadowBlur=16;rect(x,ground-14,o.w,30,'#030107');line(x,ground-15,x+o.w,ground-15,'#ff3758',3);label('⚠ RUG GAP',cx,ground-34,13,'#ff9daa','center');g.restore();return;}g.save();g.fillStyle='rgba(5,4,13,.8)';g.strokeStyle=col;g.lineWidth=2;g.shadowColor=col;g.shadowBlur=13;g.beginPath();g.roundRect(x-7,y-10,o.w+14,o.kind==='overhead'?83:o.h+13,9);g.fill();g.stroke();g.restore();
  // Shared hazard language: danger stripes + warning triangle, regardless of pitfall color.
  g.save();g.fillStyle='#ff304d';g.fillRect(x-7,o.kind==='overhead'?ground-148:ground-8,o.w+14,7);for(let i=0;i<o.w+12;i+=13){g.fillStyle='#fff0a1';g.fillRect(x-7+i,o.kind==='overhead'?ground-148:ground-8,6,7)}g.beginPath();g.moveTo(cx,y-5);g.lineTo(cx-10,y+11);g.lineTo(cx+10,y+11);g.closePath();g.fillStyle='#ff334f';g.fill();label('!',cx,y+8,12,'#fff','center');g.restore();
  g.save();g.shadowColor=col;g.shadowBlur=19;g.strokeStyle=col;g.lineWidth=3;
@@ -152,16 +152,17 @@ function tick(t){
    // Pattern director: levels 1–2 use singles, level 3+ adds jumpable
    // staggered pairs and compact double-hazard clusters.
    // All collision geometry stays grounded; no unavoidable ceiling traps.
-   const chooseHazard=()=>{
-    let index=Math.floor(Math.random()*pitfalls.length);
-    if(index===previousHazard)index=(index+1+Math.floor(Math.random()*(pitfalls.length-1)))%pitfalls.length;
-    previousHazard=index;return pitfalls[index];
+   const chooseHazard=(kind)=>{
+    const pool=kind==='gap'?['rug']:kind==='high'?['fomo','volatility']:kind==='overhead'?['leverage','phishing','approval']:kind==='moving'?['whale','airdrop','slippage']:['rug','liquidity','honeypot','fake','slippage'];
+    const candidates=pool.filter(id=>pitfalls.find(p=>p.id===id)!==pitfalls[previousHazard]);
+    const id=(candidates.length?candidates:pool)[Math.floor(Math.random()*(candidates.length||pool.length))];
+    const index=pitfalls.findIndex(p=>p.id===id);previousHazard=index;return pitfalls[index];
    };
-   const makeHazard=(x,h,w,kind='ground')=>({x,w,h,type:chooseHazard(),kind,passed:false,phase:Math.random()*6.28});
+   const makeHazard=(x,h,w,kind='ground')=>({x,w,h,type:chooseHazard(kind),kind,passed:false,phase:Math.random()*6.28});
    patternIndex++;
    // Authored, level-gated, physics-tested patterns: no single jump solves every layout.
    // Jump apex ~155px; high gates need a midair second jump, overhead bars need slide.
-   const patterns=level===1?['single','single','token']:level===2?['single','short','double','token','single']:level===3?['single','high','short','double','token']:level===4?['single','high','overhead','double','moving','token']:['high','overhead','moving','double','short','single','token'];
+   const patterns=level===1?['single','single','token']:level===2?['single','short','double','token','single']:level===3?['single','high','short','double','gap','token']:level===4?['single','high','overhead','double','moving','gap','token']:['high','overhead','moving','double','short','single','gap','token'];
    const kind=patterns[Math.floor(Math.random()*patterns.length)];
    const h=48+Math.floor(Math.random()*20);
    const add=(x,height,width,shape)=>obstacles.push(makeHazard(x,height,width,shape));
@@ -173,6 +174,7 @@ function tick(t){
    if(kind==='high')add(baseX,178,52,'high');
    if(kind==='overhead')add(baseX,76,110,'overhead');
    if(kind==='moving')add(baseX,72,52,'moving');
+   if(kind==='gap')add(baseX,30,78,'gap');
    if(kind==='token'||patternIndex%3===0)coins.push({x:baseX+20,y:ground-165-Math.floor(Math.random()*30)});
    if(patternIndex%8===0)shieldItems.push({x:baseX+35,y:ground-210,taken:false});
    // At high speed, don't overlap the next pattern before this one is past the player.
@@ -186,6 +188,7 @@ function tick(t){
    const bodyBottom=py+heroH-12;
    let hazardTop=ground-o.h+13,hazardBottom=ground-5;
    if(o.kind==='overhead'){hazardTop=ground-148;hazardBottom=ground-68;}
+   if(o.kind==='gap'){hazardTop=ground-14;hazardBottom=ground+12;}
    if(o.kind==='moving'){hazardTop=ground-o.h+13+Math.sin(elapsed*5+o.phase)*18;hazardBottom=ground-5+Math.sin(elapsed*5+o.phase)*18;}
    if(left<o.x+o.w-8&&right>o.x+8&&bodyBottom>hazardTop&&bodyTop<hazardBottom){die(o);break;}
   }
