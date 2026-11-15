@@ -121,7 +121,7 @@ function drawHazard(o){
 }
 function drawHero(){return;/*let img=state==='ready'?walk:run,count=state==='ready'?8:12;let f=Math.floor(runTime*(state==='play'?15:7))%count;if(img.complete&&img.naturalWidth){g.save();g.shadowColor='#ff1d4d';g.shadowBlur=9;g.translate(heroX+heroW,0);g.scale(-1,1);g.drawImage(img,f*128,0,128,160,0,py,heroW,heroH);g.restore()}else{rect(heroX+12,py+7,43,60,'#df193d');rect(heroX+23,py+24,26,16,'#09040a')}if(state==='play'&&jumps){g.strokeStyle='#f44b64';g.lineWidth=2;g.beginPath();g.arc(heroX+33,py+40,43,-.4,2.4);g.stroke()}}
 */}
-function hud(){rect(0,0,480,79,'#08050de8');line(0,78,480,78,'#f32547',3);label('DOOM404',14,35,27,'#fff');label('//',160,35,26,'#ff2449');label('GLITCH RUNNER',201,35,20,'#fff');label('SCORE '+score,15,65,15,'#fff');rect(172,47,82,24,'#251a14');rect(262,47,88,24,'#0b2b2b');label('✦ '+collectCount+' TOKENS',213,63,11,'#ffe08c','center');label('⬡ '+shield+' SHIELD',306,63,11,'#6dfff1','center');label('★ BEST '+best,466,65,15,'#ffd979','right');label('LVL '+level,400,92,13,'#ffdf82','right');if(levelFlash>0){label('LEVEL '+level+' — MARKET VOLATILITY UP!',240,150,17,'#ffdd8b','center')}if(missionToastTime>0)label(missionToast,240,186,16,'#72ffda','center')}
+function hud(){rect(0,0,480,79,'#08050de8');line(0,78,480,78,'#f32547',3);label('DOOM404',14,35,27,'#fff');label('//',160,35,26,'#ff2449');label('GLITCH RUNNER',201,35,20,'#fff');label('SCORE '+score,15,65,15,'#fff');rect(172,47,82,24,'#251a14');rect(262,47,88,24,'#0b2b2b');label('✦ '+collectCount+' TOKENS',213,63,11,'#ffe08c','center');label('⬡ '+shield+' '+(shield===1?'SHIELD':'SHIELDS'),306,63,10,'#6dfff1','center');label('★ BEST '+best,466,65,15,'#ffd979','right');label('LVL '+level,400,92,13,'#ffdf82','right');if(levelFlash>0){label('LEVEL '+level+' — MARKET VOLATILITY UP!',240,150,17,'#ffdd8b','center')}if(missionToastTime>0)label(missionToast,240,186,16,'#72ffda','center')}
 function overlay(){
  if(state==='ready'){
   rect(24,332,432,110,'#09040de8');g.strokeStyle='#f63453';g.lineWidth=2;g.strokeRect(24,332,432,110);
@@ -198,11 +198,11 @@ function tick(t){
    if(!q.taken&&Math.abs(q.x-(heroX+heroW/2))<32&&q.y>py&&q.y<py+heroH){
     q.taken=true;collectCount++;missionProgress('tokens',(daily.progress.tokens||0)+1);const earned=(5+level*3)*Math.min(3,1+Math.floor(streak/4));bonus+=earned;
     pickupFx.push({x:q.x,y:q.y,life:.8,points:earned});
-    if(collectCount%3===0)shield=Math.min(1,shield+1);
+    if(collectCount%3===0)shield+=1;
    }
   }
   coins=coins.filter(q=>!q.taken&&q.x>-30);
-  for(const q of shieldItems){q.x-=speed*dt;if(Math.abs(q.x-(heroX+heroW/2))<32&&q.y>py&&q.y<py+heroH){q.taken=true;shield=1;}}shieldItems=shieldItems.filter(q=>!q.taken&&q.x>-30);
+  for(const q of shieldItems){q.x-=speed*dt;if(Math.abs(q.x-(heroX+heroW/2))<32&&q.y>py&&q.y<py+heroH){q.taken=true;shield+=1;}}shieldItems=shieldItems.filter(q=>!q.taken&&q.x>-30);
  }
  for(const f of pickupFx)f.life-=dt;
  pickupFx=pickupFx.filter(f=>f.life>0);
