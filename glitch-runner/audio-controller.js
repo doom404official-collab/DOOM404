@@ -40,7 +40,10 @@ requestAnimationFrame(frame);
 }
 function unlock(){unlocked=true;const s=read();if(s&&s.state==='play'&&!s.paused){if(current)music[current].play().catch(()=>{});}}
 document.getElementById('start')?.addEventListener('pointerdown',()=>{
-unlock();const s=read();if(s?.state==='dead')effect('restart');else effect('menu');
+unlock();const s=read();
+// In V6 the left control is SLIDE during gameplay; do not stop the soundtrack.
+if(s?.state==='play')return;
+if(s?.state==='dead')effect('restart');else effect('menu');
 stopMusic();previous=null;previousLevel=1;previousJumps=0;wasPaused=false;
 },{capture:true});
 document.getElementById('jump')?.addEventListener('pointerdown',unlock,{capture:true});
