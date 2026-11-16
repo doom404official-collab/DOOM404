@@ -36,10 +36,18 @@ const pitfalls=[
 {id:'volatility',name:'VOLATILITY CRASH',icon:'bolt',headline:'VOLATILITY WIPED YOU OUT!',description:'A rapid move overwhelmed your position size or exit plan.',tip:'Use smaller positions, avoid concentration, and plan for gaps beyond stop prices.',color:'#ff5c5c'}
 ];
 const ground=515,heroX=62,heroW=94,heroH=118;py=ground-heroH;
-function start(){slideHeld=false;slideTime=0;missionPaused=false;manualPaused=false;autoPaused=false;resumeCountdown=0;state='play';score=0;runTime=0;elapsed=challengeMode?65:0;speed=challengeMode?410:340;spawn=1.35;obstacles=[];particles=[];coins=[];shieldItems=[];seq=0;py=ground-heroH;vy=0;jumps=0;dead=null;near=0;bonus=0;streak=0;collectCount=0;shield=0;shieldFlash=0;coins=[];pickupFx=[];level=challengeMode?3:1;levelFlash=0;previousHazard=-1;patternIndex=0;runSeconds=0;survivalScore=0;setMissionOpen(false);syncPauseUI();syncControlUI();document.getElementById('challengeMode').style.display='none';if(firstTutorial){firstTutorial=false;showTutorial()}}
+
+// Privacy-safe gameplay telemetry. Never includes wallet, player ID or personal data.
+let analyticsRunActive=false,analyticsPeakLevel=1;
+function runnerEvent(name,properties){try{if(typeof window.va==='function')window.va('event',name,properties)}catch(_e){}}
+function runnerStartEvent(){analyticsRunActive=true;analyticsPeakLevel=level;runnerEvent('runner_game_start',{mode:challengeMode?'challenge':'classic'});runnerEvent('runner_level_reached',{level:level,mode:challengeMode?'challenge':'classic'});}
+function runnerLevelEvent(){if(!analyticsRunActive||level<=analyticsPeakLevel)return;analyticsPeakLevel=level;runnerEvent('runner_level_reached',{level:level,mode:challengeMode?'challenge':'classic'});}
+function runnerEndEvent(){if(!analyticsRunActive)return;analyticsRunActive=false;const properties={mode:challengeMode?'challenge':'classic',level:level,score:Math.max(0,Math.floor(score))};runnerEvent('runner_game_over',properties);runnerEvent('runner_play_duration',{seconds:Math.max(0,Math.round(runTime)),mode:properties.mode});}
+
+function start(){if(analyticsRunActive)runnerEndEvent();slideHeld=false;slideTime=0;missionPaused=false;manualPaused=false;autoPaused=false;resumeCountdown=0;state='play';score=0;runTime=0;elapsed=challengeMode?65:0;speed=challengeMode?410:340;spawn=1.35;obstacles=[];particles=[];coins=[];shieldItems=[];seq=0;py=ground-heroH;vy=0;jumps=0;dead=null;near=0;bonus=0;streak=0;collectCount=0;shield=0;shieldFlash=0;coins=[];pickupFx=[];level=challengeMode?3:1;levelFlash=0;previousHazard=-1;patternIndex=0;runSeconds=0;survivalScore=0;setMissionOpen(false);syncPauseUI();syncControlUI();document.getElementById('challengeMode').style.display='none';runnerStartEvent();if(firstTutorial){firstTutorial=false;showTutorial()}}
 function jump(){// Jump inputs must never start or restart a run. Only START / RESTART may do that.
 if(state!=='play'||missionPaused||manualPaused||autoPaused||tutorialOpen||resumeCountdown>0||slideTime>0)return;if(jumps<2){vy=jumps===0?-590:-535;jumps++;for(let i=0;i<8;i++)particles.push({x:heroX+25,y:py+heroH-5,vx:(Math.random()-.5)*110,vy:Math.random()*80,life:.4,color:'#ff4a64'})}}
-function die(o){if(shield>0){shield--;shieldFlash=1;streak=0;obstacles=obstacles.filter(h=>h!==o);return;}state='dead';document.getElementById('challengeMode').style.display='block';syncControlUI();dead=o.type;best=Math.max(best,score);try{localStorage.setItem('doom404-best-v2',best)}catch(e){};for(let i=0;i<20;i++)particles.push({x:heroX+35,y:py+35,vx:(Math.random()-.5)*230,vy:(Math.random()-.5)*220,life:.8,color:'#ff314f'})}
+function die(o){if(shield>0){shield--;shieldFlash=1;streak=0;obstacles=obstacles.filter(h=>h!==o);return;}state='dead';runnerEndEvent();document.getElementById('challengeMode').style.display='block';syncControlUI();dead=o.type;best=Math.max(best,score);try{localStorage.setItem('doom404-best-v2',best)}catch(e){};for(let i=0;i<20;i++)particles.push({x:heroX+35,y:py+35,vx:(Math.random()-.5)*230,vy:(Math.random()-.5)*220,life:.8,color:'#ff314f'})}
 function rect(x,y,w,h,color){g.fillStyle=color;g.fillRect(x,y,w,h)}
 function line(x,y,x2,y2,color,width=2){g.strokeStyle=color;g.lineWidth=width;g.beginPath();g.moveTo(x,y);g.lineTo(x2,y2);g.stroke()}
 function label(s,x,y,size=16,color='#fff',align='left',weight=800){g.fillStyle=color;g.font=`${weight} ${size}px system-ui,Arial`;g.textAlign=align;g.fillText(s,x,y);g.textAlign='left'}
@@ -139,7 +147,7 @@ function tick(t){
  if(state==='play'){
   slideTime=slideHeld&&jumps===0?Math.max(slideTime,.14):Math.max(0,slideTime-dt);
   elapsed+=dt;missionToastTime=Math.max(0,missionToastTime-dt);const seconds=Math.floor(elapsed);if(seconds>runSeconds){runSeconds=seconds;missionProgress('survive',Math.max(daily.progress.survive||0,seconds<20?1:2+Math.floor((seconds-20)/45)));}const newLevel=elapsed<20?1:2+Math.floor((elapsed-20)/45);
-  if(newLevel!==level){level=newLevel;levelFlash=2.4;for(let i=0;i<20;i++)particles.push({x:240,y:170,vx:(Math.random()-.5)*240,vy:(Math.random()-.5)*140,life:.8,color:'#ffcc68'});}
+  if(newLevel!==level){level=newLevel;runnerLevelEvent();levelFlash=2.4;for(let i=0;i<20;i++)particles.push({x:240,y:170,vx:(Math.random()-.5)*240,vy:(Math.random()-.5)*140,life:.8,color:'#ffcc68'});}
   levelFlash=Math.max(0,levelFlash-dt);
   const pointsPerSecond=Math.min(53,level<=5?[0,5,8,12,17,23][level]:23+6*(level-5));survivalScore+=pointsPerSecond*dt;score=Math.floor(survivalScore+near*(2+level)+bonus);
   shieldFlash=Math.max(0,shieldFlash-dt);
