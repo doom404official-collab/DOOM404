@@ -1,3 +1,4 @@
+import {decodeToken2022BinaryMint} from '../lib/token2022BinaryMint.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {PublicKey} from '@solana/web3.js';
@@ -7,7 +8,7 @@ import * as fees from '../lib/tokenTransferFeeEvidence.mjs';
 const source=readFileSync(new URL('../app/api/token-extensions/route.js',import.meta.url),'utf8')
  .replace(/^import .*;\n/gm,'').replace('export const dynamic','const dynamic').replace('export async function GET','async function GET');
 function handler(connection){
- return new Function('NextResponse','PublicKey','createReliableConnection','normalizeTransferFee','resolveEpochFee','consistentEpochContext',`${source}; return GET;`)({json:(body,options)=>({body,...options})},PublicKey,()=>connection,fees.normalizeTransferFee,fees.resolveEpochFee,fees.consistentEpochContext);
+ return new Function('NextResponse','PublicKey','createReliableConnection','normalizeTransferFee','resolveEpochFee','consistentEpochContext','decodeToken2022BinaryMint',`${source}; return GET;`)({json:(body,options)=>({body,...options})},PublicKey,()=>connection,fees.normalizeTransferFee,fees.resolveEpochFee,fees.consistentEpochContext,decodeToken2022BinaryMint);
 }
 const token2022='TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb';
 const mint='So11111111111111111111111111111111111111112';
@@ -88,4 +89,18 @@ test('canonical string and PublicKey owners retain valid output and label/type g
   assert.equal((await handler(rpc({owner,extensions:[]}))(request)).body.transferFee.status,'not_observed');
   for(const patch of [{program:'spl-token'},{program:null},{type:'account'},{type:null}])assert.equal((await handler(rpc({owner,...patch}))(request)).body.verified,false);
  }
+});
+
+test('actual API decodes captured binary fallback and rejects incomplete bytes',async()=>{
+ const f=JSON.parse(readFileSync(new URL('./fixtures/token2022-observation-20261118.json',import.meta.url)));
+ const connection=rpc();connection.getParsedAccountInfo=async()=>({context:{slot:101},value:f.account});
+ const request=new Request(`https://example.com?mint=${f.mint}`);
+ const out=(await handler(connection)(request)).body;
+ assert.equal(out.verified,true);assert.equal(out.encoding,'base64');assert.equal(out.owner,token2022);
+ assert.equal(out.transferFee.status,'not_observed');assert.equal(out.transferFee.olderFee,undefined);
+ assert.deepEqual(out.extensions.map(x=>x.type),['metadataPointer','tokenMetadata']);
+ connection.getParsedAccountInfo=async()=>({context:{slot:101},value:{...f.account,data:Buffer.from(f.account.data[0],'base64')}});
+ assert.equal((await handler(connection)(request)).body.transferFee.status,'not_observed');
+ connection.getParsedAccountInfo=async()=>({context:{slot:101},value:{...f.account,data:[f.account.data[0].slice(0,-4),'base64']}});
+ assert.equal((await handler(connection)(request)).body.verified,false);
 });

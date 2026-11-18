@@ -1,3 +1,4 @@
+import { decodeToken2022BinaryMint } from '../../../lib/token2022BinaryMint.mjs';
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
@@ -31,9 +32,10 @@ export async function GET(request) {
       commitment: "confirmed", ...(Number.isSafeInteger(before?.absoluteSlot) ? { minContextSlot: before.absoluteSlot } : {})
     });
     const after = await connection.getEpochInfo({ commitment: "confirmed", ...(Number.isSafeInteger(response.context?.slot) ? { minContextSlot: response.context.slot } : {}) }).catch(() => null);
-    const epochContext = consistentEpochContext(before, after, response.context?.slot);
+    const epochContext = consistentEpochContext(before, after, response.context?.slot, "confirmed");
     const observedAt = new Date().toISOString();
-    const account = response.value;
+    const binary = Array.isArray(response.value?.data) || Buffer.isBuffer(response.value?.data);
+    const account = binary ? decodeToken2022BinaryMint(response.value, mint.toBase58()) : response.value;
     // A parsed program label alone is not account ownership evidence. Accept the
     // SDK PublicKey or its canonical RPC string, never arbitrary coercible objects.
     let owner = null;
@@ -83,8 +85,9 @@ export async function GET(request) {
     return NextResponse.json({
       status: "parsed_extensions_observed", mint: mint.toBase58(), verified: true,
       extensions, extensionCount: extensions.length, transferFee, observedAt, epochContext,
+      encoding: binary ? "base64" : "jsonParsed", owner,
       coverage: { source: "Solana RPC getParsedAccountInfo", accountType: "mint", program: "spl-token-2022",
-        limitations: "Presence is verified only as reported by parsed RPC. Fee configuration is parsed when available; epoch selection is resolved only when bracketed RPC observations agree. Actual transfers, hooks and future configuration changes are not verified. No risk rating, hook behavior, or delegate power is asserted. Account-level extensions are not covered." },
+        limitations: "Presence is observed from RPC parsed data or a strictly decoded supported binary mint layout. Fee configuration is parsed when available; epoch selection is resolved only when bracketed RPC observations agree. Actual transfers, hooks and future configuration changes are not verified. No risk rating, hook behavior, or delegate power is asserted. Account-level extensions are not covered." },
       interpretation: "Observed Token-2022 mint extensions are evidence, not proof of malicious behavior."
     }, { headers: { "Cache-Control": "no-store" } });
   } catch {

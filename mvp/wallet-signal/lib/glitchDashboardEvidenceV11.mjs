@@ -17,7 +17,7 @@ export function adaptDashboardEvidence({liquidity:reportedLiquidity,result,exten
  const parsed=authorities.authorityDetailsStatus==='available';
  const ext=['token-2022','spl-token-2022'].includes(result?.tokenProgram)&&same(extensions)&&extensions?.verified===true&&evidenceFresh(extensions.observedAt,now)?extensions:null,fee=ext?.transferFee;
  const context=ext?.epochContext;
- const epochVerified=context?.commitment==='confirmed'&&consistentEpochContext({epoch:context.epoch,absoluteSlot:context.beforeSlot},{epoch:context.epoch,absoluteSlot:context.afterSlot},context.accountSlot);
+ const epochVerified=['confirmed','finalized'].includes(context?.commitment)&&consistentEpochContext({epoch:context.epoch,absoluteSlot:context.beforeSlot},{epoch:context.epoch,absoluteSlot:context.afterSlot},context.accountSlot,context.commitment);
  const effectiveFee=fee?.status==='observed'&&epochVerified?resolveEpochFee({...fee,epoch:context.epoch}):null;
  const security=scoreTokenSecurity({tokenProgram:result?.tokenProgram,authoritiesParsed:parsed,mintAuthority:authorities.mintAuthority,freezeAuthority:authorities.freezeAuthority,
   feeExtensionVerified:ext?.verified===true,feeApplicable:fee?.status==='observed'?true:fee?.status==='not_observed'?false:undefined,

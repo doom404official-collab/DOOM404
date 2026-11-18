@@ -171,3 +171,23 @@ code. No scoring, policy, checkpoint or release promotion. Feasible current Toke
 Security engineering is handed back for acceptance/access/policy decisions; the
 next sole activity is read-only Holder persistence triage. This documentation is
 local handoff evidence; it does not authorize a deployment or live test.
+
+## November 18 observed binary mint integration
+
+The retained `tests/fixtures/token2022-observation-20261118.json` contains public
+blockchain bytes and parent-supplied connector observation provenance, not a raw
+wire envelope or an executed-transfer proof. Its finalized epoch 1089 bracket
+contains account slot 470856075. The complete 390-byte layout contains only
+MetadataPointer and TokenMetadata: TransferFeeConfig is absent at that observation.
+No fee schedules or zero-valued substitute schedules are fabricated.
+
+The server decoder accepts canonical base64 tuples and SDK Buffer fallbacks,
+checks owner, mint layout and complete TLV bounds, and decodes the supported
+TransferFeeConfig, MetadataPointer and TokenMetadata layouts. Other binary
+extension layouts deliberately remain Unknown. Parsed RPC compatibility remains.
+The epoch validator preserves explicitly supplied confirmed/finalized commitment;
+legacy callers default to confirmed. Finalized observations are not relabeled.
+The API continues its existing confirmed read behavior; this fixture does not
+activate a new collection path or replace live evidence with saved observations.
+No scoring methodology, historical evidence, transfer-behavior verification or
+acceptance count changes follow from this integration.

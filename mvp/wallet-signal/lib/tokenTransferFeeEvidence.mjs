@@ -32,9 +32,10 @@ export function calculateTransferFeeRaw(fee, amountRaw) {
   const cap = BigInt(normalized.maximumFeeRaw);
   return String(rounded > cap ? cap : rounded);
 }
-export function consistentEpochContext(before, after, accountSlot) {
+export function consistentEpochContext(before, after, accountSlot, commitment = 'confirmed') {
+  if (!['confirmed', 'finalized'].includes(commitment)) return null;
   const first = uint64(before?.epoch), last = uint64(after?.epoch);
   const start = uint64(before?.absoluteSlot), end = uint64(after?.absoluteSlot), slot = uint64(accountSlot);
   if (first === null || last === null || start === null || end === null || slot === null || first !== last || start > slot || slot > end) return null;
-  return { epoch: String(first), accountSlot: String(slot), beforeSlot: String(start), afterSlot: String(end), commitment: 'confirmed' };
+  return { epoch: String(first), accountSlot: String(slot), beforeSlot: String(start), afterSlot: String(end), commitment };
 }
