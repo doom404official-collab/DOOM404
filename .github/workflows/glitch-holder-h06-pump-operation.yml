@@ -1,6 +1,6 @@
-# LOCAL UNPUBLISHED replacement of an already registered manual workflow.
+# Local priority-1 registration candidate for the existing registered workflow path.
 # Public projection disclosure, publication and exact execution approval still required.
-name: Proposed single transfer witness capture
+name: Proposed eligible-holder transfer witness capture
 on:
   workflow_dispatch:
     inputs:
@@ -49,14 +49,14 @@ jobs:
         working-directory: mvp/wallet-signal
         env:
           ALCHEMY_SOLANA_ARCHIVE_RPC_URL: ${{ secrets.ALCHEMY_SOLANA_ARCHIVE_RPC_URL }}
-        run: python3 scripts/collect-fixed-transfer-witness.py --approved-once
+        run: python3 scripts/collect-eligible-transfer-witness.py --approved-once
       - name: Reject symlinks before staging upload
         working-directory: mvp/wallet-signal
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import stat
-          root=Path('fixed-transfer-private')
+          root=Path('eligible-transfer-private')
           assert not root.is_symlink() and not (root/'public').is_symlink()
           for name in ('projection.json','manifest.json'):
               p=root/'public'/name
@@ -67,10 +67,10 @@ jobs:
         if: ${{ success() && steps.capture.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: fixed-transfer-${{ github.run_id }}-${{ github.run_attempt }}
+          name: eligible-transfer-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            mvp/wallet-signal/fixed-transfer-private/public/projection.json
-            mvp/wallet-signal/fixed-transfer-private/public/manifest.json
+            mvp/wallet-signal/eligible-transfer-private/public/projection.json
+            mvp/wallet-signal/eligible-transfer-private/public/manifest.json
           retention-days: 1
           if-no-files-found: error
           overwrite: false

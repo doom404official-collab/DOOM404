@@ -10,8 +10,12 @@ import time
 import base64
 import urllib.parse
 sys.path.insert(0,str(Path('scripts').resolve()))
-spec=importlib.util.spec_from_file_location('collector','scripts/collect-fixed-transfer-witness.py')
-m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+variant=sys.argv[1:] == ['--eligible-variant']
+assert not sys.argv[1:] or variant
+script='scripts/collect-eligible-transfer-witness.py' if variant else 'scripts/collect-fixed-transfer-witness.py'
+spec=importlib.util.spec_from_file_location('collector',script)
+loaded=importlib.util.module_from_spec(spec);spec.loader.exec_module(loaded)
+m=loaded.collector if variant else loaded
 URL='https://solana-mainnet.g.alchemy.com/v2/SYNTHETIC_ONLY'
 checks=0
 def check(fn):
@@ -84,7 +88,7 @@ def closed():
     else:raise AssertionError()
 check(closed)
 def disabled():
-    p=subprocess.run([sys.executable,'scripts/collect-fixed-transfer-witness.py'],capture_output=True,text=True)
+    p=subprocess.run([sys.executable,script],capture_output=True,text=True)
     assert p.returncode==0 and json.loads(p.stdout)=={'status':'DISABLED','attempts':0} and not p.stderr
 check(disabled)
 def deadline():
