@@ -25,7 +25,7 @@ export function adaptDashboardEvidence({liquidity:reportedLiquidity,result,exten
   feeConfigAuthorityReported:ext?.verified===true&&fee?.configAuthorityReported===true,feeConfigAuthority:fee?.configAuthority});
  const top20=same(concentration)&&finite(concentration.top20TokenAccountSharePct)?concentration.top20TokenAccountSharePct:undefined;
  let holder=scoreHolderIntelligence({top20SharePct:top20});
- const matchedHolder=same(historicalHolders)&&same(verifiedHolderEnvelope)&&
+ const matchedHolder=same(concentration)&&same(historicalHolders)&&same(verifiedHolderEnvelope)&&
   !!historicalHolders.jobId&&historicalHolders.jobId===verifiedHolderEnvelope.jobId&&
   historicalHolders.updatedAt===verifiedHolderEnvelope.updatedAt&&
   evidenceFresh(verifiedHolderEnvelope.updatedAt,now)&&

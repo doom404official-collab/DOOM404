@@ -46,6 +46,20 @@ test('holder assessment needs mint job time and snapshot identity match',()=>{
  assert.equal(adaptDashboardEvidence(numeric).scores.holder_intelligence.components[1].points,null);
  assert.equal(adaptDashboardEvidence(numeric).scores.holder_intelligence.components[2].points,null);
 });
+test('foreign or missing concentration mint cannot admit matching holder account values',()=>{
+ const holders=Array.from({length:20},(_,i)=>({tokenAccount:'account'+i,ownerWallet:'owner'+i,sharePct:1}));
+ const assessment=scoreHolderIntelligence({top20SharePct:20,networkScore:30,creatorTeamExposurePct:2,independencePoints:8,historyComplete:true,classificationComplete:true,creatorAttributionComplete:true});
+ const args={...base,concentration:{mint,accounts:holders,top20TokenAccountSharePct:20},historicalHolders:{mint,jobId:'job',updatedAt,holders},verifiedHolderEnvelope:{mint,jobId:'job',updatedAt,assessment}};
+ const valid=adaptDashboardEvidence(args);
+ assert.equal(valid.matchedHolder,true);
+ assert.equal(valid.scores.holder_intelligence.components[1].points,30);
+ for(const foreignMint of ['other',undefined,null]){
+  const out=adaptDashboardEvidence({...args,concentration:{...args.concentration,mint:foreignMint}});
+  assert.equal(out.matchedHolder,false);
+  assert.ok(out.scores.holder_intelligence.components.every(c=>c.points===null));
+  assert.equal(consolidate(out.scores).score,null);
+ }
+});
 test('fee newer schedule remains pending; verified extension absence is N/A',()=>{
  const args={...base,result:{...base.result,tokenProgram:'spl-token-2022'},extensions:{mint,verified:true,observedAt:updatedAt,transferFee:{status:'observed',newerFee:{percentage:0},configAuthorityReported:true,configAuthority:null}}};
  assert.equal(adaptDashboardEvidence(args).scores.token_security.components[0].points,null);
