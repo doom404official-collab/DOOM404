@@ -1,5 +1,7 @@
 import {extractHolderNetworkTransfers} from './holderNetworkTransfers.mjs';
 import {scoreTop20Network} from './top20NetworkScore.mjs';
+// Per-assertion decoder contract only; not raw-response or execution proof.
+export const HOLDER_NETWORK_EXTRACTOR_REVISION='HOLDER_TRANSFER_CONTEXT_V2_2026_11_18';
 // Operational retention bounds, not scoring thresholds. Hitting either bound
 // is explicit missing evidence, never a truncated graph awarded full points.
 export const NETWORK_RETENTION_LIMITS=Object.freeze({signatures:20000,transfers:20000});
@@ -12,7 +14,7 @@ export function recordHolderNetworkTransaction(checkpoint,{transaction,signature
  if(Object.hasOwn(evidence.processed,signature))return;
  const parsed=extractHolderNetworkTransfers({transaction,signature});
  if(Object.keys(evidence.processed).length>=NETWORK_RETENTION_LIMITS.signatures||evidence.transfers.length+parsed.transfers.length>NETWORK_RETENTION_LIMITS.transfers){evidence.retentionLimited=true;return;}
- evidence.processed[signature]={valid:parsed.valid,unresolvedTokenTransfers:parsed.unresolvedTokenTransfers??0,transferCount:parsed.transfers.length};
+ evidence.processed[signature]={extractorRevision:HOLDER_NETWORK_EXTRACTOR_REVISION,valid:parsed.valid,unresolvedTokenTransfers:parsed.unresolvedTokenTransfers??0,transferCount:parsed.transfers.length};
  if(parsed.valid)evidence.transfers.push(...parsed.transfers);
 }
 export function summarizeHolderNetworkCheckpoint(checkpoint,{snapshotProvenanceVerified=false}={}){
@@ -24,6 +26,8 @@ export function summarizeHolderNetworkCheckpoint(checkpoint,{snapshotProvenanceV
  if(e.retentionLimited!==false||Object.keys(e.processed).length>NETWORK_RETENTION_LIMITS.signatures||e.transfers.length>NETWORK_RETENTION_LIMITS.transfers)return unavailable('NETWORK_EVIDENCE_RETENTION_LIMIT');
  const checked=Object.entries(checkpoint.signatures??{}).filter(([,s])=>s==='checked').map(([s])=>s);
  if(!checked.length||checked.some(s=>!object(e.processed[s])||e.processed[s].valid!==true))return unavailable('NETWORK_CHECKED_TRANSACTION_EVIDENCE_MISSING');
+ // Container labels cannot upgrade legacy assertions; every checked row must qualify.
+ if(checked.some(s=>!Object.hasOwn(e.processed[s],'extractorRevision')||e.processed[s].extractorRevision!==HOLDER_NETWORK_EXTRACTOR_REVISION))return unavailable('NETWORK_EXTRACTOR_REVISION_UNVERIFIED');
  if(checked.some(s=>e.processed[s].unresolvedTokenTransfers!==0))return unavailable('NETWORK_TOKEN_OWNERS_UNRESOLVED');
  const counts=new Map();for(const t of e.transfers)counts.set(t?.signature,(counts.get(t?.signature)??0)+1);
  if(checked.some(s=>!Number.isSafeInteger(e.processed[s].transferCount)||e.processed[s].transferCount<0||e.processed[s].transferCount!==(counts.get(s)??0)))return unavailable('NETWORK_RETAINED_TRANSFERS_MISSING');

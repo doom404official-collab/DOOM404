@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {scoreTop20Network} from '../lib/top20NetworkScore.mjs';
 import {extractHolderNetworkTransfers} from '../lib/holderNetworkTransfers.mjs';
-import {recordHolderNetworkTransaction,summarizeHolderNetworkCheckpoint,NETWORK_RETENTION_LIMITS} from '../lib/holderNetworkCheckpoint.mjs';
+import {recordHolderNetworkTransaction,summarizeHolderNetworkCheckpoint,NETWORK_RETENTION_LIMITS,HOLDER_NETWORK_EXTRACTOR_REVISION} from '../lib/holderNetworkCheckpoint.mjs';
 import {scanHolderHistoryBatch} from '../lib/holderHistoryEngine.mjs';
 const alphabet='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 const wallet=i=>'A'.repeat(30)+alphabet[Math.floor(i/58)]+alphabet[i%58];
@@ -124,4 +124,54 @@ test('token owner change away and back prevents end-state ownership attribution'
  {programId,parsed:{type:'transfer',info:{source:wallet(30),destination:wallet(31),amount:'1'}}},
  {programId,parsed:{type:'setAuthority',info:{account:wallet(30),authorityType:'accountOwner',newAuthority:wallet(0)}}}];
  const r=extractHolderNetworkTransfers({transaction:t,signature:sig(0)});assert.equal(r.transfers.length,0);assert.equal(r.unresolvedTokenTransfers,1);
+});
+
+// Synthetic provenance compatibility cases; no retained private checkpoint data.
+test('per-signature revision survives serialization without a container upgrade',()=>{
+ const c=checkpoint();recordHolderNetworkTransaction(c,{transaction:tx(),signature:sig(0)});
+ assert.equal(Object.hasOwn(c.networkEvidence,'extractorRevision'),false);
+ assert.equal(c.networkEvidence.processed[sig(0)].extractorRevision,HOLDER_NETWORK_EXTRACTOR_REVISION);
+ const copy=JSON.parse(JSON.stringify(c));
+ assert.equal(summarizeHolderNetworkCheckpoint(copy,{snapshotProvenanceVerified:true}).status,'observed_evidence');
+ const before=JSON.stringify(copy);
+ recordHolderNetworkTransaction(copy,{transaction:tx(),signature:sig(0)});
+ const changed=tx();changed.slot=11;recordHolderNetworkTransaction(copy,{transaction:changed,signature:sig(0)});
+ assert.equal(JSON.stringify(copy),before); // Duplicate calls never relabel or overwrite.
+});
+test('missing, mismatched and inherited row revisions cannot be laundered by container labels',()=>{
+ for(const revision of [undefined,null,false,1,'older']){
+  const c=checkpoint();recordHolderNetworkTransaction(c,{transaction:tx(),signature:sig(0)});
+  if(revision===undefined)delete c.networkEvidence.processed[sig(0)].extractorRevision;
+  else c.networkEvidence.processed[sig(0)].extractorRevision=revision;
+  c.networkEvidence.extractorRevision=HOLDER_NETWORK_EXTRACTOR_REVISION;
+  const before=JSON.stringify(c);
+  recordHolderNetworkTransaction(c,{transaction:tx(),signature:sig(0)});
+  const r=summarizeHolderNetworkCheckpoint(c,{snapshotProvenanceVerified:true});
+  assert.equal(r.reason,'NETWORK_EXTRACTOR_REVISION_UNVERIFIED');assert.equal(r.score,null);
+  assert.equal(JSON.stringify(c),before);
+ }
+ const c=checkpoint();recordHolderNetworkTransaction(c,{transaction:tx(),signature:sig(0)});
+ delete c.networkEvidence.processed[sig(0)].extractorRevision;
+ Object.setPrototypeOf(c.networkEvidence.processed[sig(0)],{extractorRevision:HOLDER_NETWORK_EXTRACTOR_REVISION});
+ assert.equal(summarizeHolderNetworkCheckpoint(c,{snapshotProvenanceVerified:true}).reason,'NETWORK_EXTRACTOR_REVISION_UNVERIFIED');
+});
+test('legacy and missing checked assertions do not block fresh pending extraction or refetch old signatures',async()=>{
+ for(const mode of ['legacy','missing','no-container']){
+  const c=checkpoint();recordHolderNetworkTransaction(c,{transaction:tx(),signature:sig(0)});
+  delete c.networkEvidence.processed[sig(0)].extractorRevision;
+  if(mode==='missing')delete c.networkEvidence.processed[sig(0)];
+  if(mode==='no-container')delete c.networkEvidence;
+  const oldRow=JSON.stringify(c.networkEvidence?.processed[sig(0)]);
+  const oldTransfers=JSON.stringify(c.networkEvidence?.transfers);
+  c.signatures[sig(1)]='pending';const requests=[];
+  const result=await scanHolderHistoryBatch({checkpoint:c,maxRequests:1,rpc:async(method,params)=>{requests.push([method,params[0]]);return tx(1);}});
+  assert.deepEqual(requests,[['getTransaction',sig(1)]]);
+  assert.equal(result.summary.reason,null);assert.equal(result.summary.requestCount,1);
+  assert.equal(c.signatures[sig(0)],'checked');assert.equal(c.signatures[sig(1)],'checked');
+  assert.equal(JSON.stringify(c.networkEvidence.processed[sig(0)]),oldRow);
+  if(mode!=='no-container')assert.equal(JSON.stringify(c.networkEvidence.transfers.slice(0,-1)),oldTransfers);
+  assert.equal(c.networkEvidence.processed[sig(1)].extractorRevision,HOLDER_NETWORK_EXTRACTOR_REVISION);
+  const r=summarizeHolderNetworkCheckpoint(JSON.parse(JSON.stringify(c)),{snapshotProvenanceVerified:true});
+  assert.equal(r.score,null);assert.equal(r.reason,mode==='legacy'?'NETWORK_EXTRACTOR_REVISION_UNVERIFIED':'NETWORK_CHECKED_TRANSACTION_EVIDENCE_MISSING');
+ }
 });
