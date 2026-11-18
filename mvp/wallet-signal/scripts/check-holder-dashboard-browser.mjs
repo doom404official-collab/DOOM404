@@ -9,7 +9,7 @@ const {chromium}=require('playwright'),compiled=require('next/dist/compiled/webp
 const temp=await mkdtemp(path.join(tmpdir(),'holder-browser-'));
 const loader=path.join(temp,'loader.cjs');
 await writeFile(loader,`module.exports=function(source){const callback=this.async();require(${JSON.stringify(require.resolve('next/dist/build/swc'))}).transform(source,{filename:this.resourcePath,jsc:{parser:{syntax:'ecmascript',jsx:true},transform:{react:{runtime:'automatic'}}},module:{type:'es6'}}).then(r=>callback(null,r.code),callback);};`);
-await writeFile(path.join(temp,'entry.jsx'),`import React from 'react';import {createRoot} from 'react-dom/client';import Dashboard from ${JSON.stringify(path.join(root,'app/GlitchV11Dashboard.jsx'))};import Map from ${JSON.stringify(path.join(root,'app/HolderBubbleMap.jsx'))};const root=createRoot(document.getElementById('root'));window.renderHolder=(props,map=false)=>root.render(map?<Map {...props}/>:<Dashboard {...props}/>);`);
+await writeFile(path.join(temp,'entry.jsx'),`import React from 'react';import {createRoot} from 'react-dom/client';import Dashboard from ${JSON.stringify(path.join(root,'app/GlitchV11Dashboard.jsx'))};import Map from ${JSON.stringify(path.join(root,'app/HolderBubbleMap.jsx'))};const root=createRoot(document.getElementById('root'));window.unmountHolder=()=>root.unmount();window.renderHolder=(props,map=false)=>root.render(map?<Map {...props}/>:<Dashboard {...props}/>);`);
 await new Promise((resolve,reject)=>compiled.webpack({mode:'development',context:root,entry:path.join(temp,'entry.jsx'),output:{path:temp,filename:'bundle.js'},resolve:{modules:[path.join(root,'node_modules'),'node_modules'],extensions:['.js','.jsx','.mjs']},module:{rules:[{test:/\.(jsx|mjs|js)$/,exclude:/node_modules/,use:loader}]},devtool:false},(error,stats)=>error||stats.hasErrors()?reject(error||Error(stats.toString({all:false,errors:true}))):resolve()));
 const browser=await chromium.launch({headless:true,...(process.env.HOLDER_BROWSER_EXECUTABLE?{executablePath:process.env.HOLDER_BROWSER_EXECUTABLE}:{})});const artifact=process.env.HOLDER_BROWSER_ARTIFACT_DIR||path.join(temp,'artifacts');await mkdir(artifact,{recursive:true});
 const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump',a='3'.repeat(32),b='4'.repeat(32),sig='2'.repeat(64),sig2='3'.repeat(64);
@@ -19,6 +19,41 @@ const historical={mint,jobId:'offline',holders,connectedGroups:groups,directPair
 let forbidden=0;const errors=[];
 // Additional narrow populated-map case; synthetic inputs, no server routes.
 try{
+ // Full-screen focus lifecycle on the actual component; surrounding controls are synthetic.
+ for(const width of [393,1280]){
+  const context=await browser.newContext({viewport:{width,height:852},serviceWorkers:'block'});
+  await context.route('**/*',r=>{forbidden++;return r.abort();});
+  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  await page.setContent('<button id="before">Background before</button><div id="root"></div><button id="after">Background after</button>');
+  await page.addScriptTag({content:await readFile(path.join(temp,'bundle.js'),'utf8')});
+  await page.evaluate(p=>window.renderHolder(p),{result:{mint,authorityDetailsStatus:'not_parsed'}});
+  const toggle=page.getByRole('button',{name:'Open full screen'});
+  for(let repeat=0;repeat<2;repeat++){
+   await toggle.focus();await page.keyboard.press('Enter');
+   const exit=page.getByRole('button',{name:'Exit full screen'});await exit.waitFor();
+   assert.equal(await page.getByRole('dialog').getAttribute('aria-modal'),'true');
+   assert.equal(await page.evaluate(()=>getComputedStyle(document.body).overflow),'hidden');
+   await page.keyboard.press('Shift+Tab');
+   assert.equal(await page.evaluate(()=>document.activeElement.textContent),'Creator Intelligence');
+   await page.keyboard.press('Tab');assert.equal(await exit.evaluate(e=>e===document.activeElement),true);
+   for(const name of ['Overall','Token Security','Holder Intelligence','Liquidity & Safety','Creator Intelligence']){
+    await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.textContent),name);
+   }
+   await page.keyboard.press('Tab');assert.equal(await exit.evaluate(e=>e===document.activeElement),true);
+   await page.locator('#after').evaluate(e=>e.focus());assert.equal(await exit.evaluate(e=>e===document.activeElement),true);
+   if(repeat===0)await page.keyboard.press('Escape');else await exit.click();
+   await toggle.waitFor();assert.equal(await toggle.evaluate(e=>e===document.activeElement),true);
+   assert.equal(await page.getByRole('dialog').count(),0);
+   assert.notEqual(await page.evaluate(()=>getComputedStyle(document.body).overflow),'hidden');
+   await page.keyboard.press('Shift+Tab');assert.equal(await page.evaluate(()=>document.activeElement.id),'before');
+  }
+  await toggle.click();await page.getByRole('dialog').waitFor();
+  await page.evaluate(()=>window.unmountHolder());assert.equal(await page.locator('.g11-full').count(),0);
+  assert.notEqual(await page.evaluate(()=>getComputedStyle(document.body).overflow),'hidden');
+  await page.locator('#before').focus();await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.id),'after');
+  assert.equal(await page.evaluate(()=>document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',cancelable:true,bubbles:true}))),true);
+  await context.close();
+ }
  {
  const alphabet='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
  const holders=Array.from({length:20},(_,i)=>({ownerWallet:'3'.repeat(31)+alphabet[i],tokenAccount:'4'.repeat(31)+alphabet[i],sharePct:1}));
@@ -98,5 +133,5 @@ try{
   assert.equal(await page.getByRole('checkbox').isChecked(),false);assert.equal(await page.getByRole('combobox').inputValue(),'all');
   await page.close();
  }
- assert.equal(forbidden,0);assert.deepEqual(errors,[]);console.log(JSON.stringify({passed:true,widths:[390,1280],networkRequests:forbidden,liquidityCasesPerViewport:8,creatorHolderExpiryCasesPerViewport:2,artifacts:artifact}));
+ assert.equal(forbidden,0);assert.deepEqual(errors,[]);console.log(JSON.stringify({passed:true,widths:[390,1280],networkRequests:forbidden,fullscreenLifecycleWidths:[393,1280],liquidityCasesPerViewport:8,creatorHolderExpiryCasesPerViewport:2,artifacts:artifact}));
 }finally{await browser.close();}

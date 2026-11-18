@@ -1,6 +1,6 @@
 "use client";
 import {mintAuthorityEvidence,normalizeMintAuthority} from "../lib/mintAuthorityEvidence.mjs";
-import {useEffect,useState} from "react";
+import {useEffect,useRef,useState} from "react";
 import {HOLDER_RETAIN19_POLICY} from "../lib/holderEligibleViewPolicy.mjs";
 import HolderBubbleMap from "./HolderBubbleMap";
 import {attributes,consolidate} from "../lib/glitchScoringV11.mjs";
@@ -48,6 +48,32 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
  },[observedAt,storedAt,feeAt,creatorAt,holderAt,clockRevision]);
  const [selected,setSelected]=useState("overall");
  const [fullScreen,setFullScreen]=useState(false);
+ const dashboardRef=useRef(null),fullScreenToggleRef=useRef(null);
+ useEffect(()=>{
+  if(!fullScreen)return;
+  const panel=dashboardRef.current,toggle=fullScreenToggleRef.current;
+  if(!panel)return;
+  const focusable=()=>Array.from(panel.querySelectorAll('button,a[href],input,select,textarea,summary,[tabindex]'))
+   .filter(node=>node.tabIndex>=0&&!node.matches(':disabled')&&!node.closest('[inert]')&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=='hidden');
+  const focusInside=()=>{if(!panel.contains(document.activeElement))(focusable()[0]||panel).focus();};
+  const keydown=event=>{
+   if(event.key==='Escape'){event.preventDefault();event.stopPropagation();setFullScreen(false);return;}
+   if(event.key!=='Tab')return;
+   const nodes=focusable(),first=nodes[0],last=nodes[nodes.length-1],active=document.activeElement;
+   if(!first){event.preventDefault();panel.focus();return;}
+   if(!nodes.includes(active)){event.preventDefault();(event.shiftKey?last:first).focus();}
+   else if(event.shiftKey&&active===first){event.preventDefault();last.focus();}
+   else if(!event.shiftKey&&active===last){event.preventDefault();first.focus();}
+  };
+  document.addEventListener('keydown',keydown,true);
+  document.addEventListener('focusin',focusInside);
+  toggle?.focus();
+  return ()=>{
+   document.removeEventListener('keydown',keydown,true);
+   document.removeEventListener('focusin',focusInside);
+   if(toggle?.isConnected)toggle.focus();
+  };
+ },[fullScreen]);
  const [holderView,setHolderView]=useState("overview");
  const authorities=mintAuthorityEvidence(result,{parsed:!!result?.mint&&result.authorityDetailsStatus!=="not_parsed"});
  const parsed=authorities.authorityDetailsStatus==="available";
@@ -98,8 +124,8 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
   {name:"Historical connections",detail:historical.available?fmt(historical.directPairs)+" wallet pairs have recorded transaction links involving "+fmt(historical.connectedWallets)+" wallets; "+(historical.compatible?"snapshot matches current holders.":"based on an earlier holder snapshot."):"Verified historical connections not yet available for this view."},
   {name:"Evidence coverage",detail:"Historical coverage is incomplete or unverified. Creator behavior and liquidity security require further verification."}
  ];
- return <section className={"g11"+(fullScreen?" g11-full":"")} aria-label="GLITCH Intelligence v1.1"><style>{css}</style>
-  <header className="g11-head"><div><div className="g11-brand">DOOM404 / GLITCH</div><h2>Token Intelligence</h2><div className="g11-muted" style={{fontSize:13}}>Evidence-First Assessment</div></div><div className="g11-actions"><span style={{color:"#ffb1b7",background:"#392127",padding:"7px 11px",borderRadius:20,fontSize:11}}>DEVELOPMENT PREVIEW</span><button type="button" className="g11-action" onClick={()=>setFullScreen(x=>!x)} aria-label={fullScreen?"Exit full screen":"Open full screen"}>{fullScreen?"Exit full screen":"Full screen ↗"}</button></div></header>
+ return <section ref={dashboardRef} tabIndex={-1} role={fullScreen?"dialog":undefined} aria-modal={fullScreen?true:undefined} className={"g11"+(fullScreen?" g11-full":"")} aria-label="GLITCH Intelligence v1.1"><style>{css}</style>
+  <header className="g11-head"><div><div className="g11-brand">DOOM404 / GLITCH</div><h2>Token Intelligence</h2><div className="g11-muted" style={{fontSize:13}}>Evidence-First Assessment</div></div><div className="g11-actions"><span style={{color:"#ffb1b7",background:"#392127",padding:"7px 11px",borderRadius:20,fontSize:11}}>DEVELOPMENT PREVIEW</span><button ref={fullScreenToggleRef} type="button" className="g11-action" onClick={()=>setFullScreen(x=>!x)} aria-label={fullScreen?"Exit full screen":"Open full screen"}>{fullScreen?"Exit full screen":"Full screen ↗"}</button></div></header>
   <div className="g11-overview"><article className="g11-panel g11-verdict"><div className="g11-kicker">GLITCH // OVERALL TOKEN ASSESSMENT</div><div className="g11-big">Overall Score: {overallScore===null?"Pending":fmt(overallScore)+"/100"}</div><div className="g11-muted" style={{fontSize:13}}>Combined assessment of Token Security, Holder Intelligence, Creator Intelligence, and Liquidity Quality &amp; Safety.</div></article>
   {selected==="overall"&&<article className="g11-panel"><h3>Evidence observations · not ranked</h3><div className="g11-insights">{insight.map(x=><article key={x.name}><strong>{x.name}</strong>{x.detail}</article>)}</div></article>}</div>
   <nav className="g11-attribute-tabs" aria-label="Attribute navigation">{[{id:"overall",name:"Overall"},... ["token_security","holder_intelligence","liquidity_quality_safety","creator_intelligence"].map(id=>attributes.find(a=>a.id===id))].map(a=><button type="button" key={a.id} aria-current={selected===a.id?"page":undefined} className="g11-action" onClick={()=>{setSelected(a.id);}}>{a.id==="liquidity_quality_safety"?"Liquidity & Safety":a.name}</button>)}</nav>
