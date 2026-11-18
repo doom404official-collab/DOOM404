@@ -1,3 +1,4 @@
+import {verifyHolderCollectionLineage} from './holderCollectionLineage.mjs';
 import {HOLDER_RETAIN19_POLICY as policy,assessApprovedHolderEligibleConcentration} from './holderEligibleViewPolicy.mjs';
 // Independent stored observation. Never reads or associates historical jobs.
 export function projectHolderFrozenObservation(snapshot){
@@ -30,5 +31,6 @@ export async function readHolderFrozenObservation(mint,{url=process.env.SUPABASE
   if(Object.hasOwn(holder,'rank')&&holder.rank!==index+1)throw Error('FROZEN_STORE_INVALID_RANK');
   return {...holder,balance:typeof balance==='number'?String(balance):balance};
  });
- return projectHolderFrozenObservation({...row,slot:row.snapshot_slot,holder_ranking:ranking});
+ const result=projectHolderFrozenObservation({...row,slot:row.snapshot_slot,holder_ranking:ranking});
+ return {...result,collectionLineage:await verifyHolderCollectionLineage(result.snapshot)};
 }

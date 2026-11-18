@@ -5,6 +5,7 @@ import {readDashboardEvidenceResponse} from '../lib/dashboardEvidenceRead.mjs';
 import {createLiquidityReadController} from '../lib/liquidityReadController.mjs';
 import HolderBubbleMap from "./HolderBubbleMap";
 import {HOLDER_RETAIN19_POLICY,assessApprovedHolderEligibleConcentration} from '../lib/holderEligibleViewPolicy.mjs';
+import {verifyHolderCollectionLineage} from '../lib/holderCollectionLineage.mjs';
 import GlitchV11Dashboard from "./GlitchV11Dashboard";
 import {reconcileHolderSnapshot} from "../lib/reconcileHolderSnapshot.mjs";
 import {scoreHolderIntelligenceForDisplay as scoreHolderConcentration} from "../lib/holderIntelligenceDisplayV11.mjs";
@@ -440,7 +441,11 @@ function CreatorLookup() {
         const data=await response.json();
         // Recompute from exact raw inputs; response diagnostics never promote job evidence.
         const observation=data.mint===address&&data.status==='observed_only'?assessApprovedHolderEligibleConcentration(data.snapshot):null;
+        if(stopped||controller.signal.aborted)return;
         if(!stopped)setFrozenHolderObservation(observation);
+        // Independent hash validation; never trust serialized API lineage flags.
+        const collectionLineage=observation?await verifyHolderCollectionLineage(data.snapshot,{signal:controller.signal}):null;
+        if(!stopped&&!controller.signal.aborted)setFrozenHolderObservation(observation?{...observation,collectionLineage}:null);
       }catch{if(!stopped)setFrozenHolderObservation(null);}
     }
     readFrozen();return ()=>{stopped=true;controller.abort();};

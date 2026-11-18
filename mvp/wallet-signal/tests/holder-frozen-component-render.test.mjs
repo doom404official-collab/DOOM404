@@ -36,7 +36,7 @@ test('approved observed component renders on its own denominator with unchanged 
  assert.match(html,/Observed eligible-holder concentration component: 32.2\/35/);
  assert.match(html,/Component only — not a Holder or Overall score/);
  assert.match(html,/Snapshot #2 at slot 457305617/);
- assert.match(html,/Snapshot provenance and job association are not verified; final score remains Pending/);
+ assert.match(html,/Exact-slot account-state certification and historical-job association remain unverified; final score remains Pending/);
  assert.match(html,/Overall Score: Pending/);
 });
 test('absent, foreign or malformed component is not displayed as numerical evidence',()=>{
@@ -45,4 +45,12 @@ test('absent, foreign or malformed component is not displayed as numerical evide
  for(const change of [{id:'foreign'},{max:100},{status:'verified'}])cases.push({...observation(),component:{...observation().component,...change}});
  for(const value of cases){const html=render(value);assert.doesNotMatch(html,/data-testid="frozen-concentration-component"/);assert.match(html,/Overall Score: Pending/);}
  assert.doesNotMatch(render(observation(),'7'.repeat(32)),/data-testid="frozen-concentration-component"/);
+});
+
+test('serialized or forged lineage flags cannot render verified collection lineage',()=>{
+ for(const collectionLineage of [undefined,{status:'verified',canonicalRowHashVerified:true,snapshotId:policy.snapshotId,runId:'38769967061'},true]){
+  const html=render({...observation(),collectionLineage});
+  assert.match(html,/Collection lineage unverified/);assert.doesNotMatch(html,/data-testid="frozen-collection-lineage"/);
+  assert.match(html,/Overall Score: Pending/);
+ }
 });
