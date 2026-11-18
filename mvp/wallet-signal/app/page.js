@@ -490,11 +490,14 @@ function CreatorLookup() {
       setPoolEvidenceError(failure.name === "AbortError" ? "Pool account verification timed out" : failure.message);
     } finally { setPoolEvidenceBusy(false); }
   }
-  async function inspect(event, cursor = null) {
+  async function inspect(event, cursor = null, historyOnly = false) {
     event.preventDefault();
+    if(historyOnly&&(busy||historyBatches>=MAX_HISTORY_BATCHES||historyBatches>0&&!historyCursor))return;
     cancelInspection();
     const controller=new AbortController();inspection.current=controller;
     const address=mint.trim(),current=()=>inspection.current===controller;
+    let primaryAccepted=historyOnly&&result?.mint===address;
+    if(historyOnly&&!primaryAccepted){inspection.current=null;return;}
     let cancel;
     const cancelled=new Promise((_,reject)=>{cancel=()=>reject(Object.assign(Error('Inspection cancelled'),{name:'AbortError'}));controller.signal.addEventListener('abort',cancel,{once:true});});
     // Bound both headers and body, including a non-cooperative late response.
@@ -511,12 +514,22 @@ function CreatorLookup() {
       })(),cancelled]);
     }
     const timer=setTimeout(()=>controller.abort(),45000);
-    setBusy(true); setError(""); if (!cursor) { liquidityReader.current.reset(address); setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
+    setBusy(true); setError(""); if (!historyOnly) { liquidityReader.current.reset(address); setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
+    if(historyOnly){setHistoryBatches(n=>n+1);setHistoryCursor(null);}
     try {
-      const data=await read('/api/creator?mint='+encodeURIComponent(address)+(cursor?'&before='+encodeURIComponent(cursor):''));
+      const data=await read('/api/creator?mint='+encodeURIComponent(address)+'&mode='+(historyOnly?'history':'current')+(cursor?'&before='+encodeURIComponent(cursor):''));
       if(!current())return;
-      setResult(data);
-      if (!cursor) {
+      if(historyOnly){
+        if(data.inspectionMode!=="history")throw Error('Historical evidence contract mismatch');
+        const historicalFields=['creatorEvidence','pumpLaunchEvidence','launchpadEvidence','launchInvestigation','stonkFunEvidence','creator','solscanDiagnostic','mintOrigin','indexedHistoryDiagnostic','historicalProvider','creatorHoldingTime'];
+        const history=Object.fromEntries(historicalFields.filter(key=>Object.hasOwn(data,key)).map(key=>[key,data[key]]));
+        setResult(previous=>previous?.mint===address?{...previous,...history}:previous);
+        setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
+        return;
+      }
+      setResult(data);primaryAccepted=true;
+      setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
+      if (!historyOnly) {
         try {
           const record=await read('/api/creator-evidence?mint='+encodeURIComponent(address));
           if(!current())return;
@@ -524,25 +537,24 @@ function CreatorLookup() {
           setCreatorEvidenceDiagnostic(record?.creator && ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(record.status) ? "record_available" : record?.status === "INDEXED_UNVERIFIED" ? "indexed_candidate" : record?.status === "CACHE_MISS" ? "cache_miss" : record?.status === "EVIDENCE_INCOMPLETE" ? "evidence_incomplete" : record?.status === "CONFLICT" ? "evidence_conflict" : "record_not_established");
         } catch { if(!current()||controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});setCreatorEvidenceDiagnostic("lookup_failed"); }
       }
-      if (!cursor) {
+      if (!historyOnly) {
         try {
           const accountData=await read('/api/token-concentration?mint='+encodeURIComponent(address));
           if(!current())return;
           setConcentration(accountData);
         } catch (failure) { if(!current()||controller.signal.aborted)throw failure;setConcentrationError('Token-account balances unavailable'); }
       }
-      if (!cursor && data.tokenProgram === "spl-token-2022") {
+      if (!historyOnly && data.tokenProgram === "spl-token-2022") {
         try {
           const extensionData=await read('/api/token-extensions?mint='+encodeURIComponent(address));
           if(!current())return;
           setExtensions(extensionData);
         } catch (failure) { if(!current()||controller.signal.aborted)throw failure;setExtensionsError('Extension data unavailable'); }
       }
-      if (!cursor) await Promise.race([refreshLiquidity(address,controller.signal),cancelled]);
+      if (!historyOnly) await Promise.race([refreshLiquidity(address,controller.signal),cancelled]);
       if(!current()||controller.signal.aborted)return;
-      setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
-      setHistoryBatches(n => cursor ? n + 1 : 1);
-    } catch (failure) { if(current()){setResult(null);setError(failure.name === "AbortError" ? "Token inspection timed out. Evidence remains incomplete; no automatic retry was made." : "Token inspection unavailable or mismatched. Evidence remains Unknown.");} }
+
+    } catch (failure) { if(current()){if(!primaryAccepted)setResult(null);setError(primaryAccepted?"Additional evidence unavailable or timed out. Current mint observation retained; unresolved attributes remain Unknown.":failure.name === "AbortError" ? "Token inspection timed out. Evidence remains incomplete; no automatic retry was made." : "Token inspection unavailable or mismatched. Evidence remains Unknown.");} }
     finally { clearTimeout(timer);controller.signal.removeEventListener('abort',cancel);if(current()){inspection.current=null;setBusy(false);} }
   }
   return <section aria-label="GLITCH Scanner Token Analysis" className="doom-token-inspect" style={{ ...cardStyle, border: "none", boxShadow: "none" }}>
@@ -554,7 +566,8 @@ function CreatorLookup() {
       <button type="submit" disabled={busy} style={{ padding: "12px 18px", border: 0, borderRadius: 8, background: "#a52222", color: "white", cursor: "pointer" }}>{busy ? "INSPECTING..." : "INSPECT TOKEN"}</button>
     </form>
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
-    {busy && <p role="status" style={{ color: "#ddd" }}>Querying Solana history. Each batch checks up to 3,000 signatures; this may take up to 45 seconds.</p>}
+    {busy && <p role="status" style={{ color: "#ddd" }}>Reading evidence. Unresolved attributes remain Unknown; this request is bounded to 45 seconds.</p>}
+    {result && <button type="button" disabled={busy||historyBatches>=MAX_HISTORY_BATCHES||historyBatches>0&&!historyCursor} onClick={event=>inspect(event,historyCursor,true)} style={{padding:10,background:"#281a20",color:"white",border:"1px solid #76424a",borderRadius:8}}> {historyBatches===0?"Investigate creator history":historyCursor?"Continue creator history":"Historical investigation stopped"} </button>}
     {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
       <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} liquidityError={liquidityError} liquidityRefreshing={liquidityRefreshing} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} frozenHolderObservation={frozenHolderObservation} workerEvidence={workerEvidence} />
       {/* Previous token evidence panels retired from the layout; raw data and scan workers remain unchanged. */}

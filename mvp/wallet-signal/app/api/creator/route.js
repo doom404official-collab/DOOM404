@@ -171,8 +171,10 @@ async function inspectSolscanCreator(mint, connection) {
 export async function GET(request) {
   const url = new URL(request.url);
   const address = url.searchParams.get("mint") || "";
+  const mode = url.searchParams.get("mode") || "full";
   const before = url.searchParams.get("before");
   const originTx = url.searchParams.get("originTx");
+  if (!["full","current","history"].includes(mode) || mode === "current" && (before || originTx)) return NextResponse.json({ error: "Invalid inspection mode" }, { status: 400 });
   if (originTx && !/^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(originTx)) return NextResponse.json({ error: "Invalid origin transaction signature" }, { status: 400 });
   if (before && !/^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(before)) {
     return NextResponse.json({ error: "Invalid historical scan cursor" }, { status: 400 });
@@ -188,6 +190,8 @@ export async function GET(request) {
   }
   try {
     const connection = createReliableConnection();
+    let mintDetails = {};
+    if (mode !== "history") {
     // Fetch raw account bytes independently: parsed RPC responses are not always supported.
     const [rawCheck, parsedCheck, supplyCheck] = await Promise.allSettled([
       connection.getAccountInfo(mint, "confirmed"),
@@ -235,6 +239,16 @@ export async function GET(request) {
       (BigInt(rawSupply) / (10n ** BigInt(decimals))).toString() + (BigInt(rawSupply) % (10n ** BigInt(decimals)) ? "." + (BigInt(rawSupply) % (10n ** BigInt(decimals))).toString().padStart(decimals, "0").replace(/0+$/, "") : "") : null);
     const parsedMintDetailsAvailable = isParsedMint;
     const verificationMethod = isParsedMint ? "parsed_mint" : rawMint ? "raw_mint_layout" : "token_supply";
+    mintDetails = {tokenProgram,parsedMintDetailsAvailable,decimals,verificationMethod,supply:displaySupply,
+      ...mintAuthorityEvidence(info,{parsed:parsedMintDetailsAvailable})};
+    }
+    if (mode === "current") return NextResponse.json({
+      mint:mint.toBase58(),...mintDetails,inspectionMode:"current",authoritiesAreCreatorIdentity:false,
+      creator:{status:"unverified",address:null},creatorEvidence:{status:"unverified"},
+      mintOrigin:{status:"not_requested",coverage:{pagesScanned:0,archivalCompletenessVerified:false}},
+      launchInvestigation:{candidateCount:0,inspectedCount:0,creatorVerified:false,coverage:"not_requested"},
+      interpretation:"Current mint observation only. Historical creator attribution remains Unknown."
+    },{headers:{"Cache-Control":"no-store"}});
     let origin;
     // Optional archival RPC: configure HELIUS_RPC_URL server-side only.
     // No provider key is sent to the browser or included in API output.
@@ -315,12 +329,9 @@ export async function GET(request) {
       launchpadEvidence: pumpLaunchEvidence,
       launchInvestigation,
       stonkFunEvidence,
-      tokenProgram,
-      parsedMintDetailsAvailable,
-      decimals,
-      verificationMethod,
-      supply: displaySupply,
-      ...mintAuthorityEvidence(info,{parsed:parsedMintDetailsAvailable}),
+      ...mintDetails,
+      inspectionMode:mode,
+      ...(mode === "history" ? {currentMintVerified:false,authorityDetailsStatus:"not_parsed"} : {}),
       authoritiesAreCreatorIdentity: false,
       creator: solscan.status === "provider_attributed" ? { status: "provider_attributed", address: solscan.creator, source: "solscan_pro", creationSignature: solscan.creationSignature, firstMintSignature: solscan.firstMintSignature, createdTime: solscan.createdTime, initializationVerified: solscan.initializationVerified, creatorIsInitializationSigner: solscan.creatorIsInitializationSigner, reason: "Solscan labels this address as creator. This is provider attribution, not proof of wallet control or beneficial ownership." } : { status: "unverified", address: null, reason: "Mint and freeze authorities do not reliably identify the original token creator. Historical launch transaction and provenance indexing are required." },
       solscanDiagnostic: { status: solscan.status, diagnostic: solscan.diagnostic || null, httpStatus: solscan.httpStatus || null, source: "solscan_pro", fallback: solscan.status === "provider_attributed" ? "not_needed" : "helius_or_bounded_rpc", guidance: solscan.diagnostic === "authentication_failed" ? "Solscan rejected the server-side credential (HTTP 401). Verify the V2 API key and its endpoint entitlement; Helius/RPC investigation remains available." : solscan.diagnostic === "access_forbidden" ? "Solscan denied endpoint access (HTTP 403). Check API plan permissions; Helius/RPC investigation remains available." : null },

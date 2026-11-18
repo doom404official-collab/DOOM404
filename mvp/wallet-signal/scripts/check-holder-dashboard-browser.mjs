@@ -17,7 +17,30 @@ const holders=[{ownerWallet:a,tokenAccount:'5'.repeat(32),sharePct:1},{ownerWall
 const groups=[{members:[a,b],directEdges:[{walletA:a,walletB:b,signatures:[sig,sig2]}]}];
 const historical={mint,jobId:'offline',holders,connectedGroups:groups,directPairs:1,connectedWallets:2,transactionsChecked:1};
 let forbidden=0;const errors=[];
+// Additional narrow populated-map case; synthetic inputs, no server routes.
 try{
+ {
+ const alphabet='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+ const holders=Array.from({length:20},(_,i)=>({ownerWallet:'3'.repeat(31)+alphabet[i],tokenAccount:'4'.repeat(31)+alphabet[i],sharePct:1}));
+ const groups=[{members:holders.map(h=>h.ownerWallet),directEdges:holders.slice(1).map(h=>({walletA:holders[0].ownerWallet,walletB:h.ownerWallet,signatures:['2'.repeat(64)]}))}];
+
+ const context=await browser.newContext({viewport:{width:320,height:720},serviceWorkers:'block'});
+ await context.route('**/*',r=>{forbidden++;return r.abort();});
+ const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));page.setDefaultTimeout(5000);
+ await page.setContent('<body style="margin:0"><div id="root"></div></body>');await page.addScriptTag({content:await readFile(path.join(temp,'bundle.js'),'utf8')});
+ await page.evaluate(p=>window.renderHolder(p,true),{holders,groups,identityKey:'synthetic-320-20'});
+ const nodes=page.getByRole('button',{name:/Wallet .*observed supply/});await nodes.first().waitFor();assert.equal(await nodes.count(),20);
+ for(let i=0;i<20;i++){await nodes.nth(i).focus();await page.keyboard.press('Enter');assert.equal(await nodes.nth(i).getAttribute('aria-pressed'),'true');}
+ await page.getByText('View transaction evidence').click();assert.equal(await page.locator('li').filter({hasText:'Candidate reference — unverified'}).count(),1);
+ await page.getByRole('button',{name:'Reset',exact:true}).focus();await page.keyboard.press('Enter');assert.equal(await page.locator('circle[aria-pressed="true"]').count(),0);
+ await page.getByRole('combobox',{name:'Filter by connected cluster'}).selectOption('0');
+ for(const name of ['Zoom in','Zoom out']){await page.getByRole('button',{name,exact:true}).focus();await page.keyboard.press('Enter');}
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));
+ for(const selector of ['select','button[aria-label="Zoom in"]','button[aria-label="Zoom out"]']){const box=await page.locator(selector).boundingBox();assert.ok(box.x>=0&&box.x+box.width<=322);}
+ await page.screenshot({path:path.join(artifact,'map-320-20-wallets.png'),fullPage:true});
+ assert.deepEqual(errors,[]);
+ await context.close();
+ }
  for(const width of [390,1280]){
   const page=await browser.newPage({viewport:{width,height:900}});page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',route=>{forbidden++;return route.abort();});
