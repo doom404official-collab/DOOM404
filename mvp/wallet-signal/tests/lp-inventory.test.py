@@ -162,4 +162,32 @@ class Checks(unittest.TestCase):
    self.assertIn(text,w)
   for text in ['always()','push:','pull_request:','schedule:','id-token:','response.bin']:
    self.assertNotIn(text,w)
+
+ def test_diagnostic_discovery_categories(self):
+  cases=[(b'{','JSON_DECODE'),(b'{"jsonrpc":"2.0","id":1,"error":{"message":"'+EP.encode()+b'"}}','RPC_ERROR'),(env(1,[],True),'RPC_ENVELOPE'),(env(1,[{}]*100),'DISCOVERY_COUNT'),(env(1,[{}]),'DISCOVERY_IDENTITY')]
+  v=value(token());v['owner']=m.core.CLASSIC
+  cases.append((env(1,[{'pubkey':KEY,'account':v}]),'DISCOVERY_ACCOUNT_LAYOUT'))
+  o=json.loads(first());o['ignored']=EP;cases.append((json.dumps(o).encode(),'DISCOVERY_LEAKAGE'))
+  for raw,stage in cases:
+   r,c,o=self.run_capture([raw]);self.assertEqual(r['failureStage'],stage);self.assertEqual(r['httpStatus'],200);self.assertIsNone(o);self.assertEqual(len(c),1);self.assertNotIn(EP,json.dumps(r))
+ def test_diagnostic_transport_status_length(self):
+  for response,stage,status in [(Response(first(),403),'HTTP_STATUS',403),(Response(first(),True),'HTTP_STATUS',None),(Response(first(),999),'HTTP_STATUS',None)]:
+   with tempfile.TemporaryDirectory() as d:
+    r=m.collect(EP,Path(d)/'cap',lambda *a,**k:response)
+    self.assertEqual(r['failureStage'],stage);self.assertEqual(r['httpStatus'],status);self.assertFalse((Path(d)/'cap/public/projection.json').exists());self.assertTrue(response.closed)
+  response=Response(first());response.headers['Content-Length']='1'
+  with tempfile.TemporaryDirectory() as d:
+   r=m.collect(EP,Path(d)/'cap',lambda *a,**k:response);self.assertEqual(r['failureStage'],'CONTENT_LENGTH')
+ def test_diagnostic_second_stage_and_success(self):
+  r,c,o=self.run_capture([first(),b'{']);self.assertEqual(r['failureStage'],'OBSERVATION_VALIDATION');self.assertEqual(r['attempts'],2);self.assertIsNone(o)
+  r,c,o=self.run_capture([first(),second()]);self.assertEqual(r,{'status':'TYPED_CAPTURED_NOT_CUSTODY','attempts':2,'retries':0});self.assertFalse(o['custodyVerified'])
+ def test_diagnostic_deadline_and_transport(self):
+  r,c,o=self.run_capture([RuntimeError(EP)]);self.assertEqual(r['failureStage'],'TRANSPORT');self.assertIsNone(r['httpStatus']);self.assertNotIn(EP,json.dumps(r))
+  real=signal.setitimer
+  def timer(which,value,*a):return real(which,0.01 if value==30 else value,*a)
+  def stall(*a,**k):time.sleep(.1);raise AssertionError()
+  old=signal.getsignal(signal.SIGALRM)
+  with tempfile.TemporaryDirectory() as d,patch.object(signal,'setitimer',side_effect=timer):
+   r=m.collect(EP,Path(d)/'cap',stall);self.assertEqual(r['failureStage'],'DEADLINE');self.assertFalse((Path(d)/'cap/public/projection.json').exists())
+  self.assertEqual(signal.getsignal(signal.SIGALRM),old);self.assertEqual(signal.getitimer(signal.ITIMER_REAL)[0],0)
 if __name__=='__main__':unittest.main()
