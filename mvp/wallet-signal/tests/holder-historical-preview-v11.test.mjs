@@ -15,3 +15,19 @@ test("matching snapshot still does not imply historical exhaustion",()=>{
  const r=summarizeHistoricalHolderPreview({historical:{holders:[],directPairs:0,connectedWallets:0},compatible:true});
  assert.equal(r.compatible,true);assert.equal(r.historyComplete,false);
 });
+test("missing and malformed observed counts remain Pending inputs rather than numerical zero",()=>{
+ for(const value of [undefined,null,false,true,"","0","2",-1,0.5,NaN,Infinity,Number.MAX_SAFE_INTEGER+1]){
+  const r=summarizeHistoricalHolderPreview({historical:{holders:[],directPairs:value,connectedWallets:value}});
+  assert.equal(r.directPairs,null,`directPairs must withhold ${String(value)}`);
+  assert.equal(r.connectedWallets,null,`connectedWallets must withhold ${String(value)}`);
+  assert.equal(r.historyComplete,false);
+ }
+});
+test("numeric count representation preserves zero and safe whole counts independently",()=>{
+ for(const value of [0,1,42,Number.MAX_SAFE_INTEGER]){
+  const r=summarizeHistoricalHolderPreview({historical:{holders:[],directPairs:value,connectedWallets:null}});
+  assert.equal(r.directPairs,value);
+  assert.equal(r.connectedWallets,null);
+  assert.equal(r.historyComplete,false);
+ }
+});
