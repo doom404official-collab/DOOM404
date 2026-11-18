@@ -1,0 +1,36 @@
+name: Creator atomic transition offline validation
+on:
+  push:
+    branches: [fix/glitch-recovery-preflight-20261027]
+    paths:
+      - '.github/workflows/creator-postgres-replay-test.yml'
+      - 'mvp/wallet-signal/tests/fixtures/creator-evidence/check-atomic-rollback-actions.py'
+      - 'mvp/wallet-signal/tests/fixtures/creator-evidence/creator-evidence-atomic-transition.sql'
+permissions:
+  contents: read
+jobs:
+  isolated-postgres:
+    if: github.repository == 'doom404official-collab/DOOM404' && github.event_name == 'push' && github.ref == 'refs/heads/fix/glitch-recovery-preflight-20261027'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      postgres:
+        # Digest observed in approved isolated runs39738276563/39741701691.
+        image: postgres:17@sha256:b8faeff7712663c2773a190181e1246e37e364b887611c04658c28b44e2408fe
+        env:
+          POSTGRES_USER: creator_test
+          POSTGRES_PASSWORD: ci-only
+          POSTGRES_DB: glitch_creator_evidence_test
+        ports: ['127.0.0.1:5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U creator_test -d glitch_creator_evidence_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Validate atomic rollback against the synthetic local service
+        run: python3 mvp/wallet-signal/tests/fixtures/creator-evidence/check-atomic-rollback-actions.py

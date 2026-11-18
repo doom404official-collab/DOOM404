@@ -1,9 +1,22 @@
+import {summarizeCreatorAcquisitionLedger} from './creatorAcquisitionLedger.mjs';
 /** Read-only projections of existing worker checkpoints. Never expose raw state,
  * leases, provider errors, credentials, or candidate transactions to the client. */
 const address=/^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const finite=(v,max=100)=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=max;
 const count=v=>Number.isSafeInteger(v)&&v>=0?v:null;
 const stamp=v=>typeof v==='string'&&Number.isFinite(Date.parse(v))?v:null;
+function creatorLedgerConsistent(state,mint,creator){
+ const saved=state.creatorAcquisitionLedger;
+ if(!creator||!saved||saved.status!=='EVIDENCE_READY'||saved.scoreEligible!==true||
+  saved.historyComplete!==true||saved.attributionComplete!==true||state.creatorRetentionBlocked||
+  !Array.isArray(state.creatorVerifiedAcquisitionEvents)||!Array.isArray(saved.rejected)||saved.rejected.length)return false;
+ try{
+  const actual=summarizeCreatorAcquisitionLedger({mint,creator,events:state.creatorVerifiedAcquisitionEvents,
+   historyComplete:state.creatorHistoryComplete===true,attributionComplete:state.creatorAcquisitionAttributionComplete===true});
+  return actual.scoreEligible===true&&['acceptedCount','launchRaw','purchasedRaw','externalReceivedRaw','externalTransferredOutRaw',
+   'verifiedSoldRaw','totalAcquiredRaw','reconciledRemainingRaw','sellThroughPct'].every(field=>saved[field]===actual[field]);
+ }catch{return false;}
+}
 export function projectCreatorCheckpoint(row,mint){
  if(!row)return {status:'not_started',mint};
  if(row.mint!==mint||!row.state||typeof row.state!=='object')throw Error('CREATOR_CHECKPOINT_MISMATCH');
@@ -17,7 +30,7 @@ export function projectCreatorCheckpoint(row,mint){
  // producer exists yet. A wallet balance and launch count must not fill those.
  const selling=s.selling,allocation=s.initialAllocationEvidence;
  const windows=Array.isArray(selling?.windows)?selling.windows:[];
- const complete=s.creatorHistoryComplete===true&&allocation?.status==='INITIAL_ALLOCATION_EVIDENCE_COMPLETE'&&allocation?.coverageComplete===true&&
+ const complete=creatorLedgerConsistent(s,mint,creator)&&s.creatorHistoryComplete===true&&allocation?.status==='INITIAL_ALLOCATION_EVIDENCE_COMPLETE'&&allocation?.coverageComplete===true&&
   /^\d+$/.test(allocation?.initialAttributableRaw||'')&&BigInt(allocation.initialAttributableRaw)>0n&&
   selling?.methodology==='CREATOR_SELLING_V1_1'&&selling.creatorSellingScoreEligible===true&&
   [3600,86400,604800].every(seconds=>windows.filter(w=>w.seconds===seconds).length===1&&

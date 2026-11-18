@@ -20,11 +20,13 @@ jobs:
         working-directory: mvp/wallet-signal
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - name: Run smoke tests
         run: npm run test:smoke
       - name: Build application

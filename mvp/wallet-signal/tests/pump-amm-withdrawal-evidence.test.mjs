@@ -9,8 +9,10 @@ test("valid LP mint alone does not verify withdrawal rights",()=>{
  assert.equal(r.lpSecurityPoints,null);
 });
 test("holder inventory flag alone cannot establish custody or locks",()=>{
- const r=assessPumpAmmWithdrawalRights({lpHolderEvidence:{complete:true}});
+ const r=assessPumpAmmWithdrawalRights({lpHolderEvidence:{inventoryComplete:true}});
  assert.equal(r.lpHolderInventoryComplete,true);
  assert.equal(r.lpCustodyVerified,false);
  assert.equal(r.verifiedLockedLpAmount,null);
 });
+
+test('unrelated complete flag cannot manufacture LP inventory coverage',()=>{assert.equal(assessPumpAmmWithdrawalRights({lpHolderEvidence:{complete:true}}).lpHolderInventoryComplete,false);});

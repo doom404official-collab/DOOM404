@@ -5,6 +5,7 @@ import { createReliableConnection } from "../../../lib/reliableConnection.js";
 import { normalizeTransferFee, resolveEpochFee, consistentEpochContext } from "../../../lib/tokenTransferFeeEvidence.mjs";
 
 export const dynamic = "force-dynamic";
+const TOKEN_2022_PROGRAM_ID = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
 const TYPES = {
   transferFeeConfig: "Transfer fee configuration",
   transferHook: "Transfer hook",
@@ -33,7 +34,14 @@ export async function GET(request) {
     const epochContext = consistentEpochContext(before, after, response.context?.slot);
     const observedAt = new Date().toISOString();
     const account = response.value;
-    if (!account || account.data?.program !== "spl-token-2022" || account.data?.parsed?.type !== "mint") {
+    // A parsed program label alone is not account ownership evidence. Accept the
+    // SDK PublicKey or its canonical RPC string, never arbitrary coercible objects.
+    let owner = null;
+    try {
+      owner = typeof account?.owner === "string" ? account.owner :
+        account?.owner instanceof PublicKey ? account.owner.toBase58() : null;
+    } catch { /* Malformed owner leaves inspection unverified. */ }
+    if (!account || owner !== TOKEN_2022_PROGRAM_ID || account.data?.program !== "spl-token-2022" || account.data?.parsed?.type !== "mint") {
       return NextResponse.json({ status: "not_token_2022_mint", mint: mint.toBase58(), verified: false, extensions: [], reason: "Parsed Token-2022 mint account not available; extension inspection not performed." });
     }
     const info = account.data.parsed.info || {};

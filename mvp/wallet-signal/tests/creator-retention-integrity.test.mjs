@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {assertCreatorRetention,blockCreatorRetention} from '../lib/creatorRetentionIntegrity.mjs';
-import {runCreatorIntelligenceTick} from '../lib/creatorIntelligenceTick.mjs';
+import {runCreatorIntelligenceTick} from '../tests/helpers/creatorTickMockLease.mjs';
 import {assessCreatorInitialAllocation} from '../lib/creatorInitialAllocationEvidence.mjs';
 const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump',creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
 const signature=i=>'2'.repeat(80)+[i%58,Math.floor(i/58)%58,Math.floor(i/3364)%58].map(n=>'123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'[n]).join('');

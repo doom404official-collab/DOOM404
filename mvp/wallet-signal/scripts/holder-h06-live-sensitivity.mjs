@@ -1,3 +1,4 @@
+import {summarizeFrozenCrossJobNetwork} from '../lib/frozenCrossJobNetwork.mjs';
 import {compareHolderInfrastructureExclusion} from "../lib/holderInfrastructureSensitivity.mjs";
 const url=process.env.SUPABASE_URL;
 const key=process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -8,9 +9,11 @@ const jobIds=["c670f393-31b0-470c-a01f-cb2b813a1219","d07c0256-b472-4089-a237-99
 const pool="6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA";
 const rows=await get("glitch_top20_snapshots?select=*&id=eq."+snapshotId);
 const s=rows[0];
-if(rows.length!==1||s.status!=="frozen")throw Error("SNAPSHOT_UNAVAILABLE");
+if(rows.length!==1||s.status!=="frozen"||s.id!==snapshotId||s.slot!==457305617)throw Error("SNAPSHOT_UNAVAILABLE");
 const jobs=await get("glitch_holder_scan_jobs?select=id,mint,status,updated_at,checkpoint&id=in.("+jobIds.join(",")+")");
-if(jobs.length!==2||jobs.some(j=>j.mint!==s.mint))throw Error("JOBS_UNAVAILABLE");
+if(jobs.length!==2||new Set(jobs.map(j=>j.id)).size!==2||jobs.some(j=>!jobIds.includes(j.id)||j.mint!==s.mint))throw Error("JOBS_UNAVAILABLE");
+const graph=summarizeFrozenCrossJobNetwork({snapshot:s,jobs});
+if(graph.status!=='OBSERVED_ONLY')throw Error(graph.reason);
 const transfers=new Map();
 for(const job of jobs)for(const t of job.checkpoint?.networkEvidence?.transfers??[]){
  const k=[t.signature,t.from,t.to,t.assetType,t.mint??"",t.amountRaw].join("|");
@@ -19,4 +22,4 @@ for(const job of jobs)for(const t of job.checkpoint?.networkEvidence?.transfers?
 const result=compareHolderInfrastructureExclusion({snapshot:s,transfers:[...transfers.values()],pool});
 const expected={baselineScore:9.93,excludedScore:14.04,uniqueTransfers:23963};
 const parity={baselineScoreMatches:result.baseline.score===expected.baselineScore,excludedScoreMatches:result.excluded.score===expected.excludedScore,transferCountMatches:transfers.size===expected.uniqueTransfers};
-console.log(JSON.stringify({status:"OBSERVED_ONLY",snapshotId,sourceJobs:jobs.map(j=>({id:j.id,status:j.status,updatedAt:j.updated_at})),uniqueTransfers:transfers.size,parity,baseline:{score:result.baseline.score,evidence:result.baseline.evidence,penalties:result.baseline.penalties},poolExcluded:{score:result.excluded.score,evidence:result.excluded.evidence,penalties:result.excluded.penalties},delta:result.delta,historyComplete:false,scorePromoted:false,snapshotModified:false}));
+console.log(JSON.stringify({status:"OBSERVED_ONLY",snapshotId,sourceJobs:jobs.map(j=>({id:j.id,status:j.status,updatedAt:j.updated_at})),uniqueTransfers:transfers.size,coverage:graph.coverage,snapshotIdentity:graph.snapshotIdentity,snapshotProvenanceVerified:false,parity,baseline:{score:result.baseline.score,evidence:result.baseline.evidence,penalties:result.baseline.penalties},poolExcluded:{score:result.excluded.score,evidence:result.excluded.evidence,penalties:result.excluded.penalties},delta:result.delta,historyComplete:false,scorePromoted:false,snapshotModified:false}));

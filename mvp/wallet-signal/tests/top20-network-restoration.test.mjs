@@ -45,9 +45,10 @@ test('extracts genuine parsed SOL instructions, not cooccurrence, failures or a 
 });
 test('cross-asset SPL and Token2022 resolve owners solely from tx-local metadata, including inner instructions',()=>{
  for(const programId of ['TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA','TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb']){
-  const t=tx();t.transaction.message.accountKeys=[wallet(30),wallet(31)];t.transaction.message.instructions=[];
+  const t=tx();t.transaction.message.accountKeys=[wallet(30),wallet(31)];t.transaction.message.instructions=[{programId:wallet(60)}];
   t.meta.preTokenBalances=[{accountIndex:0,owner:wallet(0),mint:wallet(40)},{accountIndex:1,owner:wallet(50),mint:wallet(40)}];
-  t.meta.innerInstructions=[{instructions:[{programId,parsed:{type:'transferChecked',info:{source:wallet(30),destination:wallet(31),mint:wallet(40),tokenAmount:{amount:'15'}}}}]}];
+  t.meta.postTokenBalances=structuredClone(t.meta.preTokenBalances);
+  t.meta.innerInstructions=[{index:0,instructions:[{programId,parsed:{type:'transferChecked',info:{source:wallet(30),destination:wallet(31),mint:wallet(40),tokenAmount:{amount:'15'}}}}]}];
   let r=extractHolderNetworkTransfers({transaction:t,signature:sig(0)});assert.equal(r.transfers.length,1);assert.equal(r.transfers[0].to,wallet(50));
   t.meta.postTokenBalances=[{accountIndex:1,owner:wallet(2),mint:wallet(40)}];r=extractHolderNetworkTransfers({transaction:t,signature:sig(0)});assert.equal(r.transfers.length,0);assert.equal(r.unresolvedTokenTransfers,1);
  }

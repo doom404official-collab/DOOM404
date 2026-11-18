@@ -1,7 +1,8 @@
+import {validateLiquidityStorage,liquidityStorageRequest} from "./liquidityStorageTransport.mjs";
 import { validateLiquidityCheckpoint } from "./liquidityEvidenceCheckpoint.mjs";
-export async function persistLiquidityCheckpoint(evidence, { url, serviceRoleKey, fetchImpl = fetch } = {}) {
+export async function persistLiquidityCheckpoint(evidence, { url, serviceRoleKey, fetchImpl = fetch, signal, timeoutMs } = {}) {
  validateLiquidityCheckpoint(evidence);
- if (!url || !serviceRoleKey) throw Error("LIQUIDITY_STORAGE_NOT_CONFIGURED");
+ const origin=validateLiquidityStorage({url,serviceRoleKey});
  const row = {
   mint:evidence.mint,
   schema_version:1,
@@ -12,7 +13,7 @@ export async function persistLiquidityCheckpoint(evidence, { url, serviceRoleKey
   evidence,
   updated_at:new Date().toISOString()
  };
- const response = await fetchImpl(url.replace(/\/$/,"")+"/rest/v1/liquidity_evidence_checkpoints?on_conflict=mint",{
+ return liquidityStorageRequest(origin+"/rest/v1/liquidity_evidence_checkpoints?on_conflict=mint",{
   method:"POST",
   headers:{
    apikey:serviceRoleKey,
@@ -20,9 +21,6 @@ export async function persistLiquidityCheckpoint(evidence, { url, serviceRoleKey
    "content-type":"application/json",
    prefer:"resolution=merge-duplicates,return=minimal"
   },
-  body:JSON.stringify(row),
-  signal:AbortSignal.timeout(12000)
- });
- if(!response.ok)throw Error("LIQUIDITY_CHECKPOINT_WRITE_FAILED_"+response.status);
- return true;
+  body:JSON.stringify(row)
+ },{fetchImpl,signal,timeoutMs,label:"LIQUIDITY_CHECKPOINT_WRITE"});
 }

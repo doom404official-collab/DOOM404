@@ -17,7 +17,7 @@ test("missing owner metadata is diagnostic only",()=>{
 test("resolved transfer remains verified with empty diagnostics",()=>{
  const ix={programId:token,parsed:{type:"transfer",info:{source:wallet,destination:other,amount:"10"}}};
  const pre=[{accountIndex:0,owner:wallet,mint},{accountIndex:1,owner:other,mint}];
- const result=extractHolderNetworkTransfers({transaction:tx(ix,pre),signature});
+ const result=extractHolderNetworkTransfers({transaction:tx(ix,pre,pre),signature});
  assert.equal(result.unresolvedTokenTransfers,0);assert.deepEqual(result.unresolvedReasons,{});
  assert.deepEqual(result.unresolvedAccounts,[]);
  assert.equal(result.transfers.length,1);assert.equal(result.transfers[0].transferVerified,true);

@@ -1,3 +1,4 @@
+import {inspectHistoricalTransactionProof} from "../../../lib/liquidityHistoricalDecoder.mjs";
 import {NextResponse} from "next/server";
 import {PublicKey} from "@solana/web3.js";
 import {createReliableConnection} from "../../../lib/reliableConnection.js";
@@ -28,13 +29,14 @@ export async function POST(request){
  try{pool=new PublicKey(payload?.poolAddress);if(pool.toBase58()!==payload.poolAddress)throw Error();}catch{return NextResponse.json({error:"Invalid pool address"},{status:400});}
  const vaultAddresses=payload?.vaultAddresses??[];
  if(!Array.isArray(vaultAddresses)||vaultAddresses.length>2||vaultAddresses.some(a=>{try{return new PublicKey(a).toBase58()!==a;}catch{return true;}}))return NextResponse.json({error:"Invalid vault addresses"},{status:400});
+  const requestedSignature=payload?.signature;
+  if(requestedSignature!==undefined&&(typeof requestedSignature!=="string"||!/^[1-9A-HJ-NP-Za-km-z]{64,90}$/.test(requestedSignature)))return NextResponse.json({error:"Invalid transaction signature"},{status:400});
  try{
   const connection=createReliableConnection({timeoutMs:8000,retries:1});
   const signatures=await connection.getSignaturesForAddress(pool,{limit:50},"confirmed");
   const summary=summarizePoolSignatures(signatures);
   const selection=selectLiquidityTransactionSignatures(summary.signatures,{limit:10,exclude:Array.isArray(payload?.excludeSignatures)?payload.excludeSignatures:[]});
-  const requestedSignature=payload?.signature;
-  if(requestedSignature!==undefined&&(typeof requestedSignature!=="string"||!/^[1-9A-HJ-NP-Za-km-z]{64,90}$/.test(requestedSignature)))return NextResponse.json({error:"Invalid transaction signature"},{status:400});
+
   const selected=requestedSignature?[{signature:requestedSignature,err:null}]:selection.selected;
   const decoded=[];
   for(const entry of selected){
@@ -42,12 +44,15 @@ export async function POST(request){
     const retrieval=await retrieveLiquidityTransaction(entry.signature,{primaryConnection:connection});
     if(retrieval.error){decoded.push({signature:entry.signature,status:"unavailable",...describeLiquidityRpcFailure(retrieval.error),versionProbe:inspectVersionRejection(retrieval.error),fallbackAttempted:retrieval.fallbackAttempted,fallbackSkipped:retrieval.fallbackSkipped??null,primaryErrorCode:retrieval.primaryError?describeLiquidityRpcFailure(retrieval.primaryError).errorCode:null,provider:retrieval.provider,candidateOperations:[],withdrawalConfirmed:false});continue;}
     const tx=retrieval.transaction;
+    const proof=inspectHistoricalTransactionProof(tx,entry.signature,entry.slot);
+    if(!proof.valid)throw Error(proof.reason);
+    if(proof.execution==='FAILED_TRANSACTION'){decoded.push({signature:entry.signature,slot:tx.slot,status:'failed_execution',candidateOperations:[],authorizationVerified:false,settlementVerified:false,withdrawalConfirmed:false});continue;}
     const message=tx?.transaction?.message;
     const keys=[...(message?.staticAccountKeys??message?.accountKeys??[]),...(tx?.meta?.loadedAddresses?.writable??[]),...(tx?.meta?.loadedAddresses?.readonly??[])].map(k=>typeof k==="string"?k:k?.pubkey?.toBase58?.()??k?.toBase58?.()??String(k));
     const instructionEvidence=inspectPumpAmmParsedTransaction(tx,pool.toBase58());
     const vaultBalanceEvidence=calculateVaultTransactionDeltas(tx?.meta,keys,vaultAddresses);
     const feeSweepAccounts=extractFeeSweepAccounts(tx,pool.toBase58());
-    const feeSettlementTransfers=inspectFeeSettlementTransfers(tx,feeSweepAccounts);
+    const feeSettlementTransfers=inspectFeeSettlementTransfers(tx,feeSweepAccounts,{signature:entry.signature,slot:entry.slot});
     const feeSettlementAssessment=assessFeeSettlement({sweepAccounts:feeSweepAccounts,transferEvidence:feeSettlementTransfers,vaultBalanceEvidence});
     const feeRecipientAuthorization=assessFeeRecipientAuthorization(feeSweepAccounts.sweeps);
     const historicalFeeAuthorization=assessHistoricalFeeAuthorization({transactionSlot:tx?.slot,feeSweeps:feeSweepAccounts.sweeps});

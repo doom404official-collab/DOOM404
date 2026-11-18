@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {runCreatorIntelligenceTick} from '../lib/creatorIntelligenceTick.mjs';
+import {runCreatorIntelligenceTick} from '../tests/helpers/creatorTickMockLease.mjs';
 const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
 const creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
 async function scenario(state){
@@ -23,6 +23,10 @@ const missing=await scenario({});
 assert.equal(missing.saved.stage,'selling');
 assert.equal(missing.saved.state.sellingStatus,'AWAITING_VERIFIED_LAUNCH_TIME');
 const complete=await scenario({launchTimestamp:1700000000,launchDistributionCoverageComplete:true,verifiedLaunchDistributions:[{mint,recipient:creator,verifiedLaunchDistribution:true,instructionVerified:true,signature:'2'.repeat(88),timestamp:1700000000,amountRaw:'1000'}],verifiedSwapSales:[],historyCompleteByWindow:{3600:true,86400:true,604800:true}});
-assert.equal(complete.saved.stage,'previous_launches');
-assert.equal(complete.saved.state.selling.windows[0].sellThroughPct,0);
+// A legacy flag and signature-only distribution are not independent launch coverage.
+assert.equal(complete.saved.stage,'selling');
+assert.equal(complete.saved.state.selling,undefined);
+assert.equal(complete.saved.state.initialAllocationEvidence.verifiedObservedRaw,'1000');
+assert.equal(complete.saved.state.initialAllocationEvidence.initialAttributableRaw,null);
+assert.equal(complete.saved.state.launchDistributionCoverageComplete,false);
 console.log('creator selling tick tests passed');

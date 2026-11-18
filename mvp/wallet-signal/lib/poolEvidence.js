@@ -10,14 +10,13 @@ export function normalizePoolAddress(value) {
 }
 export function normalizeReportedPools(payload, mint) {
   if (!Array.isArray(payload)) return [];
-  const seen = new Set();
-  return payload.filter(x => x?.chainId === "solana" && (x?.baseToken?.address === mint || x?.quoteToken?.address === mint))
+  const normalized = payload.filter(x => x?.chainId === "solana" && (x?.baseToken?.address === mint || x?.quoteToken?.address === mint))
     .map(x => {
       const pairAddress = normalizePoolAddress(x.pairAddress);
-      if (!pairAddress || seen.has(pairAddress)) return null;
-      seen.add(pairAddress);
+      if (!pairAddress) return null;
       return {
         pairAddress,
+        baseMint:normalizePoolAddress(x.baseToken?.address),quoteMint:normalizePoolAddress(x.quoteToken?.address),
         dexId: typeof x.dexId === "string" ? x.dexId.slice(0,120) : null,
         baseSymbol: typeof x.baseToken?.symbol === "string" ? x.baseToken.symbol.slice(0,120) : null,
         quoteSymbol: typeof x.quoteToken?.symbol === "string" ? x.quoteToken.symbol.slice(0,120) : null,
@@ -33,5 +32,11 @@ export function normalizeReportedPools(payload, mint) {
         lpBurnsVerified: false,
         withdrawalRightsVerified: false
       };
-    }).filter(Boolean).sort((a,b) => (b.liquidityUsd ?? -1) - (a.liquidityUsd ?? -1));
+    }).filter(Boolean);
+  const groups=new Map();
+  for(const row of normalized){const observations=groups.get(row.pairAddress)||new Map();observations.set(JSON.stringify(row),row);groups.set(row.pairAddress,observations);}
+  return [...groups.entries()].map(([pairAddress,observations])=>observations.size===1?[...observations.values()][0]:{
+    pairAddress,baseMint:null,quoteMint:null,dexId:null,baseSymbol:null,quoteSymbol:null,liquidityUsd:null,volume24hUsd:null,pairCreatedAt:null,url:null,evidenceConflict:true,
+    poolAddressFormat:'valid_solana_pubkey',poolAccountExistence:'not_checked',poolProgramOwnership:'not_checked',reservesVerified:false,lpLocksVerified:false,lpBurnsVerified:false,withdrawalRightsVerified:false
+  }).sort((a,b)=>(b.liquidityUsd??-1)-(a.liquidityUsd??-1)||(a.pairAddress<b.pairAddress?-1:a.pairAddress>b.pairAddress?1:0));
 }

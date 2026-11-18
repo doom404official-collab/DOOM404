@@ -1,3 +1,4 @@
+import {createHolderWorkerBudget,boundedHolderStore} from "../../../lib/holderWorkerExecution.mjs";
 import {NextResponse} from "next/server";
 import {timingSafeEqual} from "node:crypto";
 import {createHolderJobStore} from "../../../lib/holderJobStore.mjs";
@@ -13,6 +14,7 @@ const allowedSignatures=[
  "3HnBUrUjjG3yxMubsrrnN5dMPJtSrhM5WajYopUbCgKBFo5rtvZdf5LChJRJ4wR4Ua8XsnkKMG9d48AQYDDUPLhf"
 ];
 export async function POST(request){
+ const budget=createHolderWorkerBudget(),execution={stage:"CONFIGURATION"};
  const expected=process.env.GLITCH_HOLDER_SCAN_INTERNAL_TOKEN;
  const supplied=request.headers.get("x-glitch-internal-token");
  if(!expected||!supplied)return NextResponse.json({error:"Unauthorized"},{status:401});
@@ -21,10 +23,10 @@ export async function POST(request){
  if(process.env.GLITCH_NETWORK_MERGE_ENABLED!=="true")return NextResponse.json({status:"disabled"},{status:403});
  try{
   const result=await commitExternalNetworkEvidence({jobId,expectedMint,allowedSignatures,limit:3,
-   jobStore:createHolderJobStore(),evidenceStore:createHolderEvidenceStore()});
+   jobStore:boundedHolderStore(createHolderJobStore(),budget,{claim:{write:true},getById:{},commit:{write:true}},execution),evidenceStore:boundedHolderStore(createHolderEvidenceStore(),budget,{listForJob:{}},execution)});
   return NextResponse.json(result,{headers:{"Cache-Control":"no-store"}});
  }catch(error){
-  console.error("GLITCH_NETWORK_MERGE_FAILED",{code:String(error?.message??"UNKNOWN").slice(0,80)});
+  console.error("GLITCH_NETWORK_MERGE_FAILED",{stage:execution.stage,code:"OUTCOME_UNKNOWN"});
   // A failed response does not prove the atomic commit failed. Never retry blindly.
   return NextResponse.json({status:"outcome_unknown",checkpointModified:null,scorePromoted:false,
    reconciliationRequired:true,retryAllowed:false},{status:503,headers:{"Cache-Control":"no-store"}});

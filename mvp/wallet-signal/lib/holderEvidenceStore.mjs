@@ -4,40 +4,40 @@ export function createHolderEvidenceStore({url=process.env.SUPABASE_URL,key=proc
  const root=url.replace(/\/$/,"")+"/rest/v1/";
  const base=root+"glitch_holder_evidence_validation";
  const headers={apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json"};
- async function request(path,{method="GET",body,prefer}={}){
+ async function request(path,{method="GET",body,prefer,signal}={}){
   const response=await fetchImpl(base+path,{method,headers:{...headers,...(prefer?{Prefer:prefer}:{})},
-   ...(body===undefined?{}:{body:JSON.stringify(body)}),cache:"no-store"});
+   ...(body===undefined?{}:{body:JSON.stringify(body)}),cache:"no-store",...(signal?{signal}:{})});
   if(!response.ok)throw Error("EVIDENCE_STORE_HTTP_"+response.status);
   return response.status===204?[]:response.json();
  }
- async function callRpc(name,args){
-  const response=await fetchImpl(root+"rpc/"+name,{method:"POST",headers,body:JSON.stringify(args),cache:"no-store"});
+ async function callRpc(name,args,{signal}={}){
+  const response=await fetchImpl(root+"rpc/"+name,{method:"POST",headers,body:JSON.stringify(args),cache:"no-store",...(signal?{signal}:{})});
   if(!response.ok)throw Error("EVIDENCE_RPC_HTTP_"+response.status);
   return response.json();
  }
  return {
-  async listForJob(jobId,{pageSize=500}={}){
+  async listForJob(jobId,{pageSize=500,signal}={}){
    if(!Number.isInteger(pageSize)||pageSize<1||pageSize>1000)throw Error("INVALID_PAGE_SIZE");
    const all=[];
    for(let offset=0;offset<100000;offset+=pageSize){
     const rows=await request("?job_id=eq."+encodeURIComponent(jobId)+
-     "&select=signature,status,evidence,attempts&order=signature.asc&limit="+pageSize+"&offset="+offset);
+     "&select=signature,status,evidence,attempts&order=signature.asc&limit="+pageSize+"&offset="+offset,{signal});
     if(!Array.isArray(rows))throw Error("INVALID_EVIDENCE_ROWS");
     all.push(...rows);
     if(rows.length<pageSize)return all;
    }
    throw Error("EVIDENCE_PAGINATION_LIMIT");
   },
-  async health(){
-   const health=await callRpc("glitch_holder_evidence_health",{});
+  async health(options={}){
+   const health=await callRpc("glitch_holder_evidence_health",{},options);
    const fields=["total","pending","verified","rejected","unavailable","active_leases","expired_leases","retry_exhausted"];
    if(!health||typeof health!=="object"||Array.isArray(health)||
     fields.some(field=>!Number.isSafeInteger(health[field])||health[field]<0))
     throw Error("EVIDENCE_HEALTH_INVALID");
    return health;
   },
-  async nextJob(){
-   const rows=await callRpc("glitch_next_holder_evidence_job",{});
+  async nextJob(options={}){
+   const rows=await callRpc("glitch_next_holder_evidence_job",{},options);
    if(!Array.isArray(rows)||rows.length>1)throw Error("EVIDENCE_SELECTION_INVALID");
    if(rows.length===0)return null;
    const selected=rows[0];
@@ -45,9 +45,9 @@ export function createHolderEvidenceStore({url=process.env.SUPABASE_URL,key=proc
     throw Error("EVIDENCE_SELECTION_INVALID");
    return selected;
   },
-  seed:(jobId)=>callRpc("glitch_seed_holder_evidence",{p_job_id:jobId}),
-  claim:(jobId,workerId,limit=6)=>callRpc("glitch_claim_holder_evidence",{p_job_id:jobId,p_worker:workerId,p_limit:limit}),
-  finish:(jobId,signature,workerId,{status,evidence,attempts})=>callRpc("glitch_finish_holder_evidence",{p_job_id:jobId,p_signature:signature,p_worker:workerId,p_status:status,p_evidence:evidence,p_attempts:attempts}),
+  seed:(jobId,options={})=>callRpc("glitch_seed_holder_evidence",{p_job_id:jobId},options),
+  claim:(jobId,workerId,limit=6,options={})=>callRpc("glitch_claim_holder_evidence",{p_job_id:jobId,p_worker:workerId,p_limit:limit},options),
+  finish:(jobId,signature,workerId,{status,evidence,attempts},options={})=>callRpc("glitch_finish_holder_evidence",{p_job_id:jobId,p_signature:signature,p_worker:workerId,p_status:status,p_evidence:evidence,p_attempts:attempts},options),
   async enqueue(jobId,signatures){
    const rows=[...new Set(signatures)].filter(x=>typeof x==="string"&&x.length>0)
     .map(signature=>({job_id:jobId,signature}));

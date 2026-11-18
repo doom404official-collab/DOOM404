@@ -1,3 +1,4 @@
+import {inspectTokenVault} from "../../../lib/liquidityVaultEvidence.mjs";
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
@@ -18,10 +19,9 @@ export async function POST(request) {
   const accounts=accountAddresses.length?await connection.getMultipleAccountsInfo(accountAddresses,"confirmed"):[];
   const entries=top.flatMap((x,i)=>{
    const account=accounts[i];
-   if(!account||!Buffer.isBuffer(account.data)||account.data.length<165)return [];
-   const observedMint=new PublicKey(account.data.subarray(0,32)).toBase58();
-   if(observedMint!==mint.toBase58())return [];
-   return [{tokenAccount:x.address.toBase58(),owner:new PublicKey(account.data.subarray(32,64)).toBase58(),amount:account.data.readBigUInt64LE(64).toString()}];
+   const evidence=inspectTokenVault(account,mint.toBase58());
+   if(evidence.verified!==true)return [];
+   return [{tokenAccount:x.address.toBase58(),owner:evidence.authority,amount:evidence.rawAmount}];
   });
   const supply=await connection.getTokenSupply(mint,"confirmed");
   const summary=summarizeLpHolders(entries,supply.value.amount,false);

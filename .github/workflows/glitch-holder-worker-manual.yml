@@ -3,6 +3,27 @@
 name: GLITCH holder worker manual
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Explicit manual mode; disabled performs no work
+        type: choice
+        options: [disabled, assessment, recovery]
+        default: disabled
+      expected_sha:
+        description: Independently reviewed full dispatch commit SHA (recovery only)
+        type: string
+      starts_at:
+        description: Approved UTC start in YYYY-MM-DDTHH:mm:ss.sssZ format
+        type: string
+      expires_at:
+        description: Approved UTC expiry, no more than 20 minutes after start
+        type: string
+      c670_version:
+        description: Fresh sealed version for existing c670 investigation
+        type: string
+      d07_version:
+        description: Fresh sealed version for existing d07 investigation
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -10,7 +31,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   run:
-    if: github.ref == 'refs/heads/feature/glitch-assessment-sprint1'
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'assessment' && github.ref == 'refs/heads/feature/glitch-assessment-sprint1'
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
@@ -68,3 +89,37 @@ jobs:
               "directPairs":scan.get("directPairs")}))
           if state.get("status")=="not_started":raise SystemExit("Checkpoint not persisted")
           PY
+
+  recovery:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'recovery' && github.repository == 'doom404official-collab/DOOM404' && github.ref == 'refs/heads/fix/glitch-recovery-preflight-20261027' && github.run_attempt == 1 && github.sha == inputs.expected_sha
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Execute sealed Holder recovery once
+        working-directory: mvp/wallet-signal
+        env:
+          HOLDER_MANUAL_MODE: ${{ inputs.mode }}
+          HOLDER_EXPECTED_SHA: ${{ inputs.expected_sha }}
+          GLITCH_HOLDER_RECOVERY_START_AT: ${{ inputs.starts_at }}
+          GLITCH_HOLDER_RECOVERY_EXPIRES_AT: ${{ inputs.expires_at }}
+          GLITCH_HOLDER_RECOVERY_JOB_C670_VERSION: ${{ inputs.c670_version }}
+          GLITCH_HOLDER_RECOVERY_JOB_D07_VERSION: ${{ inputs.d07_version }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: node scripts/run-holder-actions-recovery.mjs
+      - name: Retain redacted recovery receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: holder-recovery-receipt-${{ github.run_id }}
+          path: mvp/wallet-signal/artifacts/holder-recovery-receipt.json
+          if-no-files-found: warn
+          retention-days: 3

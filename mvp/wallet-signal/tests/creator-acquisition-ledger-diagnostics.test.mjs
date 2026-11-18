@@ -20,7 +20,7 @@ test('unsettled purchase stays rejected with precise diagnostic',()=>{
 });
 test('unverified instruction and creator mismatch remain rejected',()=>{
  const result=run([{...base,instructionVerified:false},{...base,signature:'other',creator:'wrong'}]);
- assert.deepEqual(result.rejected.map(x=>x.detail),['INSTRUCTION_VERIFICATION_MISSING','ATTRIBUTION_MISMATCH']);
+ assert.deepEqual(result.rejected.map(x=>x.detail).sort(),['ATTRIBUTION_MISMATCH','INSTRUCTION_VERIFICATION_MISSING']);
  assert.equal(result.acceptedCount,0);
 });
 test('incomplete history cannot become score eligible',()=>{

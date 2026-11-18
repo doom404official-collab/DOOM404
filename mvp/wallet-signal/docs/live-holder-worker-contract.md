@@ -19,7 +19,7 @@
 - Scan state is private. Return only the public projection and bounded evidence links.
 - Public routes must not perform hundreds of synchronous RPC requests.
 - Limit worker requests, concurrency, cost, runtime and checkpoint size.
-- Failed transactions remain coverage gaps. Provider exhaustion is not archival proof.
+- Definitively identified failed transactions did not settle and may be rejected as transfer evidence. Missing/malformed or identity-mismatched failure responses remain Unknown coverage gaps. Provider exhaustion is not archival proof.
 - Explicit approval required before applying schema, enabling workers or deploying.
 
 ## Acceptance tests

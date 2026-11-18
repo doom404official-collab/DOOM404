@@ -8,7 +8,7 @@ test("standard SPL fee checks are inapplicable and do not lower coverage",()=>{
  assert.equal(r.calibrated,false);
 });
 test("active mint authority lowers controls assessment",()=>{
- const r=scoreTokenSecurity({tokenProgram:"spl-token",authoritiesParsed:true,mintAuthority:"active",freezeAuthority:null});
+ const r=scoreTokenSecurity({tokenProgram:"spl-token",authoritiesParsed:true,mintAuthority:"11111111111111111111111111111111",freezeAuthority:null});
  assert.equal(r.score,50);
 });
 test("unknown Token-2022 fee configuration cannot be assumed revoked",()=>{

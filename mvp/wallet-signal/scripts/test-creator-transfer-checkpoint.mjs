@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {runCreatorIntelligenceTick} from '../lib/creatorIntelligenceTick.mjs';
+import {runCreatorIntelligenceTick} from '../tests/helpers/creatorTickMockLease.mjs';
 const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
 const creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
 const signature='2'.repeat(88);

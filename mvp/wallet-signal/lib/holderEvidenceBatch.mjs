@@ -18,7 +18,7 @@ export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}=
   (Object.hasOwn(item,"job_id")&&item.job_id!==jobId))||
   new Set(pending.map(item=>item.signature)).size!==pending.length)throw Error("EVIDENCE_CLAIM_INVALID_RESPONSE");
  const holders=Object.keys(checkpoint.wallets||{});
- let processed=0,leaseLost=0;
+ let processed=0,leaseLost=0,interrupted=false;
  for(const item of pending){
   let status="unavailable",evidence={reason:"RPC_UNAVAILABLE"};
   try{
@@ -30,28 +30,35 @@ export async function processEvidenceBatch({jobId,checkpoint,store,rpc,limit=6}=
     evidence={reason:transfers.length?"DIRECT_TRANSFER_PROVEN":"NO_DIRECT_HOLDER_TRANSFER",
      pairs:transfers.map(t=>t.participants.join("|")),kinds:[...new Set(transfers.map(t=>t.kind))],slot:tx.slot};
     // Reuse this exact RPC response for independent network extraction. Keep the
-    // legacy validation outcome unchanged; do not promote incomplete evidence.
+    // instruction identities and unresolved ownership; never reject missing proof.
     try{
      const network=extractHolderNetworkTransfers({transaction:tx,signature:item.signature});
-     evidence.networkExtraction={version:1,valid:network.valid===true,
+     if(network.definitiveFailure===true){status='rejected';evidence.reason='TRANSACTION_FAILED';}
+     else if(!transfers.length&&(!network.valid||network.unresolvedTokenTransfers>0)){
+      status='unavailable';evidence.reason='TRANSFER_EVIDENCE_UNVERIFIED';
+     }
+     evidence.networkExtraction={version:1,valid:network.valid===true,definitiveFailure:network.definitiveFailure===true,
       unresolvedTokenTransfers:network.unresolvedTokenTransfers??0,
       unresolvedReasons:network.unresolvedReasons??{},
       unresolvedAccounts:network.unresolvedAccounts??[],
       transfers:network.valid===true?network.transfers:[],
       ...(network.valid===true?{}:{reason:network.reason??"NETWORK_EVIDENCE_UNAVAILABLE"})};
     }catch{
-     // Optional network extraction must never invalidate proven legacy evidence.
+     if(!transfers.length){status='unavailable';evidence.reason='TRANSFER_EVIDENCE_UNVERIFIED';}
      evidence.networkExtraction={version:1,valid:false,unresolvedTokenTransfers:0,
       transfers:[],reason:"NETWORK_EXTRACTION_ERROR"};
     }
    }
-  }catch{evidence={reason:"RPC_RETRYABLE_ERROR"};}
+  }catch(error){
+   if(error?.message==="RECOVERY_PROVIDER_TIMEOUT"){interrupted=true;break;}
+   evidence={reason:"RPC_RETRYABLE_ERROR"};
+  }
   let saved;
   try{saved=await store.finish(jobId,item.signature,workerId,{status,evidence,attempts:item.attempts+1});}
   catch(error){throw Error("EVIDENCE_FINISH_FAILED",{cause:error});}
   if(saved===true)processed++;
-  else if(saved===false)leaseLost++;
+  else if(saved===false){leaseLost++;break;}
   else throw Error("EVIDENCE_FINISH_INVALID_RESPONSE");
  }
- return {processed,claimed:pending.length,leaseLost,seeded,queuedSignatures:signatures.length};
+ return {processed,claimed:pending.length,leaseLost,seeded,queuedSignatures:signatures.length,...(interrupted?{interrupted:true}: {})};
 }

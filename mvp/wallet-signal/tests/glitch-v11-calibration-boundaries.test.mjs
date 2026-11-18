@@ -4,7 +4,7 @@ import {scoreTokenSecurity,scoreHolderIntelligence,scoreCreatorIntelligence,scor
 import {consolidate} from "../lib/glitchScoringV11.mjs";
 test("fee boundaries and nonapplicable SPL extension",()=>{
  for(const [fee,expected] of [[0,25],[0.5,20],[1,20],[2,12],[3,12],[4,5],[5,5],[6,0]]){
-  const r=scoreTokenSecurity({tokenProgram:"token-2022",authoritiesParsed:true,mintAuthority:null,freezeAuthority:null,feePercent:fee,feeConfigAuthorityReported:true,feeConfigAuthority:null});
+  const r=scoreTokenSecurity({tokenProgram:"token-2022",authoritiesParsed:true,mintAuthority:null,freezeAuthority:null,feeExtensionVerified:true,feeApplicable:true,feePercent:fee,feeConfigAuthorityReported:true,feeConfigAuthority:null});
   assert.equal(r.components[0].points,expected);
  }
  const spl=scoreTokenSecurity({tokenProgram:"spl-token",authoritiesParsed:true,mintAuthority:null,freezeAuthority:null});

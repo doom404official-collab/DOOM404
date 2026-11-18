@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import bs58 from 'bs58';
-import {runCreatorIntelligenceTick} from '../lib/creatorIntelligenceTick.mjs';
+import {runCreatorIntelligenceTick} from '../tests/helpers/creatorTickMockLease.mjs';
 const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
 const creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
 // Solana signatures are Base58-encoded 64-byte values. Decimal suffixes can

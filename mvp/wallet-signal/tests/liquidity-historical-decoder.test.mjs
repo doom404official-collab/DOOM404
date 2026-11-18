@@ -20,7 +20,7 @@ test("rejects foreign or prematurely completed checkpoints",()=>{
 });
 
 test("failed transactions cannot establish executed authorization",()=>{
- assert.equal(classifyHistoricalTransaction({meta:{err:{InstructionError:[0,"Custom"]}}}),"FAILED_TRANSACTION");
+ assert.equal(classifyHistoricalTransaction({meta:{err:{InstructionError:[0,{Custom:1}]}}}),"FAILED_TRANSACTION");
  assert.equal(classifyHistoricalTransaction({meta:{err:null}}),"EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED");
  assert.equal(classifyHistoricalTransaction({}),"TRANSACTION_META_UNAVAILABLE");
 });
@@ -65,7 +65,7 @@ test("pool account presence alone cannot establish creator authorization",()=>{
 });
 
 test("failed execution cannot be promoted to historical authorization evidence",()=>{
- const failed={meta:{err:{InstructionError:[0,"Custom"]}}};
+ const failed={meta:{err:{InstructionError:[0,{Custom:1}]}}};
  assert.notEqual(classifyHistoricalTransaction(failed),"EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED");
  const success={meta:{err:null}};
  assert.equal(classifyHistoricalTransaction(success),"EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED");
