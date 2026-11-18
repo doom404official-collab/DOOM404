@@ -1,13 +1,10 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { createReliableConnection } from "../../../lib/reliableConnection.js";
+import { PublicKey } from "@solana/web3.js";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 const SAMPLE_LIMIT = 20;
-
-function wait(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function getProgramId(instruction) {
   if (!instruction) return "Unknown";
@@ -77,14 +74,7 @@ export async function GET(request) {
       );
     }
 
-    const rpcUrl =
-      process.env.SOLANA_RPC_URL ||
-      "https://api.mainnet-beta.solana.com";
-
-    const connection = new Connection(rpcUrl, {
-      commitment: "confirmed",
-      disableRetryOnRateLimit: true
-    });
+    const connection = createReliableConnection();
 
     const signatures =
       await connection.getSignaturesForAddress(
@@ -145,7 +135,8 @@ export async function GET(request) {
         }
       }
 
-      await wait(700);
+      // The shared RPC transport already spaces requests by 300ms and
+      // applies bounded retries/backoff; avoid adding a second fixed delay.
     }
 
     return NextResponse.json({

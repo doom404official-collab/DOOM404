@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {derivePumpFunBondingCurveAccounts} from '../lib/pumpFunBondingCurveDerivation.mjs';
+const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+const first=derivePumpFunBondingCurveAccounts({mint});
+const second=derivePumpFunBondingCurveAccounts({mint});
+assert.equal(first.status,'DERIVED');
+assert.equal(first.bondingCurve,second.bondingCurve);
+assert.equal(first.poolTokenAccount,second.poolTokenAccount);
+assert.equal(first.ownershipVerified,false);
+assert.equal(derivePumpFunBondingCurveAccounts({mint:'invalid'}).status,'INVALID_MINT');
+console.log('Pump.fun bonding curve derivation tests passed');

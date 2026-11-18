@@ -1,0 +1,337 @@
+import { mintAuthorityEvidence } from "../../../lib/mintAuthorityEvidence.mjs";
+import { NextResponse } from "next/server";
+import { PublicKey } from "@solana/web3.js";
+import { createReliableConnection } from "../../../lib/reliableConnection.js";
+import { summarizeCreatorEvidence } from "../../../lib/creatorEvidence.js";
+import { detectLaunchpadEvidence } from "../../../lib/launchpadEvidence.js";
+import { lookupStonkFun } from "../../../lib/stonkFunEvidence.js";
+import { fetchArchivedTransaction } from "../../../lib/archiveTransaction.js";
+import { normalizeOriginTransaction, resolveCreatorRole } from "../../../lib/creatorOriginResolver.js";
+import { inspectMintInitialization } from "../../../lib/mintInitializationEvidence.js";
+
+export const dynamic = "force-dynamic";
+
+const HISTORY_PAGE_SIZE = 1000;
+const HISTORY_PAGE_CAP = 3;
+const INDEXED_CANDIDATE_CAP = 30;
+
+async function inspectMintOrigin(connection, mint, cursor = null) {
+  let before = cursor || undefined;
+  let earliest = null;
+  let exhausted = false;
+  let pages = 0;
+  let oldestPage = [];
+  for (let i = 0; i < HISTORY_PAGE_CAP; i++) {
+    const rows = await connection.getSignaturesForAddress(mint, { limit: HISTORY_PAGE_SIZE, ...(before ? { before } : {}) }, "confirmed");
+    pages++;
+    if (!rows.length) { exhausted = true; break; }
+    earliest = rows[rows.length - 1];
+    oldestPage = rows;
+    if (rows.length < HISTORY_PAGE_SIZE) { exhausted = true; break; }
+    before = earliest.signature;
+  }
+  const coverage = { pagesScanned: pages, historyExhaustedWithinRpc: exhausted, oldestObservedSignature: earliest?.signature || null, nextCursor: exhausted ? null : earliest?.signature || null, archivalCompletenessVerified: false, candidateSignatures: oldestPage.slice(-10).reverse().filter(row => !row.err).map(row => row.signature) };
+  if (!earliest) return { status: "unverified", reason: "No mint transaction signatures were available from this RPC; origin remains unverified.", coverage };
+  // Inspect a small window of the oldest RPC-visible transactions, not just one.
+  // Some token launches have multiple setup instructions/transactions.
+  const candidates = oldestPage.slice(-12).reverse().filter(row => !row.err);
+  let checked = 0;
+  for (const row of candidates) {
+    let tx;
+    try { tx = await connection.getParsedTransaction(row.signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 }); }
+    catch { continue; }
+    checked++;
+    if (!tx || tx.meta?.err) continue;
+    const instructions = [...(tx.transaction?.message?.instructions || []), ...(tx.meta?.innerInstructions || []).flatMap(x => x.instructions || [])];
+    const initialized = instructions.some(x => ["initializeMint", "initializeMint2"].includes(x.parsed?.type) && x.parsed?.info?.mint === mint.toBase58() && ["spl-token", "spl-token-2022"].includes(x.program));
+    if (!initialized) continue;
+    const signers = tx.transaction.message.accountKeys.filter(x => x.signer && x.pubkey).map(x => x.pubkey.toBase58());
+    return { status: "initialization_signer_observed", address: signers[0] || null, signers, signature: row.signature, blockTime: tx.blockTime ?? row.blockTime ?? null, reason: "Verified mint initialization instruction found within bounded RPC history. All observed transaction signers are origin candidates, not verified creators or beneficial owners.", coverage: { ...coverage, initializationCandidatesChecked: checked, initializationVerified: true } };
+  }
+  return { status: "unverified", reason: exhausted ? "No mint initialization instruction found in the oldest RPC-visible candidates; archive completeness is unverified." : "No mint initialization instruction found in the oldest scanned candidates. Older history remains unscanned; origin is unverified.", coverage: { ...coverage, initializationCandidatesChecked: checked } };
+}
+
+
+async function inspectIndexedOrigin(endpoint, mint, connection, archiveEndpoint = "") {
+  // Helius oldest-first indexed history; independently verify on-chain initialization.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 12000);
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST", headers: { "Content-Type": "application/json" }, cache: "no-store", signal: controller.signal,
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getTransactionsForAddress",
+        params: [mint.toBase58(), { sortOrder: "asc", transactionDetails: "signatures", limit: INDEXED_CANDIDATE_CAP }] })
+    });
+    if (!response.ok) return { status: "unavailable", reason: response.status === 401 || response.status === 403 ? "Indexed history access denied. Verify provider key and plan permissions." : response.status === 429 ? "Indexed history rate limit reached. Retry later." : response.status === 404 ? "Indexed history method unavailable at this endpoint." : "Indexed history HTTP request failed.", diagnostic: { code: "INDEXED_HTTP_" + response.status, httpStatus: response.status } };
+    const payload = await response.json();
+    if (payload.error) { const code = payload.error.code; const message = String(payload.error.message || "").slice(0, 180); return { status: "unavailable", reason: code === -32601 ? "Indexed history RPC method is not supported by this endpoint or plan." : "Indexed history RPC returned an error; using bounded RPC fallback.", diagnostic: { code: "INDEXED_RPC_ERROR", rpcCode: code ?? null, providerMessage: message.replace(/https?:\/\/\S+/g, "[redacted endpoint]") } }; }
+    // Helius indexed history may return signatures, transaction objects, or a
+    // provider-specific wrapper. Never mistake an unrecognized response for
+    // verified absence of historical transactions.
+    const result = payload.result;
+    const rows = Array.isArray(result) ? result :
+      Array.isArray(result?.transactions) ? result.transactions :
+      Array.isArray(result?.data) ? result.data :
+      Array.isArray(result?.signatures) ? result.signatures :
+      Array.isArray(result?.items) ? result.items : null;
+    const signatures = (rows || []).map(x => typeof x === "string" ? x :
+      x?.signature || x?.signatures?.[0] || x?.transaction?.signatures?.[0] || x?.transaction?.signature || null)
+      .filter(x => typeof x === "string");
+    const coverage = { provider: "helius_indexed", sortOrder: "asc",
+      signaturesReturned: signatures.length, responseShape: Array.isArray(result) ? "array" : Object.keys(result || {}).slice(0, 8), archivalCompletenessVerified: false };
+    if (!rows) return { status: "unavailable", reason: "Indexed provider returned an unrecognized response; using RPC fallback.", diagnostic: { code: "INDEXED_UNRECOGNIZED_RESPONSE" }, coverage };
+    if (!signatures.length) return { status: "unavailable", reason: "Indexed provider returned no usable signatures; using RPC fallback.", diagnostic: { code: "INDEXED_NO_SIGNATURES", rowsReturned: rows.length }, coverage };
+    // Oldest-first is requested from the indexer, but this is not proof of full archival coverage.
+    let checked = 0;
+    for (const signature of signatures.slice(0, INDEXED_CANDIDATE_CAP)) {
+      let tx;
+      try { tx = await connection.getParsedTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 }); } catch {}
+      if (!tx && archiveEndpoint) {
+        const archived = await fetchArchivedTransaction(signature, { endpoint: archiveEndpoint });
+        if (archived.status === "transaction_retrieved") tx = archived.transaction;
+      }
+      checked++;
+      if (!tx || tx.meta?.err) continue;
+      const normalized = normalizeOriginTransaction(tx);
+      const auditedRole = resolveCreatorRole({ mint: mint.toBase58(), transaction: tx });
+      const instructions = normalized.instructions;
+      const mintInitialization = inspectMintInitialization(instructions, mint.toBase58()).length > 0;
+      if (!mintInitialization && auditedRole.status !== "verified_role") continue;
+      if (auditedRole.status === "verified_role") return { status: "verified_role", creator: auditedRole.creator, signature, blockTime: tx.blockTime ?? null, evidence: auditedRole.evidence, coverage: { ...coverage, initializationCandidatesChecked: checked } };
+      const signers = (tx.transaction.message.accountKeys || []).filter(x => x.signer && x.pubkey).map(x => x.pubkey.toBase58?.() || String(x.pubkey));
+      return { status: "initialization_signer_observed", address: signers[0] || null, signers, signature, blockTime: tx.blockTime ?? null,
+        reason: "Verified on-chain mint initialization found in oldest-first indexed history. Signers are origin candidates, NOT verified creators or beneficial owners.",
+        coverage: { ...coverage, initializationCandidatesChecked: checked }, candidateSignatures: signatures.slice(0, 8) };
+    }
+    return { status: "unavailable", reason: "No mint initialization verified in indexed response; continue with bounded RPC history.", coverage: { ...coverage, initializationCandidatesChecked: checked }, candidateSignatures: signatures.slice(0, 8) };
+  } catch (error) { return { status: "unavailable", reason: error?.name === "AbortError" ? "Indexed history timed out after 12 seconds; using bounded RPC fallback." : "Indexed history request failed; using bounded RPC fallback.", diagnostic: { code: error?.name === "AbortError" ? "INDEXED_TIMEOUT" : "INDEXED_NETWORK_FAILURE" } }; }
+  finally { clearTimeout(timer); }
+}
+
+
+async function verifyOriginTransaction(connection, mint, signature) {
+  // Explicit evidence lookup: never infer creator ownership from transaction signers.
+  try {
+    const tx = await connection.getParsedTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
+    if (!tx || tx.meta?.err) return { status: "unverified", reason: "Supplied transaction is unavailable or failed; mint origin not established.", coverage: { method: "targeted_transaction", initializationVerified: false, archivalCompletenessVerified: false } };
+    const instructions = [...(tx.transaction?.message?.instructions || []), ...(tx.meta?.innerInstructions || []).flatMap(x => x.instructions || [])];
+    const matches = instructions.some(x => ["initializeMint", "initializeMint2"].includes(x.parsed?.type) && x.parsed?.info?.mint === mint.toBase58() && ["spl-token", "spl-token-2022"].includes(x.program));
+    if (!matches) return { status: "unverified", reason: "Supplied transaction does not contain a verified initialization instruction for this mint.", coverage: { method: "targeted_transaction", initializationVerified: false, archivalCompletenessVerified: false } };
+    const signers = tx.transaction.message.accountKeys.filter(x => x.signer && x.pubkey).map(x => x.pubkey.toBase58());
+    return { status: "initialization_signer_observed", address: signers[0] || null, signers, signature, blockTime: tx.blockTime ?? null, reason: "Mint initialization independently verified in the supplied on-chain transaction. Signers are not proof of creator ownership.", coverage: { method: "targeted_transaction", initializationVerified: true, archivalCompletenessVerified: false } };
+  } catch {
+    return { status: "unverified", reason: "Targeted transaction verification could not be completed.", coverage: { method: "targeted_transaction", initializationVerified: false, archivalCompletenessVerified: false } };
+  }
+}
+
+async function inspectSolscanCreator(mint, connection) {
+  const key = (process.env.SOLSCAN_API_KEY || "").trim();
+  if (!key) return { status: "not_configured" };
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 9000);
+  try {
+    const response = await fetch("https://pro-api.solscan.io/v2.0/token/meta?address=" + encodeURIComponent(mint.toBase58()), {
+      headers: { accept: "application/json", token: key }, signal: controller.signal, cache: "no-store"
+    });
+    if (!response.ok) return { status: "unavailable", diagnostic: response.status === 401 ? "authentication_failed" : response.status === 403 ? "access_forbidden" : response.status === 429 ? "rate_limited" : response.status >= 500 ? "provider_server_error" : "http_" + response.status, httpStatus: response.status };
+    const payload = await response.json();
+    const data = payload?.success === true ? payload.data : null;
+    if (!data || data.address !== mint.toBase58()) return { status: "unavailable", diagnostic: "invalid_or_mismatched_response" };
+    const creator = typeof data.creator === "string" ? data.creator : null;
+    const creationSignature = typeof data.create_tx === "string" ? data.create_tx : null;
+    const firstMintSignature = typeof data.first_mint_tx === "string" ? data.first_mint_tx : null;
+    let validCreator = null;
+    try { if (creator) validCreator = new PublicKey(creator).toBase58(); } catch {}
+    let verifiedInitialization = false;
+    let originSigners = [];
+    if (creationSignature) {
+      try {
+        const tx = await connection.getParsedTransaction(creationSignature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
+        if (tx && !tx.meta?.err) {
+          const instructions = [...(tx.transaction?.message?.instructions || []), ...(tx.meta?.innerInstructions || []).flatMap(x => x.instructions || [])];
+          verifiedInitialization = instructions.some(x => ["initializeMint", "initializeMint2"].includes(x.parsed?.type) && x.parsed?.info?.mint === mint.toBase58() && ["spl-token", "spl-token-2022"].includes(x.program));
+          if (verifiedInitialization) originSigners = tx.transaction.message.accountKeys.filter(x => x.signer && x.pubkey).map(x => x.pubkey.toBase58());
+        }
+      } catch {}
+    }
+    return { status: validCreator ? "provider_attributed" : "no_creator", creator: validCreator, creationSignature, firstMintSignature,
+      createdTime: Number.isInteger(data.created_time) ? data.created_time : null,
+      initializationVerified: verifiedInitialization, initializationSigners: originSigners,
+      creatorIsInitializationSigner: validCreator ? originSigners.includes(validCreator) : false,
+      source: "solscan_pro_token_meta" };
+  } catch (error) { return { status: "unavailable", diagnostic: error?.name === "AbortError" ? "timeout" : "request_failed" }; }
+  finally { clearTimeout(timer); }
+}
+
+/**
+ * CB-01: Mint provenance, not a creator-identity assertion.
+ * Mint authority is a permission and may not identify the original deployer.
+ * Historical creator attribution requires a verified launch transaction/indexer.
+ */
+export async function GET(request) {
+  const url = new URL(request.url);
+  const address = url.searchParams.get("mint") || "";
+  const before = url.searchParams.get("before");
+  const originTx = url.searchParams.get("originTx");
+  if (originTx && !/^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(originTx)) return NextResponse.json({ error: "Invalid origin transaction signature" }, { status: 400 });
+  if (before && !/^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(before)) {
+    return NextResponse.json({ error: "Invalid historical scan cursor" }, { status: 400 });
+  }
+  let mint;
+  try {
+    mint = new PublicKey(address);
+    if (!PublicKey.isOnCurve(mint.toBytes())) {
+      // Program-derived mints can exist. Do not reject them on curve checks.
+    }
+  } catch {
+    return NextResponse.json({ error: "Invalid Solana token mint address" }, { status: 400 });
+  }
+  try {
+    const connection = createReliableConnection();
+    // Fetch raw account bytes independently: parsed RPC responses are not always supported.
+    const [rawCheck, parsedCheck, supplyCheck] = await Promise.allSettled([
+      connection.getAccountInfo(mint, "confirmed"),
+      connection.getParsedAccountInfo(mint, "confirmed"),
+      connection.getTokenSupply(mint, "confirmed")
+    ]);
+    const rawAccount = rawCheck.status === "fulfilled" ? rawCheck.value : null;
+    const parsedAccount = parsedCheck.status === "fulfilled" ? parsedCheck.value?.value : null;
+    const supply = supplyCheck.status === "fulfilled" ? supplyCheck.value : null;
+    if (!rawAccount && !parsedAccount) {
+      if (rawCheck.status === "rejected" || parsedCheck.status === "rejected") {
+        return NextResponse.json({ error: "RPC verification unavailable.", detail: "The Solana RPC could not confirm this account. Please retry later.", errorCode: "RPC_UNAVAILABLE" }, { status: 503 });
+      }
+      return NextResponse.json({ error: "Account not found on the selected Solana RPC.", detail: "Check the full token mint address and network.", errorCode: "ACCOUNT_NOT_FOUND" }, { status: 404 });
+    }
+    const account = rawAccount || parsedAccount;
+    const owner = account.owner?.toBase58?.() || null;
+    const TOKEN_PROGRAMS = {
+      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA": "spl-token",
+      "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb": "spl-token-2022"
+    };
+    const tokenProgram = TOKEN_PROGRAMS[owner] || null;
+    const parsed = parsedAccount?.data?.parsed;
+    const isParsedMint = parsed?.type === "mint" && Boolean(tokenProgram);
+    const bytes = rawAccount?.data;
+    // Both SPL Token and Token-2022 share the 82-byte base mint layout.
+    // Offset 45 is the initialized flag; token accounts use a different layout.
+    const rawMint = Boolean(tokenProgram && bytes instanceof Uint8Array && bytes.length >= 82 &&
+      (tokenProgram === "spl-token-2022" || bytes.length === 82) && bytes[45] === 1 &&
+      bytes[0] <= 1 && bytes[46] <= 1);
+    const supplyMint = Boolean(tokenProgram && supply?.value);
+    if (!isParsedMint && !rawMint && !supplyMint) {
+      if (!tokenProgram) {
+        return NextResponse.json({ error: "Not an SPL Token or Token-2022 account.", detail: "The address is owned by a different program. Check that you pasted the token mint address.", errorCode: "NOT_TOKEN_PROGRAM", accountOwnerProgram: owner }, { status: 422 });
+      }
+      if (rawCheck.status === "rejected" || supplyCheck.status === "rejected") {
+        return NextResponse.json({ error: "Token mint verification inconclusive.", detail: "The RPC could not return enough information to distinguish this account from a token holding account.", errorCode: "RPC_INCONCLUSIVE" }, { status: 503 });
+      }
+      return NextResponse.json({ error: "Address is not a verified token mint.", detail: "This may be a token holding account rather than the mint address.", errorCode: "NOT_MINT", accountType: parsed?.type || "unknown" }, { status: 422 });
+    }
+    const info = isParsedMint ? (parsed.info || {}) : {};
+    const rawSupply = rawMint ? new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getBigUint64(36, true).toString() : null;
+    const decimals = info.decimals ?? (rawMint ? bytes[44] : null) ?? supply?.value?.decimals ?? null;
+    const displaySupply = supply?.value?.uiAmountString ?? (rawSupply !== null && decimals !== null ?
+      (BigInt(rawSupply) / (10n ** BigInt(decimals))).toString() + (BigInt(rawSupply) % (10n ** BigInt(decimals)) ? "." + (BigInt(rawSupply) % (10n ** BigInt(decimals))).toString().padStart(decimals, "0").replace(/0+$/, "") : "") : null);
+    const parsedMintDetailsAvailable = isParsedMint;
+    const verificationMethod = isParsedMint ? "parsed_mint" : rawMint ? "raw_mint_layout" : "token_supply";
+    let origin;
+    // Optional archival RPC: configure HELIUS_RPC_URL server-side only.
+    // No provider key is sent to the browser or included in API output.
+    const archivalUrl = (process.env.HELIUS_RPC_URL || "").trim();
+    const archiveTransactionUrl = (process.env.CREATOR_ARCHIVE_RPC_URL || archivalUrl).trim();
+    const archivalConfigured = /^https:\/\//i.test(archivalUrl);
+    const providerDiagnostic = !archivalUrl ? "missing_env" : !archivalConfigured ? "invalid_url_format" : "configured_not_verified";
+    const originConnection = archivalConfigured
+      ? createReliableConnection({ primary: archivalUrl, fallbacks: "", timeoutMs: 10000, retries: 1 })
+      : connection;
+    let providerConnectivity = archivalConfigured ? "not_tested" : "not_configured";
+    if (archivalConfigured) {
+      try { await originConnection.getVersion(); providerConnectivity = "confirmed"; }
+      catch { providerConnectivity = "failed"; }
+    }
+    // CB-02E: prefer indexed Solscan attribution; keep creator status distinct from ownership proof.
+    const solscan = !before && !originTx ? await inspectSolscanCreator(mint, originConnection) : { status: "skipped_targeted_or_pagination" };
+    // CB-02B: oldest-first indexed lookup, with existing bounded RPC fallback.
+    let indexedOrigin = null;
+    if (archivalConfigured && providerConnectivity === "confirmed" && !before && !originTx && solscan.status !== "provider_attributed") {
+      indexedOrigin = await inspectIndexedOrigin(archivalUrl, mint, originConnection, archiveTransactionUrl);
+    }
+    if (originTx) {
+      origin = await verifyOriginTransaction(originConnection, mint, originTx);
+    } else if (solscan.status === "provider_attributed") {
+      origin = { status: solscan.initializationVerified ? "initialization_signer_observed" : "provider_attributed", address: solscan.creator, signature: solscan.creationSignature, blockTime: solscan.createdTime, reason: solscan.initializationVerified ? "Solscan creator attribution; mint initialization independently confirmed on-chain. Creator ownership is not proven." : "Solscan indexes this address as creator. Mint initialization could not be independently confirmed; ownership remains unverified.", coverage: { provider: "solscan_pro", archivalCompletenessVerified: false, initializationVerified: solscan.initializationVerified } };
+    } else if (indexedOrigin && indexedOrigin.status === "initialization_signer_observed") {
+      origin = indexedOrigin;
+    } else if (archivalConfigured && providerConnectivity === "failed") {
+      origin = { status: "unverified", reason: "Configured archival RPC did not respond successfully. Verify provider credentials and endpoint.", coverage: { archivalCompletenessVerified: false } };
+    } else {
+      try { origin = await inspectMintOrigin(originConnection, mint, before); }
+      catch { origin = { status: "unverified", reason: "Mint origin lookup unavailable.", coverage: { archivalCompletenessVerified: false } }; }
+    }
+    // Investigate independent transaction candidates rather than assuming
+    // mint initialization and launchpad creation happened in the same tx.
+    const candidateSignatures = [...new Set([
+      solscan.creationSignature,
+      solscan.firstMintSignature,
+      origin?.signature,
+      ...(indexedOrigin?.candidateSignatures || []),
+      ...(origin?.coverage?.candidateSignatures || [])
+    ].filter(x => typeof x === "string" && /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(x)))].slice(0, 10);
+    const launchAttempts = [];
+    for (const signature of candidateSignatures) {
+      try {
+        const launchTx = await originConnection.getParsedTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
+        const evidence = detectLaunchpadEvidence({ mint: mint.toBase58(), transaction: launchTx, signature });
+        launchAttempts.push({ signature, status: evidence.status, evidence });
+        if (evidence.status === "program_interaction_observed") break;
+      } catch {
+        launchAttempts.push({ signature, status: "rpc_unavailable" });
+      }
+    }
+    const pumpLaunchEvidence = launchAttempts.find(x => x.status === "program_interaction_observed")?.evidence
+      || { status: candidateSignatures.length ? "unverified" : "not_assessed",
+        reason: candidateSignatures.length
+          ? "Inspected available independent transaction candidates; no supported launch creation was established."
+          : "No usable historical launch transaction candidates were found." };
+    const stonkFunEvidence = await lookupStonkFun(mint.toBase58());
+    // An index listing is a lead, not a verified launchpad or creator.
+    const launchInvestigation = {
+      candidateCount: candidateSignatures.length,
+      inspectedCount: launchAttempts.length,
+      sources: ["solscan_create_tx", "solscan_first_mint_tx", "mint_origin_rpc", "helius_indexed_oldest_first", "rpc_oldest_visible_window"],
+      attempts: launchAttempts.map(({ signature, status }) => ({ signature, status })),
+      creatorVerified: false,
+      coverage: "bounded_candidates_not_full_history"
+    };
+    const creatorClaim = solscan.status === "provider_attributed"
+      ? { status: "provider_attributed", address: solscan.creator, source: "solscan_pro", creationSignature: solscan.creationSignature }
+      : { status: "unverified" };
+    const creatorEvidence = summarizeCreatorEvidence({ creator: creatorClaim, mintOrigin: origin });
+    return NextResponse.json({
+      mint: mint.toBase58(),
+      creatorEvidence,
+      pumpLaunchEvidence,
+      launchpadEvidence: pumpLaunchEvidence,
+      launchInvestigation,
+      stonkFunEvidence,
+      tokenProgram,
+      parsedMintDetailsAvailable,
+      decimals,
+      verificationMethod,
+      supply: displaySupply,
+      ...mintAuthorityEvidence(info,{parsed:parsedMintDetailsAvailable}),
+      authoritiesAreCreatorIdentity: false,
+      creator: solscan.status === "provider_attributed" ? { status: "provider_attributed", address: solscan.creator, source: "solscan_pro", creationSignature: solscan.creationSignature, firstMintSignature: solscan.firstMintSignature, createdTime: solscan.createdTime, initializationVerified: solscan.initializationVerified, creatorIsInitializationSigner: solscan.creatorIsInitializationSigner, reason: "Solscan labels this address as creator. This is provider attribution, not proof of wallet control or beneficial ownership." } : { status: "unverified", address: null, reason: "Mint and freeze authorities do not reliably identify the original token creator. Historical launch transaction and provenance indexing are required." },
+      solscanDiagnostic: { status: solscan.status, diagnostic: solscan.diagnostic || null, httpStatus: solscan.httpStatus || null, source: "solscan_pro", fallback: solscan.status === "provider_attributed" ? "not_needed" : "helius_or_bounded_rpc", guidance: solscan.diagnostic === "authentication_failed" ? "Solscan rejected the server-side credential (HTTP 401). Verify the V2 API key and its endpoint entitlement; Helius/RPC investigation remains available." : solscan.diagnostic === "access_forbidden" ? "Solscan denied endpoint access (HTTP 403). Check API plan permissions; Helius/RPC investigation remains available." : null },
+      mintOrigin: origin,
+      indexedHistoryDiagnostic: indexedOrigin ? { status: indexedOrigin.status, reason: indexedOrigin.reason || null, diagnostic: indexedOrigin.diagnostic || null, coverage: indexedOrigin.coverage || null } : { status: archivalConfigured ? (before ? "skipped_pagination" : "skipped_connectivity") : "not_configured" },
+      historicalProvider: { mode: archivalConfigured ? "configured_archival_rpc" : "standard_rpc", diagnostic: archivalConfigured && providerConnectivity === "confirmed" ? "connection_confirmed" : archivalConfigured && providerConnectivity === "failed" ? "connection_failed" : providerDiagnostic, connectivity: providerConnectivity, archivalCompletenessVerified: false },
+      creatorHoldingTime: { status: "not_available", reason: "Verified creator attribution and token sale ledger are not yet connected." },
+      dataCoverage: { source: "Solana RPC mint account, Helius oldest-first indexed history when available, or bounded RPC history", historicalLaunchesChecked: 0, transactionHistoryDecoded: origin.signature ? 1 : 0 },
+      interpretation: "This is a token mint inspection, not a scam verdict or creator-behavior assessment."
+    }, { headers: { "Cache-Control": "no-store" } });
+  } catch (error) {
+    return NextResponse.json({ error: "Unable to inspect token mint using the configured RPC", detail: /429|rate limit/i.test(String(error?.message)) ? "RPC rate limited" : "RPC request failed" }, { status: 503 });
+  }
+}

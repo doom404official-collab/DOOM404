@@ -1,6 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import {readDashboardEvidenceResponse} from '../lib/dashboardEvidenceRead.mjs';
+import {createLiquidityReadController} from '../lib/liquidityReadController.mjs';
+import HolderBubbleMap from "./HolderBubbleMap";
+import {HOLDER_RETAIN19_POLICY,assessApprovedHolderEligibleConcentration} from '../lib/holderEligibleViewPolicy.mjs';
+import GlitchV11Dashboard from "./GlitchV11Dashboard";
+import {reconcileHolderSnapshot} from "../lib/reconcileHolderSnapshot.mjs";
+import {scoreHolderIntelligenceForDisplay as scoreHolderConcentration} from "../lib/holderIntelligenceDisplayV11.mjs";
+import { assessGlitchEvidence } from "../lib/glitchRiskIndicators.js";
+import { selectTokenInsights } from "../lib/tokenInsights.js";
+import { assessTokenEvidence } from "../lib/tokenAssessmentV11.js";
+import { assessTokenControls } from "../lib/tokenControlsDisplayV11.mjs";
+import { assessCreatorAndLiquidityV11 } from "../lib/creatorLiquidityDisplayV11.mjs";
+import { buildDecisionSummary } from "../lib/decisionSummary.js";
 
 function formatCoverage(status) {
   const labels = {
@@ -58,14 +71,15 @@ function Metric({ label, value, note }) {
   );
 }
 
-function Section({ title, children }) {
+function Section({ title, children, defaultOpen }) {
+  const [expanded, setExpanded] = useState(defaultOpen ?? title.startsWith("01 //"));
   return (
-    <section style={{ marginTop: "38px" }}>
-      <h2 style={{ fontSize: "22px", marginBottom: "18px" }}>
-        {title}
-      </h2>
-      {children}
-    </section>
+    <details className="doom-result-section" open={expanded} onToggle={(event) => setExpanded(event.currentTarget.open)}>
+      <summary className="doom-result-heading">
+        <span>{title}</span><span className="doom-result-chevron" aria-hidden="true">⌄</span>
+      </summary>
+      <div className="doom-result-content">{children}</div>
+    </details>
   );
 }
 
@@ -80,6 +94,7 @@ function formatDate(value) {
 }
 
 function formatNumber(value, digits = 4) {
+  if (value === null || value === undefined || value === "") return "Unavailable";
   const number = Number(value);
 
   if (!Number.isFinite(number)) {
@@ -131,48 +146,425 @@ function ErrorPanel({ message }) {
 }
 
 
-function MascotDisplay({ loading, complete }) {
-  const mode = loading ? "analysing" : complete ? "signal-ready" : "getting-ready";
-  const [active, setActive] = useState(false);
-  const [readyLabelVisible, setReadyLabelVisible] = useState(false);
-  useEffect(() => {
-    if (!complete || loading) {
-      setReadyLabelVisible(false);
-      return;
-    }
-    const timer = setTimeout(() => setReadyLabelVisible(true), 1100);
-    return () => clearTimeout(timer);
-  }, [complete, loading]);
+function MascotDisplay({ loading, complete, partial }) {
+  const mode = loading ? "scanning" : complete ? "complete" : "idle";
   return (
-    <div
-      className={"doom-mascot doom-mascot--" + mode + (active ? " doom-mascot--active" : "")}
-      onMouseEnter={() => setActive(true)}
-      onMouseLeave={() => setActive(false)}
-      onClick={() => setActive((value) => !value)}
-      role="img"
-      aria-label={"Original DOOM404 mascot, " + mode.replaceAll("-", " ")}
-    >
-      <div className="doom-mascot__art">
-        <img
-          className="doom-mascot__original"
-          src="/doom404-mascot.png..jpeg"
-          alt=""
-          width="440"
-          height="440"
-        />
-        <div className="doom-mascot__light" aria-hidden="true" />
-        <div className="doom-mascot__scan" aria-hidden="true" />
-        <div className="doom-mascot__sparkles" aria-hidden="true" />
-      </div>
+    <div className={"doom-mascot doom-mascot--" + mode} aria-label={loading ? "DOOM404 robot scanning wallet" : complete ? "DOOM404 robot: preliminary signal ready" : partial ? "DOOM404 robot: partial analysis" : "DOOM404 robot ready"}>
+      <div className="doom-mascot__beam" aria-hidden="true" />
+      <img
+        className="doom-mascot__image"
+        src="/doom404-mascot.png..jpeg"
+        alt="DOOM404 official red-hooded robot mascot"
+        width="440"
+        height="440"
+      />
       <div className="doom-mascot__indicator" aria-live="polite">
-        {loading ? "SCANNING" : complete ? (readyLabelVisible ? "✓ SIGNAL READY" : "SIGNAL LOCKED") : active ? "HELLO, BUILDER" : "SYSTEM READY"}
+        {loading ? "SCANNING" : complete ? "✓ SIGNAL READY" : partial ? "PARTIAL ANALYSIS" : "SYSTEM READY"}
       </div>
     </div>
   );
 }
 
+function DeepGlitchExplorer({ address }) {
+  const [pages, setPages] = useState([]);
+  const [cursor, setCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [started, setStarted] = useState(false);
+  const [autoRunning, setAutoRunning] = useState(false);
+  const stopRequested = useRef(false);
+  const activeRequest = useRef(null);
+  useEffect(() => () => { stopRequested.current = true; activeRequest.current?.abort(); }, []);
+  const assessment = assessGlitchEvidence(pages, { hasMore });
+  const decoded = pages.reduce((sum, page) => sum + (page.coverage?.transactionsDecoded || 0), 0);
+  const unavailable = pages.reduce((sum, page) => sum + (page.coverage?.transactionsUnavailable || 0), 0);
+  const allTransfers = pages.flatMap(page => page.transfers || []);
+  const transfers = allTransfers.length;
+  const allSignatures = pages.flatMap(page => page.pagination?.pageSignatures || []);
+  const uniqueSignatures = new Set(allSignatures);
+  const coverageValid = allSignatures.length === uniqueSignatures.size;
+  const counterparties = new Map();
+  for (const transfer of allTransfers) {
+    if (!transfer.counterparty || !["incoming", "outgoing"].includes(transfer.direction)) continue;
+    const item = counterparties.get(transfer.counterparty) || { address: transfer.counterparty, interactions: 0, volumeSOL: 0 };
+    item.interactions++;
+    item.volumeSOL += Number(transfer.amountSOL || 0);
+    counterparties.set(transfer.counterparty, item);
+  }
+  const ranked = [...counterparties.values()].sort((a, b) => b.volumeSOL - a.volumeSOL);
+  const totalVolume = ranked.reduce((sum, item) => sum + item.volumeSOL, 0);
+  const concentration = totalVolume > 0 ? (ranked[0].volumeSOL / totalVolume * 100).toFixed(2) : null;
+  async function loadPages(automatic = false) {
+    if (busy || !hasMore) return;
+    const maxPages = automatic ? 5 : 1;
+    stopRequested.current = false;
+    setBusy(true);
+    setAutoRunning(automatic);
+    setError("");
+    let nextCursor = cursor;
+    let more = hasMore;
+    const seen = new Set(uniqueSignatures);
+    try {
+      for (let index = 0; index < maxPages && more && !stopRequested.current; index++) {
+        const controller = new AbortController();
+        activeRequest.current = controller;
+        const url = "/api/glitch?mode=deep&address=" + encodeURIComponent(address) + (nextCursor ? "&before=" + encodeURIComponent(nextCursor) : "");
+        const response = await fetch(url, { cache: "no-store", signal: controller.signal });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Deep analysis unavailable");
+        const received = data.pagination?.pageSignatures;
+        if (!Array.isArray(received) || received.length !== new Set(received).size || received.some(signature => seen.has(signature))) {
+          throw new Error("Missing or duplicate transaction signatures; analysis halted to protect evidence integrity.");
+        }
+        received.forEach(signature => seen.add(signature));
+        setPages(old => [...old, data]);
+        setStarted(true);
+        nextCursor = data.pagination?.nextCursor || null;
+        more = Boolean(data.pagination?.hasMore);
+        setCursor(nextCursor);
+        setHasMore(more);
+        if (!data.pagination?.pageComplete) {
+          setError("Some transactions could not be decoded. Deep analysis paused; evidence is incomplete.");
+          break;
+        }
+        if (more && !nextCursor) throw new Error("Pagination cursor missing; analysis halted.");
+      }
+    } catch (failure) {
+      if (failure.name !== "AbortError") setError(failure.message);
+    } finally {
+      activeRequest.current = null;
+      setBusy(false);
+      setAutoRunning(false);
+    }
+  }
+  return (
+    <Section title="Deep GLITCH // Evidence Analysis">
+      <div style={cardStyle}>
+        <p style={{ color: "#ddd" }}>Decode additional RPC-visible transactions in 20-transaction pages. Each page is independently assessed; a wallet risk score is not yet available.</p>
+        <p style={{ color: "#bbb" }}>Pages examined: {pages.length} · Unique signatures: {uniqueSignatures.size} · Transactions decoded: {decoded} · Unavailable: {unavailable} · Explicit SOL transfers: {transfers}</p>
+        {started && <p style={{ color: "#bbb" }}>Cumulative counterparties: {counterparties.size} · Largest counterparty share of observed explicit SOL transfer volume: {concentration === null ? "Not enough data" : concentration + "%"}</p>}
+        {started && <p style={{ color: coverageValid && unavailable === 0 ? "#83d4a0" : "#ffb86b" }}>Evidence integrity: {coverageValid ? "No duplicate signatures across loaded pages" : "Duplicate signatures detected"} · {unavailable === 0 ? "All requested records decoded" : "Some records unavailable"}</p>}
+        {started && <p style={{ color: "#bbb" }}>{hasMore ? "More history may be available." : "No further history returned by this RPC; archival completeness not verified."}</p>}
+        {started && <div style={{ borderTop: "1px solid #555", marginTop: 18, paddingTop: 16 }}>
+          <h3 style={{ color: "#fff" }}>GLITCH // Experimental Risk Indicators</h3>
+          <p style={{ color: "#ffbd80" }}>Assessment: {assessment.assessmentStatus.replaceAll("_", " ")} · Evidence confidence: {assessment.confidence} · Risk score: Not assessed</p>
+          <p style={{ color: "#bbb" }}>Observed activity does not establish whether a wallet is safe or fraudulent.</p>
+          <p style={{ color: "#aaa" }}>{assessment.confidenceExplanation}</p>
+          <details style={{ marginBottom: 16 }}><summary style={{ cursor: "pointer", color: "#ddd" }}>How indicators are evaluated ({assessment.ruleChecks.length})</summary>
+            {assessment.ruleChecks.map(rule => <div key={rule.id} style={{ padding: "10px 0", borderBottom: "1px solid #333" }}>
+              <strong style={{ color: "#eee" }}>{rule.title}: {rule.triggered ? "Triggered" : "Not triggered"}</strong>
+              <p style={{ color: "#bbb" }}>Threshold: {rule.threshold}</p>
+              <p style={{ color: "#bbb" }}>Observed: {rule.observed}</p>
+            </div>)}
+          </details>
+          {assessment.findings.length === 0 && <p style={{ color: "#bbb" }}>No supported behavioral findings under current rules. This does not mean the wallet is safe.</p>}
+          {assessment.findings.map(finding => <div key={finding.id} style={{ borderTop: "1px solid #333", padding: "12px 0" }}>
+            <strong style={{ color: "#fff" }}>{finding.title}</strong>
+            <p style={{ color: "#bbb" }}>{finding.explanation}</p>
+            <p style={{ color: "#aaa", fontSize: 12 }}>Rule: {finding.rule}</p>
+            <p style={{ color: "#aaa", fontSize: 12 }}>Supporting transactions ({finding.supportingTransactions ?? finding.signatures.length}):</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {finding.signatures.map(signature => <a key={signature} href={"https://solscan.io/tx/" + encodeURIComponent(signature)} target="_blank" rel="noopener noreferrer" style={{ color: "#83d4ff", fontSize: 12, overflowWrap: "anywhere" }} title={signature}>{signature.slice(0, 10)}… ↗</a>)}
+            </div>
+            {finding.signatures.length < (finding.supportingTransactions || 0) && <p style={{ color: "#aaa", fontSize: 12 }}>Showing the first {finding.signatures.length} supporting signatures.</p>}
+          </div>)}
+          <details><summary style={{ cursor: "pointer", color: "#ddd" }}>Evidence limitations ({assessment.limitations.length})</summary>
+            <ul style={{ color: "#aaa" }}>{assessment.limitations.map(note => <li key={note}>{note}</li>)}</ul>
+          </details>
+        </div>}
+        {error && <p role="alert" style={{ color: "#ffb86b" }}>{error}</p>}
+        {busy && <p role="status" style={{ color: "#ddd" }}>{autoRunning ? "Analyzing up to 5 pages in this batch. You can stop after the current request." : "Decoding current page..."}</p>}
+        {hasMore && <button type="button" disabled={busy} onClick={() => loadPages(false)} style={{ background: "#a52222", color: "white", border: 0, borderRadius: 8, padding: "12px 18px" }}>{busy ? "DECODING..." : started ? "ANALYZE NEXT 20 TRANSACTIONS" : "RUN DEEP ANALYSIS"}</button>}
+        {hasMore && !busy && <button type="button" onClick={() => loadPages(true)} style={{ marginLeft: 10, background: "#333", color: "white", border: "1px solid #777", borderRadius: 8, padding: "12px 18px" }}>ANALYZE NEXT 100 (AUTO)</button>}
+        {busy && autoRunning && <button type="button" onClick={() => { stopRequested.current = true; }} style={{ marginLeft: 10, background: "#333", color: "white", border: "1px solid #777", borderRadius: 8, padding: "12px 18px" }}>STOP AFTER CURRENT PAGE</button>}
+      </div>
+    </Section>
+  );
+}
+
+function HistoryExplorer({ address }) {
+  const [items, setItems] = useState([]);
+  const [cursor, setCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [started, setStarted] = useState(false);
+  const requestId = useRef(0);
+
+  async function loadMore() {
+    if (busy || !hasMore) return;
+    const id = ++requestId.current;
+    setBusy(true);
+    setError("");
+    try {
+      const url = "/api/history?address=" + encodeURIComponent(address) + (cursor ? "&before=" + encodeURIComponent(cursor) : "");
+      const response = await fetch(url, { cache: "no-store" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "History unavailable");
+      if (id !== requestId.current) return;
+      setItems(old => {
+        const known = new Set(old.map(row => row.signature));
+        return [...old, ...(data.items || []).filter(row => !known.has(row.signature))];
+      });
+      setCursor(data.pagination?.nextCursor || null);
+      setHasMore(Boolean(data.pagination?.hasMore));
+      setStarted(true);
+    } catch (failure) {
+      if (id === requestId.current) setError(failure.message);
+    } finally {
+      if (id === requestId.current) setBusy(false);
+    }
+  }
+
+  return (
+    <Section title="Transaction History // Explorer">
+      <div style={cardStyle}>
+        <p style={{ color: "#ddd" }}>Browse RPC-visible transaction signatures in pages. This does not yet decode all transaction details or establish complete chain-history coverage.</p>
+        <p style={{ color: "#aaa" }}>Records loaded: {items.length}{started && !hasMore ? " · No further signatures returned by this RPC" : " · Total history unknown"}</p>
+        {items.map(row => (
+          <div key={row.signature} style={{ borderTop: "1px solid #333", padding: "12px 0", overflowWrap: "anywhere" }}>
+            <span style={{ color: row.status === "success" ? "#83d4a0" : "#ff8888" }}>{row.status.toUpperCase()}</span>
+            {" · "}{row.timestamp || "Timestamp unavailable"}
+            <div style={{ fontSize: "12px", color: "#bbb" }}>{row.signature}</div>
+          </div>
+        ))}
+        {error && <p role="alert" style={{ color: "#ff8888" }}>{error}</p>}
+        {hasMore && <button type="button" disabled={busy} onClick={loadMore} style={{ background: "#a52222", color: "white", border: 0, borderRadius: 8, padding: "12px 18px", cursor: "pointer" }}>{busy ? "LOADING HISTORY..." : started ? "LOAD MORE TRANSACTIONS" : "LOAD TRANSACTION HISTORY"}</button>}
+        {started && !hasMore && <p style={{ color: "#aaa" }}>RPC history exhausted. Older archival records may still exist elsewhere.</p>}
+      </div>
+    </Section>
+  );
+}
+
+function CreatorLookup() {
+  const [mint, setMint] = useState("");
+  const [result, setResult] = useState(null);
+  const [creatorEvidence, setCreatorEvidence] = useState(null);
+  const [creatorEvidenceDiagnostic, setCreatorEvidenceDiagnostic] = useState("not_requested");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const inspection = useRef(null);
+  function cancelInspection() { inspection.current?.abort(); inspection.current=null; }
+  useEffect(()=>()=>cancelInspection(),[]);
+  const [historyCursor, setHistoryCursor] = useState(null);
+  const [concentration, setConcentration] = useState(null);
+  const [concentrationError, setConcentrationError] = useState("");
+  const [holderConnections, setHolderConnections] = useState(null);
+  const [holderConnectionsBusy, setHolderConnectionsBusy] = useState(false);
+  const [holderConnectionsError, setHolderConnectionsError] = useState("");
+  const [workerEvidence,setWorkerEvidence] = useState(null);
+  const [verifiedHolderAssessment,setVerifiedHolderAssessment] = useState(null);
+  const [frozenHolderObservation,setFrozenHolderObservation]=useState(null);
+  const [holderEvidenceState,setHolderEvidenceState] = useState("unknown");
+  const holderReconciliation=concentration&&holderConnections
+    ?reconcileHolderSnapshot(concentration.accounts||[],holderConnections.holders||[])
+    :null;
+  const currentHolderConnections=holderReconciliation?.compatible
+    ?{...holderConnections,holders:holderReconciliation.holders,
+       connectedGroups:(holderConnections.connectedGroups||[]).map(group=>({
+         ...group,combinedObservedSharePct:group.members.reduce((sum,wallet)=>sum+
+           holderReconciliation.holders.filter(h=>h.ownerWallet===wallet)
+             .reduce((n,h)=>n+Number(h.sharePct||0),0),0)
+       }))}
+    :null;
+  // A historical network remains useful even when its holder snapshot differs
+  // from live balances. Never substitute current balances into historical nodes.
+  const mapHolderConnections=currentHolderConnections||holderConnections;
+  const historicalMapOnly=Boolean(holderConnections&&!currentHolderConnections);
+  const [extensions, setExtensions] = useState(null);
+  const [extensionsError, setExtensionsError] = useState("");
+  const [liquidity, setLiquidity] = useState(null);
+  const [liquidityError, setLiquidityError] = useState("");
+  const [liquidityRefreshing, setLiquidityRefreshing] = useState(false);
+  const liquidityReader=useRef(null);
+  if(!liquidityReader.current)liquidityReader.current=createLiquidityReadController({publish:state=>{setLiquidity(state.data);setLiquidityError(state.error);setLiquidityRefreshing(state.loading);}});
+  useEffect(()=>()=>liquidityReader.current.reset('',true),[]);
+  const [poolEvidence, setPoolEvidence] = useState(null);
+  const [poolEvidenceError, setPoolEvidenceError] = useState("");
+  const [poolEvidenceBusy, setPoolEvidenceBusy] = useState(false);
+  const [historyBatches, setHistoryBatches] = useState(0);
+  const storedCreatorMatch = creatorEvidence?.creator &&
+    ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(creatorEvidence.status);
+  const storedCreatorLabel = creatorEvidence?.status === "VERIFIED" ? "On-chain confirmed · independently reviewed" :
+    "On-chain confirmed · review pending";
+  useEffect(() => {
+    const address=result?.mint;
+    if(!address)return;
+    setHolderConnections(null);setHolderConnectionsError("");setHolderConnectionsBusy(true);
+    let stopped=false;
+    let timer;
+    async function refresh(){
+      try{
+        const response=await fetch("/api/holder-scan-status?mint="+encodeURIComponent(address),{cache:"no-store"});
+        if(!response.ok)throw Error("Saved holder intelligence unavailable");
+        const data=await response.json();
+        if(stopped)return;
+        if(data.scan?.mint===address)setHolderConnections({...data.scan,jobId:data.jobId,observedAt:data.scan.updatedAt});
+        if(["not_started","queued","running","partial"].includes(data.status))timer=setTimeout(refresh,12000);
+      }catch{if(!stopped)setHolderConnectionsError("Saved holder intelligence unavailable");}
+      finally{if(!stopped)setHolderConnectionsBusy(false);}
+    }
+    refresh();
+    return ()=>{stopped=true;clearTimeout(timer);};
+  },[result?.mint]);
+  useEffect(() => {
+    const address=result?.mint;
+    if(!address){setVerifiedHolderAssessment(null);setHolderEvidenceState("unknown");return;}
+    let stopped=false;
+    let requestSequence=0;
+    async function refreshVerified(){
+      const sequence=++requestSequence;
+      try{
+        const response=await fetch("/api/holder-assessment?mint="+encodeURIComponent(address),{cache:"no-store"});
+        if(!response.ok)throw Error("HOLDER_EVIDENCE_UNAVAILABLE");
+        const data=await response.json();
+        if(!stopped&&sequence===requestSequence)setHolderEvidenceState(data.mint===address&&data.assessment?"ready":"unknown");
+        if(!stopped&&sequence===requestSequence)setVerifiedHolderAssessment(data.mint===address&&data.assessment?data:null);
+      }catch{if(!stopped&&sequence===requestSequence){setHolderEvidenceState("error");setVerifiedHolderAssessment(null);}}
+    }
+    setVerifiedHolderAssessment(null);
+    setHolderEvidenceState("loading");
+    refreshVerified();
+    const interval=setInterval(refreshVerified,30000);
+    return ()=>{stopped=true;requestSequence++;clearInterval(interval);};
+  },[result?.mint]);
+  useEffect(()=>{
+    const address=result?.mint;setFrozenHolderObservation(null);
+    if(address!==HOLDER_RETAIN19_POLICY.mint)return;
+    let stopped=false;const controller=new AbortController();
+    async function readFrozen(){
+      try{
+        const response=await fetch('/api/holder-frozen-observation?mint='+encodeURIComponent(address),{cache:'no-store',signal:controller.signal});
+        if(!response.ok)throw Error('FROZEN_UNAVAILABLE');
+        const data=await response.json();
+        // Recompute from exact raw inputs; response diagnostics never promote job evidence.
+        const observation=data.mint===address&&data.status==='observed_only'?assessApprovedHolderEligibleConcentration(data.snapshot):null;
+        if(!stopped)setFrozenHolderObservation(observation);
+      }catch{if(!stopped)setFrozenHolderObservation(null);}
+    }
+    readFrozen();return ()=>{stopped=true;controller.abort();};
+  },[result?.mint]);
+  useEffect(() => {
+    const address=result?.mint;
+    setWorkerEvidence(null);
+    if(!address)return;
+    let stopped=false;
+    let controller;
+    let sequence=0;
+    async function refresh(){
+      const request=++sequence;controller?.abort();controller=new AbortController();
+      try{
+        const data=await readDashboardEvidenceResponse(address,{signal:controller.signal});
+        if(!stopped&&request===sequence)setWorkerEvidence(data);
+      }catch{if(!stopped&&request===sequence)setWorkerEvidence(null);}
+    }
+    refresh();
+    const interval=setInterval(refresh,30000);
+    return ()=>{stopped=true;controller?.abort();clearInterval(interval);};
+  },[result?.mint]);
+  const MAX_HISTORY_BATCHES = 5;
+  async function refreshLiquidity(address = mint.trim(), signal) {
+    setPoolEvidence(null);setPoolEvidenceError('');
+    await liquidityReader.current.read(address,{signal});
+  }
+  async function verifyPoolAccounts() {
+    const addresses = (liquidity?.pools || []).slice(0, 5).map(pool => pool.pairAddress).filter(Boolean);
+    if (!addresses.length || poolEvidenceBusy) return;
+    setPoolEvidenceBusy(true); setPoolEvidenceError(""); setPoolEvidence(null);
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 20000);
+      let response;
+      try {
+        response = await fetch("/api/pool-account-evidence", {
+          method: "POST", cache: "no-store", signal: controller.signal,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mint: result?.mint, poolAddresses: addresses })
+        });
+      } finally { clearTimeout(timeout); }
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.reason || data.error || "On-chain pool account lookup unavailable");
+      if (result?.mint === mint.trim()) setPoolEvidence(data);
+    } catch (failure) {
+      setPoolEvidenceError(failure.name === "AbortError" ? "Pool account verification timed out" : failure.message);
+    } finally { setPoolEvidenceBusy(false); }
+  }
+  async function inspect(event, cursor = null) {
+    event.preventDefault();
+    cancelInspection();
+    const controller=new AbortController();inspection.current=controller;
+    const address=mint.trim(),current=()=>inspection.current===controller;
+    let cancel;
+    const cancelled=new Promise((_,reject)=>{cancel=()=>reject(Object.assign(Error('Inspection cancelled'),{name:'AbortError'}));controller.signal.addEventListener('abort',cancel,{once:true});});
+    // Bound both headers and body, including a non-cooperative late response.
+    async function read(path){
+      if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
+      return Promise.race([(async()=>{
+        const response=await fetch(path,{cache:'no-store',signal:controller.signal});
+        if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
+        const data=await response.json();
+        if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
+        if(!response.ok)throw Error('Token evidence unavailable');
+        if(data?.mint!==address)throw Error('Token evidence identity mismatch');
+        return data;
+      })(),cancelled]);
+    }
+    const timer=setTimeout(()=>controller.abort(),45000);
+    setBusy(true); setError(""); if (!cursor) { liquidityReader.current.reset(address); setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
+    try {
+      const data=await read('/api/creator?mint='+encodeURIComponent(address)+(cursor?'&before='+encodeURIComponent(cursor):''));
+      if(!current())return;
+      setResult(data);
+      if (!cursor) {
+        try {
+          const record=await read('/api/creator-evidence?mint='+encodeURIComponent(address));
+          if(!current())return;
+          setCreatorEvidence(record);
+          setCreatorEvidenceDiagnostic(record?.creator && ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(record.status) ? "record_available" : record?.status === "INDEXED_UNVERIFIED" ? "indexed_candidate" : record?.status === "CACHE_MISS" ? "cache_miss" : record?.status === "EVIDENCE_INCOMPLETE" ? "evidence_incomplete" : record?.status === "CONFLICT" ? "evidence_conflict" : "record_not_established");
+        } catch { if(!current()||controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});setCreatorEvidenceDiagnostic("lookup_failed"); }
+      }
+      if (!cursor) {
+        try {
+          const accountData=await read('/api/token-concentration?mint='+encodeURIComponent(address));
+          if(!current())return;
+          setConcentration(accountData);
+        } catch (failure) { if(!current()||controller.signal.aborted)throw failure;setConcentrationError('Token-account balances unavailable'); }
+      }
+      if (!cursor && data.tokenProgram === "spl-token-2022") {
+        try {
+          const extensionData=await read('/api/token-extensions?mint='+encodeURIComponent(address));
+          if(!current())return;
+          setExtensions(extensionData);
+        } catch (failure) { if(!current()||controller.signal.aborted)throw failure;setExtensionsError('Extension data unavailable'); }
+      }
+      if (!cursor) await Promise.race([refreshLiquidity(address,controller.signal),cancelled]);
+      if(!current()||controller.signal.aborted)return;
+      setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
+      setHistoryBatches(n => cursor ? n + 1 : 1);
+    } catch (failure) { if(current()){setResult(null);setError(failure.name === "AbortError" ? "Token inspection timed out. Evidence remains incomplete; no automatic retry was made." : "Token inspection unavailable or mismatched. Evidence remains Unknown.");} }
+    finally { clearTimeout(timer);controller.signal.removeEventListener('abort',cancel);if(current()){inspection.current=null;setBusy(false);} }
+  }
+  return <section aria-label="GLITCH Scanner Token Analysis" className="doom-token-inspect" style={{ ...cardStyle, border: "none", boxShadow: "none" }}>
+    <p style={{ color: "#ff7777", fontSize: 12, fontWeight: 700, letterSpacing: 2 }}>DOOM404 // GLITCH SCANNER · TOKEN ANALYSIS</p>
+    <h2 style={{ marginTop: 8 }}>Inspect a Solana token</h2>
+    <p style={{ color: "#bbb", lineHeight: 1.6 }}>Enter a Solana token address to explore security, holder connections, creator activity, and liquidity intelligence in one assessment.</p>
+    <form onSubmit={inspect} style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+      <input aria-label="Solana token mint address" value={mint} onChange={e => {cancelInspection();setBusy(false);setError("");setResult(null);liquidityReader.current.reset(e.target.value.trim());setMint(e.target.value);}} placeholder="Paste Solana token mint address" required style={{ flex: "1 1 260px", minWidth: 0, padding: 12, background: "#101010", border: "1px solid #555", borderRadius: 8, color: "white" }} />
+      <button type="submit" disabled={busy} style={{ padding: "12px 18px", border: 0, borderRadius: 8, background: "#a52222", color: "white", cursor: "pointer" }}>{busy ? "INSPECTING..." : "INSPECT TOKEN"}</button>
+    </form>
+    {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
+    {busy && <p role="status" style={{ color: "#ddd" }}>Querying Solana history. Each batch checks up to 3,000 signatures; this may take up to 45 seconds.</p>}
+    {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
+      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} liquidityError={liquidityError} liquidityRefreshing={liquidityRefreshing} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} frozenHolderObservation={frozenHolderObservation} workerEvidence={workerEvidence} />
+      {/* Previous token evidence panels retired from the layout; raw data and scan workers remain unchanged. */}
+    </div>}
+  </section>;
+}
+
 export default function Home() {
   const [wallet, setWallet] = useState("");
+  const [analysisMode, setAnalysisMode] = useState("token");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
 
@@ -183,6 +575,9 @@ export default function Home() {
   const [walletError, setWalletError] = useState("");
   const [transactionError, setTransactionError] = useState("");
   const [glitchError, setGlitchError] = useState("");
+  const [analysisFinished, setAnalysisFinished] = useState(false);
+  const [moduleTimings, setModuleTimings] = useState(null);
+  const requestVersion = useRef(0);
 
   async function fetchModule(endpoint, address) {
     const response = await fetch(
@@ -201,6 +596,17 @@ export default function Home() {
     return result;
   }
 
+  async function timedModule(endpoint, address) {
+    const start = performance.now();
+    try {
+      const data = await fetchModule(endpoint, address);
+      return { data, elapsedMs: Math.round(performance.now() - start) };
+    } catch (error) {
+      error.elapsedMs = Math.round(performance.now() - start);
+      throw error;
+    }
+  }
+
   async function analyzeWallet() {
     const address = wallet.trim();
 
@@ -209,7 +615,10 @@ export default function Home() {
       return;
     }
 
+    const version = ++requestVersion.current;
     setLoading(true);
+    setAnalysisFinished(false);
+    setModuleTimings(null);
     setStatus("Connecting to Solana Mainnet...");
 
     setWalletData(null);
@@ -221,53 +630,72 @@ export default function Home() {
     setGlitchError("");
 
     try {
+      // Fetch the lightweight overview first, then overlap the two deep modules.
+      // This avoids launching all three RPC-heavy requests simultaneously.
+      const startedAt = performance.now();
       setStatus("Loading wallet intelligence...");
-
+      const timings = {};
       try {
-        const result = await fetchModule(
-          "/api/wallet",
-          address
-        );
-
-        setWalletData(result);
+        const result = await timedModule("/api/wallet", address);
+        timings.wallet = result.elapsedMs;
+        if (version !== requestVersion.current) return;
+        setWalletData(result.data);
       } catch (error) {
+        timings.wallet = error.elapsedMs ?? null;
+        if (version !== requestVersion.current) return;
         setWalletError(error.message);
       }
 
-      setStatus("Loading transaction intelligence...");
-
-      try {
-        const result = await fetchModule(
-          "/api/transactions",
-          address
-        );
-
-        setTransactionData(result);
-      } catch (error) {
-        setTransactionError(error.message);
+      setStatus("Analyzing transactions and GLITCH evidence...");
+      const [transactionsResult, glitchResult] = await Promise.allSettled([
+        timedModule("/api/transactions", address),
+        timedModule("/api/glitch", address)
+      ]);
+      if (version !== requestVersion.current) return;
+      if (transactionsResult.status === "fulfilled") {
+        timings.transactions = transactionsResult.value.elapsedMs;
+        setTransactionData(transactionsResult.value.data);
+      } else {
+        timings.transactions = transactionsResult.reason?.elapsedMs ?? null;
+        setTransactionError(transactionsResult.reason?.message || "Transaction intelligence unavailable");
       }
-
-      setStatus("Running GLITCH Scanner...");
-
-      try {
-        const result = await fetchModule(
-          "/api/glitch",
-          address
-        );
-
-        setGlitchData(result);
-      } catch (error) {
-        setGlitchError(error.message);
+      if (glitchResult.status === "fulfilled") {
+        timings.glitch = glitchResult.value.elapsedMs;
+        setGlitchData(glitchResult.value.data);
+      } else {
+        timings.glitch = glitchResult.reason?.elapsedMs ?? null;
+        setGlitchError(glitchResult.reason?.message || "GLITCH evidence unavailable");
       }
+      timings.total = Math.round(performance.now() - startedAt);
+      setModuleTimings(timings);
+      console.info("[Wallet Signal] module timings (ms)", timings);
 
-      setStatus("Analysis completed.");
+      if (version === requestVersion.current) setStatus("");
 
     } catch (error) {
-      setStatus("Analysis error: " + error.message);
+      if (version === requestVersion.current) setStatus("Analysis error: " + error.message);
     } finally {
-      setLoading(false);
+      if (version === requestVersion.current) {
+        setAnalysisFinished(true);
+        setLoading(false);
+      }
     }
   }
+
+  const hasModuleError = Boolean(walletError || transactionError || glitchError);
+  const walletAnalysisComplete = analysisFinished && !loading && Boolean(walletData) && !walletError;
+  const emptyWallet = walletAnalysisComplete && walletData?.dataCoverage?.transactionsRetrieved === 0;
+  const glitchDecoded = glitchData?.coverage?.transactionsDecoded ?? 0;
+  const glitchRetrieved = glitchData?.coverage?.signaturesRetrieved ?? 0;
+  const glitchEvidenceSufficient = glitchDecoded > 0 &&
+    glitchData?.evidence?.confidence === "sample_only" &&
+    ["bounded_sample", "sample_limit_reached"].includes(glitchData?.evidence?.sampleCompleteness);
+  const walletScoreEligible = walletData?.dataCoverage?.scoringEligible === true &&
+    walletData?.intelligence?.scoringStatus === "preliminary";
+  const signalReady = walletAnalysisComplete && !hasModuleError &&
+    walletScoreEligible && glitchEvidenceSufficient;
+  const partialAnalysis = walletAnalysisComplete && !hasModuleError &&
+    walletScoreEligible && !signalReady;
 
   const activity = walletData?.activity || {};
   const intelligence = walletData?.intelligence || {};
@@ -277,6 +705,7 @@ export default function Home() {
     ? Object.entries(transactionData.categories)
     : [];
 
+  const glitchEvidence = glitchData?.evidence || null;
   const glitchSummary = glitchData?.summary || {};
   const glitchCoverage = glitchData?.coverage || {};
   const behavior = glitchData?.behaviorIntelligence || {};
@@ -302,195 +731,79 @@ export default function Home() {
   return (
     <main
       style={{
-        minHeight: "100vh",
+        minHeight: analysisMode === "token" || analysisFinished ? "100vh" : "100dvh",
+        height: analysisMode === "token" || (analysisFinished && walletData && !walletError) ? "auto" : "100dvh",
+        overflowY: analysisMode === "token" || (analysisFinished && walletData && !walletError) ? "visible" : "hidden",
+        boxSizing: "border-box",
         background: "#080808",
         color: "#fff",
-        padding: "28px 20px 50px",
+        padding: "clamp(12px, 3vh, 30px) 20px",
         fontFamily: "Arial, sans-serif"
       }}
     >
 
       <style>{`
-        .doom-hero { display:grid;grid-template-columns:minmax(0, 0.9fr) minmax(0, 1.1fr);align-items:center;gap:clamp(20px,3vw,48px);min-height:0;padding:24px 0 36px;position:relative;isolation:isolate }
-.doom-hero > * {min-width:0}
-@media (min-width:701px) {
-  .doom-hero {min-height:0;padding:4px 0 8px;gap:clamp(16px,2.5vw,32px)}
-  .doom-hero__copy {padding:0}
-  .doom-hero__title {font-size:clamp(42px,5vw,66px)!important;margin:16px 0 12px!important}
-  .doom-hero__description {font-size:clamp(16px,1.35vw,19px);line-height:1.5!important}
-  .doom-mascot {max-width:410px;aspect-ratio:1.35}
-  .doom-wallet-form {margin-top:0;padding:16px 22px}
-  .doom-wallet-form__row {margin-top:10px}
-  .doom-wallet-form__input,.doom-wallet-form__button {padding:14px 18px}
-}
-@media (min-width:701px) and (max-height:800px) {
-  .doom-mascot {max-width:355px}
-  .doom-hero__title {font-size:clamp(40px,4.5vw,58px)!important}
-  .doom-hero__description {font-size:16px}
-  .doom-hero {padding:0 0 6px}
-}
-@media (min-width:701px) and (max-width:1100px) {.doom-hero{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;padding:16px 0 28px}.doom-hero__title{font-size:clamp(46px,5.5vw,68px)!important}.doom-mascot{max-width:460px!important}}
-.doom-hero::before {content:"";position:absolute;z-index:-1;inset:-35px -20px -15px 25%;background:radial-gradient(ellipse at 60% 50%,#ad0b2633,transparent 70%);pointer-events:none}
-.doom-hero__copy {position:relative;z-index:2;padding:25px 0 40px}
-.doom-hero__title {font-size:clamp(54px,6.5vw,90px)!important;line-height:1.02;letter-spacing:-2px;margin:34px 0 20px!important}
-.doom-hero__description {font-size:clamp(17px,1.7vw,23px);max-width:410px;line-height:1.65!important}
-.doom-wallet-form {margin-top:12px;position:relative;z-index:3;background:#131315eb;border:1px solid #444;border-radius:16px;padding:24px 28px}
-.doom-wallet-form__row {display:flex;gap:16px;align-items:stretch;margin-top:14px}
-.doom-wallet-form__input {flex:1;min-width:0;box-sizing:border-box;padding:18px 20px;background:#090909;border:1px solid #444;border-radius:9px;color:white;font-size:17px}
-.doom-wallet-form__button {flex:0 0 30%;min-width:180px;padding:18px;background:#d62b35;color:white;border:0;border-radius:9px;font-weight:700;font-size:16px;cursor:pointer}
-.doom-wallet-form__button:disabled {background:#555;cursor:wait}
-.doom-scan-panel {margin-top:16px;display:flex;align-items:center;gap:20px;padding:20px 24px;background:linear-gradient(110deg,#19080e,#0c090a);border:1px solid #a42d40;border-radius:16px;box-shadow:0 0 30px #a500201a}
-.doom-scan-panel__icon {width:85px;height:85px;object-fit:cover;border-radius:12px}
-.doom-scan-panel__content {flex:1;min-width:0}
-.doom-scan-panel__title {color:#ff4c5e;font-size:17px;font-weight:700;letter-spacing:1px}
-.doom-scan-panel__subtitle {color:#aaa;margin-top:6px;font-size:14px}
-.doom-scan-panel__track {margin-top:18px;height:9px;background:#3d2027;border-radius:999px;overflow:hidden}
-.doom-scan-panel__bar {width:35%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#b71e35,#ff4759,#ffabb2);box-shadow:0 0 14px #ff364c;animation:doom-progress 1.7s ease-in-out infinite alternate}
-@keyframes doom-progress {from{transform:translateX(-90%)}to{transform:translateX(280%)}}
-        .doom-mascot { position: relative; width: 100%; max-width: 540px; aspect-ratio: 1.23; margin: 0 auto; isolation: isolate; cursor: pointer; perspective: 850px; }
-        .doom-mascot__art { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 0; transform-origin: 50% 75%; animation: doom-breathe 5.2s ease-in-out infinite; transition: filter .35s ease; -webkit-mask-image: radial-gradient(ellipse 83% 78% at 50% 50%, #000 38%, #000b 65%, transparent 95%); mask-image: radial-gradient(ellipse 83% 78% at 50% 50%, #000 38%, #000b 65%, transparent 95%); }
-        .doom-mascot__original { width: 100%; height: 100%; object-fit: contain; display: block; mix-blend-mode: screen; }
-        .doom-mascot__light { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 55% 48%, #ff35441b, transparent 58%); animation: doom-glow 4.2s ease-in-out infinite; }
-        .doom-mascot__scan { position: absolute; display: none; left: 7%; right: 7%; top: 0; height: 25%; pointer-events: none; background: linear-gradient(to bottom, transparent, #ff30491a 40%, #ff47624d 82%, #ff9ba8 96%, transparent); filter: drop-shadow(0 0 12px #ff3049); animation: doom-sweep 2.2s ease-in-out infinite alternate; }
-        .doom-mascot__sparkles { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(circle at 22% 25%, #6cecb4 0 2px, transparent 4px), radial-gradient(circle at 82% 35%, #6cecb4 0 3px, transparent 5px), radial-gradient(circle at 68% 72%, #6cecb4 0 2px, transparent 4px); }
-        .doom-mascot--analysing .doom-mascot__scan { display: block; }
-        .doom-mascot--analysing .doom-mascot__art { animation: doom-focus 3.6s ease-in-out infinite; }
-        .doom-mascot--signal-ready .doom-mascot__sparkles { opacity: 1; animation: doom-celebrate 2.4s ease-in-out infinite; }
-        .doom-mascot--signal-ready .doom-mascot__art { filter: drop-shadow(0 0 12px #36d38a33); }
-        .doom-mascot--active .doom-mascot__art, .doom-mascot:hover .doom-mascot__art { filter: brightness(1.13); }
-        .doom-mascot__indicator { position: absolute; z-index: 4; bottom: 0; left: 50%; transform: translateX(-50%); background: #101010eb; color: #ff707b; border: 1px solid #8c2935; border-radius: 999px; padding: 7px 13px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; white-space: nowrap; }
-        .doom-mascot--signal-ready .doom-mascot__indicator { color: #6cecb4; border-color: #287f56; }
-        @keyframes doom-breathe { 0%,100% { transform: translateY(0) rotate(-.5deg) scale(1); } 50% { transform: translateY(-4px) rotate(.6deg) scale(1.012); } }
-        @keyframes doom-focus { 0%,100% { transform: rotate(-.5deg) scale(1); } 50% { transform: rotate(.5deg) scale(1.018); } }
-        @keyframes doom-glow { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
-        @keyframes doom-sweep { from { transform: translateY(0); } to { transform: translateY(310%); } }
-        @keyframes doom-celebrate { 0%,100% { opacity: .25; transform: scale(.95); } 50% { opacity: 1; transform: scale(1.08); } }
-        @media(max-width:700px){.doom-hero{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);min-height:360px;gap:0;padding:0}.doom-hero__copy{padding:20px 0}.doom-hero__title{font-size:clamp(38px,8vw,55px)!important;letter-spacing:-1px;margin:24px 0 18px!important}.doom-hero__description{font-size:14px}.doom-mascot{width:125%;max-width:none;margin-left:-16%;aspect-ratio:.85}.doom-mascot__indicator{font-size:8px;padding:5px 8px;letter-spacing:.5px;bottom:13%}.doom-wallet-form{margin-top:4px;padding:20px}.doom-wallet-form__row{flex-direction:column;gap:12px}.doom-wallet-form__button{flex:auto;min-width:0}.doom-scan-panel{padding:15px;gap:12px}.doom-scan-panel__icon{width:58px;height:58px}.doom-scan-panel__title{font-size:14px}.doom-scan-panel__subtitle{font-size:12px}}
-        /* Final desktop overrides: placed last to win over earlier hero rules. */
-        @media (min-width:701px) {
-          .doom-hero {min-height:0!important;padding:0 0 8px!important;gap:20px!important;align-items:center}
-          .doom-hero__copy {padding:0!important}
-          .doom-hero__title {font-size:clamp(38px,4.3vw,58px)!important;margin:12px 0 10px!important;line-height:1.06}
-          .doom-hero__description {font-size:clamp(15px,1.25vw,18px)!important;line-height:1.45!important;margin:0}
-          .doom-mascot {max-width:320px!important;aspect-ratio:1.3!important}
-          .doom-wallet-form {margin-top:0!important;padding:14px 20px!important}
-          .doom-wallet-form__row {margin-top:8px!important}
-          .doom-wallet-form__input,.doom-wallet-form__button {padding:12px 16px!important}
+        .doom-token-inspect { width: calc(100vw - 24px); max-width: 1600px; position: relative; left: 50%; transform: translateX(-50%); box-sizing: border-box; border: 0 !important; box-shadow: none !important; }
+        .doom-token-inspect form { width: 100%; }
+        .doom-token-inspect input[aria-label="Solana token mint address"] { min-width: 0; }
+        @media (max-width: 480px) { .doom-token-inspect { width: calc(100vw - 12px); padding: 16px !important; } }
+      `}</style>
+      <style>{`
+        .doom-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 360px); align-items: center; gap: 12px; margin-bottom: -46px; }
+        .doom-mascot { position: relative; width: 100%; max-width: 360px; aspect-ratio: 1; isolation: isolate; perspective: 900px; margin: 0 auto; }
+        @media (min-width:641px) { .doom-hero .doom-mascot { transform:translateY(-28px); } }
+        .doom-mascot__image { position: relative; z-index: 2; display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 0; filter: drop-shadow(0 16px 30px #d3192433); transition: filter 800ms ease; animation: doom-float 4.5s ease-in-out infinite; transform-style: preserve-3d; }
+        .doom-mascot__beam { position: absolute; z-index: 3; inset: 12% 8%; border-top: 3px solid #ff4a5d; filter: drop-shadow(0 0 12px #ff304b); opacity: 0; pointer-events: none; }
+        .doom-mascot--scanning .doom-mascot__beam { opacity: 1; animation: doom-scan 1.8s ease-in-out infinite alternate; }
+        .doom-mascot__indicator { position: absolute; z-index: 4; bottom: 0; left: 50%; transform: translateX(-50%); background: #101010e8; color: #ff707b; border: 1px solid #8c2935; border-radius: 999px; padding: 7px 13px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; white-space: nowrap; }
+        /* Signal-ready treatment: preserve the dark visor, intensify emerald accents and dissolve the source image's rectangular edges. */
+        .doom-mascot--complete .doom-mascot__image {
+          filter: hue-rotate(125deg) saturate(1.65) contrast(1.22) brightness(.88) drop-shadow(0 0 12px #26f58c88);
+          -webkit-mask-image: radial-gradient(ellipse 65% 69% at 50% 47%, #000 62%, transparent 100%);
+          mask-image: radial-gradient(ellipse 65% 69% at 50% 47%, #000 62%, transparent 100%);
         }
-        @media (min-width:701px) and (max-height:800px) {
-          .doom-mascot {max-width:285px!important}
-          .doom-hero__title {font-size:clamp(36px,4vw,52px)!important}
-          .doom-hero__description {font-size:15px!important}
-          .doom-hero {padding-bottom:4px!important}
+        @media (prefers-reduced-motion: reduce) { .doom-mascot__image { transition: none; animation: none; } }
+        .doom-mascot--complete .doom-mascot__indicator { color: #6cecb4; border-color: #287f56; }
+        @keyframes doom-float { 0%,100% { transform: translateY(0) rotateY(-4deg) rotateX(2deg); } 50% { transform: translateY(-12px) rotateY(4deg) rotateX(-2deg); } }
+        @keyframes doom-scan { from { transform: translateY(10%); } to { transform: translateY(85%); } }
+        @media (max-width: 640px) { .doom-hero { margin-bottom: 0; } .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(120px, 40%); gap: 8px; } .doom-mascot__indicator { font-size: 8px; padding: 5px 8px; letter-spacing: .5px; } }
+        @media (max-width: 380px) { .doom-hero { grid-template-columns: minmax(0, 1fr) minmax(105px, 36%); gap: 6px; } .doom-mascot__indicator { letter-spacing: 0; } }
+        .doom-wallet-controls { display:grid; grid-template-columns:minmax(0,1fr) 190px; align-items:end; gap:12px; margin-top:12px; }
+        .doom-wallet-controls input { min-width:0; }\n        @media (max-width:640px) { .doom-wallet-controls { grid-template-columns:minmax(0,1fr); gap:10px; } }\n        .doom-scan-panel { display:flex; align-items:center; gap:16px; margin-top:16px; padding:14px 18px; border:1px solid #922b3f; border-radius:16px; background:linear-gradient(110deg,#220b12,#11090d 65%,#210911); box-shadow:0 0 22px #b91b3022; }
+        .doom-scan-thumb { width:76px; height:76px; flex-shrink:0; object-fit:cover; border-radius:12px; }
+        .doom-scan-content { flex:1; min-width:0; }
+        .doom-scan-title { color:#ff5369; font-size:16px; font-weight:800; letter-spacing:1.3px; }
+        .doom-scan-stage { color:#b8a5aa; margin:6px 0 13px; font-size:13px; }
+        .doom-scan-track { height:10px; border-radius:999px; overflow:hidden; background:#46212c; }
+        .doom-scan-indeterminate { width:34%; height:100%; border-radius:999px; background:linear-gradient(90deg,#a81735,#ff3b58,#ff9aa9); box-shadow:0 0 16px #ff365c99; animation:doom-scan-progress 1.7s ease-in-out infinite alternate; }
+        @keyframes doom-scan-progress { from { transform:translateX(0); } to { transform:translateX(194%); } }
+        @media (max-width:640px) { .doom-scan-panel { gap:12px; padding:12px; } .doom-scan-thumb { width:56px; height:56px; } .doom-scan-title { font-size:14px; } }
+        @media (prefers-reduced-motion:reduce) { .doom-scan-indeterminate { animation:none; width:100%; opacity:.75; } }
+        /* Compact only the desktop scanning layout; preserve mascot dimensions. */
+        @media (min-width:641px) {
+          .doom-wallet-card { padding:14px 18px !important; }
+          .doom-wallet-controls { margin-top:8px; }
+          .doom-scan-panel { margin-top:9px; padding:9px 16px; }
+          .doom-scan-thumb { width:62px; height:62px; }
+          .doom-scan-stage { margin:3px 0 8px; }
         }
-        /* Balanced desktop sizing: larger hero while retaining the form above fold. */
-        @media (min-width:701px) {
-          .doom-hero {padding:12px 0 14px!important;gap:28px!important}
-          .doom-hero__title {font-size:clamp(48px,5.2vw,72px)!important;margin:16px 0 14px!important}
-          .doom-hero__description {font-size:clamp(17px,1.45vw,21px)!important;line-height:1.55!important}
-          .doom-mascot {max-width:405px!important;aspect-ratio:1.3!important}
-          .doom-wallet-form {padding:18px 24px!important}
-          .doom-wallet-form__input,.doom-wallet-form__button {padding:15px 18px!important}
-        }
-        @media (min-width:701px) and (max-height:800px) {
-          .doom-hero {padding:4px 0 8px!important}
-          .doom-hero__title {font-size:clamp(44px,4.7vw,62px)!important}
-          .doom-mascot {max-width:355px!important}
-          .doom-wallet-form {padding:14px 20px!important}
-          .doom-wallet-form__input,.doom-wallet-form__button {padding:12px 16px!important}
-        }
-        /* Restore immersive large mascot; reclaim height from whitespace, not artwork. */
-        @media (min-width:701px) {
-          .doom-hero {padding:0 0 0!important;gap:24px!important;align-items:center}
-          .doom-hero__copy {padding:0!important}
-          .doom-hero__title {font-size:clamp(48px,5.4vw,74px)!important;margin:8px 0 8px!important}
-          .doom-hero__description {font-size:clamp(16px,1.4vw,20px)!important;line-height:1.45!important}
-          .doom-mascot {max-width:490px!important;aspect-ratio:1.55!important}
-          .doom-mascot__art {border-radius:0!important;-webkit-mask-image:radial-gradient(ellipse 94% 92% at 50% 48%,#000 46%,#000e 68%,transparent 99%)!important;mask-image:radial-gradient(ellipse 94% 92% at 50% 48%,#000 46%,#000e 68%,transparent 99%)!important}
-          .doom-wallet-form {margin-top:-4px!important;padding:14px 20px!important}
-          .doom-wallet-form__row {margin-top:8px!important}
-          .doom-wallet-form__input,.doom-wallet-form__button {padding:12px 16px!important}
-        }
-        @media (min-width:701px) and (max-height:800px) {
-          .doom-mascot {max-width:430px!important;aspect-ratio:1.65!important}
-          .doom-hero__title {font-size:clamp(46px,4.9vw,65px)!important}
-          .doom-hero__description {line-height:1.4!important}
-        }
-        /* Desktop mascot refinement: enlarge the original art, retain compact form layout. */
-        @media (min-width:701px) {
-          .doom-hero {overflow:visible!important}
-          .doom-mascot {width:100%!important;max-width:520px!important;aspect-ratio:1.7!important;overflow:visible!important}
-          .doom-mascot__art {overflow:visible!important;transform-origin:center center;-webkit-mask-image:radial-gradient(ellipse 99% 94% at 50% 50%,#000 55%,#000e 77%,transparent 100%)!important;mask-image:radial-gradient(ellipse 99% 94% at 50% 50%,#000 55%,#000e 77%,transparent 100%)!important}
-          .doom-mascot__original {transform:scale(1.52)!important;transform-origin:center center}
-          .doom-mascot__indicator {bottom:-4px}
-        }
-        @media (min-width:701px) and (max-height:800px) {
-          .doom-mascot {max-width:470px!important;aspect-ratio:1.7!important}
-          .doom-mascot__original {transform:scale(1.48)!important}
-        }
-        /* Desktop hero balance: large blended mascot, wallet form visible, overview below fold. */
-        @media (min-width:701px) {
-          .doom-hero {min-height:clamp(410px,57vh,510px)!important;padding:8px 0 16px!important;align-items:center!important;overflow:hidden!important}
-          .doom-mascot {max-width:570px!important;aspect-ratio:1.36!important;overflow:visible!important}
-          .doom-mascot__art {overflow:hidden!important;-webkit-mask-image:radial-gradient(ellipse 99% 96% at 50% 50%,#000 54%,#000e 76%,transparent 100%)!important;mask-image:radial-gradient(ellipse 99% 96% at 50% 50%,#000 54%,#000e 76%,transparent 100%)!important}
-          /* Dissolve rectangular artwork edges into the dark hero without shrinking the robot. */
-          .doom-mascot__art {
-            -webkit-mask-image:radial-gradient(ellipse 72% 78% at 62% 49%,#000 37%,#000e 57%,#0008 76%,transparent 100%)!important;
-            mask-image:radial-gradient(ellipse 72% 78% at 62% 49%,#000 37%,#000e 57%,#0008 76%,transparent 100%)!important;
-          }
-          .doom-mascot__original {transform:scale(1.22)!important}
-          .doom-wallet-form {margin-top:0!important}
-        }
-        @media (min-width:701px) and (max-height:800px) {
-          .doom-hero {min-height:clamp(380px,55vh,450px)!important;padding:4px 0 8px!important}
-          .doom-mascot {max-width:525px!important;aspect-ratio:1.36!important}
-          .doom-mascot__original {transform:scale(1.2)!important}
-        }
-        /* Fit the live scan status into the first desktop viewport. */
-        @media (min-width:701px) {
-          .doom-hero {min-height:clamp(315px,46vh,400px)!important;padding:0 0 4px!important}
-          .doom-mascot {max-width:570px!important;aspect-ratio:1.55!important}
-          .doom-wallet-form {padding:12px 20px!important}
-          .doom-wallet-form__row {margin-top:7px!important}
-          .doom-wallet-form__input,.doom-wallet-form__button {padding:12px 16px!important}
-          .doom-scan-panel {margin-top:8px!important;padding:10px 16px!important;gap:12px!important}
-          .doom-scan-panel__icon {width:56px!important;height:56px!important}
-          .doom-scan-panel__track {margin-top:8px!important}
-          .doom-scan-panel__subtitle {margin-top:2px!important}
-        }
-        @media (min-width:701px) and (max-height:800px) {
-          .doom-hero {min-height:clamp(290px,44vh,355px)!important}
-          .doom-mascot {max-width:530px!important;aspect-ratio:1.58!important}
-        }
-        /* The original mascot itself emits a soft green glow on success; no orbital ring. */
-        .doom-mascot--signal-ready .doom-mascot__art {
-          filter: drop-shadow(0 0 20px #38f79a9c) drop-shadow(0 0 45px #1cdb7970);
-          animation: doom-success-glow 2.4s ease-in-out infinite;
-        }
-        .doom-mascot--signal-ready .doom-mascot__light {
-          background: radial-gradient(ellipse at 52% 48%, #47ffac4d 0%, #30e88c22 45%, transparent 72%);
-          animation: doom-success-light 2.4s ease-in-out infinite;
-        }
-        @keyframes doom-success-glow {
-          0%,100% { filter: drop-shadow(0 0 12px #38f79a77) drop-shadow(0 0 32px #1cdb7950); }
-          50% { filter: drop-shadow(0 0 24px #52ffc2cc) drop-shadow(0 0 54px #1cdb7999); }
-        }
-        @keyframes doom-success-light { 0%,100% {opacity:.65} 50% {opacity:1} }
-        @media (prefers-reduced-motion: reduce) {
-          .doom-mascot--signal-ready .doom-mascot__art,
-          .doom-mascot--signal-ready .doom-mascot__light {animation:none}
-        }
-        @media (prefers-reduced-motion: reduce) { .doom-mascot__art, .doom-mascot__light, .doom-mascot__scan, .doom-mascot__sparkles { animation: none !important; } .doom-mascot__scan { display: none !important; } }
+        .doom-result-section { margin-top: 16px; border: 1px solid #383838; border-radius: 12px; background: #111; overflow: hidden; }
+        .doom-result-heading { cursor: pointer; list-style: none; padding: 18px 20px; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .doom-result-heading::-webkit-details-marker { display: none; }
+        .doom-result-heading:focus-visible { outline: 2px solid #ff5b65; outline-offset: -3px; }
+        .doom-result-chevron { color: #ff7777; font-size: 25px; transition: transform .2s ease; }
+        .doom-result-section[open] .doom-result-chevron { transform: rotate(180deg); }
+        .doom-result-content { padding: 0 18px 20px; }
       `}</style>
       <div
         style={{
-          maxWidth: "1400px",
+          maxWidth: "1050px",
           margin: "0 auto"
         }}
       >
 
         <div className="doom-hero">
-          <div className="doom-hero__copy">
+          <div>
             <p
               style={{
                 color: "#ff4444",
@@ -502,7 +815,7 @@ export default function Home() {
               DOOM404 // INTELLIGENCE SYSTEM
             </p>
     
-            <h1 className="doom-hero__title"
+            <h1
               style={{
                 fontSize: "clamp(36px, 7vw, 62px)",
                 marginBottom: "12px"
@@ -511,7 +824,7 @@ export default function Home() {
               Wallet Signal
             </h1>
     
-            <p className="doom-hero__description"
+            <p
               style={{
                 color: "#aaa",
                 lineHeight: 1.7
@@ -524,10 +837,19 @@ export default function Home() {
     
     
           </div>
-          <MascotDisplay loading={loading} complete={!loading && status === "Analysis completed."} />
+          <MascotDisplay loading={loading} complete={signalReady} partial={partialAnalysis} />
         </div>
 
-        <div className="doom-wallet-form">
+        <div role="tablist" aria-label="Analysis type" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 18 }}>
+          {[{ id: "wallet", label: "WALLET ANALYSIS" }, { id: "token", label: "TOKEN ANALYSIS" }].map(item =>
+            <button key={item.id} type="button" role="tab" aria-selected={analysisMode === item.id} onClick={() => setAnalysisMode(item.id)}
+              style={{ padding: "14px 8px", background: analysisMode === item.id ? "#aa2525" : "#1b1b1b", color: "#fff", border: analysisMode === item.id ? "1px solid #d84949" : "1px solid #555", borderRadius: 9, fontWeight: 700, fontSize: "clamp(11px, 2.5vw, 14px)", cursor: "pointer" }}>
+              {item.label}
+            </button>
+          )}
+        </div>
+        {analysisMode === "token" ? <div role="tabpanel" aria-label="Token Analysis"><CreatorLookup /></div> : <div role="tabpanel" aria-label="Wallet Analysis">
+        <div className="doom-wallet-card" style={cardStyle}>
           <label
             htmlFor="wallet-address"
             style={{
@@ -538,13 +860,24 @@ export default function Home() {
             SOLANA WALLET ADDRESS
           </label>
 
-          <div className="doom-wallet-form__row">
-          <input className="doom-wallet-form__input"
+          <div className="doom-wallet-controls">
+          <input
             id="wallet-address"
             value={wallet}
-            onChange={(event) =>
-              setWallet(event.target.value)
-            }
+            onChange={(event) => {
+              requestVersion.current += 1;
+              setWallet(event.target.value);
+              setAnalysisFinished(false);
+              setModuleTimings(null);
+              setLoading(false);
+              setWalletData(null);
+              setTransactionData(null);
+              setGlitchData(null);
+              setWalletError("");
+              setTransactionError("");
+              setGlitchError("");
+              setStatus("");
+            }}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !loading) {
                 analyzeWallet();
@@ -554,7 +887,7 @@ export default function Home() {
             style={{
               width: "100%",
               boxSizing: "border-box",
-              marginTop: "12px",
+              marginTop: 0,
               padding: "15px",
               background: "#090909",
               border: "1px solid #444",
@@ -564,12 +897,12 @@ export default function Home() {
             }}
           />
 
-          <button className="doom-wallet-form__button"
+          <button
             onClick={analyzeWallet}
             disabled={loading}
             style={{
               width: "100%",
-              marginTop: "16px",
+              marginTop: 0,
               padding: "16px",
               background: loading
                 ? "#555"
@@ -590,16 +923,91 @@ export default function Home() {
           </div>
         </div>
 
-        {status && (loading ? (
-          <div className="doom-scan-panel" role="status" aria-live="polite">
-            <img className="doom-scan-panel__icon" src="/doom404-mascot.png..jpeg" alt="" />
-            <div className="doom-scan-panel__content">
-              <div className="doom-scan-panel__title">SCANNING WALLET...</div>
-              <div className="doom-scan-panel__subtitle">{status}</div>
-              <div className="doom-scan-panel__track" role="progressbar" aria-label="Wallet analysis in progress"><div className="doom-scan-panel__bar" /></div>
+        {analysisFinished && moduleTimings && (
+          <p data-testid="analysis-timing" style={{ color: "#aaa", fontSize: "12px", marginTop: "12px" }}>
+            Analysis time: {(moduleTimings.total / 1000).toFixed(1)}s · Wallet: {moduleTimings.wallet == null ? "n/a" : (moduleTimings.wallet / 1000).toFixed(1) + "s"} · Transactions: {moduleTimings.transactions == null ? "n/a" : (moduleTimings.transactions / 1000).toFixed(1) + "s"} · GLITCH: {moduleTimings.glitch == null ? "n/a" : (moduleTimings.glitch / 1000).toFixed(1) + "s"}
+          </p>
+        )}
+
+        {loading && (
+          <div className="doom-scan-panel" role="status" aria-live="polite" aria-label="Scanning wallet in progress">
+            <img className="doom-scan-thumb" src="/doom404-mascot.png..jpeg" alt="" />
+            <div className="doom-scan-content">
+              <div className="doom-scan-title">SCANNING WALLET...</div>
+              <div className="doom-scan-stage">{status || "Reading on-chain wallet activity..."}</div>
+              <div className="doom-scan-track" aria-label="Analysis in progress, duration unknown"><div className="doom-scan-indeterminate" /></div>
             </div>
           </div>
-        ) : <div role="status" style={{ ...cardStyle, color: "#ddd" }}>{status}</div>)}
+        )}
+
+        {analysisFinished && !loading && (
+          <p role="status" style={{ color: signalReady ? "#6cecb4" : "#ffb86b", fontSize: "13px", marginTop: "12px" }}>
+            {signalReady
+              ? "Signal ready — preliminary activity score supported by observed coverage."
+              : walletError || !walletData
+                ? "Analysis failed — wallet information could not be retrieved. Please retry."
+                : emptyWallet
+                  ? "Analysis complete — no observable transaction history. Insufficient evidence for a behavioral signal."
+                  : hasModuleError
+                    ? "Wallet overview complete — some optional intelligence modules are unavailable. Available results are shown below."
+                    : "Analysis complete — wallet history or scoring coverage is insufficient for a behavioral signal."}
+          </p>
+        )}
+
+        {status && !loading && !analysisFinished && (
+          <div
+            role="status"
+            style={{
+              ...cardStyle,
+              color: "#ddd"
+            }}
+          >
+            {status}
+          </div>
+        )}
+
+        {walletAnalysisComplete && (
+        <div key={requestVersion.current} id="wallet-results">
+        {emptyWallet && <p role="status" style={{ color: "#ffb86b", fontSize: "14px" }}>New or inactive wallet: no observable transactions in the queried history. Behavioral scoring is unavailable; this is not a wallet safety assessment.</p>}
+        <section aria-label="DOOM404 Trust Report" style={{ ...cardStyle, borderColor: "#633", marginBottom: 18 }}>
+          <p style={{ color: "#ff7777", fontSize: 12, fontWeight: 700, letterSpacing: 2 }}>DOOM404 // TRUST REPORT · EARLY ACCESS</p>
+          <h2 style={{ fontSize: 26, margin: "8px 0" }}>Decision: Further verification required</h2>
+          <p style={{ color: "#ddd", lineHeight: 1.65 }}>This scan cannot establish whether this wallet is safe or malicious. Do not treat an absence of detected indicators as clearance to transfer funds.</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, margin: "16px 0" }}>
+            <div style={{ background: "#202020", padding: 14, borderRadius: 8 }}><small style={{ color: "#aaa" }}>Risk verdict</small><p style={{ fontWeight: 700, marginBottom: 0 }}>Not established</p></div>
+            <div style={{ background: "#202020", padding: 14, borderRadius: 8 }}><small style={{ color: "#aaa" }}>Decoded evidence</small><p style={{ fontWeight: 700, marginBottom: 0 }}>{glitchDecoded} transactions</p></div>
+            <div style={{ background: "#202020", padding: 14, borderRadius: 8 }}><small style={{ color: "#aaa" }}>Coverage</small><p style={{ fontWeight: 700, marginBottom: 0 }}>{glitchData?.evidence?.sampleCompleteness ? String(glitchData.evidence.sampleCompleteness).replaceAll("_", " ") : "Unverified"}</p></div>
+          </div>
+          <h3 style={{ marginBottom: 6 }}>What you can decide now</h3>
+          <p style={{ color: "#ccc", lineHeight: 1.65 }}>You can inspect observed wallet activity and supporting transactions. You cannot yet rely on this report for malicious-address screening, creator history, token-launch behavior or a validated wallet risk grade.</p>
+          <p style={{ color: "#ffbf86", lineHeight: 1.65 }}>Recommended next action: Verify the wallet owner and transaction purpose independently before sending funds. Expand GLITCH evidence and inspect transaction signatures below.</p>
+          <p style={{ color: "#999", fontSize: 12 }}>This report uses current on-chain observations only. Threat intelligence and token-creator relationship checks are not yet connected.</p>
+        </section>
+        <Section title="GLITCH // Evidence Quality">
+          {glitchEvidence ? (
+            <>
+              <p style={{ color: "#ddd" }}>
+                Evidence: <strong>{String(glitchEvidence.confidence ?? "unavailable").replaceAll("_", " ")}</strong>
+                {" · "}Coverage: {String(glitchEvidence.sampleCompleteness ?? "unavailable").replaceAll("_", " ")}
+              </p>
+              <p style={{ color: "#999", fontSize: "13px" }}>
+                {glitchEvidence.decodedTransactions ?? "Unavailable"} transactions decoded; {glitchEvidence.unavailableTransactions ?? "Unavailable"} unavailable.
+              </p>
+              <ul style={{ color: "#ccc", lineHeight: 1.7 }}>
+                {(glitchEvidence.observations || []).map((observation, index) => (
+                  <li key={index}>{observation}</li>
+                ))}
+              </ul>
+              <p style={{ color: "#999", fontSize: "12px" }}>{glitchEvidence.interpretation}</p>
+            </>
+          ) : (
+            <div role="status" style={{ ...cardStyle, color: "#ffb86b" }}>
+              <strong>Evidence unavailable — GLITCH analysis did not complete.</strong>
+              <p>{glitchError || "No GLITCH evidence was returned. Please retry the analysis."}</p>
+              <p style={{ color: "#aaa", fontSize: "12px" }}>Transaction decoding and transfer coverage cannot be assessed. This is not a wallet safety determination.</p>
+            </div>
+          )}
+        </Section>
 
         <Section title="01 // Wallet Overview">
           {walletData ? (
@@ -1015,6 +1423,9 @@ export default function Home() {
           </div>
         </Section>
 
+        <HistoryExplorer key={walletData?.address || wallet.trim()} address={walletData?.address || wallet.trim()} />
+        <DeepGlitchExplorer key={"deep-" + (walletData?.address || wallet.trim())} address={walletData?.address || wallet.trim()} />
+
         <Section title="06 // GLITCH Scanner">
           <div style={cardStyle}>
             <p
@@ -1043,7 +1454,7 @@ export default function Home() {
                     9
                   )}
                   note={
-                    (glitchSummary.incomingTransferCount ?? 0) +
+                    (glitchSummary.incomingTransferCount == null ? "Unavailable" : glitchSummary.incomingTransferCount) +
                     " incoming transfers"
                   }
                 />
@@ -1055,7 +1466,7 @@ export default function Home() {
                     9
                   )}
                   note={
-                    (glitchSummary.outgoingTransferCount ?? 0) +
+                    (glitchSummary.outgoingTransferCount == null ? "Unavailable" : glitchSummary.outgoingTransferCount) +
                     " outgoing transfers"
                   }
                 />
@@ -1063,7 +1474,7 @@ export default function Home() {
                 <Metric
                   label="UNIQUE COUNTERPARTIES"
                   value={
-                    glitchSummary.uniqueCounterparties ?? 0
+                    glitchSummary.uniqueCounterparties ?? "Unavailable"
                   }
                   note="Observed addresses"
                 />
@@ -1166,8 +1577,9 @@ export default function Home() {
 
                 {counterparties.length === 0 ? (
                   <p style={{ color: "#999" }}>
-                    No SOL transfer counterparties found
-                    in this sample.
+                    {glitchData.coverage?.transactionsDecoded === 0
+                      ? "Counterparty analysis unavailable — no transaction details were decoded."
+                      : "No SOL transfer counterparties found in the decoded sample."}
                   </p>
                 ) : (
                   counterparties.map((item) => (
@@ -1229,8 +1641,9 @@ export default function Home() {
 
                 {transfers.length === 0 ? (
                   <p style={{ color: "#999" }}>
-                    No explicit SOL transfers found
-                    in this sample.
+                    {glitchData.coverage?.transactionsDecoded === 0
+                      ? "SOL transfer analysis unavailable — no transaction details were decoded."
+                      : "No explicit SOL transfers found in the decoded sample."}
                   </p>
                 ) : (
                   transfers.map((transfer, index) => (
@@ -1384,7 +1797,9 @@ export default function Home() {
           )}
         </Section>
 
-        <footer
+        </div>
+        )}
+        {walletAnalysisComplete && <footer
           style={{
             marginTop: "70px",
             paddingTop: "20px",
@@ -1395,7 +1810,7 @@ export default function Home() {
           }}
         >
           <strong>
-            DOOM404 // Wallet Signal v0.6.0
+            DOOM404 // Wallet Signal v1.0
           </strong>
 
           <p>
@@ -1406,7 +1821,8 @@ export default function Home() {
           <p>
             Higher. Stronger. Together.
           </p>
-        </footer>
+        </footer>}
+        </div>}
       </div>
     </main>
   );

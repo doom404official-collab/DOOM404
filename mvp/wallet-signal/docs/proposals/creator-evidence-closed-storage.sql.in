@@ -1,0 +1,17 @@
+-- UNAPPLIED companion: bind ONLY actual parent-approved, newly created test UIDs.
+-- No windows/runs. Apply before issuing/storing test sessions; do not invent UIDs.
+BEGIN;
+DO $$ BEGIN
+ IF '{{UPLOAD_UID}}'::uuid='{{READ_UID}}'::uuid
+ OR (SELECT count(*) FROM auth.users WHERE id IN('{{UPLOAD_UID}}'::uuid,'{{READ_UID}}'::uuid))<>2
+ THEN RAISE EXCEPTION 'ACTUAL_DISTINCT_TEST_IDENTITIES_REQUIRED'; END IF;
+END $$;
+-- Restrictive AND guard defeats pre-existing permissive policies for these two
+-- subjects only, across all Storage paths, including history. Other UIDs unchanged.
+CREATE POLICY creator_test_closed_subjects ON storage.objects AS RESTRICTIVE
+ FOR ALL TO authenticated
+ USING(auth.uid() IS DISTINCT FROM '{{UPLOAD_UID}}'::uuid AND auth.uid() IS DISTINCT FROM '{{READ_UID}}'::uuid)
+ WITH CHECK(auth.uid() IS DISTINCT FROM '{{UPLOAD_UID}}'::uuid AND auth.uid() IS DISTINCT FROM '{{READ_UID}}'::uuid);
+COMMIT;
+-- No new grants, permissive policy, Auth identity/session creation or live request.
+-- service_role/owners/BYPASSRLS remain privileged; never use them as test identities.

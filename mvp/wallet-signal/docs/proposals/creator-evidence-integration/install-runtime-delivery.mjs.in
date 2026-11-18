@@ -1,0 +1,59 @@
+// UNAPPLIED owner-operated secure-input proposal. NOT an active script.
+// Requires separate runtime-delivery grant/window approval; never run by agent.
+import {Client} from 'pg';
+import {obtainCreatorOwnerSessions} from '../../../lib/creatorEvidenceOwnerSessions.mjs';
+import {createInterface} from 'node:readline/promises';
+import {Writable} from 'node:stream';
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+const enabled=false;
+if(!enabled){console.log('DISABLED');}
+else{
+ // Non-secret arguments: exact reviewed SQL path, SHA256, downloaded CA path.
+ // Never pass passwords/tokens/connection strings as arguments or env values.
+ let client,dispatched=false,rl,authAttempts=0;
+ const abort=new AbortController();
+ const stop=()=>abort.abort();
+ process.once('SIGINT',stop);process.once('SIGTERM',stop);
+ const destroy=()=>{try{client?.connection?.stream?.destroy();}catch{}};
+ async function bounded(operation,ms=10000){
+  if(abort.signal.aborted)throw Error();
+  let timer,onAbort;
+  try{return await Promise.race([
+   Promise.resolve().then(()=>{if(abort.signal.aborted)throw Error();return operation();}),
+   new Promise((_,reject)=>{onAbort=()=>{destroy();reject(Error());};abort.signal.addEventListener('abort',onAbort,{once:true});timer=setTimeout(()=>{stop();},ms);})
+  ]);}finally{clearTimeout(timer);abort.signal.removeEventListener('abort',onAbort);}
+ }
+ try{
+  if(!process.stdin.isTTY)throw Error();
+  const [sqlPath,reviewedHash,caPath]=process.argv.slice(2);
+  const source=readFileSync(sqlPath,'utf8');
+  if(!/^[a-f0-9]{64}$/.test(reviewedHash)||createHash('sha256').update(source).digest('hex')!==reviewedHash)throw Error();
+  const muted=new Writable({write(_chunk,_encoding,done){done();}});muted.isTTY=true;muted.columns=80;
+  rl=createInterface({input:process.stdin,output:muted,terminal:true});
+  rl.on('SIGINT',stop);
+  rl.on('close',stop);
+  const secret=async label=>{process.stderr.write(label+': ');const value=await rl.question('',{signal:abort.signal});process.stderr.write('\n');if(!value||/[\r\n\0]/.test(value))throw Error();return value;};
+  const password=await secret('Existing postgres password (hidden)');
+  client=new Client({host:'db.acwmtobcbpkjfqiatyke.supabase.co',port:5432,database:'postgres',user:'postgres',password,ssl:{ca:readFileSync(caPath,'utf8'),rejectUnauthorized:true,servername:'db.acwmtobcbpkjfqiatyke.supabase.co',minVersion:'TLSv1.2'},connectionTimeoutMillis:5000,statement_timeout:8000,lock_timeout:2000,query_timeout:0,application_name:'creator-approved-delivery-install'});
+  client.on('error',()=>{});await bounded(()=>client.connect(),5000);
+  const seal=await bounded(()=>client.query('SELECT binding FROM creator_relay_test_private.sealed_test_window WHERE singleton AND closed_at IS NULL'));
+  if(seal.rows.length!==1||seal.rows[0].binding.projectRef!=='acwmtobcbpkjfqiatyke')throw Error();
+  const publishableKey=await secret('Project publishable key (hidden)');
+  const storageSessions=await obtainCreatorOwnerSessions({enabled:true,sealedBinding:seal.rows[0].binding,publishableKey,signal:abort.signal},{promptSecret:label=>secret(label+' (hidden)'),onDispatch:()=>{authAttempts++;}});
+  const payload={sealedBinding:seal.rows[0].binding,storageSessions,publishableKey};
+  await bounded(()=>client.query('CREATE TEMP TABLE creator_test_runtime_input(payload jsonb NOT NULL)'));
+  await bounded(()=>client.query('INSERT INTO creator_test_runtime_input VALUES($1::jsonb)',[JSON.stringify(payload)]));
+  await bounded(()=>{dispatched=true;return client.query(source);});
+  console.log('DELIVERY_INSTALL_REPORTED_VERIFY_PRIVILEGES');
+ }catch{console.log(JSON.stringify({status:dispatched?'INSTALL_OUTCOME_UNKNOWN_RECONCILE':authAttempts?'AUTH_OUTCOME_RECONCILIATION_REQUIRED':'NOT_INSTALLED',authAttempts,retries:0}));process.exitCode=1;}
+ finally{
+  rl?.close();destroy();
+  process.removeListener('SIGINT',stop);process.removeListener('SIGTERM',stop);
+  // Socket destruction is the cancellation boundary; never await an unbounded end().
+  try{client?.end()?.catch(()=>{});}catch{}
+ }
+}
+// Parameterized input avoids SQL text/history containing tokens. Parent must
+// review platform parameter logging/retention; no claim that host logs are off.
+// This uses existing pg dependency on the owner's machine; no service-role copy.
