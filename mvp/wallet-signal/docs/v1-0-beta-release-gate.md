@@ -228,3 +228,33 @@ paths remain unwired; existing runtime activation is unverified. No live validat
 worker dispatch, activation change, migration, credential change, production promotion
 or merge is included.”
 This wording is a proposal only; no approval is inferred and nothing was published.
+
+### November 18 scoped PostCSS remediation
+
+The production-only registry audit at navigation candidate `c1f6dc0` reported six
+associated package nodes (one high, five moderate), including PostCSS 8.4.31 via
+Next 15.5.28. The newest published Next 15 patch inspected, 15.5.29, still pins
+8.4.31. Keep Next and the Solana tree unchanged; use npm's ancestor-scoped override
+`next -> postcss: 8.5.23`. This is a tested application override, not a claim of
+Next vendor certification. The advisory fixed range includes 8.5.23:
+[GHSA-fxqj-rqcc-2cmp](https://github.com/advisories/GHSA-fxqj-rqcc-2cmp);
+[upstream release](https://github.com/postcss/postcss/releases/tag/8.5.23).
+
+Only the PostCSS package entry changes in the lockfile; its required child ranges
+are updated but their already-compatible resolved packages and every other entry
+are unchanged. A clean `npm ci --ignore-scripts --no-audit` in an isolated directory
+reproduced the lock and Next's 8.5.23 resolution. Three focused checks cover that
+resolution, refusal to load a local source map without `from`, and normal CSS
+parse/stringify compatibility. The network-blocked production build passed all
+1,768 tests, compilation, lint/types; an instrumented module loader confirmed
+PostCSS 8.5.23 during actual Next compilation. Hosted persistence remained
+SKIPPED_NOT_OPTED_IN. No live endpoint or database operation was used.
+
+One post-change production audit reports four moderate associated nodes:
+@solana/web3.js, jayson, stream-json and uuid; zero high/critical entries in that
+response. Next/PostCSS no longer appear. This is not a claim of no vulnerabilities:
+prior source review did not demonstrate the reported stream-json or uuid feature
+paths reachable through the app's inspected RPC client. No major upgrade, audit
+fix, unrelated dependency churn or scoring/runtime-policy change is included.
+Revisit the override when Next supplies a patched dependency itself. Production
+release and unresolved evidence/security acceptance remain separately gated.
