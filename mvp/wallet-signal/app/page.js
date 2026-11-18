@@ -762,7 +762,7 @@ export default function Home() {
           -webkit-mask-image: radial-gradient(ellipse 65% 69% at 50% 47%, #000 62%, transparent 100%);
           mask-image: radial-gradient(ellipse 65% 69% at 50% 47%, #000 62%, transparent 100%);
         }
-        @media (prefers-reduced-motion: reduce) { .doom-mascot__image { transition: none; animation: none; } }
+        @media (prefers-reduced-motion: reduce) { .doom-mascot__image { transition: none; animation: none; } .doom-mascot--scanning .doom-mascot__beam { animation: none; } }
         .doom-mascot--complete .doom-mascot__indicator { color: #6cecb4; border-color: #287f56; }
         @keyframes doom-float { 0%,100% { transform: translateY(0) rotateY(-4deg) rotateX(2deg); } 50% { transform: translateY(-12px) rotateY(4deg) rotateX(-2deg); } }
         @keyframes doom-scan { from { transform: translateY(10%); } to { transform: translateY(85%); } }
