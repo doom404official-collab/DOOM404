@@ -1,4 +1,5 @@
 import {PublicKey} from "@solana/web3.js";
+import {decodeToken2022BinaryMint} from "./token2022BinaryMint.mjs";
 const CLASSIC="TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
 const TOKEN_2022="TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
 export function inspectLpMintAccount(account,expectedMintAddress,reportedSupply) {
@@ -6,8 +7,11 @@ export function inspectLpMintAccount(account,expectedMintAddress,reportedSupply)
  if(!account)return {...unknown,reason:"lp_mint_account_missing"};
  const owner=account.owner?.toBase58?.();
  if(owner!==CLASSIC&&owner!==TOKEN_2022)return {...unknown,reason:"unsupported_lp_mint_program",observedOwnerProgram:owner??null};
+ if(account.executable!==false)return {...unknown,reason:"lp_mint_executable_unverified"};
  const data=account.data;
  if(!Buffer.isBuffer(data)||data.length<82)return {...unknown,reason:"invalid_lp_mint_layout"};
+ // Do not validate an arbitrary account or malformed extension suffix as a mint.
+ if(owner===CLASSIC&&data.length!==82||owner===TOKEN_2022&&!decodeToken2022BinaryMint(account,expectedMintAddress))return {...unknown,reason:"invalid_lp_mint_layout"};
  const option=data.readUInt32LE(0),freezeOption=data.readUInt32LE(46);
  if(![0,1].includes(option)||![0,1].includes(freezeOption)||data.readUInt8(45)!==1)return {...unknown,reason:"invalid_lp_mint_state"};
  const supply=data.readBigUInt64LE(36).toString();
