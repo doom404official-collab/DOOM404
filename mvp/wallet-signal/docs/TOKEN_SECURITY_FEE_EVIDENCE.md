@@ -132,3 +132,42 @@ oracle comparisons. Network-blocked npm run build passed 1,740 tests and Next
 compilation/lint/types. One additional rendered-observation assertion was then
 added without production changes; the final complete smoke suite passed 1,741/1,741.
 Persistence was SKIPPED_NOT_OPTED_IN. No hosted CI/Preview or real-token test ran.
+
+## November 18 acceptance-boundary handoff — source 2f018a9
+
+Parent independently reviewed `2f018a9e294e596bbc3fe189e853f799110b8dbe`, its
+four successful exact-head Actions runs and actual READY Scanner Preview
+`dpl_J9bDnNiH7LYMm6LW6nXpcE5go4eu`. Reuse the 56 focused tests, 1,758 aggregate
+tests and build/lint/types from that patch; none was rerun for this handoff.
+The owner guard is incorporated in the recovery branch, not merged to production.
+
+A single authorized missing-input transport check targeted the exact Scanner
+Preview `/api/token-extensions` without a mint. Source rejects this input before
+`createReliableConnection`, so it cannot initiate provider work. The attempt failed
+at the environment CONNECT tunnel: curl exit 56, `CONNECT tunnel failed, response
+403`, application HTTP status `000`. No application body/status was obtained; this
+is NOT an application 403 or proof of Vercel protection failure. No second invalid
+request, browser/static-shell check, valid-mint request or auto-scan was attempted.
+No Vercel CLI was installed. The connector fetch can create a share link and was
+not invoked; no protection, authentication or credentials were changed. Hosted
+invalid-input/UI acceptance remains blocked on an existing authorized access path.
+A successful future invalid-input check would establish transport/rejection only,
+not authentic token behavior or calibration.
+
+| Gate | Retained acceptance / precise remaining dependency |
+|---|---|
+| TS01 | Accepted producer/adapter normalization; canonical owner guard reviewed as additional offline protection, not new authenticity evidence. |
+| TS02 | Accepted epoch-bracketed schedule resolution; preserve observed-epoch limitations. |
+| TS03 | Accepted exact raw fee rounding/cap arithmetic; no reference amount invented. |
+| TS04 | Accepted identity/freshness/literal-verification guards; no fee/no-extension conclusion from rejected owners. |
+| TS05 | Label fixes selectively incorporated and mock-render/API integration reviewed. DOT must reconcile final acceptance against retained criteria; actual hosted UI/device delivery is not established by this blocked transport attempt. No duplicate PR67 merge needed. |
+| TS06 | Literal-boolean and malformed authority/owner guards incorporated; retained verified-input differential and API-to-adapter regressions pass. DOT acceptance disposition remains pending; internal flags are assertions, not independent provenance authentication. |
+| TS07 | Owner-approved capped-fee methodology/version still required. Local amount-specific disclosure recommendation was not adopted; generic score remains Pending. |
+| TS08 | Authentic, scoped transfer-behavior evidence remains unavailable. Schedule parsing or invalid-input HTTP checks are not executed-transfer/hook/settlement proof. Any collection needs its own authorized bounded scope. |
+| TS09 | Independent real-token calibration and explicit acceptance remain absent; calibrated stays false. |
+
+Retained total remains **4/9**, not six accepted by inference from incorporated
+code. No scoring, policy, checkpoint or release promotion. Feasible current Token
+Security engineering is handed back for acceptance/access/policy decisions; the
+next sole activity is read-only Holder persistence triage. This documentation is
+local handoff evidence; it does not authorize a deployment or live test.

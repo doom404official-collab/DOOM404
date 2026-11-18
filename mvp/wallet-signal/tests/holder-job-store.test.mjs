@@ -58,3 +58,24 @@ test('RPC distinguishes SQL no-match from malformed transport success',async()=>
  payload={id:null};assert.equal(await store.claim('job','worker'),null);
  for(const bad of [{},[],false,{id:12}]){payload=bad;await assert.rejects(store.commit('job','worker',1,{}, {},'partial'),/INVALID_HOLDER_RPC_RESPONSE/);}
 });
+
+for(const operation of ['read','commit'])for(const phase of ['headers','body'])test(`${operation} rejects cancellation at late ${phase} without retry`,async()=>{
+ const controller=new AbortController(),reason=new Error('SYNTHETIC_CANCEL');let requests=0,parses=0;
+ const store=createHolderJobStore({url:'https://offline.invalid',key:'fixture',fetchImpl:async()=>{
+  requests++;
+  if(phase==='headers')controller.abort(reason);
+  return {ok:true,status:200,json:async()=>{
+   parses++;if(phase==='body')controller.abort(reason);
+   return operation==='read'?[{id:'job'}]:{id:'job',version:2};
+  }};
+ }});
+ const options={signal:controller.signal};
+ await assert.rejects(operation==='read'?store.getById('job',options):store.commit('job','worker',1,{mint:'mint'},{},'partial',options),error=>error===reason);
+ assert.equal(requests,1);assert.equal(parses,phase==='headers'?0:1);
+});
+test('pre-cancelled write never dispatches',async()=>{
+ const controller=new AbortController();controller.abort();let requests=0;
+ const store=createHolderJobStore({url:'https://offline.invalid',key:'fixture',fetchImpl:async()=>{requests++;throw Error('unexpected')}});
+ await assert.rejects(store.commit('job','worker',1,{}, {},'partial',{signal:controller.signal}),{name:'AbortError'});
+ assert.equal(requests,0);
+});

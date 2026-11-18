@@ -353,3 +353,59 @@ The exact logged PostgREST 14.18 wrapper now has a local prepared-query regressi
 Parent run `40507295652` at `d4abe69` again stopped after first-job 20 calls, no second job/retry. Receipt: transport/deadline, 8,065,874 request bytes, no HTTP status. Hosted log confirms commit statement timeout at 12:53:46.458 UTC. One contemporaneous activity sample showed no wait/blocker; this does not exclude earlier contention or prove CPU saturation. Final parent reconciliation at 12:55:12.763976 UTC confirms versions 2138/1812, inactive leases and unchanged original checkpoint hashes.
 
 Fresh hosted function and index definitions match the simple commit contract and three ordinary btree indexes, with no JSON index or non-internal trigger. Offline exact-wrapper regression now represents both previously missing secondary indexes and still passes with full response equality and a single invocation. Remaining storage/compression/version/resource comparisons and bounded read-only queries are recorded in the existing recovery preflight runbook. No hosted changes, additional attempt or production optimization is authorized by these observations. Holder remains **4/11**.
+
+### November 18 read-only persistence triage — no recovery attempt
+
+Reused the exact-wrapper/index fixture, prior concurrency/timeout tests and the
+existing recovery preflight diagnosis. No broad tests, hosted queries or provider
+calls were repeated. Parent-supplied latest metadata identifies first job c670
+at version 2138, updated October 27 12:53 UTC, and d07 at version 1812, updated
+October 22, both with expired leases. Their retained `running` labels are stale
+status, not evidence of active execution or fresh claim authority. No checkpoint
+hash was freshly read in this task. Preserve separate checkpoints and the frozen
+Top20/approved retain19 policy.
+
+Both earlier saves reached PostgreSQL and hit statement_timeout (57014); the
+retained full wrapper succeeds locally. No newly established server-side expensive
+stage or production optimization follows from this review. Do not repeat scans,
+raise timeouts, shrink history, reset records or infer save success.
+
+One distinct offline cancellation gap was demonstrated in `holderJobStore.mjs`:
+`request` checks its budget signal before transport, but not after awaited headers
+or response JSON. A synthetic fetch aborted its supplied controller before returning
+a response; the store still invoked json once and returned the row. Observed receipt:
+`aborted:true, bodyParseCalls:1, rowReturned:true, realNetworkRequests:0`.
+This probe used dummy identity/key and an injected in-memory transport only.
+
+The outer `createHolderRecoveryBudget.run` deadline race/postcheck still rejects
+late results. This is therefore a bounded cleanup/late-work defect, NOT proof of
+unsafe checkpoint acceptance and NOT the established cause of hosted 57014. The
+smallest next offline change is to add focused non-cooperative header/body tests
+and recheck `assertHolderBudgetSignal(signal)` after fetch and after JSON parsing,
+preserving existing uncertain-write/no-retry semantics. No production source was
+changed during this read-only triage; parent should review this focused next step.
+Synchronous parsing already started cannot be preempted by such checks.
+
+H01/H02/H06/H07 remain accepted (4/11). H03 safe persistence/history and H04/H05
+archive/ownership evidence remain open; H08 graph/provenance, H09 calibration,
+H10 actual UX/delivery and H11 operational/release acceptance remain gated.
+Retained owner-returned frozen observation evidence is not proof of job provenance
+or complete Android UX. Historical workflow/flag observations are not a current
+activation audit. No workflow, lease, schema, permission or runtime configuration
+was changed, and no third Holder recovery is authorized here.
+
+#### Cancellation follow-up implementation — November 18
+The subsequently authorized narrow fix now rechecks the existing budget signal
+before response-body parsing and after parsing, without adding retries or changing
+claim/renew/commit contracts. Four new late-header/body read/write regressions failed
+before the fix and pass afterwards. A pre-cancelled write sends no request; two
+actual-store/pinned-recovery tests model server persistence preceding cancellation
+and retain COMMIT_OUTCOME_UNKNOWN, reconciliationRequired and retryAllowed:false,
+with one commit, unchanged retained network evidence/score and correct version/lease.
+Already-started synchronous parsing is not interruptible. This is not a diagnosis
+or repair of the historical hosted PostgreSQL statement timeouts.
+
+Verification: 89 focused store/recovery tests and all 1,765 aggregate tests passed;
+outbound-blocked Next build/lint/types and git diff --check passed. Hosted persistence
+remained SKIPPED_NOT_OPTED_IN. No recovery attempt, database write or score promotion
+was performed; this follow-up preserves the preceding Token Security handoff.

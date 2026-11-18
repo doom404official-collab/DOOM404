@@ -15,9 +15,13 @@ export function createHolderJobStore({url=process.env.SUPABASE_URL,key=process.e
   const response=await fetchImpl(base+path,{method,headers:{...headers,...(prefer?{Prefer:prefer}:{})},
    ...(payload===undefined?{}:{body:payload}),cache:"no-store",...(signal?{signal}:{})});
   if(diagnostic){diagnostic.phase='response';diagnostic.httpStatus=response.status;}
+  // Non-cooperative transports may resolve after cancellation. Do not start
+  // parsing late bodies or accept a late result (writes may still have committed).
+  assertHolderBudgetSignal(signal);
   if(!response.ok)throw Error("HOLDER_STORE_HTTP_"+response.status);
   if(diagnostic)diagnostic.phase='response_parse';
   const result=response.status===204?null:await response.json();
+  assertHolderBudgetSignal(signal);
   if(diagnostic)diagnostic.phase='response_validation';
   return result;
  }

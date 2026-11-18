@@ -280,3 +280,24 @@ test('legacy missing raw balances and snapshot are preserved with matching order
  assert.ok(!cp.networkEvidence.snapshotIdentity.includes('amountRaw'));
  assert.equal((await runPinnedHolderRecovery(args(s))).status,'partial');assert.deepEqual(s.row.checkpoint.holders,original);assert.equal(Object.hasOwn(s.row.checkpoint,'snapshot'),false);
 });
+
+for(const phase of ['headers','body'])test('actual store late commit '+phase+' preserves uncertain persisted outcome',async()=>{
+ const model=new Store(),clock=fakeClock(),before=structuredClone(model.row.checkpoint);let commits=0,commitParses=0;
+ const store=createHolderJobStore({url:'https://offline.invalid',key:'fixture',fetchImpl:async(url,o)=>{
+  if(o.method==='GET')return Response.json([await model.getById(ids[0])]);
+  const b=JSON.parse(o.body);
+  if(url.endsWith('/glitch_claim_holder_scan'))return Response.json(await model.claim(b.p_job_id,b.p_worker,b.p_lease_seconds));
+  if(url.endsWith('/glitch_renew_holder_scan'))return Response.json(await model.renew(b.p_job_id,b.p_worker,b.p_expected_version,b.p_lease_seconds));
+  commits++;
+  const row=await model.commit(b.p_job_id,b.p_worker,b.p_expected_version,b.p_checkpoint,b.p_summary,b.p_status);
+  if(phase==='headers')clock.advance(8000);
+  return {ok:true,status:200,json:async()=>{commitParses++;if(phase==='body')clock.advance(8000);return row;}};
+ }});
+ const result=await runPinnedHolderRecovery({...args(store),budget:createHolderRecoveryBudget(clock)});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(result.status,'COMMIT_OUTCOME_UNKNOWN');assert.equal(result.reconciliationRequired,true);assert.equal(result.retryAllowed,false);
+ assert.equal(commits,1);assert.equal(commitParses,phase==='headers'?0:1);
+ assert.equal(model.row.version,2137);assert.equal(model.row.lease_owner,null);assert.equal(model.row.lease_expires_at,null);
+ assert.deepEqual(model.row.checkpoint.networkEvidence,before.networkEvidence);
+ assert.equal(model.row.summary.score,9.93);assert.equal(model.row.summary.scorePromoted,false);assert.equal(clock.pending,0);
+});
