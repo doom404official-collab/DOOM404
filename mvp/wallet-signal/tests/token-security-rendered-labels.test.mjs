@@ -15,6 +15,11 @@ try {
  for(const name of ['HolderBubbleMap','GlitchV11Dashboard']) {
   let source=await readFile(new URL(`../app/${name}.jsx`,import.meta.url),'utf8');
   source=source.replaceAll('"../lib/','"../../lib/').replace('"./HolderBubbleMap"','"./HolderBubbleMap.mjs"');
+  // Static label fixtures select Token Security; real default/navigation is browser-tested.
+  if(name==='GlitchV11Dashboard'){
+   assert.ok(source.includes('useState("overall")'));
+   source=source.replace('useState("overall")','useState("token_security")');
+  }
   const {code}=transformSync(source,{filename:`${name}.jsx`,jsc:{parser:{syntax:'ecmascript',jsx:true},transform:{react:{runtime:'automatic'}}},module:{type:'es6'}});
   await writeFile(`${dir}/${name}.mjs`,code);
  }

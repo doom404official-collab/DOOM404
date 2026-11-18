@@ -564,7 +564,7 @@ function CreatorLookup() {
 
 export default function Home() {
   const [wallet, setWallet] = useState("");
-  const [analysisMode, setAnalysisMode] = useState("wallet");
+  const [analysisMode, setAnalysisMode] = useState("token");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
 

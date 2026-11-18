@@ -33,13 +33,14 @@ try{
    await page.getByRole('button',{name:'Holder Intelligence',exact:true}).click();
   }
   await page.getByRole('button',{name:'Connection map',exact:true}).click();
+  await page.getByRole('button',{name:'Overall',exact:true}).click();await page.getByRole('button',{name:'Holder Intelligence',exact:true}).click();await page.getByRole('group',{name:'Interactive wallet connection network'}).waitFor();
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),'no horizontal overflow');
   await page.screenshot({path:path.join(artifact,`dashboard-${width}.png`),fullPage:true});
   // Liquidity expiry must work without parent polling or another prop render.
   await page.clock.install();const observedAt=await page.evaluate(()=>new Date().toISOString());
   const liquidity={mint,provider:'DexScreener',observedAt,status:'pools_reported',reportedLiquidityUsd:1234,poolCountReturned:1,pools:[{pairAddress:a,liquidityUsd:1234}]};
   await page.evaluate(p=>window.renderHolder(p),{result:{mint},liquidity});
-  await page.getByRole('button',{name:'Liquidity Quality & Safety',exact:true}).click();await page.getByText('$1,234',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'Liquidity & Safety',exact:true}).click();await page.getByText('$1,234',{exact:true}).waitFor();
   const summary=page.getByText('Liquidity observation evidence',{exact:true});await summary.focus();await page.keyboard.press('Enter');
   await page.getByText(/Provider observation time:/).waitFor();assert.equal(await page.locator('time').getAttribute('datetime'),observedAt);
   assert.equal(await page.locator('a[href="https://solscan.io/account/'+a+'"]').count(),1);
