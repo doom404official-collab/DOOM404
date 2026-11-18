@@ -75,8 +75,8 @@ test('atomic claim resolves concurrent runners without duplicate provider batche
 test('expiry during preflight prevents any mutation',async()=>{
  const e=config(),t=transport();let time=Date.now(),fetch=t.fetch;t.fetch=async(...a)=>{const r=await fetch(...a);time=Date.parse(e.GLITCH_HOLDER_RECOVERY_EXPIRES_AT);return r;};const r=await run(e,t,{now:()=>time});assert.equal(r.status,'blocked');assert.equal(t.claims,0);assert.equal(t.provider,0);
 });
-test('workflow remains manual, exact-SHA checkout, default-disabled, shared concurrency, minimal artifact',()=>{
- const s=readFileSync(new URL('../../../.github/workflows/glitch-holder-worker-manual.yml',import.meta.url),'utf8');assert.match(s,/workflow_dispatch:/);assert.doesNotMatch(s,/schedule:|cron:|npm install|npm ci/);assert.match(s,/default: disabled/);assert.match(s,/inputs.mode == 'assessment'/);assert.match(s,/inputs.mode == 'recovery'/);assert.match(s,/github.run_attempt == 1/);assert.match(s,/github.sha == inputs.expected_sha/);assert.match(s,/group: glitch-holder-investigation/);assert.match(s,/ref: \$\{\{ github.sha \}\}/);assert.match(s,/persist-credentials: false/);assert.match(s,/retention-days: 3/);assert.match(s,/path: mvp\/wallet-signal\/artifacts\/holder-recovery-receipt.json/);
+test('inactive recovery workflow proposal retains manual sealed contract; not the installed main workflow',()=>{
+ const s=readFileSync(new URL('../docs/proposals/holder-manual-recovery.workflow.yml.in',import.meta.url),'utf8');assert.match(s,/workflow_dispatch:/);assert.doesNotMatch(s,/schedule:|cron:|npm install|npm ci/);assert.match(s,/default: disabled/);assert.match(s,/inputs.mode == 'assessment'/);assert.match(s,/inputs.mode == 'recovery'/);assert.match(s,/github.run_attempt == 1/);assert.match(s,/github.sha == inputs.expected_sha/);assert.match(s,/group: glitch-holder-investigation/);assert.match(s,/ref: \$\{\{ github.sha \}\}/);assert.match(s,/persist-credentials: false/);assert.match(s,/retention-days: 3/);assert.match(s,/path: mvp\/wallet-signal\/artifacts\/holder-recovery-receipt.json/);
  const recovery=s.slice(s.indexOf('\n  recovery:'));assert.doesNotMatch(recovery,/WORKER_TOKEN|BYPASS|SCAN_INTERNAL_TOKEN/);assert.match(recovery,/secrets.SUPABASE_SERVICE_ROLE_KEY/);
 });
 test('runner dependency graph uses only local modules and Node builtins; no install needed',()=>{
@@ -87,4 +87,14 @@ test('runner dependency graph uses only local modules and Node builtins; no inst
 test('wrong provider envelope stops before second job, without retries or leaking response',async()=>{
  const t=transport(),original=t.fetch;t.fetch=async(url,o)=>new URL(url).hostname==='mainnet.helius-rpc.com'?Response.json({jsonrpc:'2.0',id:'wrong',result:null,private:'secret'}):original(url,o);
  const r=await run(config(),t);assert.equal(r.status,'stopped');assert.equal(r.stopReason,'PROVIDER_UNAVAILABLE');assert.equal(r.requestCount,1);assert.equal(t.claims,1);assert.ok(!JSON.stringify(r).includes('secret'));
+});
+
+// The proposal is not an assertion that main exposes recovery dispatch.
+test('installed main manual workflow stays pinned and proposal cannot become an Actions entrypoint',async()=>{
+ const {createHash}=await import('node:crypto');
+ const installed=readFileSync(new URL('../../../.github/workflows/glitch-holder-worker-manual.yml',import.meta.url));
+ assert.equal(createHash('sha256').update(installed).digest('hex'),'7c7838cbe9dbcfa9a63df9d7fc6278b08035d8c4449fd7eebe52ae4c6e768518');
+ const proposal=readFileSync(new URL('../docs/proposals/holder-manual-recovery.workflow.yml.in',import.meta.url));
+ assert.equal(createHash('sha256').update(proposal).digest('hex'),'6dbf5749223a4d0dae26e4d7cd250bda1904be2307e685f4ae31f2f3c3b31dab');
+ assert.doesNotMatch(installed.toString(),/inputs.mode|run-holder-actions-recovery/);
 });
