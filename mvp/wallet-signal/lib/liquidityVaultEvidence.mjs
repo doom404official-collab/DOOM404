@@ -6,6 +6,7 @@ const TOKEN_PROGRAMS = new Set([
 export function inspectTokenVault(account, expectedMint) {
  if(!account) return {verified:false,reason:"vault_account_missing"};
  if(!TOKEN_PROGRAMS.has(account.owner?.toBase58?.())) return {verified:false,reason:"unsupported_token_account_program",observedOwnerProgram:account.owner?.toBase58?.() ?? null};
+ if(account.executable!==false)return {verified:false,reason:"vault_executable_unverified"};
  const data=account.data;
  if(!Buffer.isBuffer(data)||data.length<165)return {verified:false,reason:"invalid_token_account_data"};
  const mint=new PublicKey(data.subarray(0,32)).toBase58();
