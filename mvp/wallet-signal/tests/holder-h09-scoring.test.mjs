@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 import {scoreTop20Network} from '../lib/top20NetworkScore.mjs';
 import {scoreHolderIntelligence} from '../lib/glitchAttributeEnginesV11.mjs';
 import {assessVerifiedHolderConcentration} from '../lib/verifiedHolderConcentrationAssessment.mjs';
-import {summarizeHolderNetworkCheckpoint,holderNetworkSnapshotIdentity} from '../lib/holderNetworkCheckpoint.mjs';
+import {summarizeHolderNetworkCheckpoint,holderNetworkSnapshotIdentity,HOLDER_NETWORK_EXTRACTOR_REVISION} from '../lib/holderNetworkCheckpoint.mjs';
 const alphabet='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 const wallet=n=>'2'.repeat(30)+alphabet[Math.floor(n/58)]+alphabet[n%58];
 const sig=n=>'3'.repeat(62)+alphabet[Math.floor(n/58)]+alphabet[n%58];
 const edge=(a,b,n)=>({signature:sig(n),from:wallet(a),to:wallet(b),slot:100,assetType:'SOL',mint:null,amountRaw:'1',verifiedOnChain:true,transferVerified:true});
 function checkpoint(){const holders=Array.from({length:20},(_,i)=>({ownerWallet:wallet(i),tokenAccount:wallet(i+20),amountRaw:'100',sharePct:1}));
  const c={version:1,mint:wallet(50),holders,snapshot:{supplyRaw:'10000',largestAccountsSlot:100,supplySlot:100,ownerSlots:Array(20).fill(100)},wallets:Object.fromEntries(holders.map(h=>[h.ownerWallet,{}])),edges:{},signatures:{[sig(1)]:'checked'}};
- c.networkEvidence={version:1,snapshotIdentity:holderNetworkSnapshotIdentity(c),retentionLimited:false,processed:{[sig(1)]:{valid:true,unresolvedTokenTransfers:0,transferCount:1}},transfers:[edge(0,1,1)]};return c;
+ c.networkEvidence={version:1,snapshotIdentity:holderNetworkSnapshotIdentity(c),retentionLimited:false,processed:{[sig(1)]:{extractorRevision:HOLDER_NETWORK_EXTRACTOR_REVISION,valid:true,unresolvedTokenTransfers:0,transferCount:1}},transfers:[edge(0,1,1)]};return c;
 }
 for(const value of [undefined,null,false,'false','true',1,[],{}])test(`provenance ${JSON.stringify(value)} cannot unlock observed network score`,()=>{
  assert.equal(summarizeHolderNetworkCheckpoint(checkpoint(),{snapshotProvenanceVerified:value}).score,null);
@@ -72,4 +72,15 @@ test('hypothetical 19-holder exclusion does not change fixed penalty thresholds 
  assert.deepEqual(excluded.penalties,{direct:0.67,repeated:1,indirect:0,concentration:0.86});
  assert.equal(excluded.historyComplete,false);assert.equal(excluded.calibrated,false);
  assert.equal(input.holders.length,20);assert.equal(input.supplyRaw,'10000');
+});
+
+test('unversioned synthetic legacy assertion withholds network observation without hiding concentration',()=>{
+ const c=checkpoint();delete c.networkEvidence.processed[sig(1)].extractorRevision;
+ const before=JSON.stringify(c),r=assessVerifiedHolderConcentration({checkpoint:c});
+ assert.equal(r.observedNetwork.status,'unavailable');
+ assert.equal(r.observedNetwork.reason,'NETWORK_EXTRACTOR_REVISION_UNVERIFIED');
+ assert.equal(r.observedNetwork.score,null);
+ assert.deepEqual(r.components.map(c=>c.score),[31.5,null,null,null]);
+ assert.equal(r.score,null);assert.equal(r.calibrated,false);
+ assert.equal(JSON.stringify(c),before);
 });
