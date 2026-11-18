@@ -1,0 +1,42 @@
+name: GLITCH Liquidity LQ07 offline artifact integration
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/glitch-liquidity-lq07-offline-integration.yml'
+      - 'mvp/wallet-signal/scripts/liquidity-lq07-synthetic-fixture.mjs'
+permissions:
+  contents: read
+jobs:
+  offline-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate synthetic failure inputs
+        run: node mvp/wallet-signal/scripts/liquidity-lq07-synthetic-fixture.mjs offline-evidence
+      - name: Prepare partial evidence through actual CLI
+        env:
+          GLITCH_LIQUIDITY_POOL: '11111111111111111111111111111111'
+        run: node mvp/wallet-signal/scripts/liquidity-prepare-partial-recovery.mjs offline-evidence/prior.json offline-evidence/failed.json offline-evidence/partial.json
+      - name: Prepare independent sanitized diagnostic through actual CLI
+        run: node mvp/wallet-signal/scripts/liquidity-preserve-failure-diagnostic.mjs offline-evidence/failed.json offline-evidence/diagnostic.json
+      - name: Assert sanitized outputs and no promotion
+        run: |
+          node -e 'const fs=require("fs");const p=JSON.parse(fs.readFileSync("offline-evidence/partial.json"));const d=JSON.parse(fs.readFileSync("offline-evidence/diagnostic.json"));if(p.finalScore!==null||p.authorizationVerified!==false||p.complete!==false||d.continuationEligible!==false)process.exit(1);for(const f of ["partial.json","diagnostic.json"])if(fs.readFileSync("offline-evidence/"+f,"utf8").includes("SYNTHETIC_PROVIDER_SECRET_DO_NOT_UPLOAD"))process.exit(1);'
+      - name: Upload isolated CLI-generated partial
+        uses: actions/upload-artifact@v4
+        with:
+          name: lq07-offline-partial-${{ github.run_id }}
+          path: offline-evidence/partial.json
+          retention-days: 3
+          if-no-files-found: error
+      - name: Upload isolated CLI-generated diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: lq07-offline-diagnostic-${{ github.run_id }}
+          path: offline-evidence/diagnostic.json
+          retention-days: 3
+          if-no-files-found: error
