@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {reviewCreatorAttribution} from '../lib/creatorAttributionReview.mjs';
+const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+const creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
+const evidence=[{creator,signature:'1'.repeat(88),programId:'6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P',decoderVersion:'pump-fun-create_v2-prefix-v1'}];
+const result=reviewCreatorAttribution({mint,evidence});
+assert.equal(result.creator,creator);
+assert.equal(result.status,'ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW');
+assert.equal(result.purchaseRequired,false);
+assert.equal(result.independentTransactionRecheckComplete,false);
+assert.equal(result.beneficialOwnerVerified,false);
+console.log('creator attribution review tests passed');

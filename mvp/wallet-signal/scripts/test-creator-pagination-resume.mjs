@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {scanCreatorOrigin} from '../lib/creatorOriginPagedScan.mjs';
+const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+const signatures=Array.from({length:4},(_,i)=>String(i+1).repeat(88));
+const calls=[];
+const page=async(_mint,{before}={})=>{
+ calls.push(before||null);
+ const start=before?signatures.indexOf(before)+1:0;
+ const entries=signatures.slice(start,start+2).map(signature=>({signature,err:null}));
+ return {entries,nextCursor:entries.at(-1)?.signature||null,exhausted:start+2>=signatures.length};
+};
+let count=0;
+const fetchTransaction=async()=>{count++;if(count===2)throw Error('CREATOR_REQUEST_BUDGET_EXHAUSTED');return null;};
+const first=await scanCreatorOrigin({mint,lookupSignaturePage:page,fetchTransaction,maxPages:2,maxTransactions:4});
+assert.equal(first.nextCursor,signatures[0],'budget failure must not advance cursor past unprocessed signature');
+assert.equal(first.rpcHistoryExhausted,false);
+const second=await scanCreatorOrigin({mint,before:first.nextCursor,lookupSignaturePage:page,fetchTransaction:async()=>null,maxPages:2,maxTransactions:4});
+assert.ok(second.sampledSignatures.includes(signatures[1]),'resume must revisit interrupted signature');
+assert.ok(second.deferredSignatures.includes(signatures[1]));
+assert.equal(second.historyComplete,false);
+console.log('creator pagination resume tests passed');

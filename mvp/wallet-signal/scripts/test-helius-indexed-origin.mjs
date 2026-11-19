@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {fetchHeliusOldestOriginCandidates} from '../lib/heliusIndexedOriginProvider.mjs';
+const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+let used=0,called=0;
+const budget={take:async()=>{used++}};
+const disabled=await fetchHeliusOldestOriginCandidates({mint,enabled:false,budget});
+assert.equal(disabled.status,'DISABLED');
+assert.equal(used,0);
+const signature='1'.repeat(88);
+const result=await fetchHeliusOldestOriginCandidates({mint,rpcUrl:'https://example.com',enabled:true,budget,fetchImpl:async(_url,options)=>{
+ called++;
+ const body=JSON.parse(options.body);
+ assert.equal(body.method,'getTransactionsForAddress');
+ assert.equal(body.params[1].sortOrder,'asc');
+ return {ok:true,json:async()=>({result:{data:[{signature,slot:123,blockTime:1700000000}]}})};
+}});
+assert.equal(used,1);
+assert.equal(called,1);
+assert.equal(result.candidates[0].signature,signature);
+assert.equal(result.archiveComplete,false);
+console.log('Helius indexed origin provider tests passed');

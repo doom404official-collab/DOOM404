@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {discoverCreatorWalletHistory} from '../lib/creatorWalletHistoryDiscovery.mjs';
+const creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
+const signatures=['1'.repeat(88),'2'.repeat(88),'3'.repeat(88)];
+const rpc={async lookupSignaturePage(_wallet,{before}={}){const index=before?signatures.indexOf(before)+1:0;const entries=signatures.slice(index,index+2).map(signature=>({signature,err:null}));return {entries,exhausted:index+2>=signatures.length};}};
+const first=await discoverCreatorWalletHistory({creator,rpc,maxPages:1});
+assert.deepEqual(first.signatures,signatures.slice(0,2));
+assert.equal(first.nextCursor,signatures[1]);
+assert.equal(first.historyComplete,false);
+const second=await discoverCreatorWalletHistory({creator,rpc,before:first.nextCursor,maxPages:2});
+assert.deepEqual(second.signatures,[signatures[2]]);
+assert.equal(second.rpcHistoryExhausted,true);
+assert.deepEqual(second.verifiedSales,[]);
+assert.equal(second.salesInferred,false);
+console.log('creator wallet history discovery tests passed');

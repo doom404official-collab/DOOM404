@@ -1,3 +1,4 @@
+import {isRecognizedHolderTransactionError as isRecognizedTransactionError} from './holderTransactionError.mjs';
 import {createHash} from "node:crypto";
 export const HISTORY_CLASSIFICATION="AMOUNT_RECONCILED_AUTHORIZATION_PENDING";
 export const PUMP_AMM_PROGRAM="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";
@@ -44,8 +45,10 @@ export function historicalRoleAssessment(event,tx,expectedPool){
  return {status:"ACCOUNT_LAYOUT_NOT_INDEPENDENTLY_VERIFIED",poolReferenced,signerReferencedAccounts:signerEvidence.signerReferencedAccounts||[],accountRolesVerified:false,signerAuthorizationVerified:false,authorizationVerified:false};
 }
 export function classifyHistoricalTransaction(tx){
- if(!tx||!tx.meta)return "TRANSACTION_META_UNAVAILABLE";
- if(tx.meta.err!==null&&tx.meta.err!==undefined)return "FAILED_TRANSACTION";
+ if(!tx?.meta||typeof tx.meta!=="object"||Array.isArray(tx.meta)||!Object.hasOwn(tx.meta,'err'))return "TRANSACTION_META_UNAVAILABLE";
+ if(tx.meta.err!==null){
+  return isRecognizedTransactionError(tx.meta.err)?"FAILED_TRANSACTION":"TRANSACTION_META_UNAVAILABLE";
+ }
  return "EXECUTION_SUCCEEDED_AUTHORIZATION_UNVERIFIED";
 }
 export function validateHistoryCheckpoint(prior,pool){
@@ -56,4 +59,43 @@ export function validateHistoryCheckpoint(prior,pool){
  if((prior.pendingSignatures||[]).some(sig=>prior.seen.includes(sig)))throw Error("PENDING_SIGNATURE_ALREADY_SEEN");
  if(prior.events.some(e=>e.authorizationVerified===true||e.classification!=="UNVERIFIED_CANDIDATE"))throw Error("UNSAFE_HISTORY_EVENT_PROMOTION");
  return prior;
+}
+
+/** Identity/execution proof only; no authority or archive-completeness inference. */
+export function inspectHistoricalTransactionProof(tx,signature,slot){
+ const unavailable=reason=>({valid:false,reason,execution:'TRANSACTION_META_UNAVAILABLE'});
+ if(typeof signature!=='string'||!signature||!Number.isSafeInteger(tx?.slot)||tx.slot<0||(slot!==undefined&&tx.slot!==slot))return unavailable('TRANSACTION_SLOT_MISMATCH');
+ const signatures=tx?.transaction?.signatures;
+ if(!Array.isArray(signatures)||signatures[0]!==signature||signatures.some(s=>typeof s!=='string'||!s)||new Set(signatures).size!==signatures.length)return unavailable('TRANSACTION_SIGNATURE_MISMATCH');
+ if(tx.version!==undefined&&tx.version!=='legacy'&&tx.version!==0)return unavailable('TRANSACTION_VERSION_UNSUPPORTED');
+ const execution=classifyHistoricalTransaction(tx);
+ if(execution==='TRANSACTION_META_UNAVAILABLE')return unavailable('TRANSACTION_EXECUTION_UNAVAILABLE');
+ return {valid:true,execution,signature,slot:tx.slot};
+}
+/** New observations get instruction positions. Legacy retained events are untouched. */
+export function extractHistoricalTransactionCandidates(tx,signature,slot,provider,pool){
+ const proof=inspectHistoricalTransactionProof(tx,signature,slot);
+ if(!proof.valid)throw Error(proof.reason);
+ if(proof.execution==='FAILED_TRANSACTION')return []; // rolled-back instructions did not settle
+ const outer=tx?.transaction?.message?.instructions,inner=tx.meta.innerInstructions;
+ if(!Array.isArray(outer)||!Array.isArray(inner))throw Error('TRANSACTION_INSTRUCTIONS_UNAVAILABLE');
+ const groups=new Map();
+ for(const group of inner){
+  if(!group||!Number.isSafeInteger(group.index)||group.index<0||group.index>=outer.length||groups.has(group.index)||!Array.isArray(group.instructions))throw Error('TRANSACTION_INSTRUCTION_IDENTITY_CONFLICT');
+  groups.set(group.index,group.instructions);
+ }
+ const events=[];
+ for(let outerInstructionIndex=0;outerInstructionIndex<outer.length;outerInstructionIndex++){
+  const entries=[{instruction:outer[outerInstructionIndex],innerInstructionIndex:null},...(groups.get(outerInstructionIndex)||[]).map((instruction,innerInstructionIndex)=>({instruction,innerInstructionIndex}))];
+  for(const {instruction,innerInstructionIndex} of entries){
+   if(!instruction||typeof instruction!=='object'||Array.isArray(instruction)||typeof instruction.programId!=='string'||!instruction.programId||(instruction.accounts!==undefined&&!Array.isArray(instruction.accounts)))throw Error('TRANSACTION_INSTRUCTIONS_UNAVAILABLE');
+   const event=decodeHistoricalCandidate(instruction,signature,slot,provider);
+   if(event&&instruction.parsed&&instruction.data!==undefined){
+    const raw=decodeHistoricalCandidate({...instruction,parsed:undefined},signature,slot,provider);
+    if(!raw||raw.operation!==event.operation)throw Error('TRANSACTION_INSTRUCTION_IDENTITY_CONFLICT');
+   }
+   if(event)events.push({...structuredClone(event),outerInstructionIndex,innerInstructionIndex,instructionIdentity:signature+':'+outerInstructionIndex+':'+(innerInstructionIndex===null?'outer':innerInstructionIndex),transactionExecution:proof.execution,signerEvidence:inspectHistoricalSignerEvidence(tx,event),roleAssessment:historicalRoleAssessment(event,tx,pool),eligibleForAuthorizationReview:true});
+  }
+ }
+ return events;
 }

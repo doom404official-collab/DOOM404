@@ -1,8 +1,5 @@
-import {
-  Connection,
-  PublicKey,
-  LAMPORTS_PER_SOL
-} from "@solana/web3.js";
+import { createReliableConnection } from "../../../lib/reliableConnection.js";
+import { PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 import { NextResponse } from "next/server";
 
@@ -33,10 +30,10 @@ function calculateCoverage(
   }
 
   if (reachedEnd) {
-    return "rpc_exhausted";
+    return "complete_sample";
   }
 
-  return "incomplete";
+  return "incomplete_sample";
 }
 
 function calculateMaturityScore(ageDays) {
@@ -84,14 +81,7 @@ export async function GET(request) {
       );
     }
 
-    const rpcUrl =
-      process.env.SOLANA_RPC_URL ||
-      "https://api.mainnet-beta.solana.com";
-
-    const connection = new Connection(
-      rpcUrl,
-      "confirmed"
-    );
+    const connection = createReliableConnection();
 
     const balanceLamports =
       await connection.getBalance(publicKey);
@@ -231,6 +221,7 @@ export async function GET(request) {
     );
 
     const scoringEligible =
+      signatures.length > 0 &&
       timestampsAvailable &&
       coverage7d === "complete_sample" &&
       coverage30d === "complete_sample" &&
@@ -263,11 +254,7 @@ export async function GET(request) {
           .join(", ");
 
         if (reachedEnd) {
-          scoringReasons.push(
-            "The available wallet history does not reach the start of the " +
-            windows +
-            " observation window(s)."
-          );
+          scoringReasons.push("No usable history was returned for the required observation windows.");
         } else {
           scoringReasons.push(
             "The RPC retrieval limit was reached before the " +
@@ -279,7 +266,7 @@ export async function GET(request) {
     }
 
     const scoringExplanation = scoringEligible
-      ? "The required 7-, 30- and 90-day observation windows are covered by the retrieved sample."
+      ? "The required 7-, 30- and 90-day observation windows are covered by the retrieved sample or the provider reached the end of the wallet history. Observed history is not proof of wallet age."
       : "Scores are withheld until the required observation windows have sufficient coverage.";
 
     const observedAgeDays =
@@ -403,7 +390,10 @@ export async function GET(request) {
         scoringEligible,
 
         completeWalletHistory:
-          "Not independently verified"
+          "Not independently verified",
+        coverageInterpretation: reachedEnd
+          ? "RPC returned the end of available history; this does not independently establish complete on-chain history."
+          : "History pagination stopped at the configured page limit; older activity may be omitted."
       }
     });
 

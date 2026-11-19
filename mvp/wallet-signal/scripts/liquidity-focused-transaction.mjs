@@ -1,0 +1,15 @@
+import {PublicKey} from "@solana/web3.js";
+import {writeFile} from "node:fs/promises";
+const base=process.env.GLITCH_PREVIEW_URL?.replace(/\/$/,"");
+const signature=process.env.GLITCH_LIQUIDITY_SIGNATURE;
+const poolAddress=process.env.GLITCH_LIQUIDITY_POOL;
+const vaultAddresses=(process.env.GLITCH_LIQUIDITY_VAULTS??"").split(",").filter(Boolean);
+if(!base||!signature||!poolAddress||!/^https:\/\/[^/]+\.vercel\.app$/.test(base))throw Error("INVALID_FOCUSED_CONFIGURATION");
+if(!/^[1-9A-HJ-NP-Za-km-z]{64,90}$/.test(signature))throw Error("INVALID_SIGNATURE");
+if(new PublicKey(poolAddress).toBase58()!==poolAddress||vaultAddresses.length!==2||vaultAddresses.some(v=>new PublicKey(v).toBase58()!==v))throw Error("INVALID_VAULTS");
+const response=await fetch(base+"/api/liquidity-transaction-evidence",{method:"POST",headers:{"Content-Type":"application/json",...(process.env.VERCEL_AUTOMATION_BYPASS_SECRET?{"x-vercel-protection-bypass":process.env.VERCEL_AUTOMATION_BYPASS_SECRET}:{})},body:JSON.stringify({poolAddress,signature,vaultAddresses}),signal:AbortSignal.timeout(30000)});
+if(!response.ok)throw Error("FOCUSED_EVIDENCE_HTTP_"+response.status);
+const result=await response.json();
+if(result.focusedSignature!==signature||result.poolAddress!==poolAddress||!Array.isArray(result.decodedTransactions)||result.decodedTransactions.length!==1)throw Error("FOCUSED_EVIDENCE_MISMATCH");
+await writeFile("liquidity-focused-evidence.json",JSON.stringify({poolAddress,signature,observedAt:new Date().toISOString(),evidence:result.decodedTransactions[0],withdrawalVerified:false},null,2));
+console.log(JSON.stringify({status:result.decodedTransactions[0].status,signature,retrievalProvider:result.decodedTransactions[0].retrievalProvider??null,auxiliaryOperations:(result.decodedTransactions[0].instructionDiagnostics??[]).map(x=>x.auxiliaryOperation).filter(Boolean),vaultBalanceEvidence:result.decodedTransactions[0].vaultBalanceEvidence??null,feeSweepAccounts:result.decodedTransactions[0].feeSweepAccounts??null,feeSettlementTransfers:result.decodedTransactions[0].feeSettlementTransfers??null,feeSettlementAssessment:result.decodedTransactions[0].feeSettlementAssessment??null,feeRecipientAuthorization:result.decodedTransactions[0].feeRecipientAuthorization??null,historicalFeeAuthorization:result.decodedTransactions[0].historicalFeeAuthorization??null,creatorUpdateEvidence:result.decodedTransactions[0].creatorUpdateEvidence??null,creatorFeeRoutingReview:result.decodedTransactions[0].creatorFeeRoutingReview??null,sharingConfigReferences:result.decodedTransactions[0].sharingConfigReferences??null,withdrawalVerified:false}));

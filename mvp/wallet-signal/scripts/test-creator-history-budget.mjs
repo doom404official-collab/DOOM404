@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {createCreatorHistoryBudget} from '../lib/creatorHistoryBudget.mjs';
+const clock={time:1000};const waits=[];
+const budget=createCreatorHistoryBudget({maxRequests:500,minIntervalMs:250,now:()=>clock.time,sleep:async ms=>{waits.push(ms);clock.time+=ms}});
+for(let i=0;i<500;i++)assert.equal(await budget.take(),i+1);
+assert.equal(budget.used,500);
+assert.equal(budget.remaining,0);
+await assert.rejects(()=>budget.take(),/CREATOR_REQUEST_BUDGET_EXHAUSTED/);
+assert.ok(waits.length>=499);
+for(const n of [0,501,-1,1.5])assert.throws(()=>createCreatorHistoryBudget({maxRequests:n}),/INVALID_CREATOR_BUDGET/);
+console.log('creator history budget tests passed');
