@@ -5,7 +5,7 @@ import {HOLDER_RETAIN19_POLICY,HOLDER_ELIGIBLE_CONCENTRATION_POLICY} from "../li
 import {isVerifiedHolderCollectionLineage} from "../lib/holderCollectionLineage.mjs";
 import HolderBubbleMap from "./HolderBubbleMap";
 import {attributes,consolidate} from "../lib/glitchScoringV11.mjs";
-import {adaptDashboardEvidence} from "../lib/glitchDashboardEvidenceV11.mjs";
+import {adaptDashboardEvidence,liquidityAccountObservationAt} from "../lib/glitchDashboardEvidenceV11.mjs";
 import {summarizeHistoricalHolderPreview} from "../lib/holderHistoricalPreviewV11.mjs";
 
 const fmt=(v,suffix="")=>typeof v==="number"&&Number.isFinite(v)?v.toLocaleString("en-US",{maximumFractionDigits:2})+suffix:"Pending";
@@ -38,7 +38,7 @@ const css=`
 export default function GlitchV11Dashboard({result,extensions,concentration,creatorEvidence,liquidity,liquidityError="",liquidityRefreshing=false,historicalHolders,holderSnapshotCompatible=false,verifiedHolderEnvelope,workerEvidence,holderEvidenceState="unknown",frozenHolderObservation=null}){
  // Re-render at the existing freshness boundary, even without polling or interaction.
  const [clockRevision,refreshClock]=useState(0);
- const observedAt=liquidity?.observedAt,storedAt=workerEvidence?.liquidity?.updatedAt;
+ const observedAt=liquidity?.observedAt,storedAt=liquidityAccountObservationAt(workerEvidence?.liquidity);
  const feeAt=extensions?.observedAt,creatorAt=workerEvidence?.creator?.updatedAt,holderAt=verifiedHolderEnvelope?.updatedAt;
  useEffect(()=>{
   const now=Date.now(),deadlines=[observedAt,storedAt,feeAt,creatorAt,holderAt].map(x=>typeof x==='string'?Date.parse(x):NaN).filter(x=>Number.isFinite(x)&&x<=now&&x+3600001>now);

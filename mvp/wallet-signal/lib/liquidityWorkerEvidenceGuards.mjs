@@ -5,7 +5,7 @@ export function validateLiquidityPoolBatch(batch,mint,requested) {
  if (new Set(received).size!==received.length || received.some(address=>!requested.includes(address))) throw Error("INVALID_LIQUIDITY_POOL_BATCH");
  return true;
 }
-function observationTime(value) {
+export function observationTime(value) {
  if (typeof value!=="string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(value)) return NaN;
  const time=Date.parse(value);
  if (!Number.isFinite(time) || new Date(time).toISOString().replace(".000Z","Z")!==value.replace(".000Z","Z")) return NaN;
