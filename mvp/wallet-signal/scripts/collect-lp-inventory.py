@@ -2,6 +2,7 @@
 import importlib.util
 import json
 import hashlib
+import re
 import base64
 import os
 import signal
@@ -76,33 +77,44 @@ def typed(address,b,slot,mint=False):
 
 def discovery(raw,endpoint,mark=lambda _:None):
     obj,slot,rows=envelope(raw,1,mark)
-    mark("DISCOVERY_COUNT");require(len(rows)<=99)
-    keys=[];binary=[]
+    mark("DISCOVERY_COUNT");require(len(rows)<=20)
+    keys=[];selection=[]
     for row in rows:
         mark("DISCOVERY_IDENTITY")
-        require(type(row) is dict and set(row)=={'pubkey','account'})
-        k=row['pubkey'];core.base58(k,size=32)
+        require(type(row) is dict)
+        k=row.get('address');core.base58(k,size=32)
         require(k not in keys and k!=MINT)
-        mark('DISCOVERY_ACCOUNT_LAYOUT')
-        keys.append(k);binary.append(account(row['account']))
+        amount=row.get('amount')
+        require(type(amount) is str and re.fullmatch(r'0|[1-9][0-9]{0,19}',amount) is not None and int(amount)<=2**64-1)
+        require(type(row.get('decimals')) is int and row['decimals']==9)
+        keys.append(k)
+        selection.append({'address':k,'amountRaw':amount,'decimals':9,'providerReturnedPosition':len(keys)})
     mark('DISCOVERY_LEAKAGE')
-    core.leakage_gate(raw,obj,endpoint,binary)
-    return slot,keys
+    core.leakage_gate(raw,obj,endpoint,[])
+    return slot,keys,selection
 
-def observation(raw,endpoint,slot,keys,discovery_hash,discovery_bytes):
+def observation(raw,endpoint,slot,keys,discovery_hash,discovery_bytes,selection):
     obj,newslot,rows=envelope(raw,2)
     require(newslot>=slot and len(rows)==len(keys)+1)
     binary=[account(x) for x in rows[:-1]]+[account(rows[-1],True)]
     core.leakage_gate(raw,obj,endpoint,binary)
+    if newslot==slot:
+        require(len(selection)==len(keys))
+        for k,b,selected in zip(keys,binary[:-1],selection):
+            require(selected['address']==k and int(selected['amountRaw'])==int.from_bytes(b[64:72],'little'))
     tokens=binary[:-1];supply=int.from_bytes(binary[-1][36:44],'little')
     observed=sum(int.from_bytes(b[64:72],'little') for b in tokens)
     require(observed<=supply)
-    out={'schema':'LP_INVENTORY_TYPED_V1','mint':MINT,'discoverySlot':slot,'observationSlot':newslot,
+    out={'schema':'LP_TOP20_AUTHORITY_V1','selectionMethod':'getTokenLargestAccounts','coverage':'selected_top20_at_discovery_only','mint':MINT,'discoverySlot':slot,'observationSlot':newslot,
          'accountCount':len(keys),'nonzeroAccountCount':sum(int.from_bytes(b[64:72],'little')>0 for b in tokens),
          'delegatedAccountCount':sum(int.from_bytes(b[72:76],'little')==1 for b in tokens),
          'closeAuthorityAccountCount':sum(int.from_bytes(b[129:133],'little')==1 for b in tokens),
          'frozenAccountCount':sum(b[108]==2 for b in tokens),
          'observedBalancesEqualMintSupply':observed==supply,
+         'observedBalanceSumRaw':str(observed),'mintSupplyRaw':str(supply),
+         'observedSupplyFraction':{'numeratorRaw':str(observed),'denominatorRaw':str(supply)} if supply else None,
+         'supplyFractionStatus':'defined' if supply else 'undefined_zero_supply',
+         'crossSlotRankVerified':False,'discoveryRankVerified':False,'discoveryOrder':'provider_returned_not_certified_rank','discoverySelection':selection,
          'discoveryResponseSha256':discovery_hash,'discoveryResponseBytes':discovery_bytes,
          'observationResponseSha256':hashlib.sha256(raw).hexdigest(),'observationResponseBytes':len(raw),
          'inventoryCompletenessVerified':False,'crossSlotMembershipVerified':False,'custodyVerified':False,
@@ -164,11 +176,11 @@ def collect(endpoint,directory,opener=None):
                         mark('RESPONSE_CLOSE');raise
             finally:signal.setitimer(signal.ITIMER_REAL,0)
     try:
-        first=request('getProgramAccounts',[PROGRAM,{'commitment':'finalized','encoding':'base64','withContext':True,'filters':[{'memcmp':{'offset':0,'bytes':MINT}}]}])
-        slot,keys=discovery(first,endpoint,mark)
+        first=request('getTokenLargestAccounts',[MINT,{'commitment':'finalized'}])
+        slot,keys,selection=discovery(first,endpoint,mark)
         second=request('getMultipleAccounts',[keys+[MINT],{'commitment':'finalized','encoding':'base64','minContextSlot':slot}])
         mark('OBSERVATION_VALIDATION')
-        encoded=observation(second,endpoint,slot,keys,hashlib.sha256(first).hexdigest(),len(first))
+        encoded=observation(second,endpoint,slot,keys,hashlib.sha256(first).hexdigest(),len(first),selection)
         manifest=json.dumps({'schema':'LP_INVENTORY_MANIFEST_V1','projectionSha256':hashlib.sha256(encoded).hexdigest(),'projectionBytes':len(encoded),'rawIncluded':False,'attempts':attempts,'retries':0},sort_keys=True).encode()
         mark('PUBLIC_STAGING')
         public=root/'public';public.mkdir(mode=0o700)

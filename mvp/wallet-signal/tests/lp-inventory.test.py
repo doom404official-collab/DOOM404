@@ -12,7 +12,9 @@ def token():
 def mint():
  b=bytearray(82);b[:4]=(1).to_bytes(4,'little');b[4:36]=m.core.base58(m.core.ADDRESSES[0],size=32);b[36:44]=(5).to_bytes(8,'little');b[44:46]=bytes([9,1]);return b
 def env(i,rows,slot=10):return json.dumps({'jsonrpc':'2.0','id':i,'result':{'context':{'slot':slot},'value':rows}}).encode()
-def first():return env(1,[{'pubkey':KEY,'account':value(token())}])
+def selected(k=KEY,amount='5',decimals=9):return {'address':k,'amount':amount,'decimals':decimals,'uiAmount':None,'uiAmountString':'ignored'}
+def selection():return [{'address':KEY,'amountRaw':'5','decimals':9,'providerReturnedPosition':1}]
+def first():return env(1,[selected()])
 def second():return env(2,[value(token()),value(mint())])
 class Response(io.BytesIO):
  def __init__(self,b,status=200):super().__init__(b);self.headers={'Content-Length':str(len(b))};self.status=status
@@ -32,7 +34,7 @@ class Checks(unittest.TestCase):
  def test_success_and_exact_bounds(self):
   r,c,o=self.run_capture([first(),second()]);self.assertEqual(r['attempts'],2);self.assertFalse(o['custodyVerified']);self.assertTrue(o['observedBalancesEqualMintSupply']);self.assertEqual(o['accounts'][0]['address'],KEY);self.assertNotIn('dataSize',json.dumps(c));self.assertEqual(c[1]['params'][0],[KEY,m.MINT]);self.assertEqual(c[1]['params'][1]['minContextSlot'],10)
  def test_bad_discovery_never_second(self):
-  cases=[b'{',env(1,[{'pubkey':KEY,'account':value(token())}]*2),env(1,[] ,True),env(1,[{}]*100),b'{"jsonrpc":"2.0","id":1,"error":{}}',b' '* (m.MAX_BYTES+1)]
+  cases=[b'{',env(1,[selected()]*2),env(1,[] ,True),env(1,[{}]*100),b'{"jsonrpc":"2.0","id":1,"error":{}}',b' '* (m.MAX_BYTES+1)]
   for raw in cases:
    r,c,o=self.run_capture([raw]);self.assertEqual(len(c),1);self.assertIsNone(o)
  def test_account_rejections(self):
@@ -56,8 +58,8 @@ class Checks(unittest.TestCase):
   for secret in [b'DEMO_ONLY',base64.b64encode(b'DEMO_ONLY'),b'DEMO_ONLY'.hex().encode(),b'%44%45%4d%4f%5f%4f%4e%4c%59']:
    b=token();b[76:76+min(len(secret),32)]=secret[:32]
    m.account(value(b))
-   raw=env(1,[{'pubkey':KEY,'account':value(b)}])
-   with self.assertRaises(Exception):m.discovery(raw,ep)
+   raw=env(2,[value(b),value(mint())])
+   with self.assertRaises(Exception):m.observation(raw,ep,10,[KEY],'a'*64,len(first()),selection())
  def test_endpoint_leak(self):
   obj=json.loads(first());obj['unused']=EP
   m.envelope(json.dumps(obj).encode(),1)
@@ -71,28 +73,28 @@ class Checks(unittest.TestCase):
 
  def test_exact_requests(self):
   r,c,o=self.run_capture([first(),second()])
-  self.assertEqual(c,[{'jsonrpc':'2.0','id':1,'method':'getProgramAccounts','params':[m.PROGRAM,{'commitment':'finalized','encoding':'base64','withContext':True,'filters':[{'memcmp':{'offset':0,'bytes':m.MINT}}]}]}, {'jsonrpc':'2.0','id':2,'method':'getMultipleAccounts','params':[[KEY,m.MINT],{'commitment':'finalized','encoding':'base64','minContextSlot':10}]}])
+  self.assertEqual(c,[{'jsonrpc':'2.0','id':1,'method':'getTokenLargestAccounts','params':[m.MINT,{'commitment':'finalized'}]}, {'jsonrpc':'2.0','id':2,'method':'getMultipleAccounts','params':[[KEY,m.MINT],{'commitment':'finalized','encoding':'base64','minContextSlot':10}]}])
   self.assertEqual(r['attempts'],2)
- def test_99_100_boundary(self):
-  keys=[m.key(i.to_bytes(32,'big')) for i in range(1,101)]
-  for n in (99,100):
-   rows=[{'pubkey':k,'account':value(token())} for k in keys[:n]]
+ def test_20_21_boundary(self):
+  keys=[m.key(i.to_bytes(32,'big')) for i in range(1,22)]
+  for n in (20,21):
+   rows=[selected(k) for k in keys[:n]]
    lp=mint();lp[36:44]=(5*n).to_bytes(8,'little')
    r,c,o=self.run_capture([env(1,rows),env(2,[value(token()) for _ in range(n)]+[value(lp)])])
-   self.assertEqual(len(c),2 if n==99 else 1)
-   if n==99:self.assertEqual(len(c[1]['params'][0]),100)
+   self.assertEqual(len(c),2 if n==20 else 1)
+   if n==20:self.assertEqual(len(c[1]['params'][0]),21)
  def test_typed_fields_inactive_garbage_omitted(self):
   b=token();b[76:108]=bytes([77])*32;b[121:129]=(123).to_bytes(8,'little');b[133:165]=bytes([88])*32
-  out=json.loads(m.observation(env(2,[value(b),value(mint())]),EP,10,[KEY],'a'*64,len(first())))
+  out=json.loads(m.observation(env(2,[value(b),value(mint())]),EP,10,[KEY],'a'*64,len(first()),selection()))
   row=out['accounts'][0];self.assertNotIn('delegate',row);self.assertNotIn('closeAuthority',row)
   b[72:76]=(1).to_bytes(4,'little');b[129:133]=(1).to_bytes(4,'little')
-  out=json.loads(m.observation(env(2,[value(b),value(mint())]),EP,10,[KEY],'a'*64,len(first())))
+  out=json.loads(m.observation(env(2,[value(b),value(mint())]),EP,10,[KEY],'a'*64,len(first()),selection()))
   self.assertEqual(out['accounts'][0]['delegate'],{'authority':m.key(bytes([77])*32),'delegatedAmountRaw':'123'})
   self.assertEqual(out['accounts'][0]['closeAuthority'],m.key(bytes([88])*32))
   self.assertEqual(out['mintAccount']['supplyRaw'],'5')
  def test_equal_and_advancing_slots_never_complete(self):
   for slot in (10,11):
-   o=json.loads(m.observation(env(2,[value(token()),value(mint())],slot),EP,10,[KEY],'a'*64,len(first())))
+   o=json.loads(m.observation(env(2,[value(token()),value(mint())],slot),EP,10,[KEY],'a'*64,len(first()),selection()))
    for name in ('inventoryCompletenessVerified','crossSlotMembershipVerified','custodyVerified','scorePromoted'):self.assertIs(o[name],False)
  def test_mint_layout_failures(self):
   cases=[]
@@ -137,13 +139,13 @@ class Checks(unittest.TestCase):
   real=m.core.leakage_gate;seen=[]
   def gate(raw,obj,endpoint,binary):
    seen.append(obj)
-   if obj.get('schema')=='LP_INVENTORY_TYPED_V1':
+   if obj.get('schema')=='LP_TOP20_AUTHORITY_V1':
     self.assertEqual(obj['accounts'][0]['amountRaw'],'5');self.assertEqual(obj['accounts'][0]['ownerAuthority'],KEY)
     raise m.core.Invalid('SYNTHETIC_PROJECTION_REJECTION')
    return real(raw,obj,endpoint,binary)
   with patch.object(m.core,'leakage_gate',side_effect=gate):
    r,c,o=self.run_capture([first(),second()]);self.assertIsNone(o)
-  self.assertTrue(any(x.get('schema')=='LP_INVENTORY_TYPED_V1' for x in seen))
+  self.assertTrue(any(x.get('schema')=='LP_TOP20_AUTHORITY_V1' for x in seen))
 
  def test_http_exception(self):
   r,c,o=self.run_capture([urllib.error.HTTPError(EP,403,'private text',{},None)])
@@ -165,8 +167,7 @@ class Checks(unittest.TestCase):
 
  def test_diagnostic_discovery_categories(self):
   cases=[(b'{','JSON_DECODE'),(b'{"jsonrpc":"2.0","id":1,"error":{"message":"'+EP.encode()+b'"}}','RPC_ERROR'),(env(1,[],True),'RPC_ENVELOPE'),(env(1,[{}]*100),'DISCOVERY_COUNT'),(env(1,[{}]),'DISCOVERY_IDENTITY')]
-  v=value(token());v['owner']=m.core.CLASSIC
-  cases.append((env(1,[{'pubkey':KEY,'account':v}]),'DISCOVERY_ACCOUNT_LAYOUT'))
+  cases.append((env(1,[selected(amount='bad')]),'DISCOVERY_IDENTITY'))
   o=json.loads(first());o['ignored']=EP;cases.append((json.dumps(o).encode(),'DISCOVERY_LEAKAGE'))
   for raw,stage in cases:
    r,c,o=self.run_capture([raw]);self.assertEqual(r['failureStage'],stage);self.assertEqual(r['httpStatus'],200);self.assertIsNone(o);self.assertEqual(len(c),1);self.assertNotIn(EP,json.dumps(r))
@@ -190,4 +191,42 @@ class Checks(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d,patch.object(signal,'setitimer',side_effect=timer):
    r=m.collect(EP,Path(d)/'cap',stall);self.assertEqual(r['failureStage'],'DEADLINE');self.assertFalse((Path(d)/'cap/public/projection.json').exists())
   self.assertEqual(signal.getsignal(signal.SIGALRM),old);self.assertEqual(signal.getitimer(signal.ITIMER_REAL)[0],0)
+
+ def test_top20_bad_selection_stops_before_second(self):
+  for rows in [[selected(m.MINT)],[selected(),selected()],*[ [selected(amount=a)] for a in [True,5,-1,'-1','1.0','01','18446744073709551616','1e3',''] ],*[ [selected(decimals=d)] for d in [True,'9',8,None] ]]:
+   r,c,o=self.run_capture([env(1,rows)]);self.assertEqual(len(c),1);self.assertIsNone(o)
+ def test_top20_supply_and_discovery_remain_distinct(self):
+  raw=env(1,[selected(amount='99')])
+  r,c,o=self.run_capture([raw,env(2,[value(token()),value(mint())],11)])
+  self.assertEqual(o['discoverySelection'][0]['amountRaw'],'99');self.assertEqual(o['accounts'][0]['amountRaw'],'5')
+  self.assertEqual(o['observedSupplyFraction'],{'numeratorRaw':'5','denominatorRaw':'5'});self.assertFalse(o['crossSlotRankVerified']);self.assertFalse(o['inventoryCompletenessVerified'])
+ def test_top20_zero_and_large_integer_fraction(self):
+  for amount,supply in [(0,0),(0,1),(9007199254740993,18446744073709551615)]:
+   b=token();b[64:72]=amount.to_bytes(8,'little');lp=mint();lp[36:44]=supply.to_bytes(8,'little')
+   r,c,o=self.run_capture([env(1,[selected(amount=str(amount))]),env(2,[value(b),value(lp)])])
+   self.assertEqual(o['observedBalanceSumRaw'],str(amount));self.assertEqual(o['mintSupplyRaw'],str(supply))
+   self.assertEqual(o['observedSupplyFraction'],{'numeratorRaw':str(amount),'denominatorRaw':str(supply)} if supply else None)
+   self.assertFalse(o['custodyVerified']);self.assertFalse(o['crossSlotRankVerified'])
+ def test_top20_foreign_account_and_excess_supply(self):
+  foreign=token();foreign[0]^=1
+  excess=token();excess[64:72]=(6).to_bytes(8,'little')
+  for b in [foreign,excess]:
+   r,c,o=self.run_capture([first(),env(2,[value(b),value(mint())])]);self.assertEqual(len(c),2);self.assertIsNone(o)
+
+ def test_same_slot_mismatch_rejected_advancing_allowed(self):
+  for slot in (10,11):
+   r,c,o=self.run_capture([env(1,[selected(amount='99')]),env(2,[value(token()),value(mint())],slot)])
+   self.assertEqual(len(c),2)
+   if slot==10:
+    self.assertIsNone(o);self.assertEqual(r['failureStage'],'OBSERVATION_VALIDATION')
+   else:
+    self.assertEqual(o['discoverySelection'][0]['amountRaw'],'99');self.assertEqual(o['accounts'][0]['amountRaw'],'5')
+    self.assertFalse(o['crossSlotRankVerified']);self.assertFalse(o['discoveryRankVerified'])
+ def test_same_slot_matching_and_provider_order_only(self):
+  other=m.core.ADDRESSES[2];b=token();b[64:72]=(6).to_bytes(8,'little');lp=mint();lp[36:44]=(11).to_bytes(8,'little')
+  r,c,o=self.run_capture([env(1,[selected(),selected(other,'6')]),env(2,[value(token()),value(b),value(lp)])])
+  self.assertEqual(r['status'],'TYPED_CAPTURED_NOT_CUSTODY')
+  self.assertEqual(o['discoveryOrder'],'provider_returned_not_certified_rank');self.assertFalse(o['discoveryRankVerified'])
+  self.assertEqual([x['providerReturnedPosition'] for x in o['discoverySelection']],[1,2])
+  self.assertTrue(o['observedBalancesEqualMintSupply']);self.assertFalse(o['inventoryCompletenessVerified'])
 if __name__=='__main__':unittest.main()
