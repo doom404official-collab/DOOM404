@@ -1,76 +1,21 @@
-# Local priority-1 registration candidate for the existing registered workflow path.
-# Public projection disclosure, publication and exact execution approval still required.
-name: Proposed LP inventory typed evidence capture
+name: GLITCH H06 Pump operation
 on:
   workflow_dispatch:
-    inputs:
-      approved_public_projection:
-        description: Separately approved public account/authority/balance records, retained one day
-        required: true
-        default: false
-        type: boolean
-      reviewed_sha:
-        description: Exact independently reviewed collector commit
-        required: true
-        type: string
 permissions:
   contents: read
-concurrency:
-  group: glitch-lp-inventory-accounts-single
-  cancel-in-progress: false
 jobs:
-  capture:
+  audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     steps:
-      - name: Closed identity and projection admission
-        id: admission
-        env:
-          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          import json, os, re
-          with open(os.environ['GITHUB_EVENT_PATH']) as f: event=json.load(f)
-          assert event['repository']['full_name']=='doom404official-collab/DOOM404'
-          assert event.get('inputs',{}).get('approved_public_projection')=='true'
-          assert os.environ['GITHUB_EVENT_NAME']=='workflow_dispatch'
-          assert os.environ['GITHUB_REF']=='refs/heads/integration/glitch-app-main-20261118'
-          assert os.environ['GITHUB_RUN_ATTEMPT']=='1'
-          assert re.fullmatch('[0-9a-f]{40}',os.environ['REVIEWED_SHA'])
-          assert os.environ['GITHUB_SHA']==os.environ['REVIEWED_SHA']
-          PY
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
-          persist-credentials: false
-      - name: At most two bounded requests, no dependency installation
-        id: capture
+          ref: feature/glitch-assessment-sprint1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect known Pump AMM operation
         working-directory: mvp/wallet-signal
         env:
-          ALCHEMY_SOLANA_ARCHIVE_RPC_URL: ${{ secrets.ALCHEMY_SOLANA_ARCHIVE_RPC_URL }}
-        run: python3 scripts/collect-lp-inventory.py --approved-once
-      - name: Reject symlinks before staging upload
-        working-directory: mvp/wallet-signal
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import stat
-          root=Path('lp-inventory-private')
-          assert not root.is_symlink() and not (root/'public').is_symlink()
-          for name in ('projection.json','manifest.json'):
-              p=root/'public'/name
-              assert stat.S_ISREG(p.lstat().st_mode) and not p.is_symlink()
-              assert p.stat().st_size<=2*1024*1024
-          PY
-      - name: Retain successful allowlisted projection only
-        if: ${{ success() && steps.capture.outcome == 'success' }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: lp-inventory-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            mvp/wallet-signal/lp-inventory-private/public/projection.json
-            mvp/wallet-signal/lp-inventory-private/public/manifest.json
-          retention-days: 1
-          if-no-files-found: error
-          overwrite: false
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+        run: node scripts/holder-h06-pump-operation.mjs
