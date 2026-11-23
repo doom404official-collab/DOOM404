@@ -54,9 +54,11 @@ function draw(ctx,i,episode){
  }else if(hold){ctx.drawImage(hold,X,Y)}
  else {ctx.fillStyle="#120e16";ctx.fillRect(X,Y,W,H)}
  ctx.restore();
+ // Explicitly clear the former blurred filler band in the recorded canvas.
+ ctx.fillStyle="#131018";ctx.fillRect(28,Y+H+3,484,6);
  if(v.readyState>=2)evidenceScreen(ctx,i,episode);
  return true
 }
 function stop(){Object.values(clips).forEach(v=>v.pause());active=null;hold=null;started=false}
-window.doom404Prerecorded={prepare,begin,draw,stop,get failed(){return failed}};
+window.doom404Prerecorded={version:"v7.1",prepare,begin,draw,stop,get failed(){return failed}};
 })();
