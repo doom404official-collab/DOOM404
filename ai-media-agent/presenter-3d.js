@@ -8,7 +8,7 @@ let renderer,scene,camera,mascot,mixer,head=null,arm=null,ready=false,last=0;
 window.doom404Presenter3D={ready:false,render:null,error:null};
 try{
  renderer=new THREE.WebGLRenderer({canvas:surface,alpha:true,antialias:true,preserveDrawingBuffer:true,powerPreference:"low-power"});
- renderer.setPixelRatio(1);renderer.setSize(540,420,false);renderer.setClearColor(0,0);
+ renderer.setPixelRatio(1);renderer.setSize(540,420,false);renderer.setClearColor(0x000000,0);
  renderer.outputColorSpace=THREE.SRGBColorSpace;
  scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(32,540/420,.01,100);
  camera.position.set(0,1.3,4.8);camera.lookAt(0,1.05,0);
@@ -32,8 +32,8 @@ try{
      const dt=Math.max(0,Math.min(.05,time-last));last=time;
      mixer?.update(dt);
      mascot.rotation.y=Math.sin(time*.55)*.12;
-     mascot.position.y=-bounds.min.y*scale+Math.sin(time*1.8)*.035;
-     if(head)head.rotation.y=Math.sin(time*.8)*.07;
+     mascot.position.y=-bounds.min.y*scale;
+     if(head)head.rotation.y=Math.sin(time*.8)*.045;
      if(arm)arm.rotation.z=Math.sin(time*1.5)*.045;
      renderer.render(scene,camera);return surface;
    };
