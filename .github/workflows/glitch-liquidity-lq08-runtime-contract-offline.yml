@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: glitch-liquidity-history-worker
+  group: glitch-liquidity-lq08-runtime-contract-offline-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   offline:
