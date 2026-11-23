@@ -5,7 +5,7 @@ const base="./presenter-assets/doom/";
 async function prepare(){for(const [role,file] of Object.entries(names)){if(clips[role])continue;const v=document.createElement("video");v.muted=true;v.defaultMuted=true;v.playsInline=true;v.loop=true;v.preload="auto";v.crossOrigin="anonymous";v.src=base+file;await new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(Error("Missing video asset: "+file)),8000);v.onloadeddata=()=>{clearTimeout(timeout);resolve()};v.onerror=()=>{clearTimeout(timeout);reject(Error("Missing video asset: "+file))};v.load()});clips[role]=v}return true}
 function roleForScene(i){return i===0?"opening":i===6?"closing":i===2||i===4?"evidence":"explaining"}
 async function begin(){await prepare();active=null;failed=false;return true}
-function draw(ctx,i){const role=roleForScene(i),v=clips[role];if(!v||v.readyState<2)return false;if(active!==role){if(active)clips[active].pause();active=role;try{v.currentTime=0}catch{}v.play().catch(()=>{failed=true})}ctx.drawImage(v,0,300,540,360,30,145,480,330);return true}
+function draw(ctx,i){const role=roleForScene(i),v=clips[role];if(!v||v.readyState<2)return false;if(active!==role){if(active)clips[active].pause();active=role;try{v.currentTime=0}catch{}v.play().catch(()=>{failed=true})}const sw=v.videoWidth||1080,sh=v.videoHeight||1920,cropH=Math.min(sh,sw*330/480);ctx.drawImage(v,0,(sh-cropH)/2,sw,cropH,30,145,480,330);return true}
 function stop(){Object.values(clips).forEach(v=>v.pause());active=null}
 window.doom404Prerecorded={prepare,begin,draw,stop,get failed(){return failed}};
 })();
