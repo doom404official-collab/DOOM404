@@ -6,6 +6,7 @@ import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {retryLiquidityRateLimit} from '../lib/liquidityHistoricalRateLimit.mjs';
 import {retrieveHistoricalTransaction} from '../lib/liquidityHistoricalTransactionCompat.mjs';
+const v1=JSON.parse(await readFile(new URL('./fixtures/liquidity-parsed-v1/transaction.json',import.meta.url),'utf8'));
 const script=new URL('../scripts/liquidity-historical-investigator.mjs',import.meta.url).pathname;
 const pool='6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA';
 test('bounded retries stop after configured maximum',async()=>{
@@ -15,11 +16,21 @@ test('bounded retries stop after configured maximum',async()=>{
 });
 test('version fallback only on explicit incompatibility',async()=>{
  let versions=[];
- const result=await retrieveHistoricalTransaction(async(_url,_method,params)=>{versions.push(params[1].maxSupportedTransactionVersion);if(versions.length===1)throw Error('unsupported transaction version');return {slot:1};},'offline','1'.repeat(64));
- assert.deepEqual(versions,[0,1]);assert.equal(result.slot,1);
+ const result=await retrieveHistoricalTransaction(async(_url,_method,params)=>{versions.push(params[1].maxSupportedTransactionVersion);if(versions.length===1)throw Error('unsupported transaction version');return v1;},'offline',v1.transaction.signatures[0]);
+ assert.deepEqual(versions,[0,1]);assert.deepEqual(result,v1);
  let attempts=0;
  await assert.rejects(retrieveHistoricalTransaction(async()=>{attempts++;throw Error('RPC_HTTP_429');},'offline','1'.repeat(64)),/429/);
  assert.equal(attempts,1);
+});
+test('versionless and malformed v1 fallbacks remain unresolved',async()=>{
+ for(const tx of [{slot:1},{...v1,version:undefined},{...v1,transaction:{}}]){
+  const versions=[];
+  await assert.rejects(retrieveHistoricalTransaction(async(_url,_method,params)=>{
+   versions.push(params[1].maxSupportedTransactionVersion);
+   if(versions.length===1)throw Error('RPC_-32015');return tx;
+  },'offline',v1.transaction.signatures[0]),/TRANSACTION_V1_FALLBACK_UNRESOLVED/);
+  assert.deepEqual(versions,[0,1]);
+ }
 });
 test('investigator rejects invalid configuration before any network request',()=>{
  const run=spawnSync(process.execPath,[script],{encoding:'utf8',env:{...process.env,GLITCH_LIQUIDITY_POOL:pool,HELIUS_RPC_URL:'http://invalid',GLITCH_HISTORY_BUDGET:'60'}});

@@ -1,10 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const v1=JSON.parse(readFileSync(new URL("./fixtures/liquidity-parsed-v1/transaction.json",import.meta.url)));
+const signature=v1.transaction.signatures[0];
 import {retrieveHistoricalTransaction,isUnsupportedTransactionVersion} from "../lib/liquidityHistoricalTransactionCompat.mjs";
 test("retry only explicit unsupported version and preserve bounded options",async()=>{
  const calls=[];
- const call=async(_url,_method,params)=>{calls.push(params[1].maxSupportedTransactionVersion);if(calls.length===1)throw Error("Unsupported transaction version");return {slot:123};};
- assert.deepEqual(await retrieveHistoricalTransaction(call,"https://rpc.invalid","sig"),{slot:123});
+ const call=async(_url,_method,params)=>{calls.push(params[1].maxSupportedTransactionVersion);if(calls.length===1)throw Error("Unsupported transaction version");return structuredClone(v1);};
+ assert.deepEqual(await retrieveHistoricalTransaction(call,"https://rpc.invalid",signature),v1);
  assert.deepEqual(calls,[0,1]);
 });
 test("unrelated RPC errors do not trigger a version retry",async()=>{
@@ -22,8 +25,8 @@ test("RPC error containing version incompatibility is retried",async()=>{
  const call=async(_url,_method,params)=>{
   versions.push(params[1].maxSupportedTransactionVersion);
   if(versions.length===1)throw Error("RPC_-32015: Transaction version (1) is not supported by the requesting client. Please try the request again with maxSupportedTransactionVersion: 1");
-  return {slot:458811200};
+  return structuredClone(v1);
  };
- assert.deepEqual(await retrieveHistoricalTransaction(call,"https://rpc.invalid","signature"),{slot:458811200});
+ assert.deepEqual(await retrieveHistoricalTransaction(call,"https://rpc.invalid",signature),v1);
  assert.deepEqual(versions,[0,1]);
 });

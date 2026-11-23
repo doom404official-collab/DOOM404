@@ -1,5 +1,6 @@
 import {isRecognizedHolderTransactionError as isRecognizedTransactionError} from './holderTransactionError.mjs';
 import {createHash} from "node:crypto";
+import {validParsedLiquidityV1} from './liquidityParsedV1.mjs';
 export const HISTORY_CLASSIFICATION="AMOUNT_RECONCILED_AUTHORIZATION_PENDING";
 export const PUMP_AMM_PROGRAM="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";
 export const HISTORICAL_NAMES=["set_coin_creator","migrate_pool_coin_creator","admin_set_coin_creator","admin_cto_pool","collect_coin_creator_fee","transfer_creator_fees_to_pump","transfer_creator_fees_to_pump_v2"];
@@ -67,7 +68,8 @@ export function inspectHistoricalTransactionProof(tx,signature,slot){
  if(typeof signature!=='string'||!signature||!Number.isSafeInteger(tx?.slot)||tx.slot<0||(slot!==undefined&&tx.slot!==slot))return unavailable('TRANSACTION_SLOT_MISMATCH');
  const signatures=tx?.transaction?.signatures;
  if(!Array.isArray(signatures)||signatures[0]!==signature||signatures.some(s=>typeof s!=='string'||!s)||new Set(signatures).size!==signatures.length)return unavailable('TRANSACTION_SIGNATURE_MISMATCH');
- if(tx.version!==undefined&&tx.version!=='legacy'&&tx.version!==0)return unavailable('TRANSACTION_VERSION_UNSUPPORTED');
+ if(tx.version===1){if(!validParsedLiquidityV1(tx))return unavailable('TRANSACTION_V1_SHAPE_UNSUPPORTED');}
+ else if(tx.version!==undefined&&tx.version!=='legacy'&&tx.version!==0||Object.hasOwn(tx.transaction?.message??{},'transactionConfig'))return unavailable('TRANSACTION_VERSION_UNSUPPORTED');
  const execution=classifyHistoricalTransaction(tx);
  if(execution==='TRANSACTION_META_UNAVAILABLE')return unavailable('TRANSACTION_EXECUTION_UNAVAILABLE');
  return {valid:true,execution,signature,slot:tx.slot};
