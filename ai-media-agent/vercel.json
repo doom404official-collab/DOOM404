@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/narration.js": {
+      "maxDuration": 60
+    },
+    "api/project-credibility.js": {
+      "maxDuration": 60
+    }
+  }
+}
