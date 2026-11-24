@@ -10,7 +10,7 @@ function paint(c,i,p,episode,scenes){
  c.fillStyle="#090a0e";c.fillRect(0,0,540,960);
  c.strokeStyle="#383943";c.lineWidth=1;c.strokeRect(10,10,520,940);
  c.fillStyle="#ff5268";c.font="bold 24px sans-serif";c.fillText("DOOM404 AI MEDIA",24,43);
- c.fillStyle="#a9aab3";c.font="13px sans-serif";c.fillText("ON-CHAIN EVIDENCE · EDUCATION",24,65);
+ c.fillStyle="#a9aab3";c.font="13px sans-serif";c.fillText(episode?.universal?((episode.identity?.symbol?episode.identity.symbol+" · ":"")+"SOLANA · "+episode.mint.slice(0,6)+"…"+episode.mint.slice(-4)):"ON-CHAIN EVIDENCE · EDUCATION",24,65,490);
  // Upper studio composition: independent evidence monitor above continuous presenter.
  c.fillStyle="#14161e";c.fillRect(16,82,508,624);
  c.strokeStyle="#78303d";c.strokeRect(16,82,508,624);
@@ -23,7 +23,7 @@ function paint(c,i,p,episode,scenes){
  const notes=["HOLDER INTELLIGENCE","KNOWN BONDING CURVE","TOKEN ACCOUNTS · NOT UNIQUE OWNERS","CUSTODY / INFRASTRUCTURE","PURPOSE AND IDENTITY UNKNOWN","NOT A SHARED-FUNDING INDICATOR","NOT A TOKEN SAFETY RATING"];
  c.fillStyle="#ff5268";c.font="bold 38px sans-serif";c.fillText((dynamic?.value||values[i]),42,188,450);
  c.fillStyle="#b9bac4";c.font="16px sans-serif";c.fillText((dynamic?.note||notes[i]),42,222,450);
- if(i===2&&Number.isFinite(share)){c.fillStyle="#353740";c.fillRect(42,245,450,14);c.fillStyle="#ff4053";c.fillRect(42,245,450*Math.max(0,Math.min(100,share))/100,14)}
+ if(dynamic?.label==="OWNER RESOLUTION"){const h=episode.evidence.holders;const ratio=h.accounts.filter(a=>a.ownerVerified).length/h.accounts.length;c.fillStyle="#353740";c.fillRect(42,245,450,14);c.fillStyle="#ff4053";c.fillRect(42,245,450*ratio,14)}if(i===2&&Number.isFinite(share)){c.fillStyle="#353740";c.fillRect(42,245,450,14);c.fillStyle="#ff4053";c.fillRect(42,245,450*Math.max(0,Math.min(100,share))/100,14)}
  const tx=(episode?.references||[]).find(r=>r.type==="VERIFIED_SOL_TRANSFER");
  c.font="14px monospace";c.fillStyle="#c5a0aa";if(!dynamic&&i===4&&tx?.signature){c.fillText("TX "+tx.signature.slice(0,12)+"…"+tx.signature.slice(-8),42,278);if(tx.slot)c.fillText("SLOT "+tx.slot,42,300)}if(!dynamic&&i===1&&episode?.curveSlot)c.fillText("SLOT "+episode.curveSlot,42,278);
  c.globalAlpha=.12;c.fillStyle="#ff4053";c.fillRect(24,90+(now/30)%260,492,2);c.restore();
