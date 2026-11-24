@@ -1,5 +1,7 @@
 (()=>{"use strict";
-let last=-1,changed=0;
+let last=-1,changed=0,cat=null,catMode=false;
+async function begin(mode){catMode=mode==="hud-cat";if(!catMode)return window.doom404Prerecorded.begin();cat=document.createElement("video");cat.muted=true;cat.defaultMuted=true;cat.playsInline=true;cat.loop=true;cat.preload="auto";cat.src="./presenter-assets/cat/doom-cat-presenter.mp4";await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error("DOOM CAT load timeout")),15000);cat.onloadeddata=()=>{clearTimeout(timer);resolve()};cat.onerror=()=>{clearTimeout(timer);reject(Error("DOOM CAT video unavailable"))};cat.load()});await cat.play()}
+function stop(){if(cat){cat.pause();cat.removeAttribute("src");cat.load();cat=null}catMode=false}
 const labels=["REPORT OVERVIEW","VERIFIED INFRASTRUCTURE","ACCOUNT CONCENTRATION","UNRESOLVED CLASSIFICATION","VERIFIED TRANSFER","FUNDING SIGNIFICANCE","LIMITATIONS"];
 function reset(){last=-1;changed=0}
 function paint(c,i,p,episode,scenes){
@@ -25,7 +27,7 @@ function paint(c,i,p,episode,scenes){
  const tx=(episode?.references||[]).find(r=>r.type==="VERIFIED_SOL_TRANSFER");
  c.font="14px monospace";c.fillStyle="#c5a0aa";if(i===4&&tx?.signature){c.fillText("TX "+tx.signature.slice(0,12)+"…"+tx.signature.slice(-8),42,278);if(tx.slot)c.fillText("SLOT "+tx.slot,42,300)}if(i===1&&episode?.curveSlot)c.fillText("SLOT "+episode.curveSlot,42,278);
  c.globalAlpha=.12;c.fillStyle="#ff4053";c.fillRect(24,90+(now/30)%260,492,2);c.restore();
- c.save();c.translate(0,215);window.doom404Prerecorded.draw(c,1,episode);c.restore();
+ if(catMode&&cat){const x=16,y=360,w=508,h=340;const sw=cat.videoWidth,sh=cat.videoHeight;const scale=Math.min(w/sw,h/sh);c.fillStyle="#090a0e";c.fillRect(x,y,w,h);if(sw&&sh)c.drawImage(cat,x+(w-sw*scale)/2,y+(h-sh*scale)/2,sw*scale,sh*scale)}else{c.save();c.translate(0,215);window.doom404Prerecorded.draw(c,1,episode);c.restore()}
  // Fixed angular HUD, independent of caption changes.
  c.fillStyle="#14161c";c.strokeStyle="#79303d";c.lineWidth=1.5;c.beginPath();c.moveTo(16,730);c.lineTo(34,712);c.lineTo(524,712);c.lineTo(524,925);c.lineTo(506,943);c.lineTo(16,943);c.closePath();c.fill();c.stroke();
  c.strokeStyle="#ff4053";c.lineWidth=3;c.beginPath();c.moveTo(16,760);c.lineTo(16,730);c.lineTo(34,712);c.lineTo(130,712);c.moveTo(410,943);c.lineTo(506,943);c.lineTo(524,925);c.lineTo(524,900);c.stroke();
@@ -34,5 +36,5 @@ function paint(c,i,p,episode,scenes){
  c.fillStyle="#aeb0ba";c.font="12px sans-serif";c.fillText("PARTIAL EVIDENCE · NOT A SAFETY RATING",32,910);
  for(let j=0;j<7;j++){c.fillStyle=j<=i?"#ff4053":"#383943";c.fillRect(32+j*69,923,63,4)}
 }
-window.doom404HudV8={paint,reset};
+window.doom404HudV8={paint,reset,begin,stop};
 })();
