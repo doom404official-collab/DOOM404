@@ -5,6 +5,9 @@
     },
     "api/project-credibility.js": {
       "maxDuration": 60
+    },
+    "api/export-audit.js": {
+      "maxDuration": 60
     }
   }
 }
