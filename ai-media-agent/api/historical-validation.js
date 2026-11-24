@@ -24,7 +24,7 @@ module.exports=async(req,res)=>{
   }
   const i=Number(req.query.sample||0),explicit=req.query.signature;if(explicit&&!/^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(explicit))return res.status(400).json({error:'INVALID_SIGNATURE'});
   if(!explicit&&(!Number.isInteger(i)||i<0||i>=samples.length))return res.status(400).json({error:'INVALID_SAMPLE'});
-  const signature=explicit||samples[i],t=await rpc('getTransaction',[signature,{encoding:'jsonParsed',commitment:'finalized',maxSupportedTransactionVersion:0}]);if(!t)return res.status(502).json({error:'TRANSACTION_UNAVAILABLE'});
+  const signature=explicit||samples[i],t=await rpc('getTransaction',[signature,{encoding:'jsonParsed',commitment:'finalized',maxSupportedTransactionVersion:1}]);if(!t)return res.status(502).json({error:'TRANSACTION_UNAVAILABLE'});
   const result=summarize(t,signature,req.query.mint);const pools=[...new Set(result.decoded.map(d=>d.roles.pool).filter(Boolean))].slice(0,6);
   if(pools.length){const a=await rpc('getMultipleAccounts',[pools,{encoding:'base64',commitment:'finalized'}]);result.poolAccounts=pools.map((address,n)=>({address,owner:a?.value?.[n]?.owner||null,expectedPrograms:[...new Set(result.decoded.filter(d=>d.roles.pool===address).map(d=>d.program))],exists:!!a?.value?.[n],programOwnerVerified:result.decoded.filter(d=>d.roles.pool===address).every(d=>d.program===a?.value?.[n]?.owner)}))}
   return res.status(200).json(result);
