@@ -22,18 +22,20 @@ async function prepare(){
 async function begin(){await prepare();active=null;failed=false;started=true;hold=null;return true}
 function evidenceScreen(ctx,i,episode){
  if(i!==2&&i!==4)return;
- const concentration=Number.isFinite(episode?.top20Share)?episode.top20Share.toFixed(2)+"%":"";
- const title=i===2?"TOP-20 ACCOUNTS":"SOL TRANSFER";
- const value=i===2?concentration:"0.05 SOL";
- const qualifier=i===2?"NOT UNIQUE OWNERS":"PURPOSE UNKNOWN";
- if(i===2&&!concentration)return;
- // Place graphics on the blank studio display, never as a new on-chain claim.
- ctx.save();ctx.fillStyle="#15151d";ctx.fillRect(317,151,162,110);
- ctx.strokeStyle="#e83950";ctx.lineWidth=2;ctx.strokeRect(317,151,162,110);
- ctx.textAlign="center";ctx.fillStyle="#f5d7dd";ctx.font="bold 12px sans-serif";ctx.fillText(title,398,172);
- ctx.fillStyle="#ff5268";ctx.font="bold 27px sans-serif";ctx.fillText(value,398,210);
- ctx.fillStyle="#c7bec5";ctx.font="10px sans-serif";ctx.fillText(qualifier,398,234);
- ctx.restore()
+ const share=episode?.top20Share;
+ if(i===2&&(!Number.isFinite(share)||share<0||share>100))return;
+ if(i===4&&!episode?.candidateVerified)return;
+ // Calibrated against V7.1 exported monitor: x 310–478, y 194–319.
+ const x=310,y=194,w=168,h=125;
+ const a=Math.min(1,Math.max(0,(performance.now()-changedAt)/650));
+ ctx.save();ctx.fillStyle="#14141c";ctx.fillRect(x,y,w,h);
+ ctx.textAlign="center";ctx.fillStyle="#e9dce0";ctx.font="bold 12px sans-serif";
+ ctx.fillText(i===2?"TOP-20 ACCOUNTS":"VERIFIED TRANSFER",x+w/2,y+22);
+ ctx.fillStyle="#ff5268";ctx.font="bold 28px sans-serif";
+ ctx.fillText(i===2?share.toFixed(2)+"%":"0.05 SOL",x+w/2,y+55);
+ if(i===2){ctx.fillStyle="#39343e";ctx.fillRect(x+12,y+69,w-24,10);ctx.fillStyle="#ff5268";ctx.fillRect(x+12,y+69,(w-24)*share/100*a,10)}
+ else {ctx.strokeStyle="#ff5268";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+24,y+75);ctx.lineTo(x+24+(w-48)*a,y+75);ctx.stroke();ctx.fillStyle="#ff5268";ctx.beginPath();ctx.arc(x+24+(w-48)*a,y+75,4,0,Math.PI*2);ctx.fill()}
+ ctx.fillStyle="#d6cbd0";ctx.font="11px sans-serif";ctx.fillText(i===2?"NOT UNIQUE OWNERS":"PURPOSE UNKNOWN",x+w/2,y+105);ctx.restore()
 }
 function draw(ctx,i,episode){
  if(!started)return false;
@@ -60,5 +62,5 @@ function draw(ctx,i,episode){
  return true
 }
 function stop(){Object.values(clips).forEach(v=>v.pause());active=null;hold=null;started=false}
-window.doom404Prerecorded={version:"v7.1",prepare,begin,draw,stop,get failed(){return failed}};
+window.doom404Prerecorded={version:"v7.2",prepare,begin,draw,stop,get failed(){return failed}};
 })();
