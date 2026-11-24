@@ -77,3 +77,28 @@ test('read bridge is GET-only, independently handles missing tables and redacts'
  assert.equal(calls.length,2);assert.ok(calls.every(x=>x.options.method==='GET'&&x.options.cache==='no-store'));
  assert.equal(out.creator.holdings.supplySharePct,5);assert.equal(out.liquidity.status,'unavailable');assert.ok(!JSON.stringify(out).includes('secret'));
 });
+
+test('read bridge bounds noncooperative bodies while preserving healthy sibling evidence',async t=>{
+ t.mock.timers.enable({apis:['setTimeout']});
+ const flush=()=>new Promise(resolve=>setImmediate(resolve));
+ const liquidityRow={mint,updated_at:updatedAt,evidence:{mint,schemaVersion:1,observedAt:updatedAt,pools:[{}],batchErrors:[],finalScore:null,verifiedDepth:false,lpSecurityVerified:false,status:'partial'}};
+ for(const stalled of ['creator','liquidity']){
+  const calls=[];let release,settled=false;
+  const pending=readDashboardEvidence({mint,url:'https://fixture.invalid',key:'synthetic-only',fetchImpl:async(url,options)=>{
+   calls.push({url,options});
+   const creatorRead=url.includes('creator_intelligence_jobs'),rows=creatorRead?[row]:[liquidityRow];
+   return {ok:true,json:()=>((stalled==='creator')===creatorRead)?new Promise(resolve=>{release=()=>resolve(rows);}):Promise.resolve(rows)};
+  }}).then(value=>{settled=true;return value;});
+  await flush();assert.equal(typeof release,'function');assert.equal(calls.length,2);
+  t.mock.timers.tick(8999);await flush();assert.equal(settled,false);
+  t.mock.timers.tick(1);await flush();assert.equal(settled,true,'whole read must settle at 9000ms, before the 12000ms client deadline');
+  const out=await pending;assert.equal(out[stalled].status,'unavailable');
+  if(stalled==='creator')assert.equal(out.liquidity.checkedPoolCount,1);
+  else assert.equal(out.creator.holdings.supplySharePct,5);
+  assert.ok(calls.every(x=>x.options.method==='GET'&&x.options.cache==='no-store'&&x.options.signal.aborted));
+  const saved=JSON.stringify(out);t.mock.timers.tick(1000);release();await flush();
+  assert.equal(JSON.stringify(out),saved,'a body completing at 10 seconds cannot mutate the returned partial result');
+  t.mock.timers.tick(2000);await flush();assert.equal(calls.length,2,'no retries or extra reads');
+  assert.equal(consolidate(adaptDashboardEvidence({...base,workerEvidence:out}).scores).score,null);
+ }
+});

@@ -57,14 +57,22 @@ export async function readDashboardEvidence({mint,url,key,fetchImpl=fetch}={}){
  if(!address.test(mint||''))throw Error('INVALID_MINT');
  if(!/^https:\/\//.test(url||'')||!key)throw Error('EVIDENCE_STORAGE_UNAVAILABLE');
  async function read(table,select,project){
+  // Leave 3 seconds within the client's unchanged 12-second response deadline.
+  // Race the entire read, including body parsing, even if transport ignores abort.
+  const controller=new AbortController();let timer;
+  const expired=new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('READ_TIMEOUT'));},9000);});
   try{
+   return await Promise.race([(async()=>{
    const response=await fetchImpl(url.replace(/\/$/,'')+'/rest/v1/'+table+'?mint=eq.'+encodeURIComponent(mint)+'&select='+select+'&limit=1',{
-    method:'GET',headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store',signal:AbortSignal.timeout(12000)});
+    method:'GET',headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store',signal:controller.signal});
    if(!response.ok)throw Error('READ_FAILED');
    const rows=await response.json();
    if(!Array.isArray(rows)||rows.length>1)throw Error('INVALID_RESPONSE');
+   if(controller.signal.aborted)throw Error('READ_TIMEOUT');
    return project(rows[0],mint);
+   })(),expired]);
   }catch{return {mint,status:'unavailable',missing:['Persisted evidence unavailable or incompatible']};}
+  finally{clearTimeout(timer);controller.abort();}
  }
  const [creator,liquidity]=await Promise.all([
   read('creator_intelligence_jobs','mint,status,stage,state,updated_at',projectCreatorCheckpoint),
