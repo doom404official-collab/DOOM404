@@ -1,0 +1,270 @@
+[
+  {
+    "name": "usdc-doom",
+    "boundaries": [
+      {
+        "scene": 2,
+        "manifestStartSeconds": 8.615986394557822,
+        "detectedVisualStartSeconds": 9.557392644557822,
+        "visualOffsetSeconds": 0.94140625,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 9.589986394557839,
+        "visualMinusEstimatedAudioSeconds": -0.032593750000016186
+      },
+      {
+        "scene": 3,
+        "manifestStartSeconds": 19.77596371882086,
+        "detectedVisualStartSeconds": 20.70369809382086,
+        "visualOffsetSeconds": 0.927734375,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 20.759963718820902,
+        "visualMinusEstimatedAudioSeconds": -0.05626562500004084
+      },
+      {
+        "scene": 4,
+        "manifestStartSeconds": 34.439954648526076,
+        "detectedVisualStartSeconds": 35.736829648526076,
+        "visualOffsetSeconds": 1.296875,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 35.79295464852627,
+        "visualMinusEstimatedAudioSeconds": -0.05612500000019338
+      },
+      {
+        "scene": 5,
+        "manifestStartSeconds": 45.047936507936505,
+        "detectedVisualStartSeconds": 46.372155257936505,
+        "visualOffsetSeconds": 1.32421875,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 46.400936507936315,
+        "visualMinusEstimatedAudioSeconds": -0.028781249999809688
+      },
+      {
+        "scene": 6,
+        "manifestStartSeconds": 57.55192743764172,
+        "detectedVisualStartSeconds": 58.86247431264172,
+        "visualOffsetSeconds": 1.310546875,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 58.90592743764105,
+        "visualMinusEstimatedAudioSeconds": -0.04345312499932419
+      },
+      {
+        "scene": 7,
+        "manifestStartSeconds": 70.19990929705216,
+        "detectedVisualStartSeconds": 71.60615929705216,
+        "visualOffsetSeconds": 1.40625,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 71.68490929705102,
+        "visualMinusEstimatedAudioSeconds": -0.07874999999886256
+      }
+    ],
+    "maximumEstimatedBoundaryDriftSeconds": 0.07874999999886256,
+    "limitation": "Visual transitions identified from header-region frame differences. Audio boundary estimate maps cumulative decoded packet durations plus0.12sec scheduled narration lead into original packet PTS. It is not an ASR-based spoken-phrase alignment.",
+    "audioPacketClock": {
+      "packetDurationSumSeconds": 82.08,
+      "packetPtsSpanSeconds": 83.5,
+      "netTimingGapsSeconds": 1.4200000000000017,
+      "largestPositiveGapSeconds": 0.3840000000000026,
+      "largestTimingOverlapSeconds": 0.04200000000000287,
+      "interpretation": "Recorder timestamp gaps extend container playback time; estimated visual and audio scene boundaries share those offsets. Playback smoothness and spoken accuracy still require review."
+    }
+  },
+  {
+    "name": "usdc-cat",
+    "boundaries": [
+      {
+        "scene": 2,
+        "manifestStartSeconds": 8.615986394557822,
+        "detectedVisualStartSeconds": 8.819111394557822,
+        "visualOffsetSeconds": 0.203125,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 8.83598639455784,
+        "visualMinusEstimatedAudioSeconds": -0.016875000000018403
+      },
+      {
+        "scene": 3,
+        "manifestStartSeconds": 19.77596371882086,
+        "detectedVisualStartSeconds": 20.10213559382086,
+        "visualOffsetSeconds": 0.326171875,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 20.1659637188209,
+        "visualMinusEstimatedAudioSeconds": -0.06382812500003965
+      },
+      {
+        "scene": 4,
+        "manifestStartSeconds": 34.439954648526076,
+        "detectedVisualStartSeconds": 34.766126523526076,
+        "visualOffsetSeconds": 0.326171875,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 34.83895464852629,
+        "visualMinusEstimatedAudioSeconds": -0.07282812500021407
+      },
+      {
+        "scene": 5,
+        "manifestStartSeconds": 45.047936507936505,
+        "detectedVisualStartSeconds": 45.387780257936505,
+        "visualOffsetSeconds": 0.33984375,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 45.44693650793631,
+        "visualMinusEstimatedAudioSeconds": -0.05915624999980196
+      },
+      {
+        "scene": 6,
+        "manifestStartSeconds": 57.55192743764172,
+        "detectedVisualStartSeconds": 58.01481806264172,
+        "visualOffsetSeconds": 0.462890625,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 58.05192743764105,
+        "visualMinusEstimatedAudioSeconds": -0.037109374999324984
+      },
+      {
+        "scene": 7,
+        "manifestStartSeconds": 70.19990929705216,
+        "detectedVisualStartSeconds": 70.71748742205216,
+        "visualOffsetSeconds": 0.517578125,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 70.76090929705101,
+        "visualMinusEstimatedAudioSeconds": -0.04342187499885597
+      }
+    ],
+    "maximumEstimatedBoundaryDriftSeconds": 0.07282812500021407,
+    "limitation": "Visual transitions identified from header-region frame differences. Audio boundary estimate maps cumulative decoded packet durations plus0.12sec scheduled narration lead into original packet PTS. It is not an ASR-based spoken-phrase alignment.",
+    "audioPacketClock": {
+      "packetDurationSumSeconds": 82.08,
+      "packetPtsSpanSeconds": 82.75099999999999,
+      "netTimingGapsSeconds": 0.6709999999999979,
+      "largestPositiveGapSeconds": 0.13200000000000728,
+      "largestTimingOverlapSeconds": 0.014999999999999625,
+      "interpretation": "Recorder timestamp gaps extend container playback time; estimated visual and audio scene boundaries share those offsets. Playback smoothness and spoken accuracy still require review."
+    }
+  },
+  {
+    "name": "tomo-bull",
+    "boundaries": [
+      {
+        "scene": 2,
+        "manifestStartSeconds": 14.80798185941043,
+        "detectedVisualStartSeconds": 14.925169359410432,
+        "visualOffsetSeconds": 0.11718750000000178,
+        "searchResolutionSeconds": 0.0107421875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 14.963981859410396,
+        "visualMinusEstimatedAudioSeconds": -0.03881249999996328
+      },
+      {
+        "scene": 3,
+        "manifestStartSeconds": 28.511972789115646,
+        "detectedVisualStartSeconds": 28.596933726615646,
+        "visualOffsetSeconds": 0.0849609375,
+        "searchResolutionSeconds": 0.0107421875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 28.666972789115878,
+        "visualMinusEstimatedAudioSeconds": -0.07003906250023206
+      },
+      {
+        "scene": 4,
+        "manifestStartSeconds": 36.91195011337869,
+        "detectedVisualStartSeconds": 40.04769230087869,
+        "visualOffsetSeconds": 3.1357421875,
+        "searchResolutionSeconds": 0.0107421875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 40.0899501133788,
+        "visualMinusEstimatedAudioSeconds": -0.04225781250011096
+      },
+      {
+        "scene": 5,
+        "manifestStartSeconds": 46.4639455782313,
+        "detectedVisualStartSeconds": 51.3399221407313,
+        "visualOffsetSeconds": 4.8759765625,
+        "searchResolutionSeconds": 0.0107421875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 51.38894557823105,
+        "visualMinusEstimatedAudioSeconds": -0.04902343749975557
+      },
+      {
+        "scene": 6,
+        "manifestStartSeconds": 56.78392290249434,
+        "detectedVisualStartSeconds": 61.79954790249434,
+        "visualOffsetSeconds": 5.015625,
+        "searchResolutionSeconds": 0.0107421875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 61.859922902493686,
+        "visualMinusEstimatedAudioSeconds": -0.06037499999934681
+      },
+      {
+        "scene": 7,
+        "manifestStartSeconds": 67.48791383219955,
+        "detectedVisualStartSeconds": 72.60021851969955,
+        "visualOffsetSeconds": 5.1123046875,
+        "searchResolutionSeconds": 0.0107421875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 72.64291383219852,
+        "visualMinusEstimatedAudioSeconds": -0.042695312498963744
+      }
+    ],
+    "maximumEstimatedBoundaryDriftSeconds": 0.07003906250023206,
+    "limitation": "Visual transitions identified from header-region frame differences. Audio boundary estimate maps cumulative decoded packet durations plus0.12sec scheduled narration lead into original packet PTS. It is not an ASR-based spoken-phrase alignment.",
+    "audioPacketClock": {
+      "packetDurationSumSeconds": 79.67999999999999,
+      "packetPtsSpanSeconds": 84.699,
+      "netTimingGapsSeconds": 5.019000000000005,
+      "largestPositiveGapSeconds": 0.5689999999999977,
+      "largestTimingOverlapSeconds": 0.057999999999997554,
+      "interpretation": "Recorder timestamp gaps extend container playback time; estimated visual and audio scene boundaries share those offsets. Playback smoothness and spoken accuracy still require review."
+    }
+  },
+  {
+    "name": "bonk-bore",
+    "boundaries": [
+      {
+        "scene": 2,
+        "manifestStartSeconds": 6.407981859410431,
+        "detectedVisualStartSeconds": 6.67946623441043,
+        "visualOffsetSeconds": 0.2714843749999991,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 6.753981859410444,
+        "visualMinusEstimatedAudioSeconds": -0.07451562500001341
+      },
+      {
+        "scene": 3,
+        "manifestStartSeconds": 20.56798185941043,
+        "detectedVisualStartSeconds": 20.90782560941043,
+        "visualOffsetSeconds": 0.33984375,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 20.912981859410486,
+        "visualMinusEstimatedAudioSeconds": -0.0051562500000557066
+      },
+      {
+        "scene": 4,
+        "manifestStartSeconds": 29.61596371882086,
+        "detectedVisualStartSeconds": 30.010494968820865,
+        "visualOffsetSeconds": 0.39453125000000355,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 30.08196371882111,
+        "visualMinusEstimatedAudioSeconds": -0.07146875000024622
+      },
+      {
+        "scene": 5,
+        "manifestStartSeconds": 39.671950113378685,
+        "detectedVisualStartSeconds": 40.134840738378685,
+        "visualOffsetSeconds": 0.462890625,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 40.19795011337869,
+        "visualMinusEstimatedAudioSeconds": -0.06310937500000335
+      },
+      {
+        "scene": 6,
+        "manifestStartSeconds": 51.431927437641725,
+        "detectedVisualStartSeconds": 51.935833687641725,
+        "visualOffsetSeconds": 0.50390625,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 51.95792743764128,
+        "visualMinusEstimatedAudioSeconds": -0.022093749999555712
+      },
+      {
+        "scene": 7,
+        "manifestStartSeconds": 62.27990929705216,
+        "detectedVisualStartSeconds": 62.77014367205216,
+        "visualOffsetSeconds": 0.490234375,
+        "searchResolutionSeconds": 0.013671875,
+        "estimatedAudioBoundaryFromPacketClockSeconds": 62.8049092970513,
+        "visualMinusEstimatedAudioSeconds": -0.03476562499914593
+      }
+    ],
+    "maximumEstimatedBoundaryDriftSeconds": 0.07451562500001341,
+    "limitation": "Visual transitions identified from header-region frame differences. Audio boundary estimate maps cumulative decoded packet durations plus0.12sec scheduled narration lead into original packet PTS. It is not an ASR-based spoken-phrase alignment."
+  }
+]

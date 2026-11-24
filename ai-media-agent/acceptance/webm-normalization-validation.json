@@ -1,0 +1,1101 @@
+{
+  "status": "PASS_REAL_FILES_PAYLOAD_DECODE_AND_VISUAL_TIMING",
+  "files": [
+    {
+      "name": "usdc-doom",
+      "originalFile": "/workspace/shared/doom404-v13/final/usdc-doom.webm",
+      "normalizedFile": "/workspace/shared/doom404-v13/final/normalized/usdc-doom.webm",
+      "originalSha256": "2ada528dbfbd28847863e2be53129ec94065d534b48cba15ab8402a35ef8a0a4",
+      "normalizedSha256": "1e2fed333664eb98b13b71d36d8d291d950dba3a6cc2a781071e6b618e1a9b43",
+      "normalizer": "DOOM404_WEBM_OPUS_CLOCK_V1",
+      "mediaReencoded": false,
+      "referenceBlockTreatment": "Chrome/libwebm previous-absolute timestamps recognized only when equal to preceding video packet; emitted spec-correct signed relative references",
+      "authoritativeSources": [
+        "https://www.matroska.org/technical/notes.html",
+        "https://www.matroska.org/technical/elements.html",
+        "https://www.rfc-editor.org/rfc/rfc6716.html#section-3.1",
+        "https://github.com/webmproject/libwebm/blob/1f795141409295f5bc16769d0230e269efd169f9/mkvmuxer/mkvmuxerutil.cc"
+      ],
+      "scope": "Observed Chrome VP8 alpha BlockGroups + unlaced Opus SimpleBlocks; 1ms scale",
+      "audioPackets": 1368,
+      "videoPackets": 1953,
+      "encodedAudioDurationSeconds": 82.08,
+      "normalizedDurationSeconds": 82.104,
+      "originalAudioEndSeconds": 83.524,
+      "removedClockGapSeconds": 1.42,
+      "maximumTimestampQuantizationErrorMs": 0.5,
+      "payloadPreservation": "Encoded block payloads and VP8 alpha additions copied without modification; caller must retain hash validation evidence",
+      "removedStaleIndexes": [
+        "SeekHead",
+        "Cues"
+      ],
+      "limitations": [
+        "Unsupported EBML layouts, lacing, track scales and reference targets other than the preceding video packet are rejected.",
+        "No speech intelligibility or factual-accuracy determination."
+      ],
+      "expectedNarrationDurationSeconds": 82.00789115646259,
+      "mainEncodedPackets": {
+        "video": {
+          "packets": 1953,
+          "originalSha256": "548954b4590989b5ee4f20fc26d147e8efbd30cb8c301181d5ae4931698704ee",
+          "normalizedSha256": "548954b4590989b5ee4f20fc26d147e8efbd30cb8c301181d5ae4931698704ee"
+        },
+        "audio": {
+          "packets": 1368,
+          "originalSha256": "e132de5f418e5dae29a80284cdb0073a9f896629cb96baaef9ffbbb85e55e7f9",
+          "normalizedSha256": "e132de5f418e5dae29a80284cdb0073a9f896629cb96baaef9ffbbb85e55e7f9"
+        }
+      },
+      "alphaBlockAdditions": {
+        "count": 1953,
+        "originalSha256": "a10db017809e6c82b2141728411b64dec349a96d3e4160350454ecb59141b238",
+        "normalizedSha256": "a10db017809e6c82b2141728411b64dec349a96d3e4160350454ecb59141b238"
+      },
+      "mappedBoundaries": [
+        {
+          "scene": 2,
+          "manifestStartSeconds": 8.615986394557822,
+          "detectedVisualStartSeconds": 9.557392644557822,
+          "visualOffsetSeconds": 0.94140625,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 9.589986394557839,
+          "visualMinusEstimatedAudioSeconds": -0.032593750000016186,
+          "normalizedVisualBoundarySeconds": 8.727450147007954,
+          "normalizedEstimatedAudioBoundarySeconds": 8.76059633344865
+        },
+        {
+          "scene": 3,
+          "manifestStartSeconds": 19.77596371882086,
+          "detectedVisualStartSeconds": 20.70369809382086,
+          "visualOffsetSeconds": 0.927734375,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 20.759963718820902,
+          "visualMinusEstimatedAudioSeconds": -0.05626562500004084,
+          "normalizedVisualBoundarySeconds": 19.86369809382086,
+          "normalizedEstimatedAudioBoundarySeconds": 19.915272798974698
+        },
+        {
+          "scene": 4,
+          "manifestStartSeconds": 34.439954648526076,
+          "detectedVisualStartSeconds": 35.736829648526076,
+          "visualOffsetSeconds": 1.296875,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 35.79295464852627,
+          "visualMinusEstimatedAudioSeconds": -0.05612500000019338,
+          "normalizedVisualBoundarySeconds": 34.52733012915311,
+          "normalizedEstimatedAudioBoundarySeconds": 34.57613447697936
+        },
+        {
+          "scene": 5,
+          "manifestStartSeconds": 45.047936507936505,
+          "detectedVisualStartSeconds": 46.372155257936505,
+          "visualOffsetSeconds": 1.32421875,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 46.400936507936315,
+          "visualMinusEstimatedAudioSeconds": -0.028781249999809688,
+          "normalizedVisualBoundarySeconds": 45.162537346390174,
+          "normalizedEstimatedAudioBoundarySeconds": 45.19039016897062
+        },
+        {
+          "scene": 6,
+          "manifestStartSeconds": 57.55192743764172,
+          "detectedVisualStartSeconds": 58.86247431264172,
+          "visualOffsetSeconds": 1.310546875,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 58.90592743764105,
+          "visualMinusEstimatedAudioSeconds": -0.04345312499932419,
+          "normalizedVisualBoundarySeconds": 57.64762420689429,
+          "normalizedEstimatedAudioBoundarySeconds": 57.696129597601065
+        },
+        {
+          "scene": 7,
+          "manifestStartSeconds": 70.19990929705216,
+          "detectedVisualStartSeconds": 71.60615929705216,
+          "visualOffsetSeconds": 1.40625,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 71.68490929705102,
+          "visualMinusEstimatedAudioSeconds": -0.07874999999886256,
+          "normalizedVisualBoundarySeconds": 70.26576706166338,
+          "normalizedEstimatedAudioBoundarySeconds": 70.34492470886545
+        }
+      ],
+      "independentFfprobe": {
+        "original": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp8",
+              "width": 540,
+              "height": 960
+            },
+            {
+              "codec_name": "opus"
+            }
+          ],
+          "format": {
+            "duration": "83.486851"
+          }
+        },
+        "normalized": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp8",
+              "width": 540,
+              "height": 960
+            },
+            {
+              "codec_name": "opus"
+            }
+          ],
+          "format": {
+            "duration": "82.104000"
+          }
+        }
+      },
+      "independentEncodedPacketHashes": {
+        "original": {
+          "packets": 3321,
+          "sha256": "7a0e36e3a657b333822f31a5bd2d730120d5f12aad16fbf768c00c4220d13f74"
+        },
+        "normalized": {
+          "packets": 3321,
+          "sha256": "7a0e36e3a657b333822f31a5bd2d730120d5f12aad16fbf768c00c4220d13f74"
+        }
+      },
+      "independentDecodedMediaHashes": {
+        "original_video": {
+          "returnCode": 0,
+          "stdout": "SHA256=f367f1438ac53905a0b2e842ecae1a8fb9c6794fd2d22e9c6e917b5163e20f05",
+          "stderr": ""
+        },
+        "original_audio": {
+          "returnCode": 0,
+          "stdout": "SHA256=9b5b7e1b67688b086628fe8af6e89f5d023f0df3ac954dc82d0e157dc282c205",
+          "stderr": ""
+        },
+        "normalized_video": {
+          "returnCode": 0,
+          "stdout": "SHA256=f367f1438ac53905a0b2e842ecae1a8fb9c6794fd2d22e9c6e917b5163e20f05",
+          "stderr": ""
+        },
+        "normalized_audio": {
+          "returnCode": 0,
+          "stdout": "SHA256=9b5b7e1b67688b086628fe8af6e89f5d023f0df3ac954dc82d0e157dc282c205",
+          "stderr": ""
+        }
+      },
+      "independentChecks": {
+        "independent_encoded_packet_hashes_identical": true,
+        "video_decoded_pixels_identical": true,
+        "audio_decoded_pcm_identical": true,
+        "all_decodes_return_zero": true,
+        "normalized_decode_no_errors": true,
+        "normalized_duration_under_0_2s_from_narration": true
+      },
+      "status": "PASS",
+      "independentNormalizedVisualBoundaries": {
+        "observations": [
+          {
+            "scene": 2,
+            "mappedOriginalVisualBoundarySeconds": 8.727450147007954,
+            "mappedAudioPacketBoundarySeconds": 8.76059633344865,
+            "visualMinusAudioClockSeconds": -0.03314618644069611,
+            "frameBeforeSeconds": 8.647450147007953,
+            "frameBeforeDetectedScene": 1,
+            "frameAfterSeconds": 8.757450147007953,
+            "frameAfterDetectedScene": 2,
+            "expectedSceneAfter": 2,
+            "pass": true
+          },
+          {
+            "scene": 3,
+            "mappedOriginalVisualBoundarySeconds": 19.86369809382086,
+            "mappedAudioPacketBoundarySeconds": 19.915272798974698,
+            "visualMinusAudioClockSeconds": -0.05157470515383622,
+            "frameBeforeSeconds": 19.783698093820863,
+            "frameBeforeDetectedScene": 2,
+            "frameAfterSeconds": 19.893698093820863,
+            "frameAfterDetectedScene": 3,
+            "expectedSceneAfter": 3,
+            "pass": true
+          },
+          {
+            "scene": 4,
+            "mappedOriginalVisualBoundarySeconds": 34.52733012915311,
+            "mappedAudioPacketBoundarySeconds": 34.57613447697936,
+            "visualMinusAudioClockSeconds": -0.04880434782625542,
+            "frameBeforeSeconds": 34.44733012915311,
+            "frameBeforeDetectedScene": 3,
+            "frameAfterSeconds": 34.55733012915311,
+            "frameAfterDetectedScene": 4,
+            "expectedSceneAfter": 4,
+            "pass": true
+          },
+          {
+            "scene": 5,
+            "mappedOriginalVisualBoundarySeconds": 45.162537346390174,
+            "mappedAudioPacketBoundarySeconds": 45.19039016897062,
+            "visualMinusAudioClockSeconds": -0.0278528225804493,
+            "frameBeforeSeconds": 45.082537346390176,
+            "frameBeforeDetectedScene": 4,
+            "frameAfterSeconds": 45.192537346390175,
+            "frameAfterDetectedScene": 5,
+            "expectedSceneAfter": 5,
+            "pass": true
+          },
+          {
+            "scene": 6,
+            "mappedOriginalVisualBoundarySeconds": 57.64762420689429,
+            "mappedAudioPacketBoundarySeconds": 57.696129597601065,
+            "visualMinusAudioClockSeconds": -0.04850539070677229,
+            "frameBeforeSeconds": 57.567624206894294,
+            "frameBeforeDetectedScene": 5,
+            "frameAfterSeconds": 57.67762420689429,
+            "frameAfterDetectedScene": 6,
+            "expectedSceneAfter": 6,
+            "pass": true
+          },
+          {
+            "scene": 7,
+            "mappedOriginalVisualBoundarySeconds": 70.26576706166338,
+            "mappedAudioPacketBoundarySeconds": 70.34492470886545,
+            "visualMinusAudioClockSeconds": -0.07915764720206653,
+            "frameBeforeSeconds": 70.18576706166338,
+            "frameBeforeDetectedScene": 6,
+            "frameAfterSeconds": 70.29576706166338,
+            "frameAfterDetectedScene": 7,
+            "expectedSceneAfter": 7,
+            "pass": true
+          }
+        ],
+        "sixTransitionsPreserved": true,
+        "method": "Header-region differences identify scene identity in actual decoded normalized frames before/after the mapped original transition. Audio clock is the same piecewise packet-duration mapping. No ASR or intelligibility determination."
+      }
+    },
+    {
+      "name": "usdc-cat",
+      "originalFile": "/workspace/shared/doom404-v13/final/usdc-cat.webm",
+      "normalizedFile": "/workspace/shared/doom404-v13/final/normalized/usdc-cat.webm",
+      "originalSha256": "50d357d991f366db138a41380d5536b69c6852484342afb153108e03b78e5553",
+      "normalizedSha256": "b2b053cea9ea54ea413b26acf696ba7c36e0838d47465f6fce9ef813fc1786fb",
+      "normalizer": "DOOM404_WEBM_OPUS_CLOCK_V1",
+      "mediaReencoded": false,
+      "referenceBlockTreatment": "Chrome/libwebm previous-absolute timestamps recognized only when equal to preceding video packet; emitted spec-correct signed relative references",
+      "authoritativeSources": [
+        "https://www.matroska.org/technical/notes.html",
+        "https://www.matroska.org/technical/elements.html",
+        "https://www.rfc-editor.org/rfc/rfc6716.html#section-3.1",
+        "https://github.com/webmproject/libwebm/blob/1f795141409295f5bc16769d0230e269efd169f9/mkvmuxer/mkvmuxerutil.cc"
+      ],
+      "scope": "Observed Chrome VP8 alpha BlockGroups + unlaced Opus SimpleBlocks; 1ms scale",
+      "audioPackets": 1368,
+      "videoPackets": 1965,
+      "encodedAudioDurationSeconds": 82.08,
+      "normalizedDurationSeconds": 82.139,
+      "originalAudioEndSeconds": 82.8,
+      "removedClockGapSeconds": 0.671,
+      "maximumTimestampQuantizationErrorMs": 0.49253731343196705,
+      "payloadPreservation": "Encoded block payloads and VP8 alpha additions copied without modification; caller must retain hash validation evidence",
+      "removedStaleIndexes": [
+        "SeekHead",
+        "Cues"
+      ],
+      "limitations": [
+        "Unsupported EBML layouts, lacing, track scales and reference targets other than the preceding video packet are rejected.",
+        "No speech intelligibility or factual-accuracy determination."
+      ],
+      "expectedNarrationDurationSeconds": 82.00789115646259,
+      "mainEncodedPackets": {
+        "video": {
+          "packets": 1965,
+          "originalSha256": "91cc3ce4180f13b22ad904b81e815e1198b3d4400f30beffd6909f8228c25d2c",
+          "normalizedSha256": "91cc3ce4180f13b22ad904b81e815e1198b3d4400f30beffd6909f8228c25d2c"
+        },
+        "audio": {
+          "packets": 1368,
+          "originalSha256": "f1af8b95a449932118fd0e50237614efcdd630454d0de698609e8dafbebb4c8d",
+          "normalizedSha256": "f1af8b95a449932118fd0e50237614efcdd630454d0de698609e8dafbebb4c8d"
+        }
+      },
+      "alphaBlockAdditions": {
+        "count": 1965,
+        "originalSha256": "4f3107729e37d981d3c49b159ce70b37b6520fba36cb70a1cf196773f75ebbbf",
+        "normalizedSha256": "4f3107729e37d981d3c49b159ce70b37b6520fba36cb70a1cf196773f75ebbbf"
+      },
+      "mappedBoundaries": [
+        {
+          "scene": 2,
+          "manifestStartSeconds": 8.615986394557822,
+          "detectedVisualStartSeconds": 8.819111394557822,
+          "visualOffsetSeconds": 0.203125,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 8.83598639455784,
+          "visualMinusEstimatedAudioSeconds": -0.016875000000018403,
+          "normalizedVisualBoundarySeconds": 8.765618603963324,
+          "normalizedEstimatedAudioBoundarySeconds": 8.780292517006817
+        },
+        {
+          "scene": 3,
+          "manifestStartSeconds": 19.77596371882086,
+          "detectedVisualStartSeconds": 20.10213559382086,
+          "visualOffsetSeconds": 0.326171875,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 20.1659637188209,
+          "visualMinusEstimatedAudioSeconds": -0.06382812500003965,
+          "normalizedVisualBoundarySeconds": 19.88066331575003,
+          "normalizedEstimatedAudioBoundarySeconds": 19.940272798974696
+        },
+        {
+          "scene": 4,
+          "manifestStartSeconds": 34.439954648526076,
+          "detectedVisualStartSeconds": 34.766126523526076,
+          "visualOffsetSeconds": 0.326171875,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 34.83895464852629,
+          "visualMinusEstimatedAudioSeconds": -0.07282812500021407,
+          "normalizedVisualBoundarySeconds": 34.535908329009565,
+          "normalizedEstimatedAudioBoundarySeconds": 34.60038969873682
+        },
+        {
+          "scene": 5,
+          "manifestStartSeconds": 45.047936507936505,
+          "detectedVisualStartSeconds": 45.387780257936505,
+          "visualOffsetSeconds": 0.33984375,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 45.44693650793631,
+          "visualMinusEstimatedAudioSeconds": -0.05915624999980196,
+          "normalizedVisualBoundarySeconds": 45.15759009281679,
+          "normalizedEstimatedAudioBoundarySeconds": 45.210683919944614
+        },
+        {
+          "scene": 6,
+          "manifestStartSeconds": 57.55192743764172,
+          "detectedVisualStartSeconds": 58.01481806264172,
+          "visualOffsetSeconds": 0.462890625,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 58.05192743764105,
+          "visualMinusEstimatedAudioSeconds": -0.037109374999324984,
+          "normalizedVisualBoundarySeconds": 57.6793741913432,
+          "normalizedEstimatedAudioBoundarySeconds": 57.720927437641045
+        },
+        {
+          "scene": 7,
+          "manifestStartSeconds": 70.19990929705216,
+          "detectedVisualStartSeconds": 70.71748742205216,
+          "visualOffsetSeconds": 0.517578125,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 70.76090929705101,
+          "visualMinusEstimatedAudioSeconds": -0.04342187499885597,
+          "normalizedVisualBoundarySeconds": 70.32576686988355,
+          "normalizedEstimatedAudioBoundarySeconds": 70.36979069308784
+        }
+      ],
+      "independentFfprobe": {
+        "original": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp8",
+              "width": 540,
+              "height": 960
+            },
+            {
+              "codec_name": "opus"
+            }
+          ],
+          "format": {
+            "duration": "82.809500"
+          }
+        },
+        "normalized": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp8",
+              "width": 540,
+              "height": 960
+            },
+            {
+              "codec_name": "opus"
+            }
+          ],
+          "format": {
+            "duration": "82.139000"
+          }
+        }
+      },
+      "independentEncodedPacketHashes": {
+        "original": {
+          "packets": 3333,
+          "sha256": "db994eb91433e3c844451c85a2205b5e23697acbd9ccf3d694d0366e60dab366"
+        },
+        "normalized": {
+          "packets": 3333,
+          "sha256": "db994eb91433e3c844451c85a2205b5e23697acbd9ccf3d694d0366e60dab366"
+        }
+      },
+      "independentDecodedMediaHashes": {
+        "original_video": {
+          "returnCode": 0,
+          "stdout": "SHA256=eff38f0b9ee0e1356ae67da279e9181acb6a78cf2d0db9358f99f9889037488e",
+          "stderr": ""
+        },
+        "original_audio": {
+          "returnCode": 0,
+          "stdout": "SHA256=8b8646ba2164420153568cf5821611bea95b193d31a023b0ed420276ef8ed7da",
+          "stderr": ""
+        },
+        "normalized_video": {
+          "returnCode": 0,
+          "stdout": "SHA256=eff38f0b9ee0e1356ae67da279e9181acb6a78cf2d0db9358f99f9889037488e",
+          "stderr": ""
+        },
+        "normalized_audio": {
+          "returnCode": 0,
+          "stdout": "SHA256=8b8646ba2164420153568cf5821611bea95b193d31a023b0ed420276ef8ed7da",
+          "stderr": ""
+        }
+      },
+      "independentChecks": {
+        "independent_encoded_packet_hashes_identical": true,
+        "video_decoded_pixels_identical": true,
+        "audio_decoded_pcm_identical": true,
+        "all_decodes_return_zero": true,
+        "normalized_decode_no_errors": true,
+        "normalized_duration_under_0_2s_from_narration": true
+      },
+      "status": "PASS",
+      "independentNormalizedVisualBoundaries": {
+        "observations": [
+          {
+            "scene": 2,
+            "mappedOriginalVisualBoundarySeconds": 8.765618603963324,
+            "mappedAudioPacketBoundarySeconds": 8.780292517006817,
+            "visualMinusAudioClockSeconds": -0.014673913043493414,
+            "frameBeforeSeconds": 8.685618603963324,
+            "frameBeforeDetectedScene": 1,
+            "frameAfterSeconds": 8.795618603963323,
+            "frameAfterDetectedScene": 2,
+            "expectedSceneAfter": 2,
+            "pass": true
+          },
+          {
+            "scene": 3,
+            "mappedOriginalVisualBoundarySeconds": 19.88066331575003,
+            "mappedAudioPacketBoundarySeconds": 19.940272798974696,
+            "visualMinusAudioClockSeconds": -0.05960948322466564,
+            "frameBeforeSeconds": 19.800663315750032,
+            "frameBeforeDetectedScene": 2,
+            "frameAfterSeconds": 19.910663315750032,
+            "frameAfterDetectedScene": 3,
+            "expectedSceneAfter": 3,
+            "pass": true
+          },
+          {
+            "scene": 4,
+            "mappedOriginalVisualBoundarySeconds": 34.535908329009565,
+            "mappedAudioPacketBoundarySeconds": 34.60038969873682,
+            "visualMinusAudioClockSeconds": -0.06448136972725393,
+            "frameBeforeSeconds": 34.45590832900957,
+            "frameBeforeDetectedScene": 3,
+            "frameAfterSeconds": 34.56590832900957,
+            "frameAfterDetectedScene": 4,
+            "expectedSceneAfter": 4,
+            "pass": true
+          },
+          {
+            "scene": 5,
+            "mappedOriginalVisualBoundarySeconds": 45.15759009281679,
+            "mappedAudioPacketBoundarySeconds": 45.210683919944614,
+            "visualMinusAudioClockSeconds": -0.05309382712782451,
+            "frameBeforeSeconds": 45.07759009281679,
+            "frameBeforeDetectedScene": 4,
+            "frameAfterSeconds": 45.18759009281679,
+            "frameAfterDetectedScene": 5,
+            "expectedSceneAfter": 5,
+            "pass": true
+          },
+          {
+            "scene": 6,
+            "mappedOriginalVisualBoundarySeconds": 57.6793741913432,
+            "mappedAudioPacketBoundarySeconds": 57.720927437641045,
+            "visualMinusAudioClockSeconds": -0.04155324629784474,
+            "frameBeforeSeconds": 57.5993741913432,
+            "frameBeforeDetectedScene": 5,
+            "frameAfterSeconds": 57.7093741913432,
+            "frameAfterDetectedScene": 6,
+            "expectedSceneAfter": 6,
+            "pass": true
+          },
+          {
+            "scene": 7,
+            "mappedOriginalVisualBoundarySeconds": 70.32576686988355,
+            "mappedAudioPacketBoundarySeconds": 70.36979069308784,
+            "visualMinusAudioClockSeconds": -0.04402382320428444,
+            "frameBeforeSeconds": 70.24576686988355,
+            "frameBeforeDetectedScene": 6,
+            "frameAfterSeconds": 70.35576686988355,
+            "frameAfterDetectedScene": 7,
+            "expectedSceneAfter": 7,
+            "pass": true
+          }
+        ],
+        "sixTransitionsPreserved": true,
+        "method": "Header-region differences identify scene identity in actual decoded normalized frames before/after the mapped original transition. Audio clock is the same piecewise packet-duration mapping. No ASR or intelligibility determination."
+      }
+    },
+    {
+      "name": "tomo-bull",
+      "originalFile": "/workspace/shared/doom404-v13/final/tomo-bull.webm",
+      "normalizedFile": "/workspace/shared/doom404-v13/final/normalized/tomo-bull.webm",
+      "originalSha256": "3e65ef3c0b4d119c0f8895744fced20ab8bb74dba15d089b5af7952ed1772289",
+      "normalizedSha256": "ae8901734dcf84dac4a21ab926f7a618e3dbec5e3f730bea26924598b307f4fb",
+      "normalizer": "DOOM404_WEBM_OPUS_CLOCK_V1",
+      "mediaReencoded": false,
+      "referenceBlockTreatment": "Chrome/libwebm previous-absolute timestamps recognized only when equal to preceding video packet; emitted spec-correct signed relative references",
+      "authoritativeSources": [
+        "https://www.matroska.org/technical/notes.html",
+        "https://www.matroska.org/technical/elements.html",
+        "https://www.rfc-editor.org/rfc/rfc6716.html#section-3.1",
+        "https://github.com/webmproject/libwebm/blob/1f795141409295f5bc16769d0230e269efd169f9/mkvmuxer/mkvmuxerutil.cc"
+      ],
+      "scope": "Observed Chrome VP8 alpha BlockGroups + unlaced Opus SimpleBlocks; 1ms scale",
+      "audioPackets": 1328,
+      "videoPackets": 1882,
+      "encodedAudioDurationSeconds": 79.68,
+      "normalizedDurationSeconds": 79.717,
+      "originalAudioEndSeconds": 84.736,
+      "removedClockGapSeconds": 5.019,
+      "maximumTimestampQuantizationErrorMs": 0.5,
+      "payloadPreservation": "Encoded block payloads and VP8 alpha additions copied without modification; caller must retain hash validation evidence",
+      "removedStaleIndexes": [
+        "SeekHead",
+        "Cues"
+      ],
+      "limitations": [
+        "Unsupported EBML layouts, lacing, track scales and reference targets other than the preceding video packet are rejected.",
+        "No speech intelligibility or factual-accuracy determination."
+      ],
+      "expectedNarrationDurationSeconds": 79.60791383219956,
+      "mainEncodedPackets": {
+        "video": {
+          "packets": 1882,
+          "originalSha256": "0e365e3716d7f3434d9d83dabb799e6ba7479522eaaa96073a45b29af784405c",
+          "normalizedSha256": "0e365e3716d7f3434d9d83dabb799e6ba7479522eaaa96073a45b29af784405c"
+        },
+        "audio": {
+          "packets": 1328,
+          "originalSha256": "bfab9607233129155e12cb8ee8916932fcdc17de4cde8a715553d8221343983c",
+          "normalizedSha256": "bfab9607233129155e12cb8ee8916932fcdc17de4cde8a715553d8221343983c"
+        }
+      },
+      "alphaBlockAdditions": {
+        "count": 1882,
+        "originalSha256": "23f70633498899dec0261e9764a0702ae38088524d15a717be71684b35054542",
+        "normalizedSha256": "23f70633498899dec0261e9764a0702ae38088524d15a717be71684b35054542"
+      },
+      "mappedBoundaries": [
+        {
+          "scene": 2,
+          "manifestStartSeconds": 14.80798185941043,
+          "detectedVisualStartSeconds": 14.925169359410432,
+          "visualOffsetSeconds": 0.11718750000000178,
+          "searchResolutionSeconds": 0.0107421875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 14.963981859410396,
+          "visualMinusEstimatedAudioSeconds": -0.03881249999996328,
+          "normalizedVisualBoundarySeconds": 14.92758003008896,
+          "normalizedEstimatedAudioBoundarySeconds": 14.972363683935074
+        },
+        {
+          "scene": 3,
+          "manifestStartSeconds": 28.511972789115646,
+          "detectedVisualStartSeconds": 28.596933726615646,
+          "visualOffsetSeconds": 0.0849609375,
+          "searchResolutionSeconds": 0.0107421875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 28.666972789115878,
+          "visualMinusEstimatedAudioSeconds": -0.07003906250023206,
+          "normalizedVisualBoundarySeconds": 28.597949552490487,
+          "normalizedEstimatedAudioBoundarySeconds": 28.668402656300835
+        },
+        {
+          "scene": 4,
+          "manifestStartSeconds": 36.91195011337869,
+          "detectedVisualStartSeconds": 40.04769230087869,
+          "visualOffsetSeconds": 3.1357421875,
+          "searchResolutionSeconds": 0.0107421875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 40.0899501133788,
+          "visualMinusEstimatedAudioSeconds": -0.04225781250011096,
+          "normalizedVisualBoundarySeconds": 37.02718914840526,
+          "normalizedEstimatedAudioBoundarySeconds": 37.06915265767335
+        },
+        {
+          "scene": 5,
+          "manifestStartSeconds": 46.4639455782313,
+          "detectedVisualStartSeconds": 51.3399221407313,
+          "visualOffsetSeconds": 4.8759765625,
+          "searchResolutionSeconds": 0.0107421875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 51.38894557823105,
+          "visualMinusEstimatedAudioSeconds": -0.04902343749975557,
+          "normalizedVisualBoundarySeconds": 46.57149709226911,
+          "normalizedEstimatedAudioBoundarySeconds": 46.620173140223606
+        },
+        {
+          "scene": 6,
+          "manifestStartSeconds": 56.78392290249434,
+          "detectedVisualStartSeconds": 61.79954790249434,
+          "visualOffsetSeconds": 5.015625,
+          "searchResolutionSeconds": 0.0107421875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 61.859922902493686,
+          "visualMinusEstimatedAudioSeconds": -0.06037499999934681,
+          "normalizedVisualBoundarySeconds": 56.88530252390812,
+          "normalizedEstimatedAudioBoundarySeconds": 56.94092290249369
+        },
+        {
+          "scene": 7,
+          "manifestStartSeconds": 67.48791383219955,
+          "detectedVisualStartSeconds": 72.60021851969955,
+          "visualOffsetSeconds": 5.1123046875,
+          "searchResolutionSeconds": 0.0107421875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 72.64291383219852,
+          "visualMinusEstimatedAudioSeconds": -0.042695312498963744,
+          "normalizedVisualBoundarySeconds": 67.6020501803544,
+          "normalizedEstimatedAudioBoundarySeconds": 67.64336822470824
+        }
+      ],
+      "independentFfprobe": {
+        "original": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp8",
+              "width": 540,
+              "height": 960
+            },
+            {
+              "codec_name": "opus"
+            }
+          ],
+          "format": {
+            "duration": "84.706648"
+          }
+        },
+        "normalized": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp8",
+              "width": 540,
+              "height": 960
+            },
+            {
+              "codec_name": "opus"
+            }
+          ],
+          "format": {
+            "duration": "79.717000"
+          }
+        }
+      },
+      "independentEncodedPacketHashes": {
+        "original": {
+          "packets": 3210,
+          "sha256": "03a5b4bc35f00fd175c651d7b4b010a3f6de9219ea3c3c2150c14f02fb179c43"
+        },
+        "normalized": {
+          "packets": 3210,
+          "sha256": "03a5b4bc35f00fd175c651d7b4b010a3f6de9219ea3c3c2150c14f02fb179c43"
+        }
+      },
+      "independentDecodedMediaHashes": {
+        "original_video": {
+          "returnCode": 0,
+          "stdout": "SHA256=068702c059c4ecdb30095afed4f8024ff90a171856775aac0dec0116e86f7696",
+          "stderr": ""
+        },
+        "original_audio": {
+          "returnCode": 0,
+          "stdout": "SHA256=66a0e233391e982d5aa0988e8fd959b10502f6521dc55e690147fa358d5b5e6e",
+          "stderr": ""
+        },
+        "normalized_video": {
+          "returnCode": 0,
+          "stdout": "SHA256=068702c059c4ecdb30095afed4f8024ff90a171856775aac0dec0116e86f7696",
+          "stderr": ""
+        },
+        "normalized_audio": {
+          "returnCode": 0,
+          "stdout": "SHA256=66a0e233391e982d5aa0988e8fd959b10502f6521dc55e690147fa358d5b5e6e",
+          "stderr": ""
+        }
+      },
+      "independentChecks": {
+        "independent_encoded_packet_hashes_identical": true,
+        "video_decoded_pixels_identical": true,
+        "audio_decoded_pcm_identical": true,
+        "all_decodes_return_zero": true,
+        "normalized_decode_no_errors": true,
+        "normalized_duration_under_0_2s_from_narration": true
+      },
+      "status": "PASS",
+      "independentNormalizedVisualBoundaries": {
+        "observations": [
+          {
+            "scene": 2,
+            "mappedOriginalVisualBoundarySeconds": 14.92758003008896,
+            "mappedAudioPacketBoundarySeconds": 14.972363683935074,
+            "visualMinusAudioClockSeconds": -0.044783653846113936,
+            "frameBeforeSeconds": 14.84758003008896,
+            "frameBeforeDetectedScene": 1,
+            "frameAfterSeconds": 14.957580030088959,
+            "frameAfterDetectedScene": 2,
+            "expectedSceneAfter": 2,
+            "pass": true
+          },
+          {
+            "scene": 3,
+            "mappedOriginalVisualBoundarySeconds": 28.597949552490487,
+            "mappedAudioPacketBoundarySeconds": 28.668402656300835,
+            "visualMinusAudioClockSeconds": -0.07045310381034753,
+            "frameBeforeSeconds": 28.51794955249049,
+            "frameBeforeDetectedScene": 2,
+            "frameAfterSeconds": 28.627949552490488,
+            "frameAfterDetectedScene": 3,
+            "expectedSceneAfter": 3,
+            "pass": true
+          },
+          {
+            "scene": 4,
+            "mappedOriginalVisualBoundarySeconds": 37.02718914840526,
+            "mappedAudioPacketBoundarySeconds": 37.06915265767335,
+            "visualMinusAudioClockSeconds": -0.04196350926808634,
+            "frameBeforeSeconds": 36.947189148405265,
+            "frameBeforeDetectedScene": 3,
+            "frameAfterSeconds": 37.057189148405264,
+            "frameAfterDetectedScene": 4,
+            "expectedSceneAfter": 4,
+            "pass": true
+          },
+          {
+            "scene": 5,
+            "mappedOriginalVisualBoundarySeconds": 46.57149709226911,
+            "mappedAudioPacketBoundarySeconds": 46.620173140223606,
+            "visualMinusAudioClockSeconds": -0.048676047954494095,
+            "frameBeforeSeconds": 46.491497092269114,
+            "frameBeforeDetectedScene": 4,
+            "frameAfterSeconds": 46.60149709226911,
+            "frameAfterDetectedScene": 5,
+            "expectedSceneAfter": 5,
+            "pass": true
+          },
+          {
+            "scene": 6,
+            "mappedOriginalVisualBoundarySeconds": 56.88530252390812,
+            "mappedAudioPacketBoundarySeconds": 56.94092290249369,
+            "visualMinusAudioClockSeconds": -0.05562037858556579,
+            "frameBeforeSeconds": 56.805302523908125,
+            "frameBeforeDetectedScene": 5,
+            "frameAfterSeconds": 56.915302523908124,
+            "frameAfterDetectedScene": 6,
+            "expectedSceneAfter": 6,
+            "pass": true
+          },
+          {
+            "scene": 7,
+            "mappedOriginalVisualBoundarySeconds": 67.6020501803544,
+            "mappedAudioPacketBoundarySeconds": 67.64336822470824,
+            "visualMinusAudioClockSeconds": -0.041318044353843675,
+            "frameBeforeSeconds": 67.5220501803544,
+            "frameBeforeDetectedScene": 6,
+            "frameAfterSeconds": 67.6320501803544,
+            "frameAfterDetectedScene": 7,
+            "expectedSceneAfter": 7,
+            "pass": true
+          }
+        ],
+        "sixTransitionsPreserved": true,
+        "method": "Header-region differences identify scene identity in actual decoded normalized frames before/after the mapped original transition. Audio clock is the same piecewise packet-duration mapping. No ASR or intelligibility determination."
+      }
+    },
+    {
+      "name": "bonk-bore",
+      "originalFile": "/workspace/shared/doom404-v13/final/bonk-bore.webm",
+      "normalizedFile": "/workspace/shared/doom404-v13/final/normalized/bonk-bore.webm",
+      "originalSha256": "6aaee346e563b94949e7d1d7cf2a2d2a74e927a3fccd12ebc24f7e9c1f5993ad",
+      "normalizedSha256": "c587b815cfd44a5f45a09524276541680a57ab5fb3044b044f3f89e013bc1e06",
+      "normalizer": "DOOM404_WEBM_OPUS_CLOCK_V1",
+      "mediaReencoded": false,
+      "referenceBlockTreatment": "Chrome/libwebm previous-absolute timestamps recognized only when equal to preceding video packet; emitted spec-correct signed relative references",
+      "authoritativeSources": [
+        "https://www.matroska.org/technical/notes.html",
+        "https://www.matroska.org/technical/elements.html",
+        "https://www.rfc-editor.org/rfc/rfc6716.html#section-3.1",
+        "https://github.com/webmproject/libwebm/blob/1f795141409295f5bc16769d0230e269efd169f9/mkvmuxer/mkvmuxerutil.cc"
+      ],
+      "scope": "Observed Chrome VP8 alpha BlockGroups + unlaced Opus SimpleBlocks; 1ms scale",
+      "audioPackets": 1242,
+      "videoPackets": 1775,
+      "encodedAudioDurationSeconds": 74.52,
+      "normalizedDurationSeconds": 74.565,
+      "originalAudioEndSeconds": 74.927,
+      "removedClockGapSeconds": 0.362,
+      "maximumTimestampQuantizationErrorMs": 0.5,
+      "payloadPreservation": "Encoded block payloads and VP8 alpha additions copied without modification; caller must retain hash validation evidence",
+      "removedStaleIndexes": [
+        "SeekHead",
+        "Cues"
+      ],
+      "limitations": [
+        "Unsupported EBML layouts, lacing, track scales and reference targets other than the preceding video packet are rejected.",
+        "No speech intelligibility or factual-accuracy determination."
+      ],
+      "expectedNarrationDurationSeconds": 74.39990929705216,
+      "mainEncodedPackets": {
+        "video": {
+          "packets": 1775,
+          "originalSha256": "7bf8f3d4f51beb49fe81e8501b1ef6577ce2d314b5fce168c24daaa0d6f4c434",
+          "normalizedSha256": "7bf8f3d4f51beb49fe81e8501b1ef6577ce2d314b5fce168c24daaa0d6f4c434"
+        },
+        "audio": {
+          "packets": 1242,
+          "originalSha256": "2f373b509e1cac2a22649c6e33d507a3a947c4a28042cec4bf6763616a0cd786",
+          "normalizedSha256": "2f373b509e1cac2a22649c6e33d507a3a947c4a28042cec4bf6763616a0cd786"
+        }
+      },
+      "alphaBlockAdditions": {
+        "count": 1775,
+        "originalSha256": "adeb48bb45cb716d84083a47aa69c110bce70171db714cbfa549b6499902c176",
+        "normalizedSha256": "adeb48bb45cb716d84083a47aa69c110bce70171db714cbfa549b6499902c176"
+      },
+      "mappedBoundaries": [
+        {
+          "scene": 2,
+          "manifestStartSeconds": 6.407981859410431,
+          "detectedVisualStartSeconds": 6.67946623441043,
+          "visualOffsetSeconds": 0.2714843749999991,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 6.753981859410444,
+          "visualMinusEstimatedAudioSeconds": -0.07451562500001341,
+          "normalizedVisualBoundarySeconds": 6.494384116627419,
+          "normalizedEstimatedAudioBoundarySeconds": 6.573795111264858
+        },
+        {
+          "scene": 3,
+          "manifestStartSeconds": 20.56798185941043,
+          "detectedVisualStartSeconds": 20.90782560941043,
+          "visualOffsetSeconds": 0.33984375,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 20.912981859410486,
+          "visualMinusEstimatedAudioSeconds": -0.0051562500000557066,
+          "normalizedVisualBoundarySeconds": 20.726444138139126,
+          "normalizedEstimatedAudioBoundarySeconds": 20.73143405749402
+        },
+        {
+          "scene": 4,
+          "manifestStartSeconds": 29.61596371882086,
+          "detectedVisualStartSeconds": 30.010494968820865,
+          "visualOffsetSeconds": 0.39453125000000355,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 30.08196371882111,
+          "visualMinusEstimatedAudioSeconds": -0.07146875000024622,
+          "normalizedVisualBoundarySeconds": 29.70403265633177,
+          "normalizedEstimatedAudioBoundarySeconds": 29.7815732733774
+        },
+        {
+          "scene": 5,
+          "manifestStartSeconds": 39.671950113378685,
+          "detectedVisualStartSeconds": 40.134840738378685,
+          "visualOffsetSeconds": 0.462890625,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 40.19795011337869,
+          "visualMinusEstimatedAudioSeconds": -0.06310937500000335,
+          "normalizedVisualBoundarySeconds": 39.77297363224951,
+          "normalizedEstimatedAudioBoundarySeconds": 39.83715265767324
+        },
+        {
+          "scene": 6,
+          "manifestStartSeconds": 51.431927437641725,
+          "detectedVisualStartSeconds": 51.935833687641725,
+          "visualOffsetSeconds": 0.50390625,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 51.95792743764128,
+          "visualMinusEstimatedAudioSeconds": -0.022093749999555712,
+          "normalizedVisualBoundarySeconds": 51.57483368764172,
+          "normalizedEstimatedAudioBoundarySeconds": 51.596731905876666
+        },
+        {
+          "scene": 7,
+          "manifestStartSeconds": 62.27990929705216,
+          "detectedVisualStartSeconds": 62.77014367205216,
+          "visualOffsetSeconds": 0.490234375,
+          "searchResolutionSeconds": 0.013671875,
+          "estimatedAudioBoundaryFromPacketClockSeconds": 62.8049092970513,
+          "visualMinusEstimatedAudioSeconds": -0.03476562499914593,
+          "normalizedVisualBoundarySeconds": 62.40933258585693,
+          "normalizedEstimatedAudioBoundarySeconds": 62.44297673908191
+        }
+      ],
+      "independentFfprobe": {
+        "original": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp8",
+              "width": 540,
+              "height": 960
+            },
+            {
+              "codec_name": "opus"
+            }
+          ],
+          "format": {
+            "duration": "74.890570"
+          }
+        },
+        "normalized": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp8",
+              "width": 540,
+              "height": 960
+            },
+            {
+              "codec_name": "opus"
+            }
+          ],
+          "format": {
+            "duration": "74.565000"
+          }
+        }
+      },
+      "independentEncodedPacketHashes": {
+        "original": {
+          "packets": 3017,
+          "sha256": "7bb8d3173ebc077e2645956357a5e85982690863f2e40f0a977d57d1c23ec638"
+        },
+        "normalized": {
+          "packets": 3017,
+          "sha256": "7bb8d3173ebc077e2645956357a5e85982690863f2e40f0a977d57d1c23ec638"
+        }
+      },
+      "independentDecodedMediaHashes": {
+        "original_video": {
+          "returnCode": 0,
+          "stdout": "SHA256=66d3f6c176a3043398d7361aa1133235642270a9f2195b8f05aa83ac2d8f868f",
+          "stderr": ""
+        },
+        "original_audio": {
+          "returnCode": 0,
+          "stdout": "SHA256=9af49f916490529e2c1d8f5e04af3d47de454afab8cd0129562a79fc85fca716",
+          "stderr": ""
+        },
+        "normalized_video": {
+          "returnCode": 0,
+          "stdout": "SHA256=66d3f6c176a3043398d7361aa1133235642270a9f2195b8f05aa83ac2d8f868f",
+          "stderr": ""
+        },
+        "normalized_audio": {
+          "returnCode": 0,
+          "stdout": "SHA256=9af49f916490529e2c1d8f5e04af3d47de454afab8cd0129562a79fc85fca716",
+          "stderr": ""
+        }
+      },
+      "independentChecks": {
+        "independent_encoded_packet_hashes_identical": true,
+        "video_decoded_pixels_identical": true,
+        "audio_decoded_pcm_identical": true,
+        "all_decodes_return_zero": true,
+        "normalized_decode_no_errors": true,
+        "normalized_duration_under_0_2s_from_narration": true
+      },
+      "status": "PASS",
+      "independentNormalizedVisualBoundaries": {
+        "observations": [
+          {
+            "scene": 2,
+            "mappedOriginalVisualBoundarySeconds": 6.494384116627419,
+            "mappedAudioPacketBoundarySeconds": 6.573795111264858,
+            "visualMinusAudioClockSeconds": -0.07941099463743928,
+            "frameBeforeSeconds": 6.414384116627419,
+            "frameBeforeDetectedScene": 1,
+            "frameAfterSeconds": 6.524384116627419,
+            "frameAfterDetectedScene": 2,
+            "expectedSceneAfter": 2,
+            "pass": true
+          },
+          {
+            "scene": 3,
+            "mappedOriginalVisualBoundarySeconds": 20.726444138139126,
+            "mappedAudioPacketBoundarySeconds": 20.73143405749402,
+            "visualMinusAudioClockSeconds": -0.0049899193548945675,
+            "frameBeforeSeconds": 20.646444138139127,
+            "frameBeforeDetectedScene": 2,
+            "frameAfterSeconds": 20.756444138139127,
+            "frameAfterDetectedScene": 3,
+            "expectedSceneAfter": 3,
+            "pass": true
+          },
+          {
+            "scene": 4,
+            "mappedOriginalVisualBoundarySeconds": 29.70403265633177,
+            "mappedAudioPacketBoundarySeconds": 29.7815732733774,
+            "visualMinusAudioClockSeconds": -0.07754061704563142,
+            "frameBeforeSeconds": 29.62403265633177,
+            "frameBeforeDetectedScene": 3,
+            "frameAfterSeconds": 29.73403265633177,
+            "frameAfterDetectedScene": 4,
+            "expectedSceneAfter": 4,
+            "pass": true
+          },
+          {
+            "scene": 5,
+            "mappedOriginalVisualBoundarySeconds": 39.77297363224951,
+            "mappedAudioPacketBoundarySeconds": 39.83715265767324,
+            "visualMinusAudioClockSeconds": -0.06417902542373355,
+            "frameBeforeSeconds": 39.69297363224951,
+            "frameBeforeDetectedScene": 4,
+            "frameAfterSeconds": 39.80297363224951,
+            "frameAfterDetectedScene": 5,
+            "expectedSceneAfter": 5,
+            "pass": true
+          },
+          {
+            "scene": 6,
+            "mappedOriginalVisualBoundarySeconds": 51.57483368764172,
+            "mappedAudioPacketBoundarySeconds": 51.596731905876666,
+            "visualMinusAudioClockSeconds": -0.021898218234944977,
+            "frameBeforeSeconds": 51.49483368764172,
+            "frameBeforeDetectedScene": 5,
+            "frameAfterSeconds": 51.60483368764172,
+            "frameAfterDetectedScene": 6,
+            "expectedSceneAfter": 6,
+            "pass": true
+          },
+          {
+            "scene": 7,
+            "mappedOriginalVisualBoundarySeconds": 62.40933258585693,
+            "mappedAudioPacketBoundarySeconds": 62.44297673908191,
+            "visualMinusAudioClockSeconds": -0.03364415322497649,
+            "frameBeforeSeconds": 62.32933258585693,
+            "frameBeforeDetectedScene": 6,
+            "frameAfterSeconds": 62.43933258585693,
+            "frameAfterDetectedScene": 7,
+            "expectedSceneAfter": 7,
+            "pass": true
+          }
+        ],
+        "sixTransitionsPreserved": true,
+        "method": "Header-region differences identify scene identity in actual decoded normalized frames before/after the mapped original transition. Audio clock is the same piecewise packet-duration mapping. No ASR or intelligibility determination."
+      }
+    }
+  ]
+}

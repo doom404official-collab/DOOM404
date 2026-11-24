@@ -1,0 +1,653 @@
+{
+  "scope": "Original retained browser exports before container timing normalization",
+  "files": [
+    {
+      "name": "usdc-doom",
+      "video": "/workspace/shared/doom404-v13/final/usdc-doom.webm",
+      "manifest": "/workspace/shared/doom404-v13/final/usdc-doom-manifest.json",
+      "checks": {
+        "single_portrait_vp8_video": true,
+        "embedded_opus_audio": true,
+        "manifest_presenter_matches": true,
+        "manifest_dimensions_match": true,
+        "manifest_bytes_match": true,
+        "manifest_embedded_audio": true,
+        "duration_matches_narration_under_one_second_excess": false,
+        "seven_caption_scenes": true,
+        "continuous_scene_timeline": true,
+        "final_evidence_disclaimer_in_caption_manifest": true,
+        "version_13_manifest": true,
+        "full_audio_video_elementary_decode_without_errors": true,
+        "input_packet_backward_steps_under_20ms": true,
+        "audio_video_packet_end_drift_under_one_second": true,
+        "audio_non_silent": true,
+        "presenter_crop_motion_detected": true
+      },
+      "status": "FAIL",
+      "bytes": 18526764,
+      "sha256": "2ada528dbfbd28847863e2be53129ec94065d534b48cba15ab8402a35ef8a0a4",
+      "width": 540,
+      "height": 960,
+      "videoCodec": "vp8",
+      "audioCodec": "opus",
+      "audioChannels": 2,
+      "durationSeconds": 83.486851,
+      "narrationDurationSeconds": 82.00789115646259,
+      "recordingExcessSeconds": 1.4789598435374103,
+      "meanVolumeDb": -23.5,
+      "maxVolumeDb": -6.1,
+      "elementaryStreamDecodes": {
+        "video": {
+          "returnCode": 0,
+          "stderr": ""
+        },
+        "audio": {
+          "returnCode": 0,
+          "stderr": ""
+        }
+      },
+      "combinedNullMuxerReturnCode": 0,
+      "combinedNullMuxerWarnings": "",
+      "packetTiming": {
+        "video": {
+          "streamIndex": 0,
+          "codecType": "video",
+          "packetCount": 1953,
+          "pts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "dts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "firstPacketPtsSeconds": 0.0,
+          "lastPacketEndSeconds": 83.48700000000001,
+          "packetSpanSeconds": 83.48700000000001
+        },
+        "audio": {
+          "streamIndex": 1,
+          "codecType": "audio",
+          "packetCount": 1368,
+          "pts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "dts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "firstPacketPtsSeconds": 0.024,
+          "lastPacketEndSeconds": 83.524,
+          "packetSpanSeconds": 83.5
+        }
+      },
+      "maximumInputBackwardSeconds": 0,
+      "audioVideoPacketEndDeltaSeconds": 0.03699999999999193,
+      "timingClassification": "NO_TIMESTAMP_WARNING_OBSERVED",
+      "presenterCrop": [
+        120,
+        390,
+        420,
+        650
+      ],
+      "animationComparisons": [
+        {
+          "startSeconds": 8.3486851,
+          "endSeconds": 9.0486851,
+          "meanAbsoluteRgbDifference": 21.61,
+          "fractionPixelsChangingOver20": 0.37606410256410255,
+          "motionDetected": true
+        },
+        {
+          "startSeconds": 33.3947404,
+          "endSeconds": 34.094740400000006,
+          "meanAbsoluteRgbDifference": 3.410820512820513,
+          "fractionPixelsChangingOver20": 0.06683333333333333,
+          "motionDetected": true
+        },
+        {
+          "startSeconds": 58.440795699999995,
+          "endSeconds": 59.1407957,
+          "meanAbsoluteRgbDifference": 22.115384615384613,
+          "fractionPixelsChangingOver20": 0.3896025641025641,
+          "motionDetected": true
+        }
+      ],
+      "sceneFrames": [
+        {
+          "scene": 1,
+          "videoTimestampSeconds": 4.427993197278911,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-doom-scene-1.png"
+        },
+        {
+          "scene": 2,
+          "videoTimestampSeconds": 14.315975056689341,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-doom-scene-2.png"
+        },
+        {
+          "scene": 3,
+          "videoTimestampSeconds": 27.22795918367347,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-doom-scene-3.png"
+        },
+        {
+          "scene": 4,
+          "videoTimestampSeconds": 39.86394557823129,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-doom-scene-4.png"
+        },
+        {
+          "scene": 5,
+          "videoTimestampSeconds": 51.41993197278911,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-doom-scene-5.png"
+        },
+        {
+          "scene": 6,
+          "videoTimestampSeconds": 63.99591836734694,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-doom-scene-6.png"
+        },
+        {
+          "scene": 7,
+          "videoTimestampSeconds": 76.22390022675738,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-doom-scene-7.png"
+        }
+      ],
+      "contactSheet": "/workspace/shared/doom404-v13/final/qa/usdc-doom-contact-sheet.jpg",
+      "limitations": [
+        "Speech intelligibility and spoken factual/numeric accuracy are not assessed by volume or codec checks.",
+        "Caption timeline continuity is checked against the export manifest; visual caption clipping, overlap and actual transition alignment require rendered-frame/playback review.",
+        "Sub-20ms packet/mux timing warnings are retained for explicit review; they are not claimed absent or equivalent to verified audiovisual synchronization.",
+        "Presenter crop differences demonstrate visual motion; they do not establish intended semantic animation or continuous visibility for every frame."
+      ]
+    },
+    {
+      "name": "usdc-cat",
+      "video": "/workspace/shared/doom404-v13/final/usdc-cat.webm",
+      "manifest": "/workspace/shared/doom404-v13/final/usdc-cat-manifest.json",
+      "checks": {
+        "single_portrait_vp8_video": true,
+        "embedded_opus_audio": true,
+        "manifest_presenter_matches": true,
+        "manifest_dimensions_match": true,
+        "manifest_bytes_match": true,
+        "manifest_embedded_audio": true,
+        "duration_matches_narration_under_one_second_excess": true,
+        "seven_caption_scenes": true,
+        "continuous_scene_timeline": true,
+        "final_evidence_disclaimer_in_caption_manifest": true,
+        "version_13_manifest": true,
+        "full_audio_video_elementary_decode_without_errors": true,
+        "input_packet_backward_steps_under_20ms": true,
+        "audio_video_packet_end_drift_under_one_second": true,
+        "audio_non_silent": true,
+        "presenter_crop_motion_detected": true
+      },
+      "status": "PASS_FILE_CHECKS_WITH_TIMING_WARNING_REQUIRES_REVIEW",
+      "bytes": 18858002,
+      "sha256": "50d357d991f366db138a41380d5536b69c6852484342afb153108e03b78e5553",
+      "width": 540,
+      "height": 960,
+      "videoCodec": "vp8",
+      "audioCodec": "opus",
+      "audioChannels": 2,
+      "durationSeconds": 82.8095,
+      "narrationDurationSeconds": 82.00789115646259,
+      "recordingExcessSeconds": 0.8016088435374087,
+      "meanVolumeDb": -23.5,
+      "maxVolumeDb": -6.3,
+      "elementaryStreamDecodes": {
+        "video": {
+          "returnCode": 0,
+          "stderr": ""
+        },
+        "audio": {
+          "returnCode": 0,
+          "stderr": ""
+        }
+      },
+      "combinedNullMuxerReturnCode": 0,
+      "combinedNullMuxerWarnings": "[null @ 0x56467a300040] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 775 >= 775\n[null @ 0x56467a300040] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 948 >= 948\n[null @ 0x56467a300040] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 3977 >= 3977",
+      "packetTiming": {
+        "video": {
+          "streamIndex": 0,
+          "codecType": "video",
+          "packetCount": 1965,
+          "pts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "dts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "firstPacketPtsSeconds": 0.0,
+          "lastPacketEndSeconds": 82.825,
+          "packetSpanSeconds": 82.825
+        },
+        "audio": {
+          "streamIndex": 1,
+          "codecType": "audio",
+          "packetCount": 1368,
+          "pts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "dts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "firstPacketPtsSeconds": 0.049,
+          "lastPacketEndSeconds": 82.8,
+          "packetSpanSeconds": 82.75099999999999
+        }
+      },
+      "maximumInputBackwardSeconds": 0,
+      "audioVideoPacketEndDeltaSeconds": 0.025000000000005684,
+      "timingClassification": "BOUNDED_TIMESTAMP_WARNING_REQUIRES_REVIEW",
+      "presenterCrop": [
+        120,
+        390,
+        420,
+        650
+      ],
+      "animationComparisons": [
+        {
+          "startSeconds": 8.28095,
+          "endSeconds": 8.98095,
+          "meanAbsoluteRgbDifference": 17.191444444444443,
+          "fractionPixelsChangingOver20": 0.24383333333333335,
+          "motionDetected": true
+        },
+        {
+          "startSeconds": 33.1238,
+          "endSeconds": 33.823800000000006,
+          "meanAbsoluteRgbDifference": 16.77629487179487,
+          "fractionPixelsChangingOver20": 0.2516538461538462,
+          "motionDetected": true
+        },
+        {
+          "startSeconds": 57.966649999999994,
+          "endSeconds": 58.66665,
+          "meanAbsoluteRgbDifference": 7.17717094017094,
+          "fractionPixelsChangingOver20": 0.11883333333333333,
+          "motionDetected": true
+        }
+      ],
+      "sceneFrames": [
+        {
+          "scene": 1,
+          "videoTimestampSeconds": 4.427993197278911,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-cat-scene-1.png"
+        },
+        {
+          "scene": 2,
+          "videoTimestampSeconds": 14.315975056689341,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-cat-scene-2.png"
+        },
+        {
+          "scene": 3,
+          "videoTimestampSeconds": 27.22795918367347,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-cat-scene-3.png"
+        },
+        {
+          "scene": 4,
+          "videoTimestampSeconds": 39.86394557823129,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-cat-scene-4.png"
+        },
+        {
+          "scene": 5,
+          "videoTimestampSeconds": 51.41993197278911,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-cat-scene-5.png"
+        },
+        {
+          "scene": 6,
+          "videoTimestampSeconds": 63.99591836734694,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-cat-scene-6.png"
+        },
+        {
+          "scene": 7,
+          "videoTimestampSeconds": 76.22390022675738,
+          "file": "/workspace/shared/doom404-v13/final/qa/usdc-cat-scene-7.png"
+        }
+      ],
+      "contactSheet": "/workspace/shared/doom404-v13/final/qa/usdc-cat-contact-sheet.jpg",
+      "limitations": [
+        "Speech intelligibility and spoken factual/numeric accuracy are not assessed by volume or codec checks.",
+        "Caption timeline continuity is checked against the export manifest; visual caption clipping, overlap and actual transition alignment require rendered-frame/playback review.",
+        "Sub-20ms packet/mux timing warnings are retained for explicit review; they are not claimed absent or equivalent to verified audiovisual synchronization.",
+        "Presenter crop differences demonstrate visual motion; they do not establish intended semantic animation or continuous visibility for every frame."
+      ]
+    },
+    {
+      "name": "tomo-bull",
+      "video": "/workspace/shared/doom404-v13/final/tomo-bull.webm",
+      "manifest": "/workspace/shared/doom404-v13/final/tomo-bull-manifest.json",
+      "checks": {
+        "single_portrait_vp8_video": true,
+        "embedded_opus_audio": true,
+        "manifest_presenter_matches": true,
+        "manifest_dimensions_match": true,
+        "manifest_bytes_match": true,
+        "manifest_embedded_audio": true,
+        "duration_matches_narration_under_one_second_excess": false,
+        "seven_caption_scenes": true,
+        "continuous_scene_timeline": true,
+        "final_evidence_disclaimer_in_caption_manifest": true,
+        "version_13_manifest": true,
+        "full_audio_video_elementary_decode_without_errors": true,
+        "input_packet_backward_steps_under_20ms": true,
+        "audio_video_packet_end_drift_under_one_second": true,
+        "audio_non_silent": true,
+        "presenter_crop_motion_detected": true
+      },
+      "status": "FAIL",
+      "bytes": 18105178,
+      "sha256": "3e65ef3c0b4d119c0f8895744fced20ab8bb74dba15d089b5af7952ed1772289",
+      "width": 540,
+      "height": 960,
+      "videoCodec": "vp8",
+      "audioCodec": "opus",
+      "audioChannels": 2,
+      "durationSeconds": 84.706648,
+      "narrationDurationSeconds": 79.60791383219956,
+      "recordingExcessSeconds": 5.098734167800444,
+      "meanVolumeDb": -23.3,
+      "maxVolumeDb": -6.1,
+      "elementaryStreamDecodes": {
+        "video": {
+          "returnCode": 0,
+          "stderr": ""
+        },
+        "audio": {
+          "returnCode": 0,
+          "stderr": ""
+        }
+      },
+      "combinedNullMuxerReturnCode": 0,
+      "combinedNullMuxerWarnings": "",
+      "packetTiming": {
+        "video": {
+          "streamIndex": 0,
+          "codecType": "video",
+          "packetCount": 1882,
+          "pts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "dts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "firstPacketPtsSeconds": 0.0,
+          "lastPacketEndSeconds": 84.70700000000001,
+          "packetSpanSeconds": 84.70700000000001
+        },
+        "audio": {
+          "streamIndex": 1,
+          "codecType": "audio",
+          "packetCount": 1328,
+          "pts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "dts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "firstPacketPtsSeconds": 0.037,
+          "lastPacketEndSeconds": 84.736,
+          "packetSpanSeconds": 84.699
+        }
+      },
+      "maximumInputBackwardSeconds": 0,
+      "audioVideoPacketEndDeltaSeconds": 0.028999999999996362,
+      "timingClassification": "NO_TIMESTAMP_WARNING_OBSERVED",
+      "presenterCrop": [
+        120,
+        390,
+        420,
+        650
+      ],
+      "animationComparisons": [
+        {
+          "startSeconds": 8.4706648,
+          "endSeconds": 9.170664799999999,
+          "meanAbsoluteRgbDifference": 13.355777777777776,
+          "fractionPixelsChangingOver20": 0.19685897435897437,
+          "motionDetected": true
+        },
+        {
+          "startSeconds": 33.8826592,
+          "endSeconds": 34.5826592,
+          "meanAbsoluteRgbDifference": 7.686384615384616,
+          "fractionPixelsChangingOver20": 0.14046153846153847,
+          "motionDetected": true
+        },
+        {
+          "startSeconds": 59.2946536,
+          "endSeconds": 59.9946536,
+          "meanAbsoluteRgbDifference": 13.483222222222224,
+          "fractionPixelsChangingOver20": 0.19628205128205128,
+          "motionDetected": true
+        }
+      ],
+      "sceneFrames": [
+        {
+          "scene": 1,
+          "videoTimestampSeconds": 7.523990929705215,
+          "file": "/workspace/shared/doom404-v13/final/qa/tomo-bull-scene-1.png"
+        },
+        {
+          "scene": 2,
+          "videoTimestampSeconds": 21.77997732426304,
+          "file": "/workspace/shared/doom404-v13/final/qa/tomo-bull-scene-2.png"
+        },
+        {
+          "scene": 3,
+          "videoTimestampSeconds": 32.83196145124716,
+          "file": "/workspace/shared/doom404-v13/final/qa/tomo-bull-scene-3.png"
+        },
+        {
+          "scene": 4,
+          "videoTimestampSeconds": 41.80794784580499,
+          "file": "/workspace/shared/doom404-v13/final/qa/tomo-bull-scene-4.png"
+        },
+        {
+          "scene": 5,
+          "videoTimestampSeconds": 51.74393424036281,
+          "file": "/workspace/shared/doom404-v13/final/qa/tomo-bull-scene-5.png"
+        },
+        {
+          "scene": 6,
+          "videoTimestampSeconds": 62.25591836734694,
+          "file": "/workspace/shared/doom404-v13/final/qa/tomo-bull-scene-6.png"
+        },
+        {
+          "scene": 7,
+          "videoTimestampSeconds": 73.66791383219956,
+          "file": "/workspace/shared/doom404-v13/final/qa/tomo-bull-scene-7.png"
+        }
+      ],
+      "contactSheet": "/workspace/shared/doom404-v13/final/qa/tomo-bull-contact-sheet.jpg",
+      "limitations": [
+        "Speech intelligibility and spoken factual/numeric accuracy are not assessed by volume or codec checks.",
+        "Caption timeline continuity is checked against the export manifest; visual caption clipping, overlap and actual transition alignment require rendered-frame/playback review.",
+        "Sub-20ms packet/mux timing warnings are retained for explicit review; they are not claimed absent or equivalent to verified audiovisual synchronization.",
+        "Presenter crop differences demonstrate visual motion; they do not establish intended semantic animation or continuous visibility for every frame."
+      ]
+    },
+    {
+      "name": "bonk-bore",
+      "video": "/workspace/shared/doom404-v13/final/bonk-bore.webm",
+      "manifest": "/workspace/shared/doom404-v13/final/bonk-bore-manifest.json",
+      "checks": {
+        "single_portrait_vp8_video": true,
+        "embedded_opus_audio": true,
+        "manifest_presenter_matches": true,
+        "manifest_dimensions_match": true,
+        "manifest_bytes_match": true,
+        "manifest_embedded_audio": true,
+        "duration_matches_narration_under_one_second_excess": true,
+        "seven_caption_scenes": true,
+        "continuous_scene_timeline": true,
+        "final_evidence_disclaimer_in_caption_manifest": true,
+        "version_13_manifest": true,
+        "full_audio_video_elementary_decode_without_errors": true,
+        "input_packet_backward_steps_under_20ms": true,
+        "audio_video_packet_end_drift_under_one_second": true,
+        "audio_non_silent": true,
+        "presenter_crop_motion_detected": true
+      },
+      "status": "PASS_FILE_CHECKS_REQUIRES_VISUAL_AND_SPEECH_REVIEW",
+      "bytes": 17118475,
+      "sha256": "6aaee346e563b94949e7d1d7cf2a2d2a74e927a3fccd12ebc24f7e9c1f5993ad",
+      "width": 540,
+      "height": 960,
+      "videoCodec": "vp8",
+      "audioCodec": "opus",
+      "audioChannels": 2,
+      "durationSeconds": 74.89057,
+      "narrationDurationSeconds": 74.39990929705216,
+      "recordingExcessSeconds": 0.49066070294783515,
+      "meanVolumeDb": -22.8,
+      "maxVolumeDb": -5.8,
+      "elementaryStreamDecodes": {
+        "video": {
+          "returnCode": 0,
+          "stderr": ""
+        },
+        "audio": {
+          "returnCode": 0,
+          "stderr": ""
+        }
+      },
+      "combinedNullMuxerReturnCode": 0,
+      "combinedNullMuxerWarnings": "",
+      "packetTiming": {
+        "video": {
+          "streamIndex": 0,
+          "codecType": "video",
+          "packetCount": 1775,
+          "pts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "dts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "firstPacketPtsSeconds": 0.0,
+          "lastPacketEndSeconds": 74.891,
+          "packetSpanSeconds": 74.891
+        },
+        "audio": {
+          "streamIndex": 1,
+          "codecType": "audio",
+          "packetCount": 1242,
+          "pts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "dts_time": {
+            "backwardCount": 0,
+            "maximumBackwardSeconds": 0,
+            "events": []
+          },
+          "firstPacketPtsSeconds": 0.045,
+          "lastPacketEndSeconds": 74.927,
+          "packetSpanSeconds": 74.882
+        }
+      },
+      "maximumInputBackwardSeconds": 0,
+      "audioVideoPacketEndDeltaSeconds": 0.036000000000001364,
+      "timingClassification": "NO_TIMESTAMP_WARNING_OBSERVED",
+      "presenterCrop": [
+        120,
+        390,
+        420,
+        650
+      ],
+      "animationComparisons": [
+        {
+          "startSeconds": 7.489057,
+          "endSeconds": 8.189057,
+          "meanAbsoluteRgbDifference": 10.302529914529915,
+          "fractionPixelsChangingOver20": 0.18257692307692308,
+          "motionDetected": true
+        },
+        {
+          "startSeconds": 29.956228,
+          "endSeconds": 30.656228,
+          "meanAbsoluteRgbDifference": 17.47868376068376,
+          "fractionPixelsChangingOver20": 0.2823974358974359,
+          "motionDetected": true
+        },
+        {
+          "startSeconds": 52.423398999999996,
+          "endSeconds": 53.123399,
+          "meanAbsoluteRgbDifference": 14.021239316239317,
+          "fractionPixelsChangingOver20": 0.24716666666666667,
+          "motionDetected": true
+        }
+      ],
+      "sceneFrames": [
+        {
+          "scene": 1,
+          "videoTimestampSeconds": 3.3239909297052157,
+          "file": "/workspace/shared/doom404-v13/final/qa/bonk-bore-scene-1.png"
+        },
+        {
+          "scene": 2,
+          "videoTimestampSeconds": 13.60798185941043,
+          "file": "/workspace/shared/doom404-v13/final/qa/bonk-bore-scene-2.png"
+        },
+        {
+          "scene": 3,
+          "videoTimestampSeconds": 25.211972789115645,
+          "file": "/workspace/shared/doom404-v13/final/qa/bonk-bore-scene-3.png"
+        },
+        {
+          "scene": 4,
+          "videoTimestampSeconds": 34.76395691609977,
+          "file": "/workspace/shared/doom404-v13/final/qa/bonk-bore-scene-4.png"
+        },
+        {
+          "scene": 5,
+          "videoTimestampSeconds": 45.671938775510206,
+          "file": "/workspace/shared/doom404-v13/final/qa/bonk-bore-scene-5.png"
+        },
+        {
+          "scene": 6,
+          "videoTimestampSeconds": 56.97591836734694,
+          "file": "/workspace/shared/doom404-v13/final/qa/bonk-bore-scene-6.png"
+        },
+        {
+          "scene": 7,
+          "videoTimestampSeconds": 68.45990929705216,
+          "file": "/workspace/shared/doom404-v13/final/qa/bonk-bore-scene-7.png"
+        }
+      ],
+      "contactSheet": "/workspace/shared/doom404-v13/final/qa/bonk-bore-contact-sheet.jpg",
+      "limitations": [
+        "Speech intelligibility and spoken factual/numeric accuracy are not assessed by volume or codec checks.",
+        "Caption timeline continuity is checked against the export manifest; visual caption clipping, overlap and actual transition alignment require rendered-frame/playback review.",
+        "Sub-20ms packet/mux timing warnings are retained for explicit review; they are not claimed absent or equivalent to verified audiovisual synchronization.",
+        "Presenter crop differences demonstrate visual motion; they do not establish intended semantic animation or continuous visibility for every frame."
+      ]
+    }
+  ]
+}
