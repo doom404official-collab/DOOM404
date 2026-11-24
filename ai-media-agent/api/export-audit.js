@@ -16,7 +16,9 @@ module.exports=async(req,res)=>{
     if(body.length>MAX_BASE64+100)return res.status(413).json({error:"AUDIO_TOO_LARGE"});
     try{body=JSON.parse(body)}catch{return res.status(400).json({error:"INVALID_JSON"})}
   }
-  if(!body||typeof body!=="object"||Array.isArray(body)||Object.keys(body).some(k=>!["audioBase64","mimeType"].includes(k))||body.mimeType!=="audio/mpeg"||typeof body.audioBase64!=="string")return res.status(400).json({error:"MP3_AUDIO_ONLY_NO_SCRIPT"});
+  if(!body||typeof body!=="object"||Array.isArray(body)||Object.keys(body).some(k=>!["audioBase64","mimeType","model"].includes(k))||body.mimeType!=="audio/mpeg"||typeof body.audioBase64!=="string")return res.status(400).json({error:"MP3_AUDIO_ONLY_NO_SCRIPT"});
+  const model=body.model===undefined?"whisper-1":body.model;
+  if(!["whisper-1","gpt-4o-mini-transcribe"].includes(model))return res.status(400).json({error:"TRANSCRIPTION_MODEL_NOT_ALLOWED"});
   const encoded=body.audioBase64;
   if(encoded.length>MAX_BASE64)return res.status(413).json({error:"AUDIO_TOO_LARGE"});
   if(!encoded.length||encoded.length%4!==0||!/^[A-Za-z0-9+/]+={0,2}$/.test(encoded))return res.status(400).json({error:"INVALID_BASE64"});
@@ -31,16 +33,17 @@ module.exports=async(req,res)=>{
   try{
     const form=new FormData();
     form.append("file",new File([audio],"export-sample.mp3",{type:"audio/mpeg"}));
-    form.append("model","whisper-1");
-    form.append("response_format","verbose_json");
+    form.append("model",model);
+    form.append("response_format",model==="whisper-1"?"verbose_json":"json");
     form.append("language","en");
-    form.append("timestamp_granularities[]","segment");
+    if(model==="whisper-1")form.append("timestamp_granularities[]","segment");
     // No prompt, reference script or captions: avoid contaminating the audit.
     const upstream=await fetch("https://api.openai.com/v1/audio/transcriptions",{method:"POST",headers:{Authorization:"Bearer "+process.env.OPENAI_API_KEY},body:form,signal:AbortSignal.timeout(45000)});
     if(!upstream.ok)return res.status(502).json({error:"TRANSCRIPTION_PROVIDER_FAILED",providerStatus:upstream.status});
     const result=await upstream.json();
-    if(typeof result.text!=="string"||!result.text.trim()||result.text.length>20000||!Number.isFinite(result.duration)||result.duration<=0||result.duration>180||!Array.isArray(result.segments))return res.status(502).json({error:"TRANSCRIPTION_RESPONSE_INVALID"});
-    const segments=result.segments.slice(0,1000).filter(s=>Number.isFinite(s.start)&&Number.isFinite(s.end)&&s.start>=0&&s.end>=s.start&&s.end<=result.duration+1&&typeof s.text==="string").map(s=>({start:s.start,end:s.end,text:s.text.slice(0,2000)}));
-    return res.status(200).json({model:"whisper-1",audit:"UNPROMPTED_EXPORTED_AUDIO_TRANSCRIPTION",observedAt:new Date().toISOString(),audioSha256:crypto.createHash("sha256").update(audio).digest("hex"),audioBytes:audio.length,text:result.text,duration:result.duration,segments,limitation:"Machine transcription supports intelligibility and timing review; compare with the actual export and its caption timeline. It does not independently establish factual accuracy or perfect synchronization."});
+    const duration=Number.isFinite(result.duration)&&result.duration>0&&result.duration<=180?result.duration:null;
+    if(typeof result.text!=="string"||!result.text.trim()||result.text.length>20000||(model==="whisper-1"&&(!duration||!Array.isArray(result.segments)))||(result.duration!==undefined&&duration===null))return res.status(502).json({error:"TRANSCRIPTION_RESPONSE_INVALID"});
+    const segments=(Array.isArray(result.segments)?result.segments:[]).slice(0,1000).filter(s=>Number.isFinite(s.start)&&Number.isFinite(s.end)&&s.start>=0&&s.end>=s.start&&s.end<=(duration??180)+1&&typeof s.text==="string").map(s=>({start:s.start,end:s.end,text:s.text.slice(0,2000)}));
+    return res.status(200).json({model,audit:"UNPROMPTED_EXPORTED_AUDIO_TRANSCRIPTION",observedAt:new Date().toISOString(),audioSha256:crypto.createHash("sha256").update(audio).digest("hex"),audioBytes:audio.length,text:result.text,duration,segments,timingAvailability:segments.length?"PROVIDER_SEGMENTS_RETURNED":"NO_SEGMENT_TIMESTAMPS_RETURNED",limitation:"Machine transcription supports intelligibility and timing review; compare with the actual export and its caption timeline. It does not independently establish factual accuracy or perfect synchronization."});
   }catch(e){return res.status(503).json({error:e.name==="TimeoutError"?"TRANSCRIPTION_TIMEOUT":"TRANSCRIPTION_UNAVAILABLE"})}
 };
