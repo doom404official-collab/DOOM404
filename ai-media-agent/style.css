@@ -6,3 +6,7 @@
 
 .hi-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.hi-metric:last-child{grid-column:span 2}.hi-wallet:has(.hi-wallet-body .hi-link) .hi-wallet-summary{min-width:0}@media(min-width:650px){.hi-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.hi-metric:last-child{grid-column:auto}}
 #unified-results{margin:14px 0;overflow-wrap:anywhere}#unified-results h3{margin:16px 0}#unified-results h4{margin:0;font-size:1rem}.unified-section{border:1px solid #43313a;border-radius:12px;padding:14px;margin:10px 0;background:#17141a}.unified-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #302931;font-size:.83rem}.unified-row strong{color:#ff7781;text-align:right;white-space:nowrap}.unified-section .hi-link{overflow-wrap:anywhere}
+/* V13: long on-chain references must wrap inside mobile research panels. */
+#universal-results,#universal-results p,#universal-results a,#broadcast-studio{overflow-wrap:anywhere;min-width:0}
+#broadcast-studio canvas,#broadcast-studio video{max-width:100%;height:auto}
+.controls button{max-width:100%;white-space:normal}
