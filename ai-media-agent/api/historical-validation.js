@@ -1,6 +1,7 @@
 const PUMP_SWAP="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";const PUMP_DISCS={"102,6,61,18,1,218,235,234":"buy","198,46,21,82,180,217,232,112":"buy_exact_quote_in","194,171,28,70,104,77,91,47":"buy_exact_quote_in_v2","184,23,238,97,103,197,211,61":"buy_v2","51,230,133,164,1,127,131,173":"sell","93,246,130,60,231,233,64,178":"sell_v2"};
 const crypto=require("crypto");
 const protocols={
+"6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P":["Pump.fun bonding curve",["buy","buy_exact_quote_in_v2","buy_exact_quote_in_v3","buy_exact_sol_in","buy_v2","buy_v3","sell","sell_v2","sell_v3"],[]],
 "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4":["Jupiter",["route","shared_accounts_route","exact_out_route","shared_accounts_exact_out_route","route_with_token_ledger","shared_accounts_route_with_token_ledger"],[]],
 "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C":["Raydium CPMM",["swap_base_input","swap_base_output"],["withdraw"]],
 "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK":["Raydium CLMM",["swap","swap_v2"],["decrease_liquidity","decrease_liquidity_v2"]],
