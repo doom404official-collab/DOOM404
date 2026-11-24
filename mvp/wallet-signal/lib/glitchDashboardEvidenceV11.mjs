@@ -1,3 +1,4 @@
+import {withConcentrationContext,hasAlignedConcentrationContext} from "./concentrationContext.mjs";
 import {observationTime} from './liquidityWorkerEvidenceGuards.mjs';
 import {mintAuthorityEvidence} from './mintAuthorityEvidence.mjs';
 import {scoreTokenSecurity,scoreHolderIntelligence,scoreCreatorIntelligence,scoreLiquidityQuality} from './glitchAttributeEnginesV11.mjs';
@@ -14,6 +15,7 @@ export function evidenceFresh(updatedAt,now=Date.now()){
 // Account checks age from collection, not from a later persistence update.
 export const liquidityAccountObservationAt = evidence => Number.isFinite(observationTime(evidence?.observedAt)) ? evidence.observedAt : null;
 export function adaptDashboardEvidence({liquidity:reportedLiquidity,result,extensions,concentration,creatorEvidence,historicalHolders,verifiedHolderEnvelope,workerEvidence,now=Date.now()}={}){
+ concentration=withConcentrationContext(concentration);
  const mint=result?.mint;
  const same=x=>Boolean(mint&&x?.mint===mint);
  const authorities=mintAuthorityEvidence(result,{parsed:!!mint&&result.authorityDetailsStatus!=='not_parsed'});
@@ -28,7 +30,7 @@ export function adaptDashboardEvidence({liquidity:reportedLiquidity,result,exten
   feeConfigAuthorityReported:ext?.verified===true&&fee?.configAuthorityReported===true,feeConfigAuthority:fee?.configAuthority});
  const top20=same(concentration)&&finite(concentration.top20TokenAccountSharePct)?concentration.top20TokenAccountSharePct:undefined;
  let holder=scoreHolderIntelligence({top20SharePct:top20});
- const matchedHolder=same(concentration)&&same(historicalHolders)&&same(verifiedHolderEnvelope)&&
+ const matchedHolder=hasAlignedConcentrationContext(concentration)&&same(concentration)&&same(historicalHolders)&&same(verifiedHolderEnvelope)&&
   !!historicalHolders.jobId&&historicalHolders.jobId===verifiedHolderEnvelope.jobId&&
   historicalHolders.updatedAt===verifiedHolderEnvelope.updatedAt&&
   evidenceFresh(verifiedHolderEnvelope.updatedAt,now)&&

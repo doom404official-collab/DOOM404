@@ -1,8 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-const source = readFileSync(new URL("../lib/decisionSummary.js", import.meta.url), "utf8");
-const { buildDecisionSummary } = await import("data:text/javascript," + encodeURIComponent(source));
+import { buildDecisionSummary } from "../lib/decisionSummary.js";
 
 test("issuer controls are described as centralization rather than elevated concern", () => {
  const a = buildDecisionSummary({result:{mintAuthority:"issuer",freezeAuthority:"issuer",tokenProgram:"spl-token",authorityDetailsStatus:"parsed"}});
@@ -16,7 +14,7 @@ test("missing authority fields are not counted as checked", () => {
  assert.ok(!a.findings.some(x=>x.title==="Mint and freeze controls"));
 });
 test("large token accounts trigger investigation without assuming ownership", () => {
- const a = buildDecisionSummary({result:{mintAuthority:null,freezeAuthority:null,tokenProgram:"spl-token"},concentration:{largestAccountSharePct:35}});
+ const a = buildDecisionSummary({result:{mintAuthority:null,freezeAuthority:null,tokenProgram:"spl-token"},concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},largestAccountSharePct:35}});
  assert.equal(a.status,"CONCENTRATION_REVIEW");
  assert.match(a.explanation,/beneficial owner and role are not established/);
 });

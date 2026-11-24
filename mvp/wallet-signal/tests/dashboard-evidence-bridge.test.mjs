@@ -36,25 +36,25 @@ test('stage1 liquidity only projects observation counts',()=>{
 test('holder assessment needs mint job time and snapshot identity match',()=>{
  const holders=Array.from({length:20},(_,i)=>({tokenAccount:'account'+i,ownerWallet:'owner'+i,sharePct:1}));
  const assessment=scoreHolderIntelligence({top20SharePct:20});assessment.components[1].reason='HISTORICAL_COVERAGE_UNVERIFIED';
- const args={...base,concentration:{mint,accounts:holders,top20TokenAccountSharePct:20},historicalHolders:{mint,jobId:'job',updatedAt,holders},verifiedHolderEnvelope:{mint,jobId:'job',updatedAt,assessment}};
+ const args={...base,concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},mint,accounts:holders,top20TokenAccountSharePct:20},historicalHolders:{mint,jobId:'job',updatedAt,holders},verifiedHolderEnvelope:{mint,jobId:'job',updatedAt,assessment}};
  assert.equal(adaptDashboardEvidence(args).matchedHolder,true);assert.equal(adaptDashboardEvidence(args).scores.holder_intelligence.components[1].reason,'HISTORICAL_COVERAGE_UNVERIFIED');
  for(const mismatch of [{jobId:'other'},{mint:'other'},{updatedAt:'2026-10-19T00:00:00Z'}])assert.equal(adaptDashboardEvidence({...args,verifiedHolderEnvelope:{...args.verifiedHolderEnvelope,...mismatch}}).matchedHolder,false);
- assert.equal(adaptDashboardEvidence({...args,concentration:{...args.concentration,accounts:[]}}).matchedHolder,false);
- assert.equal(adaptDashboardEvidence({...args,concentration:{...args.concentration,accounts:holders.map((h,i)=>i? h:{...h,sharePct:2})}}).matchedHolder,false);
- assert.equal(adaptDashboardEvidence({...args,concentration:{mint:'other',top20TokenAccountSharePct:20}}).scores.holder_intelligence.coveragePct,0);
- const numeric={...args,verifiedHolderEnvelope:{...args.verifiedHolderEnvelope,assessment:scoreHolderIntelligence({top20SharePct:20,networkScore:30,creatorTeamExposurePct:2,independencePoints:8,historyComplete:true,classificationComplete:true,creatorAttributionComplete:true})},concentration:{...args.concentration,accounts:holders.map((h,i)=>i?h:{...h,sharePct:2})}};
+ assert.equal(adaptDashboardEvidence({...args,concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},...args.concentration,accounts:[]}}).matchedHolder,false);
+ assert.equal(adaptDashboardEvidence({...args,concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},...args.concentration,accounts:holders.map((h,i)=>i? h:{...h,sharePct:2})}}).matchedHolder,false);
+ assert.equal(adaptDashboardEvidence({...args,concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},mint:'other',top20TokenAccountSharePct:20}}).scores.holder_intelligence.coveragePct,0);
+ const numeric={...args,verifiedHolderEnvelope:{...args.verifiedHolderEnvelope,assessment:scoreHolderIntelligence({top20SharePct:20,networkScore:30,creatorTeamExposurePct:2,independencePoints:8,historyComplete:true,classificationComplete:true,creatorAttributionComplete:true})},concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},...args.concentration,accounts:holders.map((h,i)=>i?h:{...h,sharePct:2})}};
  assert.equal(adaptDashboardEvidence(numeric).scores.holder_intelligence.components[1].points,null);
  assert.equal(adaptDashboardEvidence(numeric).scores.holder_intelligence.components[2].points,null);
 });
 test('foreign or missing concentration mint cannot admit matching holder account values',()=>{
  const holders=Array.from({length:20},(_,i)=>({tokenAccount:'account'+i,ownerWallet:'owner'+i,sharePct:1}));
  const assessment=scoreHolderIntelligence({top20SharePct:20,networkScore:30,creatorTeamExposurePct:2,independencePoints:8,historyComplete:true,classificationComplete:true,creatorAttributionComplete:true});
- const args={...base,concentration:{mint,accounts:holders,top20TokenAccountSharePct:20},historicalHolders:{mint,jobId:'job',updatedAt,holders},verifiedHolderEnvelope:{mint,jobId:'job',updatedAt,assessment}};
+ const args={...base,concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},mint,accounts:holders,top20TokenAccountSharePct:20},historicalHolders:{mint,jobId:'job',updatedAt,holders},verifiedHolderEnvelope:{mint,jobId:'job',updatedAt,assessment}};
  const valid=adaptDashboardEvidence(args);
  assert.equal(valid.matchedHolder,true);
  assert.equal(valid.scores.holder_intelligence.components[1].points,30);
  for(const foreignMint of ['other',undefined,null]){
-  const out=adaptDashboardEvidence({...args,concentration:{...args.concentration,mint:foreignMint}});
+  const out=adaptDashboardEvidence({...args,concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},...args.concentration,mint:foreignMint}});
   assert.equal(out.matchedHolder,false);
   assert.ok(out.scores.holder_intelligence.components.every(c=>c.points===null));
   assert.equal(consolidate(out.scores).score,null);

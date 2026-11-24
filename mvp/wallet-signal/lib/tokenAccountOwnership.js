@@ -15,7 +15,7 @@ export function summarizeResolvedTokenAccounts(accounts, parsedAccounts){
   if(!row.ownerWallet)continue;
   const g=groups.get(row.ownerWallet)||{ownerWallet:row.ownerWallet,tokenAccountCount:0,sharePct:0};
   g.tokenAccountCount++;
-  g.sharePct+=Number(row.sharePct||0);
+  g.sharePct=g.sharePct!==null&&typeof row.sharePct==="number"&&Number.isFinite(row.sharePct)&&row.sharePct>=0&&row.sharePct<=100?g.sharePct+row.sharePct:null;
   groups.set(row.ownerWallet,g);
  }
  return {accounts:rows,observedOwnerGroups:[...groups.values()].sort((a,b)=>b.sharePct-a.sharePct),

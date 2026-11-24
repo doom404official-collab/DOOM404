@@ -1,7 +1,9 @@
+import {withConcentrationContext} from "./concentrationContext.mjs";
 import {scoreCreatorIntelligence,scoreLiquidityQuality} from "./glitchAttributeEnginesV11.mjs";
 import {consolidate} from "./glitchScoringV11.mjs";
 /** GLITCH v1.1 evidence summary. Never emits legacy provisional permission scores. */
 export function assessTokenEvidence({result,extensions,concentration,liquidity,creatorEvidence}={}){
+ concentration=withConcentrationContext(concentration);
  const creatorVerified=creatorEvidence?.status==="VERIFIED"&&!!creatorEvidence?.creator;
  const creator=scoreCreatorIntelligence({creatorVerified});
  const liquidityScore=scoreLiquidityQuality({});

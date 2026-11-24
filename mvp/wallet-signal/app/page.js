@@ -1,4 +1,5 @@
 "use client";
+import {withConcentrationContext,hasAlignedConcentrationContext} from "../lib/concentrationContext.mjs";
 
 import { useEffect, useRef, useState } from "react";
 import {readDashboardEvidenceResponse} from '../lib/dashboardEvidenceRead.mjs';
@@ -358,7 +359,7 @@ function CreatorLookup() {
   const [verifiedHolderAssessment,setVerifiedHolderAssessment] = useState(null);
   const [frozenHolderObservation,setFrozenHolderObservation]=useState(null);
   const [holderEvidenceState,setHolderEvidenceState] = useState("unknown");
-  const holderReconciliation=concentration&&holderConnections
+  const holderReconciliation=hasAlignedConcentrationContext(concentration)&&holderConnections
     ?reconcileHolderSnapshot(concentration.accounts||[],holderConnections.holders||[])
     :null;
   const currentHolderConnections=holderReconciliation?.compatible
@@ -546,7 +547,7 @@ function CreatorLookup() {
         try {
           const accountData=await read('/api/token-concentration?mint='+encodeURIComponent(address));
           if(!current())return;
-          setConcentration(accountData);
+          setConcentration(withConcentrationContext(accountData));
         } catch (failure) { if(!current()||controller.signal.aborted)throw failure;setConcentrationError('Token-account balances unavailable'); }
       }
       if (!historyOnly && data.tokenProgram === "spl-token-2022") {

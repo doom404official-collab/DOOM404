@@ -1,14 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-const source = readFileSync(new URL("../lib/tokenInsights.js", import.meta.url), "utf8");
-const { selectTokenInsights } = await import("data:text/javascript," + encodeURIComponent(source));
+import { selectTokenInsights } from "../lib/tokenInsights.js";
 
 test("higher priority permanent delegate displaces routine liquidity observation", () => {
  const rows = selectTokenInsights({
   result: {},
   extensions: { verified: true, extensions: [{type:"permanentDelegate"}], transferFee:{status:"observed",configAuthorityReported:true,configAuthority:"abc",olderFee:{percentage:1},newerFee:{percentage:1}}},
-  concentration: {largestAccountSharePct:4},
+  concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},largestAccountSharePct:4},
   liquidity: {reportedLiquidityUsd:100000,poolCountReturned:2,observedAt:"2026-10-12T07:00:00Z"},
   now:Date.parse("2026-10-12T07:01:00Z")
  });
@@ -28,7 +26,7 @@ test("old market-data retrieval is marked stale", () => {
 
 test("evidence classes distinguish direct observations from market estimates", () => {
  const rows = selectTokenInsights({
-  result:{}, concentration:{largestAccountSharePct:4},
+  result:{}, concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},largestAccountSharePct:4},
   liquidity:{reportedLiquidityUsd:1000,poolCountReturned:1,observedAt:"2026-10-12T07:00:00Z"},
   now:Date.parse("2026-10-12T07:01:00Z")
  });
@@ -41,7 +39,7 @@ test("standard SPL token does not invent Token-2022 fees", () => {
  const rows=selectTokenInsights({
   result:{tokenProgram:"spl-token"},
   extensions:null,
-  concentration:{largestAccountSharePct:5.75},
+  concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},largestAccountSharePct:5.75},
   liquidity:{reportedLiquidityUsd:793000,poolCountReturned:30,observedAt:"2026-10-12T08:00:00Z"},
   now:Date.parse("2026-10-12T08:01:00Z")
  });
@@ -52,7 +50,7 @@ test("standard SPL token does not invent Token-2022 fees", () => {
 test("transfer hook outranks routine concentration and liquidity", () => {
  const rows=selectTokenInsights({
   result:{},extensions:{verified:true,extensions:[{type:"transferHook"}]},
-  concentration:{largestAccountSharePct:4},
+  concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},largestAccountSharePct:4},
   liquidity:{reportedLiquidityUsd:200000,poolCountReturned:3,observedAt:"2026-10-12T08:00:00Z"},
   now:Date.parse("2026-10-12T08:01:00Z")
  });
@@ -61,7 +59,7 @@ test("transfer hook outranks routine concentration and liquidity", () => {
 });
 test("concentrated token account is prioritized without assigning ownership", () => {
  const rows=selectTokenInsights({
-  result:{},concentration:{largestAccountSharePct:31},
+  result:{},concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},largestAccountSharePct:31},
   liquidity:{reportedLiquidityUsd:1000,poolCountReturned:1,observedAt:"2026-10-12T08:00:00Z"},
   now:Date.parse("2026-10-12T08:01:00Z")
  });
@@ -79,7 +77,7 @@ test("numeric insight count never exceeds three", () => {
  const rows=selectTokenInsights({
   result:{mintAuthority:"mint-admin",freezeAuthority:"freeze-admin"},
   extensions:{verified:true,extensions:[{type:"permanentDelegate"},{type:"transferHook"}],transferFee:{status:"observed",configAuthorityReported:true,configAuthority:"admin",olderFee:{percentage:1},newerFee:{percentage:1}}},
-  concentration:{largestAccountSharePct:25},
+  concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},largestAccountSharePct:25},
   liquidity:{reportedLiquidityUsd:100,poolCountReturned:1,observedAt:"2026-10-12T08:00:00Z"}
  });
  assert.equal(rows.length,3);

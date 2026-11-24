@@ -15,8 +15,8 @@ export function reconcileHolderSnapshot(liveAccounts=[],cachedHolders=[]){
   const tokenAccount=account?.tokenAccount,ownerWallet=account?.ownerWallet;
   if(!tokenAccount||!ownerWallet||cached.get(tokenAccount)!==ownerWallet)
    return {compatible:false,reason:"HOLDER_SET_CHANGED",holders:[]};
-  const sharePct=Number(account.sharePct);
-  if(!Number.isFinite(sharePct)||sharePct<0||sharePct>100)
+  const sharePct=account.sharePct;
+  if(typeof sharePct!=="number"||!Number.isFinite(sharePct)||sharePct<0||sharePct>100)
    return {compatible:false,reason:"INVALID_LIVE_BALANCE",holders:[]};
   holders.push({tokenAccount,ownerWallet,sharePct});
  }

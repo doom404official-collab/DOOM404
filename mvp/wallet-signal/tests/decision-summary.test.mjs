@@ -9,7 +9,7 @@ test("no evidence yields insufficient evidence, not false low risk",()=>{
 test("cached creator plus controls produces useful caution",()=>{
  const x=buildDecisionSummary({
   result:{tokenProgram:"spl-token",mintAuthority:null,freezeAuthority:null},
-  concentration:{largestAccountSharePct:10.97},
+  concentration:{ratioContext:{commitment:"confirmed",largestAccountsSlot:100,supplySlot:100},largestAccountSharePct:10.97},
   liquidity:{reportedLiquidityUsd:31250},
   creatorEvidence:{status:"ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW",creator:"EQFgSvmavjfcvovYvgfETTcYvYzpHntqxkvDUViBTtZr",evidence:[{signature:"x"}]}
  });

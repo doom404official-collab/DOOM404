@@ -1,6 +1,8 @@
+import {withConcentrationContext} from "./concentrationContext.mjs";
 // Evidence ranking, not a token safety or investment score.
 // Every candidate states its coverage and interpretation limitations.
 export function selectTokenInsights({ result, extensions, concentration, liquidity, now = Date.now() }) {
+ concentration=withConcentrationContext(concentration);
   const candidates = [];
   const push = (priority, title, detail, confidence, source, category) =>
     candidates.push({ priority, title, detail, confidence, source, category, evidenceClass: category === "liquidity" ? "provider_reported" : category === "coverage" ? "unverified" : "onchain_observed" });

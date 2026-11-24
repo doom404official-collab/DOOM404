@@ -3,6 +3,8 @@ import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
 import { summarizeResolvedTokenAccounts } from "../../../lib/tokenAccountOwnership.js";
 
+import { hasAlignedConcentrationContext } from "../../../lib/concentrationContext.mjs";
+
 export const dynamic = "force-dynamic";
 
 // RPC returns token ACCOUNTS, not unique beneficial owners. This is not holder concentration.
@@ -17,19 +19,21 @@ export async function GET(request) {
       connection.getTokenLargestAccounts(mint, "confirmed"),
       connection.getTokenSupply(mint, "confirmed")
     ]);
+    const ratioContext={commitment:"confirmed",largestAccountsSlot:largest.context?.slot??null,supplySlot:supply.context?.slot??null};
+    const aligned=hasAlignedConcentrationContext({ratioContext});
     const total = BigInt(supply.value.amount);
     const accounts = largest.value.slice(0, 20).map((row, index) => ({
       rank: index + 1, tokenAccount: row.address.toBase58(),
       amount: row.amount, uiAmount: row.uiAmountString,
-      sharePct: total > 0n ? Number(BigInt(row.amount) * 1000000n / total) / 10000 : null
+      sharePct: aligned && total > 0n ? Number(BigInt(row.amount) * 1000000n / total) / 10000 : null
     }));
     const parsedResults = await Promise.allSettled(accounts.map(row =>
       connection.getParsedAccountInfo(new PublicKey(row.tokenAccount), "confirmed")));
     const ownership = summarizeResolvedTokenAccounts(accounts,parsedResults.map(r=>r.status==="fulfilled"?r.value:null));
     const sum = (n) => accounts.slice(0, n).reduce((a, x) => a + BigInt(x.amount), 0n);
-    const percent = n => total > 0n ? Number(sum(n) * 1000000n / total) / 10000 : null;
+    const percent = n => aligned && total > 0n ? Number(sum(n) * 1000000n / total) / 10000 : null;
     return NextResponse.json({
-      status: "observed_token_accounts", mint: mint.toBase58(), decimals: supply.value.decimals,
+      status: "observed_token_accounts", ratioContext, mint: mint.toBase58(), decimals: supply.value.decimals,
       totalRawSupply: supply.value.amount, returnedAccounts: accounts.length,
       largestAccountSharePct: percent(1), top5TokenAccountSharePct: percent(5),
       top10TokenAccountSharePct: percent(10), top20TokenAccountSharePct: percent(20), accounts: ownership.accounts,

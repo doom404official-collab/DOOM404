@@ -1,7 +1,9 @@
+import {withConcentrationContext} from "./concentrationContext.mjs";
 /** Decision-support summary, not a buy/sell recommendation or scam probability.
  * Coverage and observed concern are separate dimensions.
  */
 export function buildDecisionSummary({result,extensions,concentration,liquidity,creatorEvidence}={}){
+ concentration=withConcentrationContext(concentration);
  const findings=[];
  const add=(priority,title,detail,source)=>findings.push({priority,title,detail,source});
  const onchain=["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(creatorEvidence?.status)&&Boolean(creatorEvidence?.creator)&&Boolean(creatorEvidence?.evidence?.length);
