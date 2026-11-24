@@ -2,8 +2,8 @@
 // Holds the previous decoded frame until the next prerecorded clip is ready.
 (()=>{"use strict";
 const names={opening:"Doom-Opening.mp4",explaining:"doom-explaining.mp4",evidence:"doom-evidence.mp4",closing:"doom-closing.mp4"};
-const clips={},base="./presenter-assets/doom/",X=30,Y=145,W=480,H=271;
-let active=null,failed=false,changedAt=0,hold=null,started=false;
+const clips={},base="./presenter-assets/doom/",X=16,Y=145,W=508,H=340;
+let active=null,failed=false,changedAt=0,hold=null,started=false; const composed=document.createElement("canvas");composed.width=W;composed.height=H;let hasFrame=false;
 const frame=document.createElement("canvas");frame.width=W;frame.height=H;
 function roleForScene(i){return i===0?"opening":i===6?"closing":i===2||i===4?"evidence":"explaining"}
 function drawSource(ctx,v){const sw=v.videoWidth||540,sh=v.videoHeight||960;
@@ -19,16 +19,16 @@ async function prepare(){
  }
  return true
 }
-async function begin(){await prepare();active=null;failed=false;started=true;hold=null;return true}
+async function begin(){await prepare();active=null;failed=false;started=true;hold=null;hasFrame=false;return true}
 function evidenceScreen(ctx,i,episode){
  if(i!==2&&i!==4)return;
  const share=episode?.top20Share;
  if(i===2&&(!Number.isFinite(share)||share<0||share>100))return;
  if(i===4&&!episode?.candidateVerified)return;
  // Calibrated against V7.1 exported monitor: x 310–478, y 194–319.
- const x=310,y=194,w=168,h=125;
+ const x=306,y=181,w=185,h=183;
  const a=Math.min(1,Math.max(0,(performance.now()-changedAt)/650));
- ctx.save();ctx.fillStyle="#14141c";ctx.fillRect(x,y,w,h);
+ ctx.save();ctx.fillStyle="#14141c";ctx.beginPath();ctx.moveTo(x,y+17);ctx.lineTo(x+w,y);ctx.lineTo(x+w,y+h);ctx.lineTo(x,y+h-5);ctx.closePath();ctx.fill();
  ctx.textAlign="center";ctx.fillStyle="#e9dce0";ctx.font="bold 12px sans-serif";
  ctx.fillText(i===2?"TOP-20 ACCOUNTS":"VERIFIED TRANSFER",x+w/2,y+22);
  ctx.fillStyle="#ff5268";ctx.font="bold 28px sans-serif";
@@ -41,26 +41,20 @@ function draw(ctx,i,episode){
  if(!started)return false;
  const role=roleForScene(i),v=clips[role];if(!v)return false;
  if(active!==role){
-  if(active&&clips[active]?.readyState>=2){
-   const h=frame.getContext("2d");h.clearRect(0,0,W,H);h.save();h.translate(-X,-Y);drawSource(h,clips[active]);h.restore();hold=frame;
-   clips[active].pause()
-  }
-  active=role;changedAt=performance.now();
-  try{v.currentTime=0}catch{}
-  v.play().catch(()=>{failed=true})
+  if(hasFrame){const h=frame.getContext("2d");h.clearRect(0,0,W,H);h.drawImage(composed,0,0);hold=frame}
+  if(active)clips[active].pause();
+  active=role;changedAt=0;v.play().catch(()=>{failed=true});
  }
- ctx.save();ctx.beginPath();ctx.rect(X,Y,W,H);ctx.clip();
- if(v.readyState>=2){
-  drawSource(ctx,v);
-  if(hold){const opacity=Math.max(0,1-(performance.now()-changedAt)/240);if(opacity>0){ctx.globalAlpha=opacity;ctx.drawImage(hold,X,Y)}else hold=null}
- }else if(hold){ctx.drawImage(hold,X,Y)}
+ if(v.readyState>=2&&!v.seeking){
+  if(!changedAt)changedAt=performance.now();
+  const q=composed.getContext("2d");q.save();q.translate(-X,-Y);drawSource(q,v);evidenceScreen(q,i,episode);q.restore();hasFrame=true;
+  ctx.drawImage(composed,X,Y);
+  if(hold){const t=Math.min(1,(performance.now()-changedAt)/850);ctx.save();ctx.globalAlpha=1-t*t*(3-2*t);ctx.drawImage(hold,X,Y);ctx.restore();if(t>=1)hold=null}
+ }else if(hold)ctx.drawImage(hold,X,Y);
+ else if(hasFrame)ctx.drawImage(composed,X,Y);
  else {ctx.fillStyle="#120e16";ctx.fillRect(X,Y,W,H)}
- ctx.restore();
- // Explicitly clear the former blurred filler band in the recorded canvas.
- ctx.fillStyle="#131018";ctx.fillRect(28,Y+H+3,484,6);
- if(v.readyState>=2)evidenceScreen(ctx,i,episode);
  return true
 }
 function stop(){Object.values(clips).forEach(v=>v.pause());active=null;hold=null;started=false}
-window.doom404Prerecorded={version:"v7.2",prepare,begin,draw,stop,get failed(){return failed}};
+window.doom404Prerecorded={version:"v7.3",prepare,begin,draw,stop,get failed(){return failed}};
 })();
