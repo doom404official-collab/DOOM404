@@ -1,6 +1,6 @@
 (()=>{"use strict";
-let last=-1,changed=0,cat=null,catMode=false;
-async function begin(mode){catMode=mode==="hud-cat"||mode==="hud-bore"||mode==="hud-bull";if(!catMode)return window.doom404Prerecorded.begin();cat=document.createElement("video");cat.muted=true;cat.defaultMuted=true;cat.playsInline=true;cat.loop=true;cat.preload="auto";cat.src=mode==="hud-bull"?"./presenter-assets/bull/doom-bull-presenter.mp4":mode==="hud-bore"?"./presenter-assets/bore/doom-bore-presenter.mp4":"./presenter-assets/cat/doom-cat-presenter.mp4";await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error("Selected presenter load timeout")),15000);cat.onloadeddata=()=>{clearTimeout(timer);resolve()};cat.onerror=()=>{clearTimeout(timer);reject(Error("Selected presenter video unavailable"))};cat.load()});await cat.play()}
+let last=-1,changed=0,cat=null,catMode=false,selectedMode="hud";
+async function begin(mode){stop();selectedMode=mode;catMode=mode==="hud-cat"||mode==="hud-bore"||mode==="hud-bull";if(!catMode)return window.doom404Prerecorded.begin();cat=document.createElement("video");cat.muted=true;cat.defaultMuted=true;cat.playsInline=true;cat.loop=true;cat.preload="auto";cat.src=mode==="hud-bull"?"./presenter-assets/bull/doom-bull-presenter.mp4":mode==="hud-bore"?"./presenter-assets/bore/doom-bore-presenter.mp4":"./presenter-assets/cat/doom-cat-presenter.mp4";await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error("Selected presenter load timeout")),15000);cat.onloadeddata=()=>{clearTimeout(timer);resolve()};cat.onerror=()=>{clearTimeout(timer);reject(Error("Selected presenter video unavailable"))};cat.load()});await cat.play()}
 function stop(){if(cat){cat.pause();cat.removeAttribute("src");cat.load();cat=null}catMode=false}
 const labels=["REPORT OVERVIEW","VERIFIED INFRASTRUCTURE","ACCOUNT CONCENTRATION","UNRESOLVED CLASSIFICATION","VERIFIED TRANSFER","FUNDING SIGNIFICANCE","LIMITATIONS"];
 function reset(){last=-1;changed=0}
@@ -9,7 +9,7 @@ function paint(c,i,p,episode,scenes){
  const t=Math.min(1,(now-changed)/300);
  c.fillStyle="#090a0e";c.fillRect(0,0,540,960);
  c.strokeStyle="#383943";c.lineWidth=1;c.strokeRect(10,10,520,940);
- c.fillStyle="#ff5268";c.font="bold 24px sans-serif";c.fillText("DOOM404 AI MEDIA",24,43);
+ c.fillStyle="#ff5268";c.font="bold 24px sans-serif";c.fillText("DOOM404 AI MEDIA",24,43);c.font="bold 12px sans-serif";c.textAlign="right";c.fillText(selectedMode==="hud"?"DOOM":selectedMode.replace("hud-","DOOM ").toUpperCase(),516,43);c.textAlign="left";
  c.fillStyle="#a9aab3";c.font="13px sans-serif";c.fillText(episode?.universal?((episode.identity?.symbol?episode.identity.symbol+" · ":"")+"SOLANA · "+episode.mint.slice(0,6)+"…"+episode.mint.slice(-4)):"ON-CHAIN EVIDENCE · EDUCATION",24,65,490);
  // Upper studio composition: independent evidence monitor above continuous presenter.
  c.fillStyle="#14161e";c.fillRect(16,82,508,624);
