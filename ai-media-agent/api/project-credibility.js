@@ -1,7 +1,7 @@
 // Bounded public evidence discovery. Never fetch arbitrary project URLs.
 const MINT=/^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const check=(status,detail,source=null)=>({status,detail,source});
-async function json(url,options={}){const r=await fetch(url,{...options,signal:AbortSignal.timeout(5000)});if(!r.ok)throw Error("HTTP "+r.status);return r.json()}
+async function json(url,options={}){const r=await fetch(url,{...options,redirect:"error",signal:AbortSignal.timeout(5000)});if(!r.ok)throw Error("HTTP "+r.status);return r.json()}
 module.exports=async(req,res)=>{res.setHeader("Cache-Control","no-store");if(req.method!=="GET")return res.status(405).json({error:"GET only"});const mint=req.query.mint;if(typeof mint!=="string"||!MINT.test(mint))return res.status(400).json({error:"Invalid mint"});
 const result={mint,observedAt:new Date().toISOString(),product:check("UNRESOLVED","No functional product test performed"),development:check("UNRESOLVED","No linked public repository inspected"),integrations:check("UNRESOLVED","No independent partner confirmation retrieved"),usage:check("UNRESOLVED","No utility-specific program attribution established"),repositories:[]};
 let links=[];try{const data=await json("https://api.dexscreener.com/token-pairs/v1/solana/"+mint);const pairs=Array.isArray(data)?data.filter(p=>p.chainId==="solana"&&p.baseToken?.address===mint):[];for(const p of pairs.slice(0,10)){for(const x of [...(p.info?.websites||[]),...(p.info?.socials||[])])if(typeof x.url==="string")links.push(x.url)}result.reportedLinks=[...new Set(links)].slice(0,12);if(links.length)result.product=check("REPORTED_LINKS_ONLY","Project links discovered; accessibility and functionality not tested","DexScreener");}catch{}
@@ -19,11 +19,15 @@ result.utilityAttribution={status:"UNRESOLVED",detail:"No claim-specific applica
 if(transfers.length){result.product=check("TOKEN_TRANSFER_FUNCTION_OBSERVED","Successful positive-amount token transfer instructions observed; application functionality not established","Solana RPC");result.utilityAttribution={status:"TOKEN_TRANSFER_CAPABILITY_OBSERVED",detail:"Transfer capability observed for this mint; payment purpose, application use and project-specific utility remain unresolved",operations};}
 result.integrations={...result.integrations,requiredEvidence:"Independent partner documentation identifying the exact mint or program and specific integration; no partner confirmation inferred from project links"};
 
-// Fixed-source corroboration pilot. Never follow arbitrary metadata URLs.
-if(mint==="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"){
-const url="https://tokens.jup.ag/token/"+mint;
-try{const record=await json(url,{redirect:"error"});if(record.address===mint){result.integrations=check("INDEPENDENT_LISTING_OBSERVED","Jupiter token registry returned the exact mint. Listing does not establish a commercial partnership or successful swap.",url);result.integrations.observedAt=new Date().toISOString();}}catch{}
-}
-result.application={status:"UNRESOLVED",detail:"No application-level feature test completed; token transfer evidence is not application evidence"};
+// Fixed hosts, no arbitrary URL fetches, no redirects or transaction submission.
+const native="So11111111111111111111111111111111111111112",usdc="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+const peer=mint===native?usdc:native;
+result.application=check("UNRESOLVED","No validated public quote response");
+await Promise.allSettled([
+(async()=>{const url="https://lite-api.jup.ag/tokens/v2/search?query="+mint;const rows=await json(url,{redirect:"error"});if(Array.isArray(rows)&&rows.some(x=>x.id===mint))result.integrations=check("INDEPENDENT_LISTING_OBSERVED","Exact mint returned by Jupiter registry; not a partnership confirmation",url)})(),
+(async()=>{const url="https://lite-api.jup.ag/swap/v1/quote?inputMint="+peer+"&outputMint="+mint+"&amount=1000000&slippageBps=50";const q=await json(url,{redirect:"error"});if(q.inputMint===peer&&q.outputMint===mint&&q.inAmount==="1000000"&&/^\\d+$/.test(q.outAmount)&&BigInt(q.outAmount)>0n&&Array.isArray(q.routePlan)&&q.routePlan.length)result.application=check("EXTERNAL_QUOTE_FUNCTION_OBSERVED","Jupiter returned a positive read-only swap quote for the exact mint; no swap executed and project-owned application not verified",url)})()
+]);
+result.utilityAttribution.documentation="https://solana.com/docs/tokens/basics/transfer-tokens";
+result.utilityAttribution.mapping="Parsed SPL Token or Token-2022 transfer instructions with exact mint association and positive raw amount; no application-specific attribution inferred";
 result.verificationPolicy={product:"Requires feature-specific read-only test",integration:"Requires independent exact-mint or program evidence",utility:"Requires documented instruction mapping and successful execution"};
 return res.status(200).json(result)};
