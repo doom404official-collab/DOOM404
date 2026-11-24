@@ -18,4 +18,12 @@ const transfers=operations.filter(x=>x.type==="transfer"||x.type==="transferChec
 result.utilityAttribution={status:"UNRESOLVED",detail:"No claim-specific application or partner program mapping established",operations};
 if(transfers.length){result.product=check("TOKEN_TRANSFER_FUNCTION_OBSERVED","Successful positive-amount token transfer instructions observed; application functionality not established","Solana RPC");result.utilityAttribution={status:"TOKEN_TRANSFER_CAPABILITY_OBSERVED",detail:"Transfer capability observed for this mint; payment purpose, application use and project-specific utility remain unresolved",operations};}
 result.integrations={...result.integrations,requiredEvidence:"Independent partner documentation identifying the exact mint or program and specific integration; no partner confirmation inferred from project links"};
+
+// Fixed-source corroboration pilot. Never follow arbitrary metadata URLs.
+if(mint==="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"){
+const url="https://tokens.jup.ag/token/"+mint;
+try{const record=await json(url,{redirect:"error"});if(record.address===mint){result.integrations=check("INDEPENDENT_LISTING_OBSERVED","Jupiter token registry returned the exact mint. Listing does not establish a commercial partnership or successful swap.",url);result.integrations.observedAt=new Date().toISOString();}}catch{}
+}
+result.application={status:"UNRESOLVED",detail:"No application-level feature test completed; token transfer evidence is not application evidence"};
+result.verificationPolicy={product:"Requires feature-specific read-only test",integration:"Requires independent exact-mint or program evidence",utility:"Requires documented instruction mapping and successful execution"};
 return res.status(200).json(result)};
