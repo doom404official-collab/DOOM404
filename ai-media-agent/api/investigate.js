@@ -5,6 +5,7 @@ const {build}=require('../universal');
 const {synthesize}=require('../lib/editorial-synthesis');
 const {review}=require('../lib/editorial-validation');
 const {buildEvidence}=require('../lib/editorial-evidence');
+const {admit}=require('../lib/durable-admission');
 const inFlight=new Set(),usedSessions=new Map();
 async function collect(name,mint){
  const handler=require('./'+name);let value,status=200;
@@ -16,6 +17,7 @@ module.exports=async(req,res)=>{
  if(!gate(req,res))return;
  const {mint,sessionId,...extra}=req.body||{};
  if(typeof mint!=='string'||typeof sessionId!=='string'||!MINT.test(mint||'')||!SESSION.test(sessionId||'')||Object.keys(extra).length)return res.status(400).json({error:'INVALID_RESEARCH_REQUEST'});
+ if(!await admit(req,res,'research',sessionId))return;
  for(const [id,until] of usedSessions)if(until<Date.now())usedSessions.delete(id);
  if(usedSessions.has(sessionId))return res.status(409).json({error:'RESEARCH_SESSION_REPLAY'});
  if(usedSessions.size>=10000)return res.status(429).json({error:'RESEARCH_CAPACITY'});
@@ -41,6 +43,6 @@ module.exports=async(req,res)=>{
  }}catch(e){reason=e?.name==='TimeoutError'?'UPSTREAM_TIMEOUT':/^(EVIDENCE_TOO_LARGE|EDITORIAL_PROVIDER_ERROR_\d{3}|EDITORIAL_INCOMPLETE|EDITORIAL_SCHEMA_OR_REFERENCE_INVALID|REVIEW_PROVIDER_ERROR|REVIEW_INCOMPLETE)$/.test(e?.message||'')?e.message:'EDITORIAL_FAILED';stages.push({stage:'failure',reason});}}
  report.editorialStatus=status;
  const narrationTicket=key?sign({purpose:'narration',mint,sessionId,sentences:report.scenes.map(s=>s.caption)}):null;
- return res.status(200).json({mint,sessionId,status,report,narrationTicket,diagnostics:{reason,elapsedMs:Date.now()-started,stages,quotaScope:'INSTANCE_ONLY'}});
+ return res.status(200).json({mint,sessionId,status,report,narrationTicket,diagnostics:{reason,elapsedMs:Date.now()-started,stages,quotaScope:'DURABLE_SUPABASE'}});
  }catch{return res.status(503).json({mint,sessionId,error:'RESEARCH_EVIDENCE_UNAVAILABLE'});}finally{inFlight.delete(sessionId);}
 };
