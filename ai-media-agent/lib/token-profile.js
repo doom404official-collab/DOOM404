@@ -1,0 +1,19 @@
+"use strict";
+const USDC='EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',BONK='DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',JUP='JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN';
+const categories=['NEW_MEMECOIN','ESTABLISHED_MEMECOIN','UTILITY','GOVERNANCE','FIAT_BACKED_STABLECOIN','CRYPTO_BACKED_STABLECOIN','ALGORITHMIC_STABLECOIN','WRAPPED_ASSET','LIQUID_STAKING','OTHER_OR_UNESTABLISHED'];
+const profiles={
+ [USDC]:{name:'USD Coin',symbol:'USDC',category:'FIAT_BACKED_STABLECOIN',issuer:'Circle',mintSource:'https://developers.circle.com/stablecoins/usdc-contract-addresses',sources:['https://www.circle.com/transparency','https://www.circle.com/legal/usdc-terms'],priorities:['backing','redemption','peg','issuer controls','custody','exit routes']},
+ [BONK]:{name:'Bonk',symbol:'BONK',category:'ESTABLISHED_MEMECOIN',mintSource:'https://www.coinbase.com/price/bonk',sources:['https://www.bonkcoin.com/about','https://www.bonkcoin.com/ecosystem'],priorities:['holder distribution','ecosystem claims versus usage','market depth']},
+ [JUP]:{name:'Jupiter',symbol:'JUP',category:'GOVERNANCE',mintSource:'https://developers.jup.ag/docs/price',sources:['https://vote.jup.ag/','https://developers.jup.ag/docs/price'],priorities:['governance participation','token utility','functional products','adoption']}
+};
+// The allowlist is maintained in source, never derived from token metadata.
+async function readSource(url,fetchImpl){const r=await fetchImpl(url,{redirect:'error',signal:AbortSignal.timeout(5000)});if(!r.ok)throw Error('SOURCE_UNAVAILABLE');const reader=r.body?.getReader();if(!reader){const text=await r.text();if(Buffer.byteLength(text)>1000000)throw Error('SOURCE_TOO_LARGE');return text}let total=0,parts=[];try{for(;;){const {done,value}=await reader.read();if(done)break;total+=value.length;if(total>1000000)throw Error('SOURCE_TOO_LARGE');parts.push(Buffer.from(value))}return Buffer.concat(parts).toString('utf8')}finally{await reader.cancel()}}
+async function profile(mint,{fetchImpl=fetch}={}){
+ const observedAt=new Date().toISOString(),p=profiles[mint];
+ if(!p)return {mint,category:'OTHER_OR_UNESTABLISHED',identityStatus:'UNESTABLISHED',priorities:['security','creator behavior','distribution','liquidity'],observedAt,reason:'No authoritative exact-mint category record; metadata never establishes category'};
+ const references=[];let exact=false;for(const url of [...new Set([p.mintSource,...p.sources])]){try{const text=await readSource(url,fetchImpl);const mintMatched=url===p.mintSource&&text.includes(mint);if(mintMatched)exact=true;references.push({url,observedAt,status:'RETRIEVED',sha256:require('crypto').createHash('sha256').update(text).digest('hex'),exactMintMatched:mintMatched})}catch{references.push({url,observedAt,status:'UNAVAILABLE'})}}
+ const result={...p,mint,observedAt,references,category:exact?p.category:'OTHER_OR_UNESTABLISHED',identityStatus:exact?(mint===BONK?'OFFICIAL_PROJECT_PLUS_INDEPENDENT_MINT_CORROBORATION':'AUTHORITATIVE_EXACT_MINT_MATCH'):'UNESTABLISHED',projectClaimsAreNotUsageProof:true};
+ if(mint===USDC&&exact)result.stablecoin={type:'FIAT_BACKED',pegTargetUsd:1,reserveDisclosureSource:p.sources[0],redemptionTermsSource:p.sources[1],issuerControlContext:'Mint and freeze controls are intentional issuer features; assess permission and counterparty risk.',reserveVerification:'Issuer disclosures and attestations are not independent proof of solvency.',redemption:'Circle Mint redemption subject to eligibility, terms and jurisdiction; DEX swaps are distinct.',historicalPegStatus:'NOT_RESEARCHED',latestAttestationStatus:'NOT_PARSED'};
+ return result;
+}
+module.exports={profile,categories,profiles,readSource};

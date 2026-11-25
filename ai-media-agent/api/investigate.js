@@ -23,6 +23,7 @@ module.exports=async(req,res)=>{
  const results=await Promise.allSettled(['relationships','token-context','project-credibility','creator-intelligence'].map(n=>collect(n,mint)));
  const [relationships,contextResult,credibility,creator]=results.map(x=>x.status==='fulfilled'?x.value:null);
  const context=contextResult||{mint};context.credibility=credibility;context.creatorIntelligence=creator;
+ context.tokenProfile=await require("../lib/token-profile").profile(mint);
  context.earlyLaunch=earlyLaunch({mint,creator,relationships,market:context.market});
  const report=build(mint,h,relationships,context);report.sessionId=sessionId;
  let status='DETERMINISTIC_FALLBACK',reason='CONFIG_MISSING';

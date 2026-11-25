@@ -9,6 +9,9 @@ function gate(req,res,{limit=6,bytes=4096}={}){
  res.setHeader('Cache-Control','no-store');
  if(process.env.VERCEL_ENV!=='preview'||req.method!=='POST'){res.status(404).end();return false;}
  const origin=req.headers?.origin,host=req.headers?.host;
+ if(!String(host).endsWith('.vercel.app')){res.status(403).json({error:'PROTECTED_PREVIEW_REQUIRED'});return false;}
+ if(!String(req.headers?.['content-type']||'').startsWith('application/json')){res.status(415).json({error:'JSON_REQUIRED'});return false;}
+ if(Number(req.headers?.['content-length']||0)>bytes){res.status(413).json({error:'REQUEST_TOO_LARGE'});return false;}
  if(!origin||origin!=='https://'+host){res.status(403).json({error:'SAME_ORIGIN_REQUIRED'});return false;}
  if(Buffer.byteLength(JSON.stringify(req.body||{}))>bytes){res.status(413).json({error:'REQUEST_TOO_LARGE'});return false;}
  const ip=String(req.headers['x-forwarded-for']||'unknown').split(',')[0];
