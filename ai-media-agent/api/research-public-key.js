@@ -1,0 +1,2 @@
+// Public verification material only. No upstream API request or secret disclosure.
+module.exports=async(req,res)=>{res.setHeader('Cache-Control','no-store');if(process.env.VERCEL_ENV!=='preview'||req.method!=='GET')return res.status(404).end();try{return res.status(200).json({algorithm:'Ed25519',environment:'preview',spki:require('../lib/durable-admission').publicKey()})}catch{return res.status(503).json({error:'CONFIG_MISSING'})}};
