@@ -6,6 +6,6 @@ async function review(draft,evidence,{key,model,fetcher=fetch}){
  if(!r.ok)throw Error("REVIEW_PROVIDER_ERROR");
  const d=await r.json();if(d.status!=="completed")throw Error("REVIEW_INCOMPLETE");
  const result=JSON.parse((d.output||[]).flatMap(x=>x.content||[]).filter(x=>x.type==="output_text").map(x=>x.text).join(""));
- return {approved:result.approved===true&&Array.isArray(result.issues)&&result.issues.length===0,issues:Array.isArray(result.issues)?result.issues:["Invalid review"]};
+ return {approved:result.approved===true&&Array.isArray(result.issues)&&result.issues.length===0,usage:d.usage||null,issues:Array.isArray(result.issues)?result.issues:["Invalid review"]};
 }
 module.exports={review};
