@@ -1,0 +1,135 @@
+{
+  "provenance": {
+    "retrievedDate": "2026-11-25",
+    "commitment": "finalized",
+    "source": "Solana public mainnet RPC; one duplicate Alchemy read used for diagnostic corroboration",
+    "officialIdlCommit": "bc35796152027d2744ca02066d305438e34b67e7"
+  },
+  "fixtures": {
+    "479USJgwsJBry3Ki5LseVMjdHiwifdLAsYTYLfJFXfpA1r5fsfy3r2ftp4aQbBVyKTepJNWiN95UGsFV92WdLuhA": {
+      "expectedClassification": "PUMPSWAP_SALE",
+      "rawAmount": "1223452638537",
+      "slot": 473626366,
+      "rawSha256": "9ade18265535e58f2247c913a2df951ab43d11e7797d55b57917668fcd623df8"
+    },
+    "2X7h1c46CBgYg4Bm2tdG5RktcdsbWsEsV1K6tjzHkjQBG8q76kXT3nZW2kAuCZCMzTsopaJGFvLVqW28bQdiWvUa": {
+      "expectedClassification": "PUMPSWAP_SALE",
+      "rawAmount": "1216576003669",
+      "slot": 473626366,
+      "rawSha256": "20da798d902348f63f371a90872680617e026185dfb1097f7a74be019ff3847d"
+    },
+    "5yajm5NADjKFoo1ujfgLYBM1h5ZJEUgxBaF9mDMb4EFEHGmztVTv7G954a87iKJhMmvmxzJJ3Kumr2M9VxK7F92b": {
+      "expectedClassification": "PUMPSWAP_SALE",
+      "rawAmount": "34310121934",
+      "slot": 473626348,
+      "rawSha256": "1c527d8e86aefbfa81a0e2e39f03af68e4d49e4c46ecfb638a1982e7b5ed02be"
+    },
+    "iKcwEz4GnwEZhmj1ijZ6BSRVucwfubsYAcyRk8YJ8xP3CFsMGGK1aoETK22eBVCh7eFS41jENAr9TsffckjvGQh": {
+      "expectedClassification": "TEMPORARY_WSOL_SALE",
+      "rawAmount": "121991221887",
+      "slot": 473626373,
+      "rawSha256": "5d9e02a29bfb4d8d75516ba684bb1a3604f604ebdbf9959f890fe467cbe491dd"
+    },
+    "3BuMccVmHYnRXQNnnXttQmGRJuAsvBtYsfg2GGtG6k71ieMuvfJ23xA8Aq1covgzCogWW62BSLhkEc4LT3xS3BNa": {
+      "expectedClassification": "TEMPORARY_WSOL_SALE",
+      "rawAmount": "121305548356",
+      "slot": 473626367,
+      "rawSha256": "134a303827d86f9179bb296b8c992fae39532f219450999904bce6ed85e44450"
+    },
+    "4HFX91dtSKCACD3RgtwvgiwXFzLee3K2e4SVKiHRZFNYk3izQDniN9oDPfEjULLRyHhNiTayNtspfFoUEfv4eEzr": {
+      "expectedClassification": "INCINERATOR_TRANSFER",
+      "rawAmount": "3520918000000",
+      "slot": 469713076,
+      "rawSha256": "902686f855dbc52f0ddb34bdbdc57a5d2b13960960baf740f915366e70809e9d"
+    },
+    "4FpbS4C8imB8P6kE2DXkkeCpXTPiZvjU5WaqkTvfGoEWZaQVEV5ZxeSKbrXrNwShZXknaEewwiGTmFT4iucA9cqA": {
+      "expectedClassification": "DIRECT_WALLET_TRANSFER",
+      "rawAmount": "3520918746848",
+      "slot": 469698800,
+      "rawSha256": "f69f310b07f05ff3d9956a5095d0faccfdecab48de0633a9e402e53e7a780e10"
+    },
+    "65RPCEm87y6VWQ24wcJmCWfdqvxEZT5SXXBEhQDcYpC3L8GgKZ8UUHUD9o9QsnPZEdDro8he4S1MQ9MWxK3jRxfE": {
+      "expectedClassification": "SPL_BURN",
+      "rawAmount": "3162276660168",
+      "slot": 373472247,
+      "rawSha256": "bc61ffd149c9adca73841eed2ff732ecbf57727e2db831f8d27b73fdb7bc7fe5"
+    },
+    "5egCBX2T6wkQp4QDdSgTUF2nAg7YX6oBtSod7oJv7d8VR2p7LH5mqGe7DYHLhNjCkVoEmV9TSdtdADFrEUXCDQdF": {
+      "expectedClassification": "SPL_BURN_CHECKED",
+      "rawAmount": "1069970862580",
+      "slot": 470059546,
+      "rawSha256": "22d5f5d3a5eda5dfd97675170221449bd6d9b32c74168d236b8c8b97e065019b"
+    },
+    "41ictC37ai8e2RfaN4Vyo7LuyFfQWn9fJfPSZ2L5JSyLovSNHR7adLG1wjdKQRH1VLxaPFuogTgi8U9vrYkwY79E": {
+      "expectedClassification": "TOKEN_2022_BURN_CHECKED",
+      "rawAmount": "320573461117",
+      "slot": 465947372,
+      "rawSha256": "84e51c34afd83461913681102148f1b6e8408e0e34d07b528950d5d271eec20f"
+    },
+    "2gEsSGxrkbdsFYeawxpz9VGWM1MVViJtLTLEB57AaezdfsM8dz4kCKGYLTucytb3fzi9iE8UE2wB2s6AsTHp1omd": {
+      "expectedClassification": "PUMP_FUN_SELL_V2",
+      "rawAmount": "2264707626888",
+      "slot": 467393001,
+      "rawSha256": "d222991f034ed773d7b847640dfb595f2bf06c8e1ed2edcfc262d4c7f4986ac1"
+    },
+    "5MCFPrm5nE8wCUrjoBqfqUk3t3rujhWbVsRgqqTN4bHtNrjhsYHW8YkPJxH1HQagedzrZHNBgUd8arYgxGy9orKS": {
+      "expectedClassification": "PUMP_FUN_SELL_V2",
+      "rawAmount": "66121393913083",
+      "slot": 469842737,
+      "rawSha256": "04c25bc51af1417dcbb2d42da626f250203c0528db46286d571da96faa6432c5"
+    },
+    "PftAURqooa4HwVo96s39Qjyr33Cqi2x19NPovmui9ojcxyE676wufEST9eh6vy9cYr7tx8ACFHUpvGGFWZUv7qX": {
+      "expectedClassification": "PROTOCOL_AND_CREATOR_FEE_SWEEPS",
+      "rawAmount": null,
+      "slot": 462799601,
+      "rawSha256": "5266d9e192ee23d0ca8331f9fdf7c2511c441925a86aa557f864ee269151420c"
+    },
+    "4c5BaTKrdVtDiQy6b3pb8EBQJ5y99h9RUM4GJzqhjU5dCtCP8gF84NmhhGCxxVmNvs8EJQCzTp7YbHh8uRRFv9tq": {
+      "expectedClassification": "CREATOR_FEE_SWEEP",
+      "rawAmount": null,
+      "slot": 469022512,
+      "rawSha256": "e30d641ce3bb540cdad6bab1a82b2ee77723d84825d6576a971edfe2c3779429"
+    },
+    "2mETmrMYJcDLY1kcW5QL9RpwaXDjR8R6u4wWmyDmd1vPkV28UpX7rQQof4pv9nzDViJ5vgpBoGhgmMAcPMmMFUFe": {
+      "expectedClassification": "PUMPSWAP_PURCHASE",
+      "rawAmount": null,
+      "slot": 473605882,
+      "rawSha256": "5d1287c484443fe54d3b4849aced8d3b04d2836c99a62550e5ec1355b884cd34"
+    },
+    "4j7mGriw2qDghSDFxCwiiMFvvNSjo8MYvwUQSCWvimqKcEDCd7wtDNuP9j7WEW9eY43dLSiEtWZ4JxSMrvRGzq49": {
+      "expectedClassification": "PROTOCOL_CREATION",
+      "rawAmount": null,
+      "slot": 469698780,
+      "rawSha256": "da3b8ed15310a4c5910339395f2bc570e9122d2d0be35eb7ad61a613cfa0420b"
+    },
+    "4X1Wx7A3JYLN67VjWmRisvfGAou7yaWZgRB6frjzxgDJq5bLtMRriqXE17BmnQa43vPCzfx6zuHx7FNdQchyf7a8": {
+      "expectedClassification": "PRE_LAUNCH_FUNDING",
+      "rawAmount": null,
+      "slot": 469698769,
+      "rawSha256": "8bacf01f82aeefb5cfad0352006dc0cfe84396f74b8fe93fb093aba1528928ba"
+    },
+    "4AmnKjkPkS5iLk5TBobPkJf4JKGUeoKVV9rwwRVwGs7bnWw5H2C7yAEfmyxDHQitzepmroMjsYgfdNwqdHt4H7Gu": {
+      "expectedClassification": "SELL_V3_RECOGNITION_SETTLEMENT_UNSUPPORTED",
+      "rawAmount": null,
+      "slot": 473603218,
+      "rawSha256": "2f79553fe58a098d77228a70ebfc4c4d898248004c6d84697615923462c01386"
+    }
+  },
+  "negativeCases": {
+    "derivedFrom": "iKcw temporary WSOL raw fixture",
+    "mutations": [
+      "wrong mint",
+      "wrong seller",
+      "failed transaction",
+      "unreconciled proceeds",
+      "wrong temporary owner",
+      "wrong close recipient",
+      "missing initialization",
+      "unsupported instruction",
+      "missing proceeds transfer",
+      "mint mismatch in transfer"
+    ],
+    "expectedResults": [],
+    "replay": "tests/v15-historical.test.js applies explicit deterministic mutations to raw transaction evidence; these are counterfixtures, not genuine historical transactions."
+  }
+}

@@ -254,6 +254,7 @@
           131,
           173
         ],
+        "minimumBytes": 24,
         "accounts": [
           "global",
           "fee_recipient",
@@ -270,11 +271,6 @@
           "fee_config",
           "fee_program"
         ],
-        "minimumBytes": 24,
-        "args": [
-          "amount",
-          "min_sol_output"
-        ],
         "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump.json"
       },
       "sell_v2": {
@@ -288,6 +284,7 @@
           64,
           178
         ],
+        "minimumBytes": 24,
         "accounts": [
           "global",
           "base_mint",
@@ -316,11 +313,6 @@
           "event_authority",
           "program"
         ],
-        "minimumBytes": 24,
-        "args": [
-          "amount",
-          "min_sol_output"
-        ],
         "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump.json"
       },
       "sell_v3": {
@@ -334,6 +326,7 @@
           105,
           213
         ],
+        "minimumBytes": 24,
         "accounts": [
           "global",
           "base_mint",
@@ -353,10 +346,110 @@
           "event_authority",
           "program"
         ],
-        "minimumBytes": 24,
-        "args": [
-          "amount",
-          "min_sol_output"
+        "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump.json"
+      },
+      "collect_creator_fee": {
+        "discriminator": [
+          20,
+          22,
+          86,
+          123,
+          198,
+          28,
+          219,
+          132
+        ],
+        "minimumBytes": 8,
+        "accounts": [
+          "creator",
+          "creator_vault",
+          "system_program",
+          "event_authority",
+          "program"
+        ],
+        "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump.json"
+      },
+      "collect_creator_fee_v2": {
+        "discriminator": [
+          207,
+          17,
+          138,
+          242,
+          4,
+          34,
+          19,
+          56
+        ],
+        "minimumBytes": 8,
+        "accounts": [
+          "creator",
+          "creator_token_account",
+          "creator_vault",
+          "creator_vault_token_account",
+          "quote_mint",
+          "quote_token_program",
+          "associated_token_program",
+          "system_program",
+          "event_authority",
+          "program"
+        ],
+        "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump.json"
+      },
+      "sweep_creator_fee": {
+        "discriminator": [
+          32,
+          246,
+          191,
+          52,
+          8,
+          201,
+          73,
+          186
+        ],
+        "minimumBytes": 8,
+        "accounts": [
+          "payer",
+          "global",
+          "base_mint",
+          "quote_mint",
+          "quote_token_program",
+          "associated_token_program",
+          "system_program",
+          "bonding_curve",
+          "associated_quote_bonding_curve",
+          "recipient",
+          "associated_quote_recipient",
+          "event_authority",
+          "program"
+        ],
+        "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump.json"
+      },
+      "sweep_protocol_fee": {
+        "discriminator": [
+          8,
+          48,
+          190,
+          7,
+          182,
+          68,
+          183,
+          229
+        ],
+        "minimumBytes": 8,
+        "accounts": [
+          "payer",
+          "global",
+          "base_mint",
+          "quote_mint",
+          "quote_token_program",
+          "associated_token_program",
+          "system_program",
+          "bonding_curve",
+          "associated_quote_bonding_curve",
+          "recipient",
+          "associated_quote_recipient",
+          "event_authority",
+          "program"
         ],
         "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump.json"
       }
@@ -537,6 +630,7 @@
           131,
           173
         ],
+        "minimumBytes": 24,
         "accounts": [
           "pool",
           "user",
@@ -559,11 +653,6 @@
           "coin_creator_vault_authority",
           "fee_config",
           "fee_program"
-        ],
-        "minimumBytes": 24,
-        "args": [
-          "base_amount_in",
-          "min_quote_amount_out"
         ],
         "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump_amm.json"
       },
@@ -637,6 +726,86 @@
           "lp_token_amount_in",
           "min_base_amount_out",
           "min_quote_amount_out"
+        ],
+        "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump_amm.json"
+      },
+      "collect_coin_creator_fee": {
+        "discriminator": [
+          160,
+          57,
+          89,
+          42,
+          181,
+          139,
+          43,
+          66
+        ],
+        "minimumBytes": 8,
+        "accounts": [
+          "quote_mint",
+          "quote_token_program",
+          "coin_creator",
+          "coin_creator_vault_authority",
+          "coin_creator_vault_ata",
+          "coin_creator_token_account",
+          "event_authority",
+          "program"
+        ],
+        "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump_amm.json"
+      },
+      "sweep_creator_fee": {
+        "discriminator": [
+          32,
+          246,
+          191,
+          52,
+          8,
+          201,
+          73,
+          186
+        ],
+        "minimumBytes": 8,
+        "accounts": [
+          "payer",
+          "global_config",
+          "pool",
+          "quote_mint",
+          "quote_token_program",
+          "pool_quote_token_account",
+          "recipient",
+          "recipient_token_account",
+          "system_program",
+          "associated_token_program",
+          "event_authority",
+          "program"
+        ],
+        "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump_amm.json"
+      },
+      "sweep_protocol_fee": {
+        "discriminator": [
+          8,
+          48,
+          190,
+          7,
+          182,
+          68,
+          183,
+          229
+        ],
+        "minimumBytes": 8,
+        "accounts": [
+          "payer",
+          "global_config",
+          "pool",
+          "quote_mint",
+          "quote_token_program",
+          "pool_quote_token_account",
+          "recipient",
+          "recipient_token_account",
+          "system_program",
+          "associated_token_program",
+          "event_authority",
+          "program"
         ],
         "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump_amm.json"
       }

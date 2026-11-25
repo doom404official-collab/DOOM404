@@ -38,7 +38,7 @@ function decodePump(ix) {
  const liquidity=instruction==='withdraw'||instruction.startsWith('decrease_liquidity');
  // A zero-liquidity CLMM decrease can collect fees; it does not prove principal reduction.
  const liquidityRaw=instruction.startsWith('decrease')?(BigInt(u64(bytes,8))+(BigInt(u64(bytes,16))<<64n)).toString():liquidity?u64(bytes,8):null;
- return {program,protocol:p.protocol,instruction,kind:liquidity?'liquidity':'swap',accounts,roles,accountRoles:a,liquidityRaw,rawInstructionAmount:p.protocol==='Jupiter'?null:u64(bytes,8),source,layoutStatus:accounts.length>=minimum?'OFFICIAL_ACCOUNT_LAYOUT':'PARTIAL_ACCOUNT_LAYOUT',liveValidation:liquidity?(p.protocol==='PumpSwap'&&instruction==='withdraw'?'GENUINE_WITHDRAWAL_VALIDATED':'UNVALIDATED_VARIANT_ATTRIBUTION_DISABLED'):'INSTRUCTION_RECOGNITION_ONLY'};
+ return {program,protocol:p.protocol,instruction,kind:liquidity?'liquidity':/^(sweep_|collect_)/.test(instruction)?'fee':'swap',accounts,roles,accountRoles:a,liquidityRaw,rawInstructionAmount:p.protocol==='Jupiter'?null:u64(bytes,8),source,layoutStatus:accounts.length>=minimum?'OFFICIAL_ACCOUNT_LAYOUT':'PARTIAL_ACCOUNT_LAYOUT',liveValidation:liquidity?(p.protocol==='PumpSwap'&&instruction==='withdraw'?'GENUINE_WITHDRAWAL_VALIDATED':'UNVALIDATED_VARIANT_ATTRIBUTION_DISABLED'):'INSTRUCTION_RECOGNITION_ONLY'};
 }
 function withdrawalEvidence(t,mint){
  const out=[];if(t?.meta?.err!==null)return out;

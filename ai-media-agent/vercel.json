@@ -8,6 +8,9 @@
     },
     "api/export-audit.js": {
       "maxDuration": 60
+    },
+    "api/creator-intelligence.js": {
+      "maxDuration": 60
     }
   }
 }
