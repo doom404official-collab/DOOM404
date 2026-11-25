@@ -5,7 +5,7 @@ const {build}=require('../universal');
 const {synthesize}=require('../lib/editorial-synthesis');
 const {review}=require('../lib/editorial-validation');
 const {buildEvidence}=require('../lib/editorial-evidence');
-const inFlight=new Set();
+const inFlight=new Set(),usedSessions=new Map();
 async function collect(name,mint){
  const handler=require('./'+name);let value,status=200;
  const response={setHeader(){},status(n){status=n;return this},json(d){value=d;return this},end(){},send(d){value=d;return this}};
@@ -16,8 +16,11 @@ module.exports=async(req,res)=>{
  if(!gate(req,res))return;
  const {mint,sessionId,...extra}=req.body||{};
  if(!MINT.test(mint||'')||!SESSION.test(sessionId||'')||Object.keys(extra).length)return res.status(400).json({error:'INVALID_RESEARCH_REQUEST'});
+ for(const [id,until] of usedSessions)if(until<Date.now())usedSessions.delete(id);
+ if(usedSessions.has(sessionId))return res.status(409).json({error:'RESEARCH_SESSION_REPLAY'});
+ if(usedSessions.size>=10000)return res.status(429).json({error:'RESEARCH_CAPACITY'});
  if(inFlight.has(sessionId))return res.status(409).json({error:'RESEARCH_IN_PROGRESS'});
- inFlight.add(sessionId);const started=Date.now(),stages=[];
+ inFlight.add(sessionId);usedSessions.set(sessionId,Date.now()+3600000);const started=Date.now(),stages=[];
  try{
  const h=await collect('owners',mint);
  const results=await Promise.allSettled(['relationships','token-context','project-credibility','creator-intelligence'].map(n=>collect(n,mint)));
@@ -35,7 +38,7 @@ module.exports=async(req,res)=>{
  const rt=Date.now(),audit=await review(result.draft,result.evidence,{key,model});stages.push({stage:'review',attempt,ms:Date.now()-rt,approved:audit.approved,usage:audit.usage,issueCount:audit.issues.length,issues:audit.issues.slice(0,8).map(x=>String(x).replace(/sk-[A-Za-z0-9_-]+/g,"[redacted]").slice(0,600))});
  if(audit.approved){report.headline=result.draft.headline;report.scenes=result.draft.scenes.map(s=>({label:s.role.toUpperCase().replaceAll('_',' '),value:'EVIDENCE-LED REPORT',note:'AI-REVIEWED EDITORIAL',caption:s.caption,evidenceIds:s.evidenceIds,evidenceCards:s.evidenceIds.map(id=>result.evidence.facts.find(f=>f.id===id)).filter(Boolean)}));report.script=report.scenes.map(s=>s.caption).join(' ');status='AI_REVIEW_PASSED';reason=null;break;}
  reason='REVIEW_REJECTED';correction={draft:result.draft,issues:audit.issues};
- }}catch(e){reason=e?.name==='TimeoutError'?'UPSTREAM_TIMEOUT':'EDITORIAL_FAILED';}}
+ }}catch(e){reason=e?.name==='TimeoutError'?'UPSTREAM_TIMEOUT':/^(EVIDENCE_TOO_LARGE|EDITORIAL_PROVIDER_ERROR_\d{3}|EDITORIAL_INCOMPLETE|EDITORIAL_SCHEMA_OR_REFERENCE_INVALID|REVIEW_PROVIDER_ERROR|REVIEW_INCOMPLETE)$/.test(e?.message||'')?e.message:'EDITORIAL_FAILED';stages.push({stage:'failure',reason});}}
  report.editorialStatus=status;
  const narrationTicket=key?sign({purpose:'narration',mint,sessionId,sentences:report.scenes.map(s=>s.caption)}):null;
  return res.status(200).json({mint,sessionId,status,report,narrationTicket,diagnostics:{reason,elapsedMs:Date.now()-started,stages,quotaScope:'INSTANCE_ONLY'}});

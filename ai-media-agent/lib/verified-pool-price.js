@@ -1,6 +1,5 @@
 "use strict";
 const {encode,classifyPool,POOLS}=require('./holder-classification');
-const {QUOTE_MINTS}=require('./market-selection');
 const {marketFallback}=require('./market-fallback');
 function reserveRatio(inputRaw,quoteRaw,inputDecimals,quoteDecimals){
  if(!/^\d+$/.test(inputRaw)||!/^\d+$/.test(quoteRaw)||BigInt(inputRaw)<=0n||BigInt(quoteRaw)<=0n||![inputDecimals,quoteDecimals].every(d=>Number.isInteger(d)&&d>=0&&d<=18))throw Error('INVALID_RESERVES');
@@ -15,7 +14,7 @@ async function verifiedPoolPrice({mint,holders,fetchImpl=fetch,rpcUrl=process.en
  const layout=POOLS.find(p=>p.protocol==='PumpSwap');if(account?.owner!==layout.program||account.executable!==false||account.data?.[1]!=='base64')throw Error('POOL_IDENTITY_FAILED');
  const raw=Buffer.from(account.data[0],'base64');if(raw.length<layout.minimum)throw Error('POOL_LAYOUT_FAILED');
  const mints=layout.mints.map(o=>encode(raw.subarray(o,o+32))),vaults=layout.vaults.map(o=>encode(raw.subarray(o,o+32))),index=mints.indexOf(mint),other=1-index;
- if(index<0||mints[0]===mints[1]||!QUOTE_MINTS.has(mints[other]))throw Error('UNSUPPORTED_QUOTE');
+ if(index<0||mints[0]===mints[1])throw Error('UNSUPPORTED_QUOTE');
  const reads=await rpc('getMultipleAccounts',[[...mints,...vaults],{encoding:'jsonParsed',commitment:'confirmed'}]);
  const [ma,mb,va,vb]=reads.value,parsedMints=[ma,mb],parsedVaults=[va,vb];
  for(let i=0;i<2;i++){
