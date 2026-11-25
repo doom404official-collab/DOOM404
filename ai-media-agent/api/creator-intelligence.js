@@ -24,4 +24,22 @@ if(creator){
  history.previousLaunches.push(...creations(t,s.signature).filter(x=>x.creator===creator&&x.mint!==mint&&x.slot<creationEvidence[0].slot));
  }catch{history.scope.errors++}}))}catch{history.scope.errors++}
 }
+history.recipientTraces=[];
+const targets=history.tokenDisposals.filter(d=>d.status==="DIRECT_TRANSFER_RECONCILED").flatMap(d=>d.transfers.map(x=>({...x,originSlot:d.slot,originSignature:d.signature}))).filter(x=>x.classification==="DIRECT_WALLET_TRANSFER").slice(0,2);
+for(const target of targets){try{
+ const rows=await rpc("getSignaturesForAddress",[target.destination,{limit:10,commitment:"finalized"}]);if(!Array.isArray(rows))throw Error("history");
+ const candidates=rows.filter(x=>x.err===null&&x.slot>target.originSlot).sort((a,b)=>a.slot-b.slot).slice(0,3);
+ for(const s of candidates){const t=await rpc("getTransaction",[s.signature,{encoding:"jsonParsed",commitment:"finalized",maxSupportedTransactionVersion:0}]);if(t?.meta?.err!==null)continue;
+ const keys=t.transaction.message.accountKeys.map(k=>typeof k==="string"?k:k.pubkey);
+ const pre=t.meta.preTokenBalances||[],post=t.meta.postTokenBalances||[];
+ const a=pre.find(b=>keys[b.accountIndex]===target.destination&&b.owner===target.recipient&&b.mint===mint);
+ if(!a)continue;
+ for(const x of t.transaction.message.instructions||[]){const d=x.parsed?.info;if(!["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA","TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"].includes(x.programId)||!["transfer","transferChecked"].includes(x.parsed?.type)||d?.source!==target.destination||d.authority!==target.recipient)continue;
+ const b=post.find(b=>keys[b.accountIndex]===d.destination&&b.mint===mint&&b.owner==="1nc1nerator11111111111111111111111111111111");if(!b)continue;
+ const raw=String(d.tokenAmount?.amount??d.amount);if(!/^\d+$/.test(raw)||BigInt(raw)<=0n)continue;
+ const before=pre.find(p=>p.accountIndex===b.accountIndex);const gain=BigInt(b.uiTokenAmount.amount)-BigInt(before?.uiTokenAmount.amount||"0");if(gain!==BigInt(raw))continue;
+ history.recipientTraces.push({originSignature:target.originSignature,signature:s.signature,slot:t.slot,recipient:target.recipient,destination:b.owner,rawAmount:raw,decimals:b.uiTokenAmount.decimals,status:"INCINERATOR_TRANSFER_OBSERVED",url:"https://solscan.io/tx/"+s.signature,limitation:"Observed onward transfer; fungible token provenance and supply reduction not established."});
+ }
+ }
+}catch{history.scope.errors++}}
 return res.status(200).json({mint,observedAt:new Date().toISOString(),status:observations.length?"MINT_INITIALIZATION_OBSERVED":"UNRESOLVED",observations,creationEvidence,roleEvidence,history,scope:{signaturesRetrieved:rows.length,transactionsRequested:sample.length,historyExhausted:exhausted,discoveryStatus,errors},creator,creatorStatus:creator?"PROTOCOL_CREATOR_OBSERVED":creators.length>1?"CONFLICTING_CREATION_EVIDENCE":"CREATOR_IDENTITY_UNRESOLVED",limitation:"Mint initialization roles do not establish project creator identity. Bounded history may omit initialization."})};
