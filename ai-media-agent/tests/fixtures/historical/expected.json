@@ -3,7 +3,8 @@
     "retrievedDate": "2026-11-25",
     "commitment": "finalized",
     "source": "Solana public mainnet RPC; one duplicate Alchemy read used for diagnostic corroboration",
-    "officialIdlCommit": "bc35796152027d2744ca02066d305438e34b67e7"
+    "officialIdlCommit": "bc35796152027d2744ca02066d305438e34b67e7",
+    "hashCanonicalization": "Recursive sorted JSON object keys, JavaScript JSON.stringify number representation"
   },
   "fixtures": {
     "479USJgwsJBry3Ki5LseVMjdHiwifdLAsYTYLfJFXfpA1r5fsfy3r2ftp4aQbBVyKTepJNWiN95UGsFV92WdLuhA": {
@@ -22,25 +23,25 @@
       "expectedClassification": "PUMPSWAP_SALE",
       "rawAmount": "34310121934",
       "slot": 473626348,
-      "rawSha256": "1c527d8e86aefbfa81a0e2e39f03af68e4d49e4c46ecfb638a1982e7b5ed02be"
+      "rawSha256": "2f4242225c3911ffa2b86dc346843475c7b233954d607af127696d9f068645aa"
     },
     "iKcwEz4GnwEZhmj1ijZ6BSRVucwfubsYAcyRk8YJ8xP3CFsMGGK1aoETK22eBVCh7eFS41jENAr9TsffckjvGQh": {
       "expectedClassification": "TEMPORARY_WSOL_SALE",
       "rawAmount": "121991221887",
       "slot": 473626373,
-      "rawSha256": "5d9e02a29bfb4d8d75516ba684bb1a3604f604ebdbf9959f890fe467cbe491dd"
+      "rawSha256": "f529309820797ab753dc5a756246588096b129b2e4d2b222aee3751831fcf5f2"
     },
     "3BuMccVmHYnRXQNnnXttQmGRJuAsvBtYsfg2GGtG6k71ieMuvfJ23xA8Aq1covgzCogWW62BSLhkEc4LT3xS3BNa": {
       "expectedClassification": "TEMPORARY_WSOL_SALE",
       "rawAmount": "121305548356",
       "slot": 473626367,
-      "rawSha256": "134a303827d86f9179bb296b8c992fae39532f219450999904bce6ed85e44450"
+      "rawSha256": "a5e9b590c862caa0ef8232d5d36488915fc2bb9de1dd0b2c037fa410be9e1795"
     },
     "4HFX91dtSKCACD3RgtwvgiwXFzLee3K2e4SVKiHRZFNYk3izQDniN9oDPfEjULLRyHhNiTayNtspfFoUEfv4eEzr": {
       "expectedClassification": "INCINERATOR_TRANSFER",
       "rawAmount": "3520918000000",
       "slot": 469713076,
-      "rawSha256": "902686f855dbc52f0ddb34bdbdc57a5d2b13960960baf740f915366e70809e9d"
+      "rawSha256": "555ef47dcea3816e0bfcb3a93f782dd3f4be4c6067c565d5a74503c6939d4d1a"
     },
     "4FpbS4C8imB8P6kE2DXkkeCpXTPiZvjU5WaqkTvfGoEWZaQVEV5ZxeSKbrXrNwShZXknaEewwiGTmFT4iucA9cqA": {
       "expectedClassification": "DIRECT_WALLET_TRANSFER",
@@ -82,7 +83,7 @@
       "expectedClassification": "PROTOCOL_AND_CREATOR_FEE_SWEEPS",
       "rawAmount": null,
       "slot": 462799601,
-      "rawSha256": "5266d9e192ee23d0ca8331f9fdf7c2511c441925a86aa557f864ee269151420c"
+      "rawSha256": "3b1a8ff4daddcabf713e68d27593f63a5c43358dd9e5060f4c15fa9dfea1f214"
     },
     "4c5BaTKrdVtDiQy6b3pb8EBQJ5y99h9RUM4GJzqhjU5dCtCP8gF84NmhhGCxxVmNvs8EJQCzTp7YbHh8uRRFv9tq": {
       "expectedClassification": "CREATOR_FEE_SWEEP",
@@ -113,6 +114,16 @@
       "rawAmount": null,
       "slot": 473603218,
       "rawSha256": "2f79553fe58a098d77228a70ebfc4c4d898248004c6d84697615923462c01386"
+    },
+    "5XGgkgt4m4HdbYYqch73mL1BTBXTisUu7fonwa6ygpnUmoRdGjaHteUBM1ndBvYFJmDRUi44KJkZ15aNbVPqjsCt": {
+      "expectedClassification": "UNSUPPORTED_INSTRUCTION_NO_SALE",
+      "slot": 473642826,
+      "rawSha256": "0f031fc3fc55a48d63373663bd7c69cdadc4c5c185e902fb901a6e82f9829e33"
+    },
+    "5RTX7MT1SQ4G1pULTqtTAsP9Tr2iXCtkPnUDY5n7VgDazrdsJVTih17YnCdRxGbtaASEn7pEfFzXZqA47nt48u6f": {
+      "expectedClassification": "UNSUPPORTED_INSTRUCTION_NO_SALE",
+      "slot": 473642826,
+      "rawSha256": "5cb59988bd41fbf6f1f32ec4889190062427a35d7692014805d77726ecbe125d"
     }
   },
   "negativeCases": {

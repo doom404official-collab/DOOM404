@@ -1,0 +1,494 @@
+{
+  "date": "2026-11-25",
+  "validatedRuntimeCommit": "620635b4cad6f9c6080e53aea779a715926af06e",
+  "runtimePreview": "https://doom404-ai-media-agent-plwpv1x9m-doom-404.vercel.app/",
+  "historicalLive": {
+    "temp1": {
+      "httpStatus": 200,
+      "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+      "signature": "iKcwEz4GnwEZhmj1ijZ6BSRVucwfubsYAcyRk8YJ8xP3CFsMGGK1aoETK22eBVCh7eFS41jENAr9TsffckjvGQh",
+      "slot": 473626373,
+      "status": "SALE_RECONCILED",
+      "results": [
+        {
+          "instruction": "sell",
+          "protocol": "PumpSwap",
+          "seller": "35RRPX6QrY78GYUjdoYpZgG8C8LU45xrhS9aMyYyDXLM",
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+          "tokenOutRaw": "121991221887",
+          "quoteMint": "So11111111111111111111111111111111111111112",
+          "quoteProceedsRaw": "10222138",
+          "outerIndex": 2,
+          "settlement": {
+            "type": "TEMPORARY_WSOL_NATIVE_SETTLEMENT",
+            "account": "E4rnkymB5rTmGWKGtuPT8ibXd7h2iJET8X8eGWtffr3Q",
+            "rentLamports": "1488440",
+            "proceedsLamports": "10222138",
+            "closureRecipient": "35RRPX6QrY78GYUjdoYpZgG8C8LU45xrhS9aMyYyDXLM",
+            "syncNativeObserved": false,
+            "transactionFeeLamports": "5000",
+            "nativeBalanceReconciled": true
+          },
+          "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump_amm.json",
+          "signature": "iKcwEz4GnwEZhmj1ijZ6BSRVucwfubsYAcyRk8YJ8xP3CFsMGGK1aoETK22eBVCh7eFS41jENAr9TsffckjvGQh",
+          "slot": 473626373,
+          "url": "https://solscan.io/tx/iKcwEz4GnwEZhmj1ijZ6BSRVucwfubsYAcyRk8YJ8xP3CFsMGGK1aoETK22eBVCh7eFS41jENAr9TsffckjvGQh"
+        }
+      ],
+      "diagnostics": [
+        {
+          "outerIndex": 2,
+          "protocol": "PumpSwap",
+          "instruction": "sell",
+          "seller": "35RRPX6QrY78GYUjdoYpZgG8C8LU45xrhS9aMyYyDXLM",
+          "exactMint": true,
+          "rejection": null,
+          "tokenOutRaw": "121991221887",
+          "quoteProceedsRaw": "10222138"
+        }
+      ],
+      "evidenceCache": {
+        "scope": "FINALIZED_FIXTURES_AND_BOUNDED_PROCESS_CACHE",
+        "rpcRequests": 0,
+        "fixtureHits": 1,
+        "cacheHits": 0,
+        "deduplicated": 0
+      },
+      "url": "https://solscan.io/tx/iKcwEz4GnwEZhmj1ijZ6BSRVucwfubsYAcyRk8YJ8xP3CFsMGGK1aoETK22eBVCh7eFS41jENAr9TsffckjvGQh"
+    },
+    "temp2": {
+      "httpStatus": 200,
+      "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+      "signature": "3BuMccVmHYnRXQNnnXttQmGRJuAsvBtYsfg2GGtG6k71ieMuvfJ23xA8Aq1covgzCogWW62BSLhkEc4LT3xS3BNa",
+      "slot": 473626367,
+      "status": "SALE_RECONCILED",
+      "results": [
+        {
+          "instruction": "sell",
+          "protocol": "PumpSwap",
+          "seller": "35RRPX6QrY78GYUjdoYpZgG8C8LU45xrhS9aMyYyDXLM",
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+          "tokenOutRaw": "121305548356",
+          "quoteMint": "So11111111111111111111111111111111111111112",
+          "quoteProceedsRaw": "10170111",
+          "outerIndex": 2,
+          "settlement": {
+            "type": "TEMPORARY_WSOL_NATIVE_SETTLEMENT",
+            "account": "E4rnkymB5rTmGWKGtuPT8ibXd7h2iJET8X8eGWtffr3Q",
+            "rentLamports": "1488440",
+            "proceedsLamports": "10170111",
+            "closureRecipient": "35RRPX6QrY78GYUjdoYpZgG8C8LU45xrhS9aMyYyDXLM",
+            "syncNativeObserved": false,
+            "transactionFeeLamports": "5000",
+            "nativeBalanceReconciled": true
+          },
+          "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump_amm.json",
+          "signature": "3BuMccVmHYnRXQNnnXttQmGRJuAsvBtYsfg2GGtG6k71ieMuvfJ23xA8Aq1covgzCogWW62BSLhkEc4LT3xS3BNa",
+          "slot": 473626367,
+          "url": "https://solscan.io/tx/3BuMccVmHYnRXQNnnXttQmGRJuAsvBtYsfg2GGtG6k71ieMuvfJ23xA8Aq1covgzCogWW62BSLhkEc4LT3xS3BNa"
+        }
+      ],
+      "diagnostics": [
+        {
+          "outerIndex": 2,
+          "protocol": "PumpSwap",
+          "instruction": "sell",
+          "seller": "35RRPX6QrY78GYUjdoYpZgG8C8LU45xrhS9aMyYyDXLM",
+          "exactMint": true,
+          "rejection": null,
+          "tokenOutRaw": "121305548356",
+          "quoteProceedsRaw": "10170111"
+        }
+      ],
+      "evidenceCache": {
+        "scope": "FINALIZED_FIXTURES_AND_BOUNDED_PROCESS_CACHE",
+        "rpcRequests": 0,
+        "fixtureHits": 1,
+        "cacheHits": 0,
+        "deduplicated": 0
+      },
+      "url": "https://solscan.io/tx/3BuMccVmHYnRXQNnnXttQmGRJuAsvBtYsfg2GGtG6k71ieMuvfJ23xA8Aq1covgzCogWW62BSLhkEc4LT3xS3BNa"
+    },
+    "curve": {
+      "httpStatus": 200,
+      "mint": "GCXbS7GupDSD9MXudRWJN86ijS7EFcBeRnSv95HyqKVR",
+      "signature": "2gEsSGxrkbdsFYeawxpz9VGWM1MVViJtLTLEB57AaezdfsM8dz4kCKGYLTucytb3fzi9iE8UE2wB2s6AsTHp1omd",
+      "slot": 467393001,
+      "status": "SALE_RECONCILED",
+      "results": [
+        {
+          "protocol": "Pump.fun bonding curve",
+          "instruction": "sell_v2",
+          "seller": "FPkDJczmwGmNPotzgAzm8SvSFuPuBefN1H5VKEZi8Tit",
+          "mint": "GCXbS7GupDSD9MXudRWJN86ijS7EFcBeRnSv95HyqKVR",
+          "tokenOutRaw": "2264707626888",
+          "quoteMint": "NATIVE_SOL",
+          "quoteProceedsRaw": "82465063",
+          "grossProceedsRaw": "83508925",
+          "protocolFeeRaw": "793335",
+          "creatorFeeRaw": "250527",
+          "outerIndex": 2,
+          "innerIndex": 0,
+          "settlement": {
+            "type": "CURVE_NATIVE_SOL_SETTLEMENT",
+            "nativeBalanceReconciled": true,
+            "transactionFeeLamports": "9000"
+          },
+          "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump.json",
+          "signature": "2gEsSGxrkbdsFYeawxpz9VGWM1MVViJtLTLEB57AaezdfsM8dz4kCKGYLTucytb3fzi9iE8UE2wB2s6AsTHp1omd",
+          "slot": 467393001,
+          "url": "https://solscan.io/tx/2gEsSGxrkbdsFYeawxpz9VGWM1MVViJtLTLEB57AaezdfsM8dz4kCKGYLTucytb3fzi9iE8UE2wB2s6AsTHp1omd"
+        }
+      ],
+      "diagnostics": [
+        {
+          "outerIndex": 2,
+          "innerIndex": 0,
+          "protocol": "Pump.fun bonding curve",
+          "instruction": "sell_v2",
+          "seller": "FPkDJczmwGmNPotzgAzm8SvSFuPuBefN1H5VKEZi8Tit",
+          "exactMint": true,
+          "rejection": null
+        }
+      ],
+      "evidenceCache": {
+        "scope": "FINALIZED_FIXTURES_AND_BOUNDED_PROCESS_CACHE",
+        "rpcRequests": 0,
+        "fixtureHits": 1,
+        "cacheHits": 0,
+        "deduplicated": 0
+      },
+      "url": "https://solscan.io/tx/2gEsSGxrkbdsFYeawxpz9VGWM1MVViJtLTLEB57AaezdfsM8dz4kCKGYLTucytb3fzi9iE8UE2wB2s6AsTHp1omd"
+    },
+    "negative": {
+      "httpStatus": 200,
+      "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+      "signature": "4HFX91dtSKCACD3RgtwvgiwXFzLee3K2e4SVKiHRZFNYk3izQDniN9oDPfEjULLRyHhNiTayNtspfFoUEfv4eEzr",
+      "slot": 469713076,
+      "status": "NO_EXACT_SALE_MATCH",
+      "results": [],
+      "evidenceCache": {
+        "scope": "FINALIZED_FIXTURES_AND_BOUNDED_PROCESS_CACHE",
+        "rpcRequests": 0,
+        "fixtureHits": 1,
+        "cacheHits": 0,
+        "deduplicated": 0
+      },
+      "url": "https://solscan.io/tx/4HFX91dtSKCACD3RgtwvgiwXFzLee3K2e4SVKiHRZFNYk3izQDniN9oDPfEjULLRyHhNiTayNtspfFoUEfv4eEzr"
+    },
+    "original": {
+      "httpStatus": 200,
+      "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+      "signature": "479USJgwsJBry3Ki5LseVMjdHiwifdLAsYTYLfJFXfpA1r5fsfy3r2ftp4aQbBVyKTepJNWiN95UGsFV92WdLuhA",
+      "slot": 473626366,
+      "status": "SALE_RECONCILED",
+      "results": [
+        {
+          "instruction": "sell",
+          "protocol": "PumpSwap",
+          "seller": "2tgUbS9UMoQD6GkDZBiqKYCURnGrSb6ocYwRABrSJUvY",
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+          "tokenOutRaw": "1223452638537",
+          "quoteMint": "So11111111111111111111111111111111111111112",
+          "quoteProceedsRaw": "102876325",
+          "outerIndex": 2,
+          "settlement": {
+            "type": "TOKEN_ACCOUNT_CREDIT"
+          },
+          "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump_amm.json",
+          "signature": "479USJgwsJBry3Ki5LseVMjdHiwifdLAsYTYLfJFXfpA1r5fsfy3r2ftp4aQbBVyKTepJNWiN95UGsFV92WdLuhA",
+          "slot": 473626366,
+          "url": "https://solscan.io/tx/479USJgwsJBry3Ki5LseVMjdHiwifdLAsYTYLfJFXfpA1r5fsfy3r2ftp4aQbBVyKTepJNWiN95UGsFV92WdLuhA"
+        }
+      ],
+      "evidenceCache": {
+        "scope": "FINALIZED_FIXTURES_AND_BOUNDED_PROCESS_CACHE",
+        "rpcRequests": 0,
+        "fixtureHits": 1,
+        "cacheHits": 0,
+        "deduplicated": 0
+      },
+      "url": "https://solscan.io/tx/479USJgwsJBry3Ki5LseVMjdHiwifdLAsYTYLfJFXfpA1r5fsfy3r2ftp4aQbBVyKTepJNWiN95UGsFV92WdLuhA"
+    },
+    "sale2": {
+      "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+      "signature": "2X7h1c46CBgYg4Bm2tdG5RktcdsbWsEsV1K6tjzHkjQBG8q76kXT3nZW2kAuCZCMzTsopaJGFvLVqW28bQdiWvUa",
+      "slot": 473626366,
+      "status": "SALE_RECONCILED",
+      "results": [
+        {
+          "instruction": "sell",
+          "protocol": "PumpSwap",
+          "seller": "2tgUbS9UMoQD6GkDZBiqKYCURnGrSb6ocYwRABrSJUvY",
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+          "tokenOutRaw": "1216576003669",
+          "quoteMint": "So11111111111111111111111111111111111111112",
+          "quoteProceedsRaw": "102848858",
+          "outerIndex": 2,
+          "settlement": {
+            "type": "TOKEN_ACCOUNT_CREDIT"
+          },
+          "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump_amm.json",
+          "signature": "2X7h1c46CBgYg4Bm2tdG5RktcdsbWsEsV1K6tjzHkjQBG8q76kXT3nZW2kAuCZCMzTsopaJGFvLVqW28bQdiWvUa",
+          "slot": 473626366,
+          "url": "https://solscan.io/tx/2X7h1c46CBgYg4Bm2tdG5RktcdsbWsEsV1K6tjzHkjQBG8q76kXT3nZW2kAuCZCMzTsopaJGFvLVqW28bQdiWvUa"
+        }
+      ],
+      "evidenceCache": {
+        "scope": "FINALIZED_FIXTURES_AND_BOUNDED_PROCESS_CACHE",
+        "rpcRequests": 0,
+        "fixtureHits": 1,
+        "cacheHits": 0,
+        "deduplicated": 0
+      },
+      "url": "https://solscan.io/tx/2X7h1c46CBgYg4Bm2tdG5RktcdsbWsEsV1K6tjzHkjQBG8q76kXT3nZW2kAuCZCMzTsopaJGFvLVqW28bQdiWvUa"
+    },
+    "sale3": {
+      "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+      "signature": "5yajm5NADjKFoo1ujfgLYBM1h5ZJEUgxBaF9mDMb4EFEHGmztVTv7G954a87iKJhMmvmxzJJ3Kumr2M9VxK7F92b",
+      "slot": 473626348,
+      "status": "SALE_RECONCILED",
+      "results": [
+        {
+          "instruction": "sell",
+          "protocol": "PumpSwap",
+          "seller": "7tniNDS36StAX3bLWnDg1JLJ6Wozq6tgGRyeZQpD63Si",
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+          "tokenOutRaw": "34310121934",
+          "quoteMint": "So11111111111111111111111111111111111111112",
+          "quoteProceedsRaw": "2908568",
+          "outerIndex": 3,
+          "settlement": {
+            "type": "TOKEN_ACCOUNT_CREDIT"
+          },
+          "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump_amm.json",
+          "signature": "5yajm5NADjKFoo1ujfgLYBM1h5ZJEUgxBaF9mDMb4EFEHGmztVTv7G954a87iKJhMmvmxzJJ3Kumr2M9VxK7F92b",
+          "slot": 473626348,
+          "url": "https://solscan.io/tx/5yajm5NADjKFoo1ujfgLYBM1h5ZJEUgxBaF9mDMb4EFEHGmztVTv7G954a87iKJhMmvmxzJJ3Kumr2M9VxK7F92b"
+        }
+      ],
+      "evidenceCache": {
+        "scope": "FINALIZED_FIXTURES_AND_BOUNDED_PROCESS_CACHE",
+        "rpcRequests": 0,
+        "fixtureHits": 1,
+        "cacheHits": 0,
+        "deduplicated": 0
+      },
+      "url": "https://solscan.io/tx/5yajm5NADjKFoo1ujfgLYBM1h5ZJEUgxBaF9mDMb4EFEHGmztVTv7G954a87iKJhMmvmxzJJ3Kumr2M9VxK7F92b"
+    },
+    "curve2": {
+      "mint": "D8HzoMucT9uzgQ1sCpHmR4HQiZuKBmEwif6MkheSpump",
+      "signature": "5MCFPrm5nE8wCUrjoBqfqUk3t3rujhWbVsRgqqTN4bHtNrjhsYHW8YkPJxH1HQagedzrZHNBgUd8arYgxGy9orKS",
+      "slot": 469842737,
+      "status": "SALE_RECONCILED",
+      "results": [
+        {
+          "protocol": "Pump.fun bonding curve",
+          "instruction": "sell_v2",
+          "seller": "FCYMJzEw2GPh4FEpegUZX8m91YXUfqDJDXmNhkAS4kKU",
+          "mint": "D8HzoMucT9uzgQ1sCpHmR4HQiZuKBmEwif6MkheSpump",
+          "tokenOutRaw": "66121393913083",
+          "quoteMint": "NATIVE_SOL",
+          "quoteProceedsRaw": "6433086307",
+          "grossProceedsRaw": "6514517780",
+          "protocolFeeRaw": "61887919",
+          "creatorFeeRaw": "19543554",
+          "outerIndex": 2,
+          "innerIndex": 0,
+          "settlement": {
+            "type": "CURVE_NATIVE_SOL_SETTLEMENT",
+            "nativeBalanceReconciled": true,
+            "transactionFeeLamports": "9000"
+          },
+          "source": "https://github.com/pump-fun/pump-public-docs/blob/bc35796152027d2744ca02066d305438e34b67e7/idl/pump.json",
+          "signature": "5MCFPrm5nE8wCUrjoBqfqUk3t3rujhWbVsRgqqTN4bHtNrjhsYHW8YkPJxH1HQagedzrZHNBgUd8arYgxGy9orKS",
+          "slot": 469842737,
+          "url": "https://solscan.io/tx/5MCFPrm5nE8wCUrjoBqfqUk3t3rujhWbVsRgqqTN4bHtNrjhsYHW8YkPJxH1HQagedzrZHNBgUd8arYgxGy9orKS"
+        }
+      ],
+      "evidenceCache": {
+        "scope": "FINALIZED_FIXTURES_AND_BOUNDED_PROCESS_CACHE",
+        "rpcRequests": 0,
+        "fixtureHits": 1,
+        "cacheHits": 0,
+        "deduplicated": 0
+      },
+      "url": "https://solscan.io/tx/5MCFPrm5nE8wCUrjoBqfqUk3t3rujhWbVsRgqqTN4bHtNrjhsYHW8YkPJxH1HQagedzrZHNBgUd8arYgxGy9orKS"
+    }
+  },
+  "creator": {
+    "creator": "6qUtYLyyoYCNj1Snd6FkGfTAzXHgSWCS4nyg871VwD13",
+    "creatorStatus": "PROTOCOL_CREATOR_OBSERVED",
+    "consolidated": {
+      "creatorIdentity": {
+        "status": "PROTOCOL_CREATOR_OBSERVED",
+        "address": "6qUtYLyyoYCNj1Snd6FkGfTAzXHgSWCS4nyg871VwD13",
+        "evidence": [
+          {
+            "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+            "creator": "6qUtYLyyoYCNj1Snd6FkGfTAzXHgSWCS4nyg871VwD13",
+            "initiator": "6qUtYLyyoYCNj1Snd6FkGfTAzXHgSWCS4nyg871VwD13",
+            "signature": "4j7mGriw2qDghSDFxCwiiMFvvNSjo8MYvwUQSCWvimqKcEDCd7wtDNuP9j7WEW9eY43dLSiEtWZ4JxSMrvRGzq49",
+            "slot": 469698780,
+            "program": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+            "instruction": "create_v2",
+            "source": "https://github.com/pump-fun/pump-public-docs/blob/main/idl/pump.json",
+            "url": "https://solscan.io/tx/4j7mGriw2qDghSDFxCwiiMFvvNSjo8MYvwUQSCWvimqKcEDCd7wtDNuP9j7WEW9eY43dLSiEtWZ4JxSMrvRGzq49"
+          }
+        ]
+      },
+      "initialAllocation": [
+        {
+          "signature": "4j7mGriw2qDghSDFxCwiiMFvvNSjo8MYvwUQSCWvimqKcEDCd7wtDNuP9j7WEW9eY43dLSiEtWZ4JxSMrvRGzq49",
+          "slot": 469698780,
+          "postRaw": "3520918746848",
+          "preRaw": "0",
+          "limitation": "Direct owner balances recorded in launch transaction; not total allocation through other wallets."
+        }
+      ],
+      "currentDirectHoldings": {
+        "address": "6qUtYLyyoYCNj1Snd6FkGfTAzXHgSWCS4nyg871VwD13",
+        "roles": [
+          "PROTOCOL_CREATOR",
+          "INITIALIZATION_FEE_PAYER"
+        ],
+        "status": "ROLE_BALANCE_OBSERVED",
+        "rawBalance": "0",
+        "slot": 473649894,
+        "tokenAccounts": [
+          "DqcoYySipeTFXRCN2thXY838BxExid99mdNrfYY39S5D"
+        ],
+        "source": "Solana confirmed RPC",
+        "url": "https://solscan.io/account/6qUtYLyyoYCNj1Snd6FkGfTAzXHgSWCS4nyg871VwD13",
+        "limitation": "Balance belongs to an observed initialization role, not an established project creator."
+      },
+      "observedFunding": [
+        {
+          "signature": "4X1Wx7A3JYLN67VjWmRisvfGAou7yaWZgRB6frjzxgDJq5bLtMRriqXE17BmnQa43vPCzfx6zuHx7FNdQchyf7a8",
+          "slot": 469698769,
+          "url": "https://solscan.io/tx/4X1Wx7A3JYLN67VjWmRisvfGAou7yaWZgRB6frjzxgDJq5bLtMRriqXE17BmnQa43vPCzfx6zuHx7FNdQchyf7a8",
+          "source": "49CfXAr58cCTGJnYsbm16fEsE5JRpdR8QQP8E1ZinGCq",
+          "lamports": 113510000,
+          "preLaunch": true,
+          "limitation": "Incoming transfer, not necessarily original funding."
+        },
+        {
+          "signature": "2MYvNc1aZkQ955Lw6X8h3VpN15qLXHsTibBHQ6VFieDSyZhXCy35RP8SQ32zKd8dPQtpDbixAZ9pN3akHeetZjsu",
+          "slot": 469698816,
+          "url": "https://solscan.io/tx/2MYvNc1aZkQ955Lw6X8h3VpN15qLXHsTibBHQ6VFieDSyZhXCy35RP8SQ32zKd8dPQtpDbixAZ9pN3akHeetZjsu",
+          "source": "HUpEuDs3FC4T3xMZ3n8EGe16QLJFSnjbd1Kzh6C22YyP",
+          "lamports": 12500000,
+          "preLaunch": false,
+          "limitation": "Incoming transfer, not necessarily original funding."
+        },
+        {
+          "signature": "9Yt6sDj1z7tdB3uix2hzmXj71CcRARQAkchp277JG2XaZ1CiDsoEnYLAJ3CjCm6LPZHrHcHaNMkTAvgkT4Hy3r2",
+          "slot": 469702824,
+          "url": "https://solscan.io/tx/9Yt6sDj1z7tdB3uix2hzmXj71CcRARQAkchp277JG2XaZ1CiDsoEnYLAJ3CjCm6LPZHrHcHaNMkTAvgkT4Hy3r2",
+          "source": "EfL98Ke9dKnA4ZtzimQkvMSP6Qn4H32hTS1BBrcTcsoX",
+          "lamports": 93845297,
+          "preLaunch": false,
+          "limitation": "Incoming transfer, not necessarily original funding."
+        }
+      ],
+      "directTransfers": [
+        {
+          "source": "DqcoYySipeTFXRCN2thXY838BxExid99mdNrfYY39S5D",
+          "destination": "E1TtZ1wKAnBypoVDB4ZE2RU4DkPu6GLMJ4NpJqKhnomD",
+          "recipient": "77c1MWu4q3U7Gy1Ly4742mQpqSZVkVLyeBB1k4gwrnv5",
+          "rawAmount": "3520918746848",
+          "decimals": 6,
+          "classification": "DIRECT_WALLET_TRANSFER",
+          "signature": "4FpbS4C8imB8P6kE2DXkkeCpXTPiZvjU5WaqkTvfGoEWZaQVEV5ZxeSKbrXrNwShZXknaEewwiGTmFT4iucA9cqA",
+          "slot": 469698800,
+          "url": "https://solscan.io/tx/4FpbS4C8imB8P6kE2DXkkeCpXTPiZvjU5WaqkTvfGoEWZaQVEV5ZxeSKbrXrNwShZXknaEewwiGTmFT4iucA9cqA"
+        }
+      ],
+      "incineratorTransfers": [],
+      "recipientMovements": [
+        {
+          "originSignature": "4FpbS4C8imB8P6kE2DXkkeCpXTPiZvjU5WaqkTvfGoEWZaQVEV5ZxeSKbrXrNwShZXknaEewwiGTmFT4iucA9cqA",
+          "signature": "4HFX91dtSKCACD3RgtwvgiwXFzLee3K2e4SVKiHRZFNYk3izQDniN9oDPfEjULLRyHhNiTayNtspfFoUEfv4eEzr",
+          "slot": 469713076,
+          "recipient": "77c1MWu4q3U7Gy1Ly4742mQpqSZVkVLyeBB1k4gwrnv5",
+          "destination": "1nc1nerator11111111111111111111111111111111",
+          "rawAmount": "3520918000000",
+          "decimals": 6,
+          "status": "INCINERATOR_TRANSFER_OBSERVED",
+          "url": "https://solscan.io/tx/4HFX91dtSKCACD3RgtwvgiwXFzLee3K2e4SVKiHRZFNYk3izQDniN9oDPfEjULLRyHhNiTayNtspfFoUEfv4eEzr",
+          "limitation": "Observed onward transfer; fungible token provenance and supply reduction not established."
+        }
+      ],
+      "verifiedMarketSales": [],
+      "reconciledProceeds": [],
+      "actualTokenBurns": [],
+      "creatorFeeCollection": [],
+      "feeCollectionScope": "Creator-wide collections; attribution to this mint requires pool or curve linkage.",
+      "previousLaunches": [],
+      "remainingExposure": {
+        "status": "BOUNDED_HISTORY_AND_DIRECT_HOLDINGS_ONLY",
+        "unresolvedDisposals": [],
+        "relatedWalletOwnership": "NOT_ESTABLISHED",
+        "zeroDirectHoldingsDoesNotEstablishSale": true,
+        "historyScope": {
+          "requested": 10,
+          "retrieved": 10,
+          "errors": 0,
+          "discovery": "OLDEST_AND_RECENT_BOUNDED"
+        }
+      }
+    },
+    "rpcConsumption": {
+      "providerRequests": 16,
+      "methods": {
+        "getTransactionsForAddress": 3,
+        "getTransaction": 10,
+        "getTokenAccountsByOwner": 2,
+        "getSignaturesForAddress": 1
+      }
+    },
+    "scope": {
+      "requested": 10,
+      "retrieved": 10,
+      "errors": 0,
+      "discovery": "OLDEST_AND_RECENT_BOUNDED"
+    }
+  },
+  "automatedTests": {
+    "total": 202,
+    "passed": 198,
+    "failed": 0,
+    "skipped": 4,
+    "skipReason": "Historical browser export binaries absent; newly generated live export verified separately."
+  },
+  "video": {
+    "status": "EXPORTED_MEDIA_STREAMS_VERIFIED_OWNER_REVIEW_PENDING",
+    "durationSeconds": 153.268,
+    "width": 540,
+    "height": 960,
+    "videoCodec": "vp8",
+    "audioCodec": "opus",
+    "bytes": 4347522,
+    "libraryFileId": "libfile_fde3_f-4f1cac12e6048191b2da3030c688a431_bf70ebf964a081919069550adbc976b6"
+  },
+  "rpc": {
+    "directPublicAttempts": 37,
+    "alchemyTransactionAttempts": 2,
+    "legacySaleEndpoint": 1,
+    "instrumentedCreatorInvocations": [
+      16,
+      16
+    ],
+    "cachedLiveFixtureChecks": 8,
+    "cachedLiveFixtureRpcRequests": 0,
+    "overallTotal": "Unavailable: legacy creator inspection and three browser research flows did not meter all RPC paths."
+  },
+  "limits": [
+    "Runtime cache is per process; persisted regression fixtures survive deployments. General cross-instance persistent transaction caching is not implemented.",
+    "Pump.fun sell_v2 native SOL settlement validated; sell/sell_v3 recognition is present but unvalidated settlement variants fail closed.",
+    "Unsupported fee schedules, delegated burns, multisig authorities and ambiguous routed settlements fail closed.",
+    "Creator fee sweep instruction recognition is validated; these sweeps do not by themselves prove creator receipt or token-specific fee collection.",
+    "Full independent Solscan balance corroboration unavailable; accessible curve page corroborated the Sell action label.",
+    "No beneficial ownership, independent holder ownership or creator-related wallet identity inferred."
+  ]
+}
