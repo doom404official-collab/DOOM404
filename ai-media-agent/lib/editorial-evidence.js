@@ -1,3 +1,5 @@
+const instructionLike=/(?:ignore|disregard).{0,60}(?:previous|system|developer|instructions)|<\|(?:system|assistant|im_start)\|>|(?:system|developer)\s*:/i;
+function sanitizeEvidence(value){if(typeof value==="string")return instructionLike.test(value)?"[Instruction-like external text omitted; original retained in technical evidence]":value;if(Array.isArray(value))return value.map(sanitizeEvidence);if(value&&typeof value==="object")return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,sanitizeEvidence(v)]));return value;}
 const DOMAINS=["market","security","creator","holders","liquidity","integrity","utility","relationships"];
 const pick=(o,keys)=>Object.fromEntries(keys.filter(k=>o&&Object.hasOwn(o,k)).map(k=>[k,o[k]]));
 const list=(a,keys)=>Array.isArray(a)?a.map(x=>pick(x,keys)):undefined;
@@ -21,6 +23,6 @@ function buildEvidence(report){
  const cred=report.credibility;if(cred)add("utility",{...Object.fromEntries(["product","application","development","integrations","usage","utilityAttribution"].filter(k=>cred[k]).map(k=>[k,pick(cred[k],["status","detail","source","limitation","url"])])),repositories:list(cred.repositories,["name","url","archived","commit"])},"project_evidence_with_source_specific_limitations");
  add("utility",e.reportedProjectClaims,"reported_claims_not_verified");
  const references=[...new Map((report.references||[]).filter(x=>x.signature).map(x=>[x.signature,pick(x,["signature","slot","url"])] )).values()];
- return {version:2,mint:report.mint,identity:report.identity||{},observedAt:report.observedAt||null,coverage:DOMAINS.map(domain=>({domain,available:facts.some(f=>f.domain===domain)})),facts,unresolved:[...new Set(report.unresolved||[])],references};
+ return sanitizeEvidence({version:2,mint:report.mint,identity:report.identity||{},observedAt:report.observedAt||null,coverage:DOMAINS.map(domain=>({domain,available:facts.some(f=>f.domain===domain)})),facts,unresolved:[...new Set(report.unresolved||[])],references});
 }
-module.exports={buildEvidence};
+module.exports={buildEvidence,sanitizeEvidence};

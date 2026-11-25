@@ -15,7 +15,7 @@ async function collect(name,mint){
 module.exports=async(req,res)=>{
  if(!gate(req,res))return;
  const {mint,sessionId,...extra}=req.body||{};
- if(!MINT.test(mint||'')||!SESSION.test(sessionId||'')||Object.keys(extra).length)return res.status(400).json({error:'INVALID_RESEARCH_REQUEST'});
+ if(typeof mint!=='string'||typeof sessionId!=='string'||!MINT.test(mint||'')||!SESSION.test(sessionId||'')||Object.keys(extra).length)return res.status(400).json({error:'INVALID_RESEARCH_REQUEST'});
  for(const [id,until] of usedSessions)if(until<Date.now())usedSessions.delete(id);
  if(usedSessions.has(sessionId))return res.status(409).json({error:'RESEARCH_SESSION_REPLAY'});
  if(usedSessions.size>=10000)return res.status(429).json({error:'RESEARCH_CAPACITY'});
