@@ -9,7 +9,7 @@ function setup({decision='ADMITTED',fault=false}={}){let clock=Date.now(),db=0,u
  function load(file,modules={}){const ctx={module:{exports:{}},require:n=>modules[n]||require(require.resolve(n,{paths:[path.dirname(path.join(root,file))]})),process:{env},Date:Clock,Buffer,URL,AbortSignal,console,fetch:async()=>{db++;if(fault)throw Error('private database failure');return {ok:true,json:async()=>({status:decision})}}};vm.runInNewContext(fs.readFileSync(path.join(root,file),'utf8'),ctx);return ctx.module.exports;}
  const adapter=load('lib/durable-admission.js'),security=load('lib/research-security.js');
  const permits=load('lib/research-permit.js',{'./durable-admission':adapter,'./research-security':security});
- const admission={...adapter,admit:async(q,r,p,n)=>{if(!await adapter.admit(q,r,p,n))return false;const k=p+':'+n;if(consumed.has(k)){r.status(409).json({error:'ADMISSION_REPLAY'});return false;}consumed.add(k);return true;}};
+ const admission={...adapter,admit:async(q,r,p,n,proof)=>{if(!await adapter.admit(q,r,p,n,proof))return false;const k=p+':'+n;if(consumed.has(k)){r.status(409).json({error:'ADMISSION_REPLAY'});return false;}consumed.add(k);return true;}};
  const issue=load('api/research-permit.js',{'../lib/durable-admission':admission,'../lib/research-security':security,'../lib/research-permit':permits});
  const investigate=load('api/investigate.js',{'../lib/durable-admission':admission,'../lib/research-security':security,'../lib/research-permit':permits,'./owners':async(q,r)=>{upstream++;r.status(503).json({});}});
  return {permits,issue,investigate,counts:()=>({db,upstream}),advance:n=>{clock+=n},clear:()=>consumed.clear(),fresh:()=>permits.issue(req(),mint),load};
@@ -40,3 +40,5 @@ test('issuance reissue preserves window and refuses expired proof',async()=>{con
 test('research signature cannot authorize narration',()=>{const h=setup(),p=h.fresh(),security=h.load('lib/research-security.js');assert.throws(()=>security.verify(p.researchPermit,{mint,sessionId:p.sessionId,purpose:'narration'}));});
 test('IPv6 spelling changes preserve permit binding; spoofed secondary headers ignored',()=>{const h=setup(),q=req({},'2001:db8::1'),p=h.permits.issue(q,mint);const q2=req({},'2001:0db8:0:0:0:0:0:1');q2.headers['x-forwarded-for']='198.51.100.5';assert.ok(h.permits.verify(q2,p.researchPermit,binding(p)));});
 test('missing or invalid trusted identity rejects permit',()=>{const h=setup(),p=h.fresh();for(const ip of ['',undefined,'fake','192.0.2.1,192.0.2.2']){const q=req();q.headers['x-vercel-forwarded-for']=ip;assert.throws(()=>h.permits.verify(q,p.researchPermit,binding(p)));}});
+
+test("database expiry after permit verification prevents upstream work",async()=>{const h=setup({decision:"EXPIRED"}),p=h.fresh(),r=res();await h.investigate(req({mint,sessionId:p.sessionId,researchPermit:p.researchPermit}),r);assert.equal(r.code,403);assert.deepEqual(h.counts(),{db:1,upstream:0});});

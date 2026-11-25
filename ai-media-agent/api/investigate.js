@@ -18,9 +18,9 @@ module.exports=async(req,res)=>{
  if(!req.body||typeof req.body!=='object'||Array.isArray(req.body))return res.status(400).json({error:'INVALID_RESEARCH_REQUEST'});
  const {mint,sessionId,researchPermit,...extra}=req.body;
  if(typeof mint!=='string'||typeof sessionId!=='string'||!MINT.test(mint||'')||!SESSION.test(sessionId||'')||Object.keys(extra).length)return res.status(400).json({error:'INVALID_RESEARCH_REQUEST'});
- try{permits.verify(req,researchPermit,{mint,sessionId});}catch{return res.status(403).json({error:'RESEARCH_PERMIT_REQUIRED'});}
+ let permit;try{permit=permits.verify(req,researchPermit,{mint,sessionId});}catch{return res.status(403).json({error:'RESEARCH_PERMIT_REQUIRED'});}
  // Consume the signed session, not the replaceable permit nonce.
- if(!await admit(req,res,'research',sessionId))return;
+ if(!await admit(req,res,'research',sessionId,permit))return;
  try{permits.verify(req,researchPermit,{mint,sessionId});}catch{return res.status(403).json({error:'RESEARCH_PERMIT_REQUIRED'});}
  const started=Date.now(),stages=[];
  try{

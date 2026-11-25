@@ -8,17 +8,18 @@ function clientDigest(req){
  const ip=isIP(raw.trim())===6?new URL('http://['+raw.trim()+']').hostname:raw.trim();
  return crypto.createHmac('sha256',key).update(ip).digest('hex');
 }
-async function admit(req,res,purpose,nonce){
+async function admit(req,res,purpose,nonce,permit){
  if(typeof nonce!=="string"||!UUID.test(nonce)||!["research","narration","permit"].includes(purpose)){res.status(400).json({error:"INVALID_ADMISSION_NONCE"});return false;}
  try{
  const url=new URL(process.env.SUPABASE_URL),key=process.env.SUPABASE_SERVICE_ROLE_KEY;
  if(url.protocol!=="https:"||!url.hostname.endsWith(".supabase.co")||!key||process.env.VERCEL_ENV!=="preview")throw Error("CONFIG");
  // Vercel supplies this header. Never fall back to client-selected proxy headers.
  const digest=clientDigest(req);
- const response=await fetch(new URL("/rest/v1/rpc/ai_media_v16_preview_admit",url),{method:"POST",redirect:"error",headers:{apikey:key,...(key.startsWith("sb_secret_")?{}:{Authorization:"Bearer "+key}),"Content-Type":"application/json"},body:JSON.stringify({p_purpose:purpose,p_digest:digest,p_nonce:nonce}),signal:AbortSignal.timeout(5000)});
+ const response=await fetch(new URL("/rest/v1/rpc/ai_media_v16_preview_admit_v2",url),{method:"POST",redirect:"error",headers:{apikey:key,...(key.startsWith("sb_secret_")?{}:{Authorization:"Bearer "+key}),"Content-Type":"application/json"},body:JSON.stringify({p_purpose:purpose,p_digest:digest,p_nonce:nonce,p_issued_ms:purpose==="research"?permit?.issuedAt:null,p_expiry_ms:purpose==="research"?permit?.expiresAt:null}),signal:AbortSignal.timeout(5000)});
  if(!response.ok)throw Error("UPSTREAM");
  const {status}=await response.json();
  if(status==="ADMITTED")return true;
+ if(status==="EXPIRED"){res.status(403).json({error:"RESEARCH_PERMIT_REQUIRED"});return false;}
  if(status==="REPLAY"){res.status(409).json({error:"ADMISSION_REPLAY"});return false;}
  if(status==="RATE_LIMIT"){res.status(429).json({error:"ADMISSION_RATE_LIMIT"});return false;}
  if(status==="INVALID"){res.status(400).json({error:"INVALID_ADMISSION"});return false;}
