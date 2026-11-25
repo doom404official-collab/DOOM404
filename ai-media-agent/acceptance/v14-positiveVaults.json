@@ -1,0 +1,66 @@
+{
+  "context": {
+    "apiVersion": "4.4.1",
+    "slot": 473602763
+  },
+  "value": [
+    {
+      "data": {
+        "parsed": {
+          "info": {
+            "isNative": false,
+            "mint": "7LSsEoJGhLeZzGvDofTdNg7M3JttxQqGWNLo6vWMpump",
+            "owner": "GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+            "state": "initialized",
+            "tokenAmount": {
+              "amount": "675148640594619",
+              "decimals": 6,
+              "uiAmount": 675148640.594619,
+              "uiAmountString": "675148640.594619"
+            }
+          },
+          "type": "account"
+        },
+        "program": "spl-token",
+        "space": 165
+      },
+      "executable": false,
+      "lamports": 2039280,
+      "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "rentEpoch": 18446744073709552000,
+      "space": 165
+    },
+    {
+      "data": {
+        "parsed": {
+          "info": {
+            "isNative": true,
+            "mint": "So11111111111111111111111111111111111111112",
+            "owner": "5zpyutJu9ee6jFymDGoK7F6S5Kczqtc9FomP3ueKuyA9",
+            "rentExemptReserve": {
+              "amount": "2039280",
+              "decimals": 9,
+              "uiAmount": 0.00203928,
+              "uiAmountString": "0.00203928"
+            },
+            "state": "initialized",
+            "tokenAmount": {
+              "amount": "839379770380",
+              "decimals": 9,
+              "uiAmount": 839.37977038,
+              "uiAmountString": "839.37977038"
+            }
+          },
+          "type": "account"
+        },
+        "program": "spl-token",
+        "space": 165
+      },
+      "executable": false,
+      "lamports": 839388918649,
+      "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "rentEpoch": 18446744073709552000,
+      "space": 165
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "context": {
+    "apiVersion": "4.4.0",
+    "slot": 473603414
+  },
+  "value": [
+    {
+      "data": {
+        "parsed": {
+          "info": {
+            "extensions": [
+              {
+                "extension": "immutableOwner"
+              }
+            ],
+            "isNative": false,
+            "mint": "XpTG8S9uTwaHCbJ2HM8ZUJGSQ9gEynAikHGdbLTpump",
+            "owner": "AAMRqX266rQFEnSfkppqihRJT3MGERwZxrBh5KR1wrvE",
+            "state": "initialized",
+            "tokenAmount": {
+              "amount": "996526051755099",
+              "decimals": 6,
+              "uiAmount": 996526051.755099,
+              "uiAmountString": "996526051.755099"
+            }
+          },
+          "type": "account"
+        },
+        "program": "spl-token-2022",
+        "space": 170
+      },
+      "executable": false,
+      "lamports": 1513840,
+      "owner": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+      "rentEpoch": 18446744073709552000,
+      "space": 170
+    },
+    {
+      "data": {
+        "parsed": {
+          "info": {
+            "decimals": 6,
+            "extensions": [
+              {
+                "extension": "metadataPointer",
+                "state": {
+                  "authority": null,
+                  "metadataAddress": "XpTG8S9uTwaHCbJ2HM8ZUJGSQ9gEynAikHGdbLTpump"
+                }
+              },
+              {
+                "extension": "tokenMetadata",
+                "state": {
+                  "additionalMetadata": [],
+                  "mint": "XpTG8S9uTwaHCbJ2HM8ZUJGSQ9gEynAikHGdbLTpump",
+                  "name": "MrBeast",
+                  "symbol": "BEAST",
+                  "updateAuthority": null,
+                  "uri": "https://turbo-gateway.com/QHc0-sOY6GRVugULidrw6jNOQuOXVOuljzx56aXZ4D8?ext=json"
+                }
+              }
+            ],
+            "freezeAuthority": null,
+            "isInitialized": true,
+            "mintAuthority": null,
+            "supply": "1000000000000000"
+          },
+          "type": "mint"
+        },
+        "program": "spl-token-2022",
+        "space": 408
+      },
+      "executable": false,
+      "lamports": 2722880,
+      "owner": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+      "rentEpoch": 18446744073709552000,
+      "space": 408
+    }
+  ]
+}
