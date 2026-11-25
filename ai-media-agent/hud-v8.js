@@ -4,7 +4,8 @@ async function begin(mode){stop();selectedMode=mode;catMode=mode==="hud-cat"||mo
 function stop(){if(cat){cat.pause();cat.removeAttribute("src");cat.load();cat=null}catMode=false}
 const labels=["REPORT OVERVIEW","VERIFIED INFRASTRUCTURE","ACCOUNT CONCENTRATION","UNRESOLVED CLASSIFICATION","VERIFIED TRANSFER","FUNDING SIGNIFICANCE","LIMITATIONS"];
 function reset(){last=-1;changed=0}
-function paint(c,i,p,episode,scenes){
+function captionPage(caption,progress){const words=String(caption).split(/\s+/);const pages=Math.max(1,Math.ceil(words.length/28));const index=Math.min(pages-1,Math.floor(Math.max(0,Math.min(1,progress))*pages));return words.slice(index*28,(index+1)*28).join(" ")}
+function paint(c,i,p,episode,scenes,sceneProgress=0){
  const dynamic=episode?.universal?episode.scenes[i]:null;const now=performance.now();if(last!==i){last=i;changed=now}
  const t=Math.min(1,(now-changed)/300);
  c.fillStyle="#090a0e";c.fillRect(0,0,540,960);
@@ -32,7 +33,7 @@ function paint(c,i,p,episode,scenes){
  c.fillStyle="#14161c";c.strokeStyle="#79303d";c.lineWidth=1.5;c.beginPath();c.moveTo(16,730);c.lineTo(34,712);c.lineTo(524,712);c.lineTo(524,925);c.lineTo(506,943);c.lineTo(16,943);c.closePath();c.fill();c.stroke();
  c.strokeStyle="#ff4053";c.lineWidth=3;c.beginPath();c.moveTo(16,760);c.lineTo(16,730);c.lineTo(34,712);c.lineTo(130,712);c.moveTo(410,943);c.lineTo(506,943);c.lineTo(524,925);c.lineTo(524,900);c.stroke();
  c.save();c.globalAlpha=.65+.35*t;c.fillStyle="#ff5268";c.font="bold 15px sans-serif";c.fillText(String(i+1).padStart(2,"0")+" / "+(dynamic?.label||labels[i]),32,739,476);
- c.fillStyle="#f4f4f6";let lines=[],fontSize=21;const splitCaption=()=>{const out=[];let line="";for(const word of scenes[i].split(/\s+/)){const next=line?line+" "+word:word;if(c.measureText(next).width>476&&line){out.push(line);line=word}else line=next}if(line)out.push(line);return out};do{c.font=fontSize+"px sans-serif";lines=splitCaption();if(lines.length*(fontSize+3)<=132)break;fontSize--}while(fontSize>=15);let y=768;for(const line of lines){c.fillText(line,32,y);y+=fontSize+3}c.restore();
+ c.fillStyle="#f4f4f6";let lines=[],fontSize=21;const splitCaption=()=>{const out=[];let line="";for(const word of captionPage(scenes[i],sceneProgress).split(/\s+/)){const next=line?line+" "+word:word;if(c.measureText(next).width>476&&line){out.push(line);line=word}else line=next}if(line)out.push(line);return out};do{c.font=fontSize+"px sans-serif";lines=splitCaption();if(lines.length*(fontSize+3)<=132)break;fontSize--}while(fontSize>=15);let y=768;for(const line of lines){c.fillText(line,32,y);y+=fontSize+3}c.restore();
  c.fillStyle="#aeb0ba";c.font="12px sans-serif";c.fillText("PARTIAL EVIDENCE · NOT A SAFETY RATING",32,910);
  for(let j=0;j<7;j++){c.fillStyle=j<=i?"#ff4053":"#383943";c.fillRect(32+j*69,923,63,4)}
 }
