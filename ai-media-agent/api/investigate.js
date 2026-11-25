@@ -31,7 +31,7 @@ module.exports=async(req,res)=>{
  const evidence=buildEvidence(report);stages.push({stage:'evidence',bytes:Buffer.byteLength(JSON.stringify(evidence)),facts:evidence.facts.length,failedModules:results.map((x,i)=>x.status==='rejected'?i:null).filter(x=>x!==null)});
  if(key&&model){try{let correction=null;for(let attempt=1;attempt<=2;attempt++){
  const t=Date.now(),result=await synthesize(report,{key,model,correction});stages.push({stage:'generation',attempt,ms:Date.now()-t,usage:result.usage});
- const rt=Date.now(),audit=await review(result.draft,result.evidence,{key,model});stages.push({stage:'review',attempt,ms:Date.now()-rt,approved:audit.approved,usage:audit.usage,issueCount:audit.issues.length});
+ const rt=Date.now(),audit=await review(result.draft,result.evidence,{key,model});stages.push({stage:'review',attempt,ms:Date.now()-rt,approved:audit.approved,usage:audit.usage,issueCount:audit.issues.length,issues:audit.issues.slice(0,8).map(x=>String(x).replace(/sk-[A-Za-z0-9_-]+/g,"[redacted]").slice(0,600))});
  if(audit.approved){report.headline=result.draft.headline;report.scenes=result.draft.scenes.map(s=>({label:s.role.toUpperCase().replaceAll('_',' '),value:'EVIDENCE-LED REPORT',note:'AI-REVIEWED EDITORIAL',caption:s.caption,evidenceIds:s.evidenceIds,evidenceCards:s.evidenceIds.map(id=>result.evidence.facts.find(f=>f.id===id)).filter(Boolean)}));report.script=report.scenes.map(s=>s.caption).join(' ');status='AI_REVIEW_PASSED';reason=null;break;}
  reason='REVIEW_REJECTED';correction={draft:result.draft,issues:audit.issues};
  }}catch(e){reason=e?.name==='TimeoutError'?'UPSTREAM_TIMEOUT':'EDITORIAL_FAILED';}}
