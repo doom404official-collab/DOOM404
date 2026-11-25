@@ -84,7 +84,9 @@ function build(mint,h,r,context={}){
  if(s.label==="EXTERNAL SWAP QUOTE")return "Jupiter returned a buy quote for this token. That shows a quoted route exists, not that you can exit a position at the displayed price.";
  return s.caption;
  };
- const narrated=ranked.map((s,i)=>({...s,caption:explain(s)}));
+ const exitRows=(Array.isArray(context.exitRisk)?context.exitRisk:[]).filter(q=>[100,500,1000].includes(q.targetUsd)&&q.status==="SELL_QUOTE_OBSERVED"&&Number.isFinite(q.proceedsUsdc)&&q.proceedsUsdc>0);
+ const exitNarrative=exitRows.length?" Read-only sell quotes: "+exitRows.map(q=>usd(q.targetUsd)+" reference position returns approximately "+q.proceedsUsdc.toFixed(2)+" USDC").join("; ")+". These are quotes, not executed trades.":" No validated sell quote was available for the requested sizes.";
+ const narrated=ranked.map((s,i)=>({...s,caption:explain(s)+(domains[s.label]==="liquidity"?exitNarrative:"")}));
  const takeaway=ranked.length?"Before risking capital, focus on "+themes[ranked[0].label]+". "+actions[ranked[0].label]+(ranked[1]?" "+actions[ranked[1].label]:"")+(ranked[2]?" "+actions[ranked[2].label]:""):"There is not enough evidence for a token-specific risk conclusion.";
  const safeName=String(name).replace(/[\x00-\x1f\x7f]/g," ").slice(0,100);
  const scenes=[{label:"TOKEN OVERVIEW",value:name,note:project?project.category+" · SOLANA":"SOLANA · "+short,caption:"Welcome to DOOM404 Intelligence. Today we examine "+safeName+" on Solana. "+(project?project.utility:ranked.length?"Our briefing focuses on "+themes[ranked[0].label]+".":"The available evidence is limited.")},
