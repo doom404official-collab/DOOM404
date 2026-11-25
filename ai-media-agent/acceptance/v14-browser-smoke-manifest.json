@@ -1,0 +1,2977 @@
+{
+  "version": 13,
+  "status": "REVIEW_ONLY_NOT_PUBLISHED",
+  "synchronizedSnapshot": false,
+  "evidence": {
+    "universal": true,
+    "eligible": true,
+    "intelligence": {
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "version": "V14_EVIDENCE_AGGREGATOR_2",
+      "findings": [
+        {
+          "id": "active-authorities",
+          "priority": 100,
+          "observation": "Active mint and freeze authority observed.",
+          "implication": "Check who controls these permissions before trading.",
+          "evidence": {
+            "source": "token-context",
+            "slot": 473605199
+          }
+        },
+        {
+          "id": "editorial-NON-EXCLUDED CONCENTRATION",
+          "priority": 94,
+          "observation": "After separating verified infrastructure, non-excluded sampled accounts hold 49.18 percent of supply. These accounts are not proven independent.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-TOKEN AUTHORITIES",
+          "priority": 85,
+          "observation": "The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-PAIR LIQUIDITY",
+          "priority": 80,
+          "observation": "The selected pair reports $2,247,400 in liquidity. Available liquidity affects execution and potential price impact.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-EXTERNAL SWAP QUOTE",
+          "priority": 76,
+          "observation": "Jupiter returned a positive swap quote for this exact mint. This demonstrates quote availability, not an executed swap or a functioning project-owned application.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "Jupiter quote API",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-ACCOUNT CONCENTRATION",
+          "priority": 70,
+          "observation": "The largest 20 token accounts hold 49.18% of supply. This measures account concentration, not beneficial ownership.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        },
+        {
+          "id": "non-excluded-concentration",
+          "priority": 62,
+          "observation": "Non-excluded sampled accounts hold 49.18163% of supply.",
+          "implication": "Verified pool and bonding inventory is separated; remaining accounts are not proven independent.",
+          "evidence": {
+            "source": "owners",
+            "slot": 473605195,
+            "raw": {
+              "supplyRaw": "9196424128728132",
+              "sampledRaw": "4522951371444617",
+              "verifiedInfrastructureRaw": "0",
+              "nonExcludedRaw": "4522951371444617",
+              "unresolvedOwnerRaw": "0",
+              "outsideSampleRaw": "4673472757283515",
+              "reconciled": true,
+              "percentagePrecision": 6
+            }
+          }
+        },
+        {
+          "id": "account-concentration",
+          "priority": 60,
+          "observation": "Top 20 token accounts hold 49.18163% of supply.",
+          "implication": "Account concentration is not beneficial ownership; investigate pool inventory and linked owners.",
+          "evidence": {
+            "source": "owners",
+            "observedAt": "2026-11-25T04:02:34.328Z",
+            "slot": 473605195
+          }
+        },
+        {
+          "id": "editorial-TRADING ACTIVITY",
+          "priority": 60,
+          "observation": "The selected pair reports 78684 buys and 77832 sells over 24 hours. Trade counts do not establish unique traders or manipulation.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-24H PRICE MOVEMENT",
+          "priority": 55,
+          "observation": "The selected pair reports a 24-hour price change of 0.09 percent.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        },
+        {
+          "id": "reported-liquidity",
+          "priority": 40,
+          "observation": "Selected pair reports $2247372.4 liquidity.",
+          "implication": "Reported liquidity is not executable sell depth or proof of withdrawal safety.",
+          "evidence": {
+            "source": "DexScreener",
+            "pairAddress": "DJNtGuBGEQiUCWE8F981M2C3ZghZt2XLD8f2sQdZ6rsZ",
+            "observedAt": "2026-11-25T04:02:35.162Z"
+          }
+        },
+        {
+          "id": "editorial-OWNER RESOLUTION",
+          "priority": 20,
+          "observation": "Controlling addresses were identified for 20 of 20 sampled token accounts.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-RECENT SAMPLE",
+          "priority": 10,
+          "observation": "12 recent transactions were retrieved, with 0 direct transfer observations between sampled addresses.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-SAMPLE COVERAGE",
+          "priority": 5,
+          "observation": "The concentration calculation covers 20 largest token accounts from the confirmed RPC response.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        }
+      ],
+      "topInsights": [
+        {
+          "id": "editorial-NON-EXCLUDED CONCENTRATION",
+          "priority": 94,
+          "observation": "After separating verified infrastructure, non-excluded sampled accounts hold 49.18 percent of supply. These accounts are not proven independent.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-TOKEN AUTHORITIES",
+          "priority": 85,
+          "observation": "The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-PAIR LIQUIDITY",
+          "priority": 80,
+          "observation": "The selected pair reports $2,247,400 in liquidity. Available liquidity affects execution and potential price impact.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              },
+              {
+                "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+                "slot": 473375492,
+                "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+              }
+            ]
+          }
+        }
+      ],
+      "rankedScenes": [
+        {
+          "label": "NON-EXCLUDED CONCENTRATION",
+          "value": "49.18%",
+          "note": "SAMPLED TOP 20 \u00b7 NOT INDEPENDENCE",
+          "caption": "After separating verified infrastructure, non-excluded sampled accounts hold 49.18 percent of supply. These accounts are not proven independent.",
+          "priority": 94,
+          "category": "VERIFIED OBSERVATIONS",
+          "source": "Solana RPC"
+        },
+        {
+          "label": "TOKEN AUTHORITIES",
+          "value": "MINT AUTHORITY SET",
+          "note": "FREEZE AUTHORITY SET",
+          "caption": "The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk.",
+          "priority": 85,
+          "category": "VERIFIED OBSERVATIONS",
+          "source": "Solana RPC"
+        },
+        {
+          "label": "PAIR LIQUIDITY",
+          "value": "$2,247,400",
+          "note": "DEXSCREENER \u00b7 SELECTED PAIR",
+          "caption": "The selected pair reports $2,247,400 in liquidity. Available liquidity affects execution and potential price impact.",
+          "priority": 80,
+          "category": "REPORTED MARKET DATA",
+          "source": "DexScreener"
+        },
+        {
+          "label": "EXTERNAL SWAP QUOTE",
+          "value": "ROUTE FOUND",
+          "note": "JUPITER \u00b7 READ ONLY",
+          "caption": "Jupiter returned a positive swap quote for this exact mint. This demonstrates quote availability, not an executed swap or a functioning project-owned application.",
+          "category": "VERIFIED OBSERVATIONS",
+          "source": "Jupiter quote API",
+          "priority": 76
+        },
+        {
+          "label": "ACCOUNT CONCENTRATION",
+          "value": "49.18%",
+          "note": "TOKEN ACCOUNTS \u00b7 NOT UNIQUE OWNERS",
+          "chart": {
+            "fraction": 0.4918163
+          },
+          "caption": "The largest 20 token accounts hold 49.18% of supply. This measures account concentration, not beneficial ownership.",
+          "priority": 70
+        },
+        {
+          "label": "TRADING ACTIVITY",
+          "value": "78684 / 77832",
+          "note": "24H BUY / SELL COUNTS \u00b7 SELECTED PAIR",
+          "caption": "The selected pair reports 78684 buys and 77832 sells over 24 hours. Trade counts do not establish unique traders or manipulation.",
+          "priority": 60
+        },
+        {
+          "label": "24H PRICE MOVEMENT",
+          "value": "0.09%",
+          "note": "SELECTED PAIR \u00b7 DEXSCREENER",
+          "caption": "The selected pair reports a 24-hour price change of 0.09 percent.",
+          "priority": 55
+        },
+        {
+          "label": "OWNER RESOLUTION",
+          "value": "20 / 20",
+          "note": "CONTROLLING ADDRESSES",
+          "chart": {
+            "fraction": 1
+          },
+          "caption": "Controlling addresses were identified for 20 of 20 sampled token accounts.",
+          "priority": 20
+        },
+        {
+          "label": "RECENT SAMPLE",
+          "value": "12",
+          "note": "TRANSACTIONS RETRIEVED",
+          "caption": "12 recent transactions were retrieved, with 0 direct transfer observations between sampled addresses.",
+          "priority": 10
+        },
+        {
+          "label": "SAMPLE COVERAGE",
+          "value": "20 ACCOUNTS",
+          "note": "BOUNDED HOLDER SAMPLE",
+          "caption": "The concentration calculation covers 20 largest token accounts from the confirmed RPC response.",
+          "priority": 5
+        }
+      ],
+      "holderGroups": [
+        {
+          "owner": "7VHUFJHWu2CuExkJcJrzhQPJ2oygupTWkL2A2For4BmE",
+          "share": 19.382082
+        },
+        {
+          "owner": "H8BgJgae6qhMtf7BM2JtddywSQt11WdxHHxkGLNX5hss",
+          "share": 14.010808
+        },
+        {
+          "owner": "4Dg89gRmz8rUrTRiBP6XzfWJWtEuAxEYAWXn64AE3xvi",
+          "share": 2.695523
+        },
+        {
+          "owner": "DBD8hAwLDRQkTsu6EqviaYNGKPnsAMmQonxf7AH8ZcFY",
+          "share": 1.648282
+        },
+        {
+          "owner": "E1bQJ8eMMn3zmeSewW3HQ8zmJr7KR75JonbwAtWx2bux",
+          "share": 1.573239
+        },
+        {
+          "owner": "6LY1JzAFVZsP2a2xKrtU6znQMQ5h4i7tocWdgrkZzkzF",
+          "share": 1.120821
+        },
+        {
+          "owner": "28nYGHJyUVcVdxZtzKByBXEj127XnrUkrE3VaGuWj1ZU",
+          "share": 1.114178
+        },
+        {
+          "owner": "AVzP2GeRmqGphJsMxWoqjpUifPpCret7LqWhD8NWQK49",
+          "share": 1.101202
+        },
+        {
+          "owner": "8Vkgsarud8mSc1gkzayGA7XhNQfq4wDJRxTWDgq8RaJD",
+          "share": 1.09116
+        },
+        {
+          "owner": "3csuXZKah5rgpb8RiwX9XfjrMxcp3u1K9mBdCwL51spj",
+          "share": 0.904131
+        },
+        {
+          "owner": "F6ZjiBm1WgVXzez5vxHeBDgaVPQRfLyFb7GFwXvyZVxD",
+          "share": 0.762447
+        },
+        {
+          "owner": "8DfHuYFv7VQ6wgcGtVDN2vtFn5ezF52hHNtPWYcqm8hU",
+          "share": 0.597993
+        },
+        {
+          "owner": "7s1da8DduuBFqGra5bJBjpnvL5E9mGzCuMk1Qkh4or2Z",
+          "share": 0.558127
+        },
+        {
+          "owner": "2GAPBYrsxR8pUaDaWGKkAJUf6DcBZrxMjpZ423kLDia1",
+          "share": 0.548852
+        },
+        {
+          "owner": "6fJxHzqAvnmsfb61Hkh7dNtUqLCaZdBtCvYq5X8BqHYj",
+          "share": 0.488233
+        },
+        {
+          "owner": "81w96XvKAZZFmmuzaohSQUyxtGnAPJmkjwoBFBmtytUj",
+          "share": 0.334663
+        },
+        {
+          "owner": "41zCUJsKk6cMB94DDtm99qWmyMZfp4GkAhhuz4xTwePu",
+          "share": 0.334117
+        },
+        {
+          "owner": "9wZ4ngHgHw5BuEuHNS7PFQ8EYM3aHefesHQMpQRxybpR",
+          "share": 0.319689
+        },
+        {
+          "owner": "22D4D68xv6Wm6JtsUbVf2uZVBNLHsvQjLD5R1S8RRPcD",
+          "share": 0.299729
+        },
+        {
+          "owner": "3Ln6KEgLoMR2xFHfqtYazP7CxFQPDtUVVtwCVsLKVfmV",
+          "share": 0.296346
+        }
+      ],
+      "holderGroupScope": "Resolved non-excluded token accounts within sampled Top 20; not economic ownership",
+      "references": [
+        {
+          "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+          "slot": 473375492,
+          "url": "https://solscan.io/tx/2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr"
+        }
+      ],
+      "coverage": {
+        "security": true,
+        "holders": true,
+        "relationships": true,
+        "liquidity": true,
+        "creator": true,
+        "credibility": true,
+        "historicalFunding": false
+      },
+      "prioritization": {
+        "type": "EDITORIAL_HEURISTIC",
+        "validatedRiskScore": false,
+        "thresholds": {
+          "concentrationPercent": [
+            25,
+            50
+          ],
+          "reportedLiquidityUsd": 10000
+        },
+        "limitation": "Review thresholds prioritize evidence; they are not calibrated probabilities or scientifically validated risk scores."
+      },
+      "gaps": [
+        "Executable exit depth and withdrawal authorization not established",
+        "Manipulation not established by available sample",
+        "Creator identity and reputation unresolved",
+        "Token transfers observed; project-specific utility not established",
+        "Beneficial ownership and holder independence not established"
+      ]
+    },
+    "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "top20Share": 49.18163,
+    "observedAt": "2026-11-25T04:02:34.328Z",
+    "identity": {
+      "name": "USD Coin",
+      "symbol": "USDC",
+      "source": "DexScreener exact-mint metadata; project identity not independently verified",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/913e72ef4901644569197a61dd198656ab488e9cd648a326fc2fca21b0d2521d?width=800&height=800&quality=95&format=auto"
+    },
+    "context": {
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "observedAt": "2026-11-25T04:02:35.162Z",
+      "identity": {
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "source": "DexScreener exact-mint metadata; project identity not independently verified",
+        "logoUrl": "https://cdn.dexscreener.com/cms/images/913e72ef4901644569197a61dd198656ab488e9cd648a326fc2fca21b0d2521d?width=800&height=800&quality=95&format=auto"
+      },
+      "market": {
+        "source": "DexScreener",
+        "pairAddress": "DJNtGuBGEQiUCWE8F981M2C3ZghZt2XLD8f2sQdZ6rsZ",
+        "dex": "pancakeswap",
+        "priceUsd": 1.00049,
+        "liquidityUsd": 2247372.4,
+        "volume24h": 8796094.11,
+        "change24h": 0.09,
+        "marketCap": 68990460463,
+        "fdv": 9241496687,
+        "pairCreatedAt": null,
+        "buys24h": 78684,
+        "sells24h": 77832,
+        "quoteSymbol": "SOL",
+        "quoteMint": "So11111111111111111111111111111111111111112",
+        "pairCount": 30,
+        "eligiblePairCount": 27,
+        "websites": [],
+        "socials": [],
+        "scope": "Highest reported liquidity eligible exact-mint base pair against canonical WSOL, USDC or USDT; reported metrics, not aggregate market volume or independently verified price"
+      },
+      "marketSelection": {
+        "status": "CANONICAL_QUOTE_PAIR_SELECTED",
+        "exactMintPairs": 30,
+        "eligiblePairs": 27,
+        "exoticQuotePairsExcluded": 1,
+        "reversedPairsExcluded": 2,
+        "invalidMetricPairsExcluded": 0,
+        "quoteMintPolicy": [
+          "So11111111111111111111111111111111111111112",
+          "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
+        ],
+        "limitation": "Reported pair metrics are not independently verified prices or aggregate market metrics. Quote-side token orientation is unsupported; base-token prices and trade counts are never relabeled as quote-token metrics."
+      },
+      "security": {
+        "source": "Solana confirmed RPC",
+        "slot": 473605199,
+        "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "mintAuthority": "BJE5MMbqXjVwjAF7oxwPYXnTXDyspzZyt4vwenNw5ruG",
+        "freezeAuthority": "7dGbd2QZcCKcTndnHcTL8q7SMVXAkp688NTQYwrRCrar",
+        "extensions": []
+      },
+      "metadata": {
+        "source": "DAS mint-matched metadata",
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "description": null,
+        "interface": "Custom",
+        "mutable": true
+      },
+      "credibility": {
+        "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "observedAt": "2026-11-25T04:02:35.652Z",
+        "product": {
+          "status": "TOKEN_TRANSFER_FUNCTION_OBSERVED",
+          "detail": "Successful positive-amount token transfer instructions observed; application functionality not established",
+          "source": "Solana RPC"
+        },
+        "development": {
+          "status": "UNRESOLVED",
+          "detail": "No linked public repository inspected",
+          "source": null
+        },
+        "integrations": {
+          "status": "INDEPENDENT_LISTING_OBSERVED",
+          "detail": "Exact mint returned by Jupiter registry; not a partnership confirmation",
+          "source": "https://lite-api.jup.ag/tokens/v2/search?query=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+        },
+        "usage": {
+          "status": "MINT_LINKED_EXECUTION_OBSERVED",
+          "detail": "Mint-linked successful transaction sample. Invoked executable programs do not establish project ownership or claimed functionality.",
+          "source": "Solana RPC",
+          "sampleSize": 10,
+          "successful": 8,
+          "references": [
+            {
+              "signature": "3bUHJ4task65kB6KyYGRaDNyfaGG8H89R97QwAxb3WFLDFLW9SMsoTW8zDLVBRp31QqowStnEobc8PoyGrkpU3EB",
+              "slot": 473605200
+            },
+            {
+              "signature": "4bLUKhtuw24igeDAqd7hHMLqv6fW29o6dSCtmgmKuLY9ygw4xmYWm8S31u1kuCLNC8vUPPq1wcgPHaXpUac364cZ",
+              "slot": 473605200
+            },
+            {
+              "signature": "5r5jGCsBsr6Hf8gePBhY4G2govzTEb1cfa7xun5gneZHMmnm55Ar4aepTtEJ198TNcr3XzLbGSRHEMimV9wPhSAN",
+              "slot": 473605200
+            },
+            {
+              "signature": "2VeMvpDuzhSsZ9mTitHdoUWeX4sNZGwftwdgSDMr1jeiA7Lax3Uomh82mUtRpnkM1PFXCtMVJeBfMqLhfCKi9EQk",
+              "slot": 473605200
+            },
+            {
+              "signature": "6631RZW6u4SNg8EdRCBySn18s85H7p4iM1NQETt1GLewkpsLzgu3KFbfL8ZaKi75Mk15V87NhdP7fXiaZwR5YHAb",
+              "slot": 473605200
+            },
+            {
+              "signature": "4DUaBDcfYdSMCsxzFyF4yVVoS7eoiXYC57BhuEiBJ5XS6LwipD7sUKWVTZwc2CRyajaDTyzNxQaFoY3VhtcwgkkX",
+              "slot": 473605199
+            },
+            {
+              "signature": "3Dy6yaS5uezTGs1sE4wJRNfYYXpHt9nbyrb4WDoY6QniNvYXUfBsvgKGEw4ETWznfsFEvf3q9f3sFCZZ4tNN8BDa",
+              "slot": 473605199
+            },
+            {
+              "signature": "z3w3VexeGN6i7Vfi4DYJNEdJoTPdXPUWvKPjMfNhMkUbvYgwHApbU79cXsuT5vJnen9CKyfTEW3sJCNEecfX1QV",
+              "slot": 473605199
+            }
+          ],
+          "transactionsRequested": 3,
+          "transactionsVerified": 3,
+          "observations": [
+            {
+              "signature": "3bUHJ4task65kB6KyYGRaDNyfaGG8H89R97QwAxb3WFLDFLW9SMsoTW8zDLVBRp31QqowStnEobc8PoyGrkpU3EB",
+              "slot": 473605200,
+              "operations": [
+                {
+                  "type": "transferChecked",
+                  "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "amount": "129600282"
+                },
+                {
+                  "type": "transfer",
+                  "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "amount": "129608073"
+                }
+              ],
+              "programs": [
+                "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",
+                "ZERor4xhbUycZ6gb9ntrhqscUcZmAbQDjEAtCf4hbZY",
+                "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+                "Archer8kgiavM61GyusMzaaS2ft5sALtNsD1HxkUPMhy"
+              ]
+            },
+            {
+              "signature": "4bLUKhtuw24igeDAqd7hHMLqv6fW29o6dSCtmgmKuLY9ygw4xmYWm8S31u1kuCLNC8vUPPq1wcgPHaXpUac364cZ",
+              "slot": 473605200,
+              "operations": [],
+              "programs": [
+                "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+                "11111111111111111111111111111111",
+                "6Vo3245eszAb5wuqEMw8mGdbfRUdKbHhDHP5LcaGuTAB",
+                "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+                "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+                "pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ"
+              ]
+            },
+            {
+              "signature": "5r5jGCsBsr6Hf8gePBhY4G2govzTEb1cfa7xun5gneZHMmnm55Ar4aepTtEJ198TNcr3XzLbGSRHEMimV9wPhSAN",
+              "slot": 473605200,
+              "operations": [
+                {
+                  "type": "transferChecked",
+                  "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "amount": "562675941"
+                },
+                {
+                  "type": "transferChecked",
+                  "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "amount": "562687743"
+                }
+              ],
+              "programs": [
+                "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",
+                "ZERor4xhbUycZ6gb9ntrhqscUcZmAbQDjEAtCf4hbZY",
+                "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+                "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK"
+              ]
+            }
+          ],
+          "programs": [
+            {
+              "address": "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",
+              "executable": true,
+              "slot": 473605203
+            },
+            {
+              "address": "ZERor4xhbUycZ6gb9ntrhqscUcZmAbQDjEAtCf4hbZY",
+              "executable": true,
+              "slot": 473605203
+            },
+            {
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "executable": true,
+              "slot": 473605203
+            },
+            {
+              "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "executable": true,
+              "slot": 473605203
+            },
+            {
+              "address": "Archer8kgiavM61GyusMzaaS2ft5sALtNsD1HxkUPMhy",
+              "executable": true,
+              "slot": 473605203
+            },
+            {
+              "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+              "executable": true,
+              "slot": 473605203
+            },
+            {
+              "address": "11111111111111111111111111111111",
+              "executable": true,
+              "slot": 473605203
+            },
+            {
+              "address": "6Vo3245eszAb5wuqEMw8mGdbfRUdKbHhDHP5LcaGuTAB",
+              "executable": true,
+              "slot": 473605203
+            }
+          ]
+        },
+        "repositories": [],
+        "reportedLinks": [],
+        "utilityAttribution": {
+          "status": "TOKEN_TRANSFER_CAPABILITY_OBSERVED",
+          "detail": "Transfer capability observed for this mint; payment purpose, application use and project-specific utility remain unresolved",
+          "operations": [
+            {
+              "type": "transferChecked",
+              "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "amount": "129600282",
+              "signature": "3bUHJ4task65kB6KyYGRaDNyfaGG8H89R97QwAxb3WFLDFLW9SMsoTW8zDLVBRp31QqowStnEobc8PoyGrkpU3EB",
+              "slot": 473605200
+            },
+            {
+              "type": "transfer",
+              "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "amount": "129608073",
+              "signature": "3bUHJ4task65kB6KyYGRaDNyfaGG8H89R97QwAxb3WFLDFLW9SMsoTW8zDLVBRp31QqowStnEobc8PoyGrkpU3EB",
+              "slot": 473605200
+            },
+            {
+              "type": "transferChecked",
+              "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "amount": "562675941",
+              "signature": "5r5jGCsBsr6Hf8gePBhY4G2govzTEb1cfa7xun5gneZHMmnm55Ar4aepTtEJ198TNcr3XzLbGSRHEMimV9wPhSAN",
+              "slot": 473605200
+            },
+            {
+              "type": "transferChecked",
+              "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "amount": "562687743",
+              "signature": "5r5jGCsBsr6Hf8gePBhY4G2govzTEb1cfa7xun5gneZHMmnm55Ar4aepTtEJ198TNcr3XzLbGSRHEMimV9wPhSAN",
+              "slot": 473605200
+            }
+          ],
+          "documentation": "https://solana.com/docs/tokens/basics/transfer-tokens",
+          "mapping": "Parsed SPL Token or Token-2022 transfer instructions with exact mint association and positive raw amount; no application-specific attribution inferred"
+        },
+        "application": {
+          "status": "EXTERNAL_QUOTE_FUNCTION_OBSERVED",
+          "detail": "Jupiter returned a positive read-only swap quote for the exact mint; no swap executed and project-owned application not verified",
+          "source": "https://lite-api.jup.ag/swap/v1/quote?inputMint=So11111111111111111111111111111111111111112&outputMint=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&amount=1000000&slippageBps=50"
+        },
+        "verificationPolicy": {
+          "product": "Requires feature-specific read-only test",
+          "integration": "Requires independent exact-mint or program evidence",
+          "utility": "Requires documented instruction mapping and successful execution"
+        }
+      },
+      "creatorIntelligence": {
+        "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "observedAt": "2026-11-25T04:02:36.337Z",
+        "status": "UNRESOLVED",
+        "observations": [],
+        "scope": {
+          "signaturesRetrieved": 200,
+          "transactionsRequested": 3,
+          "historyExhausted": false,
+          "errors": 3
+        },
+        "creator": null,
+        "limitation": "Mint initialization roles do not establish project creator identity. Bounded history may omit initialization."
+      }
+    },
+    "project": {
+      "category": "ISSUER-CONTROLLED STABLECOIN",
+      "issuer": "Circle",
+      "source": "https://www.circle.com/multi-chain-usdc/solana",
+      "terms": "https://www.circle.com/legal/usdc-terms",
+      "identitySource": "https://help.circle.com/support/en/usdc-supported-blockchains-minting-redemption-faqs?id=kb_article_view&sysparm_article=KB0010590",
+      "utility": "Circle describes native USDC as a digital dollar used for payments, trading and financial services."
+    },
+    "credibility": {
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "observedAt": "2026-11-25T04:02:35.652Z",
+      "product": {
+        "status": "TOKEN_TRANSFER_FUNCTION_OBSERVED",
+        "detail": "Successful positive-amount token transfer instructions observed; application functionality not established",
+        "source": "Solana RPC"
+      },
+      "development": {
+        "status": "UNRESOLVED",
+        "detail": "No linked public repository inspected",
+        "source": null
+      },
+      "integrations": {
+        "status": "INDEPENDENT_LISTING_OBSERVED",
+        "detail": "Exact mint returned by Jupiter registry; not a partnership confirmation",
+        "source": "https://lite-api.jup.ag/tokens/v2/search?query=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      },
+      "usage": {
+        "status": "MINT_LINKED_EXECUTION_OBSERVED",
+        "detail": "Mint-linked successful transaction sample. Invoked executable programs do not establish project ownership or claimed functionality.",
+        "source": "Solana RPC",
+        "sampleSize": 10,
+        "successful": 8,
+        "references": [
+          {
+            "signature": "3bUHJ4task65kB6KyYGRaDNyfaGG8H89R97QwAxb3WFLDFLW9SMsoTW8zDLVBRp31QqowStnEobc8PoyGrkpU3EB",
+            "slot": 473605200
+          },
+          {
+            "signature": "4bLUKhtuw24igeDAqd7hHMLqv6fW29o6dSCtmgmKuLY9ygw4xmYWm8S31u1kuCLNC8vUPPq1wcgPHaXpUac364cZ",
+            "slot": 473605200
+          },
+          {
+            "signature": "5r5jGCsBsr6Hf8gePBhY4G2govzTEb1cfa7xun5gneZHMmnm55Ar4aepTtEJ198TNcr3XzLbGSRHEMimV9wPhSAN",
+            "slot": 473605200
+          },
+          {
+            "signature": "2VeMvpDuzhSsZ9mTitHdoUWeX4sNZGwftwdgSDMr1jeiA7Lax3Uomh82mUtRpnkM1PFXCtMVJeBfMqLhfCKi9EQk",
+            "slot": 473605200
+          },
+          {
+            "signature": "6631RZW6u4SNg8EdRCBySn18s85H7p4iM1NQETt1GLewkpsLzgu3KFbfL8ZaKi75Mk15V87NhdP7fXiaZwR5YHAb",
+            "slot": 473605200
+          },
+          {
+            "signature": "4DUaBDcfYdSMCsxzFyF4yVVoS7eoiXYC57BhuEiBJ5XS6LwipD7sUKWVTZwc2CRyajaDTyzNxQaFoY3VhtcwgkkX",
+            "slot": 473605199
+          },
+          {
+            "signature": "3Dy6yaS5uezTGs1sE4wJRNfYYXpHt9nbyrb4WDoY6QniNvYXUfBsvgKGEw4ETWznfsFEvf3q9f3sFCZZ4tNN8BDa",
+            "slot": 473605199
+          },
+          {
+            "signature": "z3w3VexeGN6i7Vfi4DYJNEdJoTPdXPUWvKPjMfNhMkUbvYgwHApbU79cXsuT5vJnen9CKyfTEW3sJCNEecfX1QV",
+            "slot": 473605199
+          }
+        ],
+        "transactionsRequested": 3,
+        "transactionsVerified": 3,
+        "observations": [
+          {
+            "signature": "3bUHJ4task65kB6KyYGRaDNyfaGG8H89R97QwAxb3WFLDFLW9SMsoTW8zDLVBRp31QqowStnEobc8PoyGrkpU3EB",
+            "slot": 473605200,
+            "operations": [
+              {
+                "type": "transferChecked",
+                "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "amount": "129600282"
+              },
+              {
+                "type": "transfer",
+                "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "amount": "129608073"
+              }
+            ],
+            "programs": [
+              "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",
+              "ZERor4xhbUycZ6gb9ntrhqscUcZmAbQDjEAtCf4hbZY",
+              "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "Archer8kgiavM61GyusMzaaS2ft5sALtNsD1HxkUPMhy"
+            ]
+          },
+          {
+            "signature": "4bLUKhtuw24igeDAqd7hHMLqv6fW29o6dSCtmgmKuLY9ygw4xmYWm8S31u1kuCLNC8vUPPq1wcgPHaXpUac364cZ",
+            "slot": 473605200,
+            "operations": [],
+            "programs": [
+              "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+              "11111111111111111111111111111111",
+              "6Vo3245eszAb5wuqEMw8mGdbfRUdKbHhDHP5LcaGuTAB",
+              "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+              "pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ"
+            ]
+          },
+          {
+            "signature": "5r5jGCsBsr6Hf8gePBhY4G2govzTEb1cfa7xun5gneZHMmnm55Ar4aepTtEJ198TNcr3XzLbGSRHEMimV9wPhSAN",
+            "slot": 473605200,
+            "operations": [
+              {
+                "type": "transferChecked",
+                "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "amount": "562675941"
+              },
+              {
+                "type": "transferChecked",
+                "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "amount": "562687743"
+              }
+            ],
+            "programs": [
+              "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",
+              "ZERor4xhbUycZ6gb9ntrhqscUcZmAbQDjEAtCf4hbZY",
+              "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK"
+            ]
+          }
+        ],
+        "programs": [
+          {
+            "address": "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",
+            "executable": true,
+            "slot": 473605203
+          },
+          {
+            "address": "ZERor4xhbUycZ6gb9ntrhqscUcZmAbQDjEAtCf4hbZY",
+            "executable": true,
+            "slot": 473605203
+          },
+          {
+            "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "executable": true,
+            "slot": 473605203
+          },
+          {
+            "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+            "executable": true,
+            "slot": 473605203
+          },
+          {
+            "address": "Archer8kgiavM61GyusMzaaS2ft5sALtNsD1HxkUPMhy",
+            "executable": true,
+            "slot": 473605203
+          },
+          {
+            "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+            "executable": true,
+            "slot": 473605203
+          },
+          {
+            "address": "11111111111111111111111111111111",
+            "executable": true,
+            "slot": 473605203
+          },
+          {
+            "address": "6Vo3245eszAb5wuqEMw8mGdbfRUdKbHhDHP5LcaGuTAB",
+            "executable": true,
+            "slot": 473605203
+          }
+        ]
+      },
+      "repositories": [],
+      "reportedLinks": [],
+      "utilityAttribution": {
+        "status": "TOKEN_TRANSFER_CAPABILITY_OBSERVED",
+        "detail": "Transfer capability observed for this mint; payment purpose, application use and project-specific utility remain unresolved",
+        "operations": [
+          {
+            "type": "transferChecked",
+            "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "amount": "129600282",
+            "signature": "3bUHJ4task65kB6KyYGRaDNyfaGG8H89R97QwAxb3WFLDFLW9SMsoTW8zDLVBRp31QqowStnEobc8PoyGrkpU3EB",
+            "slot": 473605200
+          },
+          {
+            "type": "transfer",
+            "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "amount": "129608073",
+            "signature": "3bUHJ4task65kB6KyYGRaDNyfaGG8H89R97QwAxb3WFLDFLW9SMsoTW8zDLVBRp31QqowStnEobc8PoyGrkpU3EB",
+            "slot": 473605200
+          },
+          {
+            "type": "transferChecked",
+            "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "amount": "562675941",
+            "signature": "5r5jGCsBsr6Hf8gePBhY4G2govzTEb1cfa7xun5gneZHMmnm55Ar4aepTtEJ198TNcr3XzLbGSRHEMimV9wPhSAN",
+            "slot": 473605200
+          },
+          {
+            "type": "transferChecked",
+            "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "amount": "562687743",
+            "signature": "5r5jGCsBsr6Hf8gePBhY4G2govzTEb1cfa7xun5gneZHMmnm55Ar4aepTtEJ198TNcr3XzLbGSRHEMimV9wPhSAN",
+            "slot": 473605200
+          }
+        ],
+        "documentation": "https://solana.com/docs/tokens/basics/transfer-tokens",
+        "mapping": "Parsed SPL Token or Token-2022 transfer instructions with exact mint association and positive raw amount; no application-specific attribution inferred"
+      },
+      "application": {
+        "status": "EXTERNAL_QUOTE_FUNCTION_OBSERVED",
+        "detail": "Jupiter returned a positive read-only swap quote for the exact mint; no swap executed and project-owned application not verified",
+        "source": "https://lite-api.jup.ag/swap/v1/quote?inputMint=So11111111111111111111111111111111111111112&outputMint=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&amount=1000000&slippageBps=50"
+      },
+      "verificationPolicy": {
+        "product": "Requires feature-specific read-only test",
+        "integration": "Requires independent exact-mint or program evidence",
+        "utility": "Requires documented instruction mapping and successful execution"
+      }
+    },
+    "evidenceCategories": {
+      "verifiedObservations": {
+        "holders": {
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "supply": {
+            "raw": "9196424128728132",
+            "decimals": 6,
+            "slot": 473605194
+          },
+          "top10TokenAccountSharePercent": 44.64143,
+          "top20TokenAccountSharePercent": 49.18163,
+          "classifiedInfrastructureSharePercent": 0,
+          "classifiedInfrastructureCount": 0,
+          "verifiedBondingCurveSharePercent": 0,
+          "verifiedLiquidityPoolSharePercent": 0,
+          "verifiedCustodySharePercent": 0,
+          "custodyVerificationStatus": "NOT_ESTABLISHED",
+          "unclassifiedTop20SharePercent": 49.18163,
+          "nonExcludedTop20SharePercent": 49.18163,
+          "unresolvedAccountSharePercent": 0,
+          "purposeUnresolvedSharePercent": 49.18163,
+          "resolvedOwnerCount": 20,
+          "resolvedTokenAccountCount": 20,
+          "ownerGroups": [
+            {
+              "owner": "7VHUFJHWu2CuExkJcJrzhQPJ2oygupTWkL2A2For4BmE",
+              "rawAmount": "1782458515786417",
+              "nonExcludedRawAmount": "1782458515786417",
+              "tokenAccounts": [
+                "3emsAVdmGKERbHjmGfQ6oZ1e35dkf5iYcS6U4CPKFVaa"
+              ],
+              "count": 1,
+              "sharePercent": 19.382082,
+              "nonExcludedSharePercent": 19.382082,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "H8BgJgae6qhMtf7BM2JtddywSQt11WdxHHxkGLNX5hss",
+              "rawAmount": "1288493338186000",
+              "nonExcludedRawAmount": "1288493338186000",
+              "tokenAccounts": [
+                "DT78gNBH7enTRrAFcag4PAuQbSeemstmtj888w8pkvdf"
+              ],
+              "count": 1,
+              "sharePercent": 14.010808,
+              "nonExcludedSharePercent": 14.010808,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "4Dg89gRmz8rUrTRiBP6XzfWJWtEuAxEYAWXn64AE3xvi",
+              "rawAmount": "247891766433984",
+              "nonExcludedRawAmount": "247891766433984",
+              "tokenAccounts": [
+                "9piy5wGy8v1gpnGXigfmbssBgCuv2X6VKrACT5owmFVo"
+              ],
+              "count": 1,
+              "sharePercent": 2.695523,
+              "nonExcludedSharePercent": 2.695523,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "DBD8hAwLDRQkTsu6EqviaYNGKPnsAMmQonxf7AH8ZcFY",
+              "rawAmount": "151583047860864",
+              "nonExcludedRawAmount": "151583047860864",
+              "tokenAccounts": [
+                "FSxJ85FXVsXSr51SeWf9ciJWTcRnqKFSmBgRDeL3KyWw"
+              ],
+              "count": 1,
+              "sharePercent": 1.648282,
+              "nonExcludedSharePercent": 1.648282,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "E1bQJ8eMMn3zmeSewW3HQ8zmJr7KR75JonbwAtWx2bux",
+              "rawAmount": "144681771190019",
+              "nonExcludedRawAmount": "144681771190019",
+              "tokenAccounts": [
+                "6xTBTqJMBr5m7BKqVxmW2x11DfqUwtD3TJsqpxELx72L"
+              ],
+              "count": 1,
+              "sharePercent": 1.573239,
+              "nonExcludedSharePercent": 1.573239,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "6LY1JzAFVZsP2a2xKrtU6znQMQ5h4i7tocWdgrkZzkzF",
+              "rawAmount": "103075469860323",
+              "nonExcludedRawAmount": "103075469860323",
+              "tokenAccounts": [
+                "8g1gYt8tFYP8Yo4Wvz1VpUsfouH1kL79wxeiRvyB4hND"
+              ],
+              "count": 1,
+              "sharePercent": 1.120821,
+              "nonExcludedSharePercent": 1.120821,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "28nYGHJyUVcVdxZtzKByBXEj127XnrUkrE3VaGuWj1ZU",
+              "rawAmount": "102464601207512",
+              "nonExcludedRawAmount": "102464601207512",
+              "tokenAccounts": [
+                "ExFUyu3f5C9UW3zLZybVcXv156X2g5AxdZCZJvCh23w4"
+              ],
+              "count": 1,
+              "sharePercent": 1.114178,
+              "nonExcludedSharePercent": 1.114178,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "AVzP2GeRmqGphJsMxWoqjpUifPpCret7LqWhD8NWQK49",
+              "rawAmount": "101271261050847",
+              "nonExcludedRawAmount": "101271261050847",
+              "tokenAccounts": [
+                "WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS"
+              ],
+              "count": 1,
+              "sharePercent": 1.101202,
+              "nonExcludedSharePercent": 1.101202,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "8Vkgsarud8mSc1gkzayGA7XhNQfq4wDJRxTWDgq8RaJD",
+              "rawAmount": "100347742778065",
+              "nonExcludedRawAmount": "100347742778065",
+              "tokenAccounts": [
+                "Cp8wjBC7MVWeMeawTdyPzPdH7ThpBq1vRdBKtVRVTW2B"
+              ],
+              "count": 1,
+              "sharePercent": 1.09116,
+              "nonExcludedSharePercent": 1.09116,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "3csuXZKah5rgpb8RiwX9XfjrMxcp3u1K9mBdCwL51spj",
+              "rawAmount": "83147769868364",
+              "nonExcludedRawAmount": "83147769868364",
+              "tokenAccounts": [
+                "8MzrQK9MiFhgzFuh3RXyHXGM6xRChHyKy7VZQMqaTqtq"
+              ],
+              "count": 1,
+              "sharePercent": 0.904131,
+              "nonExcludedSharePercent": 0.904131,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "F6ZjiBm1WgVXzez5vxHeBDgaVPQRfLyFb7GFwXvyZVxD",
+              "rawAmount": "70117912905315",
+              "nonExcludedRawAmount": "70117912905315",
+              "tokenAccounts": [
+                "Ezo6p9nw16XJeDGmKnXSH9rHdGEkwpfZDWfHwb68rUa7"
+              ],
+              "count": 1,
+              "sharePercent": 0.762447,
+              "nonExcludedSharePercent": 0.762447,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "8DfHuYFv7VQ6wgcGtVDN2vtFn5ezF52hHNtPWYcqm8hU",
+              "rawAmount": "54993996842716",
+              "nonExcludedRawAmount": "54993996842716",
+              "tokenAccounts": [
+                "FUc4NrNsK4WCFxfB2LvkQCnPva3fabjdp32Lfm2gPJbA"
+              ],
+              "count": 1,
+              "sharePercent": 0.597993,
+              "nonExcludedSharePercent": 0.597993,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "7s1da8DduuBFqGra5bJBjpnvL5E9mGzCuMk1Qkh4or2Z",
+              "rawAmount": "51327808687000",
+              "nonExcludedRawAmount": "51327808687000",
+              "tokenAccounts": [
+                "BmkUoKMFYBxNSzWXyUjyMJjMAaVz4d8ZnxwwmhDCUXFB"
+              ],
+              "count": 1,
+              "sharePercent": 0.558127,
+              "nonExcludedSharePercent": 0.558127,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "2GAPBYrsxR8pUaDaWGKkAJUf6DcBZrxMjpZ423kLDia1",
+              "rawAmount": "50474811639694",
+              "nonExcludedRawAmount": "50474811639694",
+              "tokenAccounts": [
+                "cYoCXcb7kq5e4MMVogKpKPho4TVtmmxVsFkhR1Pk75Q"
+              ],
+              "count": 1,
+              "sharePercent": 0.548852,
+              "nonExcludedSharePercent": 0.548852,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "6fJxHzqAvnmsfb61Hkh7dNtUqLCaZdBtCvYq5X8BqHYj",
+              "rawAmount": "44900010000000",
+              "nonExcludedRawAmount": "44900010000000",
+              "tokenAccounts": [
+                "C6JXWwUgBwf9vRNktNjz3Q9eUxJP4LpBkdb7R7Pa9g1z"
+              ],
+              "count": 1,
+              "sharePercent": 0.488233,
+              "nonExcludedSharePercent": 0.488233,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "81w96XvKAZZFmmuzaohSQUyxtGnAPJmkjwoBFBmtytUj",
+              "rawAmount": "30777041000000",
+              "nonExcludedRawAmount": "30777041000000",
+              "tokenAccounts": [
+                "ABnvL6oaY7PqaD5EwNUfRgLFTmCuWxmwBudCzPLhDxkb"
+              ],
+              "count": 1,
+              "sharePercent": 0.334663,
+              "nonExcludedSharePercent": 0.334663,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "41zCUJsKk6cMB94DDtm99qWmyMZfp4GkAhhuz4xTwePu",
+              "rawAmount": "30726875752732",
+              "nonExcludedRawAmount": "30726875752732",
+              "tokenAccounts": [
+                "9gD46MnYLpskDiRisMZGY958JHgMSxLUiT56r8vdNzb8"
+              ],
+              "count": 1,
+              "sharePercent": 0.334117,
+              "nonExcludedSharePercent": 0.334117,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "9wZ4ngHgHw5BuEuHNS7PFQ8EYM3aHefesHQMpQRxybpR",
+              "rawAmount": "29400000012026",
+              "nonExcludedRawAmount": "29400000012026",
+              "tokenAccounts": [
+                "H5Te9HAvdY2Tv4s43GykN19bDQphwZxMaFMrrt5XTYWs"
+              ],
+              "count": 1,
+              "sharePercent": 0.319689,
+              "nonExcludedSharePercent": 0.319689,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "22D4D68xv6Wm6JtsUbVf2uZVBNLHsvQjLD5R1S8RRPcD",
+              "rawAmount": "27564351217007",
+              "nonExcludedRawAmount": "27564351217007",
+              "tokenAccounts": [
+                "G6nbKrnjosQys2yCtgtRSfRafK3e4nqHsGZhZQYwKmSA"
+              ],
+              "count": 1,
+              "sharePercent": 0.299729,
+              "nonExcludedSharePercent": 0.299729,
+              "classification": "PURPOSE_UNRESOLVED"
+            },
+            {
+              "owner": "3Ln6KEgLoMR2xFHfqtYazP7CxFQPDtUVVtwCVsLKVfmV",
+              "rawAmount": "27253279165732",
+              "nonExcludedRawAmount": "27253279165732",
+              "tokenAccounts": [
+                "J6nam4Er6sKBetuPpchrUF36usQuDxMendRGJ3FeGWXB"
+              ],
+              "count": 1,
+              "sharePercent": 0.296346,
+              "nonExcludedSharePercent": 0.296346,
+              "classification": "PURPOSE_UNRESOLVED"
+            }
+          ],
+          "largestObservedOwner": {
+            "owner": "7VHUFJHWu2CuExkJcJrzhQPJ2oygupTWkL2A2For4BmE",
+            "rawAmount": "1782458515786417",
+            "nonExcludedRawAmount": "1782458515786417",
+            "tokenAccounts": [
+              "3emsAVdmGKERbHjmGfQ6oZ1e35dkf5iYcS6U4CPKFVaa"
+            ],
+            "count": 1,
+            "sharePercent": 19.382082,
+            "nonExcludedSharePercent": 19.382082,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          "largestObservedOwnerSharePercent": 19.382082,
+          "ownerConcentrationScope": "Non-excluded balances in sampled Top 20 only; controlling address is not beneficial ownership or independence",
+          "reconciliation": {
+            "supplyRaw": "9196424128728132",
+            "sampledRaw": "4522951371444617",
+            "verifiedInfrastructureRaw": "0",
+            "nonExcludedRaw": "4522951371444617",
+            "unresolvedOwnerRaw": "0",
+            "outsideSampleRaw": "4673472757283515",
+            "reconciled": true,
+            "percentagePrecision": 6
+          },
+          "accounts": [
+            {
+              "tokenAccount": "3emsAVdmGKERbHjmGfQ6oZ1e35dkf5iYcS6U4CPKFVaa",
+              "tokenOwner": "7VHUFJHWu2CuExkJcJrzhQPJ2oygupTWkL2A2For4BmE",
+              "rawAmount": "1782458515786417",
+              "sharePercent": 19.382082,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/3emsAVdmGKERbHjmGfQ6oZ1e35dkf5iYcS6U4CPKFVaa",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "DT78gNBH7enTRrAFcag4PAuQbSeemstmtj888w8pkvdf",
+              "tokenOwner": "H8BgJgae6qhMtf7BM2JtddywSQt11WdxHHxkGLNX5hss",
+              "rawAmount": "1288493338186000",
+              "sharePercent": 14.010808,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/DT78gNBH7enTRrAFcag4PAuQbSeemstmtj888w8pkvdf",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "9piy5wGy8v1gpnGXigfmbssBgCuv2X6VKrACT5owmFVo",
+              "tokenOwner": "4Dg89gRmz8rUrTRiBP6XzfWJWtEuAxEYAWXn64AE3xvi",
+              "rawAmount": "247891766433984",
+              "sharePercent": 2.695523,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/9piy5wGy8v1gpnGXigfmbssBgCuv2X6VKrACT5owmFVo",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "FSxJ85FXVsXSr51SeWf9ciJWTcRnqKFSmBgRDeL3KyWw",
+              "tokenOwner": "DBD8hAwLDRQkTsu6EqviaYNGKPnsAMmQonxf7AH8ZcFY",
+              "rawAmount": "151583047860864",
+              "sharePercent": 1.648282,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "CCTPiPYPc6AsJuwueEnWgSgucamXDZwBd53dQ11YiKX3",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/FSxJ85FXVsXSr51SeWf9ciJWTcRnqKFSmBgRDeL3KyWw",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "6xTBTqJMBr5m7BKqVxmW2x11DfqUwtD3TJsqpxELx72L",
+              "tokenOwner": "E1bQJ8eMMn3zmeSewW3HQ8zmJr7KR75JonbwAtWx2bux",
+              "rawAmount": "144681771190019",
+              "sharePercent": 1.573239,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "CCTPV2vPZJS2u2BBsUoscuikbYjnpFmbFsvVuJdgUMQe",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/6xTBTqJMBr5m7BKqVxmW2x11DfqUwtD3TJsqpxELx72L",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "8g1gYt8tFYP8Yo4Wvz1VpUsfouH1kL79wxeiRvyB4hND",
+              "tokenOwner": "6LY1JzAFVZsP2a2xKrtU6znQMQ5h4i7tocWdgrkZzkzF",
+              "rawAmount": "103075469860323",
+              "sharePercent": 1.120821,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/8g1gYt8tFYP8Yo4Wvz1VpUsfouH1kL79wxeiRvyB4hND",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "ExFUyu3f5C9UW3zLZybVcXv156X2g5AxdZCZJvCh23w4",
+              "tokenOwner": "28nYGHJyUVcVdxZtzKByBXEj127XnrUkrE3VaGuWj1ZU",
+              "rawAmount": "102464601207512",
+              "sharePercent": 1.114178,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/ExFUyu3f5C9UW3zLZybVcXv156X2g5AxdZCZJvCh23w4",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS",
+              "tokenOwner": "AVzP2GeRmqGphJsMxWoqjpUifPpCret7LqWhD8NWQK49",
+              "rawAmount": "101271261050847",
+              "sharePercent": 1.101202,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "Cp8wjBC7MVWeMeawTdyPzPdH7ThpBq1vRdBKtVRVTW2B",
+              "tokenOwner": "8Vkgsarud8mSc1gkzayGA7XhNQfq4wDJRxTWDgq8RaJD",
+              "rawAmount": "100347742778065",
+              "sharePercent": 1.09116,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/Cp8wjBC7MVWeMeawTdyPzPdH7ThpBq1vRdBKtVRVTW2B",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "8MzrQK9MiFhgzFuh3RXyHXGM6xRChHyKy7VZQMqaTqtq",
+              "tokenOwner": "3csuXZKah5rgpb8RiwX9XfjrMxcp3u1K9mBdCwL51spj",
+              "rawAmount": "83147769868364",
+              "sharePercent": 0.904131,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/8MzrQK9MiFhgzFuh3RXyHXGM6xRChHyKy7VZQMqaTqtq",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "Ezo6p9nw16XJeDGmKnXSH9rHdGEkwpfZDWfHwb68rUa7",
+              "tokenOwner": "F6ZjiBm1WgVXzez5vxHeBDgaVPQRfLyFb7GFwXvyZVxD",
+              "rawAmount": "70117912905315",
+              "sharePercent": 0.762447,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/Ezo6p9nw16XJeDGmKnXSH9rHdGEkwpfZDWfHwb68rUa7",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "FUc4NrNsK4WCFxfB2LvkQCnPva3fabjdp32Lfm2gPJbA",
+              "tokenOwner": "8DfHuYFv7VQ6wgcGtVDN2vtFn5ezF52hHNtPWYcqm8hU",
+              "rawAmount": "54993996842716",
+              "sharePercent": 0.597993,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/FUc4NrNsK4WCFxfB2LvkQCnPva3fabjdp32Lfm2gPJbA",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "BmkUoKMFYBxNSzWXyUjyMJjMAaVz4d8ZnxwwmhDCUXFB",
+              "tokenOwner": "7s1da8DduuBFqGra5bJBjpnvL5E9mGzCuMk1Qkh4or2Z",
+              "rawAmount": "51327808687000",
+              "sharePercent": 0.558127,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "jupeiUmn818Jg1ekPURTpr4mFo29p46vygyykFJ3wZC",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/BmkUoKMFYBxNSzWXyUjyMJjMAaVz4d8ZnxwwmhDCUXFB",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "cYoCXcb7kq5e4MMVogKpKPho4TVtmmxVsFkhR1Pk75Q",
+              "tokenOwner": "2GAPBYrsxR8pUaDaWGKkAJUf6DcBZrxMjpZ423kLDia1",
+              "rawAmount": "50474811639694",
+              "sharePercent": 0.548852,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/cYoCXcb7kq5e4MMVogKpKPho4TVtmmxVsFkhR1Pk75Q",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "C6JXWwUgBwf9vRNktNjz3Q9eUxJP4LpBkdb7R7Pa9g1z",
+              "tokenOwner": "6fJxHzqAvnmsfb61Hkh7dNtUqLCaZdBtCvYq5X8BqHYj",
+              "rawAmount": "44900010000000",
+              "sharePercent": 0.488233,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/C6JXWwUgBwf9vRNktNjz3Q9eUxJP4LpBkdb7R7Pa9g1z",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "ABnvL6oaY7PqaD5EwNUfRgLFTmCuWxmwBudCzPLhDxkb",
+              "tokenOwner": "81w96XvKAZZFmmuzaohSQUyxtGnAPJmkjwoBFBmtytUj",
+              "rawAmount": "30777041000000",
+              "sharePercent": 0.334663,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/ABnvL6oaY7PqaD5EwNUfRgLFTmCuWxmwBudCzPLhDxkb",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "9gD46MnYLpskDiRisMZGY958JHgMSxLUiT56r8vdNzb8",
+              "tokenOwner": "41zCUJsKk6cMB94DDtm99qWmyMZfp4GkAhhuz4xTwePu",
+              "rawAmount": "30726875752732",
+              "sharePercent": 0.334117,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/9gD46MnYLpskDiRisMZGY958JHgMSxLUiT56r8vdNzb8",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "H5Te9HAvdY2Tv4s43GykN19bDQphwZxMaFMrrt5XTYWs",
+              "tokenOwner": "9wZ4ngHgHw5BuEuHNS7PFQ8EYM3aHefesHQMpQRxybpR",
+              "rawAmount": "29400000012026",
+              "sharePercent": 0.319689,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/H5Te9HAvdY2Tv4s43GykN19bDQphwZxMaFMrrt5XTYWs",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "G6nbKrnjosQys2yCtgtRSfRafK3e4nqHsGZhZQYwKmSA",
+              "tokenOwner": "22D4D68xv6Wm6JtsUbVf2uZVBNLHsvQjLD5R1S8RRPcD",
+              "rawAmount": "27564351217007",
+              "sharePercent": 0.299729,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "OWNER_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": null,
+              "ownerAccountExecutable": null,
+              "ownerControlType": "UNRESOLVED",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/G6nbKrnjosQys2yCtgtRSfRafK3e4nqHsGZhZQYwKmSA",
+              "sameOwnerTokenAccounts": 1
+            },
+            {
+              "tokenAccount": "J6nam4Er6sKBetuPpchrUF36usQuDxMendRGJ3FeGWXB",
+              "tokenOwner": "3Ln6KEgLoMR2xFHfqtYazP7CxFQPDtUVVtwCVsLKVfmV",
+              "rawAmount": "27253279165732",
+              "sharePercent": 0.296346,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "11111111111111111111111111111111",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/J6nam4Er6sKBetuPpchrUF36usQuDxMendRGJ3FeGWXB",
+              "sameOwnerTokenAccounts": 1
+            }
+          ],
+          "targetedOwners": [
+            {
+              "tokenAccount": "FSxJ85FXVsXSr51SeWf9ciJWTcRnqKFSmBgRDeL3KyWw",
+              "tokenOwner": "DBD8hAwLDRQkTsu6EqviaYNGKPnsAMmQonxf7AH8ZcFY",
+              "rawAmount": "151583047860864",
+              "sharePercent": 1.648282,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "CCTPiPYPc6AsJuwueEnWgSgucamXDZwBd53dQ11YiKX3",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/FSxJ85FXVsXSr51SeWf9ciJWTcRnqKFSmBgRDeL3KyWw"
+            },
+            {
+              "tokenAccount": "6xTBTqJMBr5m7BKqVxmW2x11DfqUwtD3TJsqpxELx72L",
+              "tokenOwner": "E1bQJ8eMMn3zmeSewW3HQ8zmJr7KR75JonbwAtWx2bux",
+              "rawAmount": "144681771190019",
+              "sharePercent": 1.573239,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "CCTPV2vPZJS2u2BBsUoscuikbYjnpFmbFsvVuJdgUMQe",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/6xTBTqJMBr5m7BKqVxmW2x11DfqUwtD3TJsqpxELx72L"
+            },
+            {
+              "tokenAccount": "WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS",
+              "tokenOwner": "AVzP2GeRmqGphJsMxWoqjpUifPpCret7LqWhD8NWQK49",
+              "rawAmount": "101271261050847",
+              "sharePercent": 1.101202,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS"
+            },
+            {
+              "tokenAccount": "BmkUoKMFYBxNSzWXyUjyMJjMAaVz4d8ZnxwwmhDCUXFB",
+              "tokenOwner": "7s1da8DduuBFqGra5bJBjpnvL5E9mGzCuMk1Qkh4or2Z",
+              "rawAmount": "51327808687000",
+              "sharePercent": 0.558127,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": "jupeiUmn818Jg1ekPURTpr4mFo29p46vygyykFJ3wZC",
+              "ownerAccountExecutable": false,
+              "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/BmkUoKMFYBxNSzWXyUjyMJjMAaVz4d8ZnxwwmhDCUXFB"
+            },
+            {
+              "tokenAccount": "G6nbKrnjosQys2yCtgtRSfRafK3e4nqHsGZhZQYwKmSA",
+              "tokenOwner": "22D4D68xv6Wm6JtsUbVf2uZVBNLHsvQjLD5R1S8RRPcD",
+              "rawAmount": "27564351217007",
+              "sharePercent": 0.299729,
+              "classification": "UNCLASSIFIED",
+              "ownerVerified": true,
+              "role": "OWNER_PURPOSE_UNRESOLVED",
+              "ownerAccountProgram": null,
+              "ownerAccountExecutable": null,
+              "ownerControlType": "UNRESOLVED",
+              "balanceChangedSinceRanking": false,
+              "explorer": "https://solscan.io/account/G6nbKrnjosQys2yCtgtRSfRafK3e4nqHsGZhZQYwKmSA"
+            }
+          ],
+          "provider": "configured",
+          "observedAt": "2026-11-25T04:02:34.328Z",
+          "largestAccountsSlot": 473605195,
+          "ownerResolutionSlot": 473605195,
+          "controlInspectionSlot": 473605195,
+          "controlInspection": "COMPLETE",
+          "infrastructureCheck": "NOT_ESTABLISHED",
+          "infrastructureSlot": 473605195,
+          "knownCurveState": "NOT_SEPARATELY_QUERIED",
+          "knownCurveBalanceRaw": null,
+          "knownCurveSlot": null,
+          "poolDiscovery": {
+            "queryLimit": 8,
+            "queries": 0,
+            "results": []
+          },
+          "observedWalletRelationships": {
+            "status": "NOT_QUERIED_HERE",
+            "source": "Reuse bounded relationships pipeline"
+          },
+          "classificationPolicy": "Only exact protocol pool/curve mint, vault and authority checks exclude infrastructure. All unresolved accounts remain included. Separate RPC reads are not a synchronized snapshot.",
+          "unresolved": [
+            "Custody identity",
+            "Beneficial ownership",
+            "Holder independence",
+            "Historical funding",
+            "Trade coordination",
+            "Infrastructure outside bounded discovery may remain included"
+          ]
+        },
+        "recent": {
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "manipulationIndicators": {
+            "reciprocal": [],
+            "cycles": [],
+            "swapCandidates": [],
+            "roundTrips": [],
+            "coordinatedAcquisitions": [],
+            "decodedSwapInstructions": [],
+            "liquidityInstructions": [],
+            "withdrawalTransfers": [],
+            "swapVerification": "SELECTED_DISCRIMINATORS_RECOGNIZED_WALLET_ATTRIBUTION_PENDING",
+            "conclusion": "Transfer graph patterns only; chronology, economic purpose, swap execution and common control not established. No wash trading determination."
+          },
+          "relationshipGraph": {
+            "components": [],
+            "sharedFunding": [],
+            "scope": "Bounded recent sample; no beneficial ownership or trade coordination inference"
+          },
+          "provider": "configured",
+          "observedAt": "2026-11-25T04:02:34.970Z",
+          "scope": {
+            "topAccountsConsidered": 20,
+            "ownersSelected": [
+              "7VHUFJHWu2CuExkJcJrzhQPJ2oygupTWkL2A2For4BmE",
+              "H8BgJgae6qhMtf7BM2JtddywSQt11WdxHHxkGLNX5hss",
+              "4Dg89gRmz8rUrTRiBP6XzfWJWtEuAxEYAWXn64AE3xvi",
+              "DBD8hAwLDRQkTsu6EqviaYNGKPnsAMmQonxf7AH8ZcFY"
+            ],
+            "signaturesPerOwner": 3,
+            "transactionsRequested": 12,
+            "transactionsRetrieved": 12,
+            "retriesAttempted": 0,
+            "versionFallbacksAttempted": 0,
+            "transactionFailures": [],
+            "signatureQueriesFailed": 0,
+            "transactionQueriesFailed": 0
+          },
+          "directTransfers": [],
+          "inboundSolObservations": [
+            {
+              "type": "OBSERVED_INBOUND_SOL",
+              "source": "Cwqb8V5VQ3H2BKNrwNsNbmK7J2NrLNiL8Q14UNioLNzV",
+              "destination": "4Dg89gRmz8rUrTRiBP6XzfWJWtEuAxEYAWXn64AE3xvi",
+              "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+              "slot": 473375492,
+              "instructionIndex": 2,
+              "lamports": 1000,
+              "significance": "DUST_SIZED_TRANSFER"
+            }
+          ],
+          "dustTransfers": [
+            {
+              "type": "OBSERVED_INBOUND_SOL",
+              "source": "Cwqb8V5VQ3H2BKNrwNsNbmK7J2NrLNiL8Q14UNioLNzV",
+              "destination": "4Dg89gRmz8rUrTRiBP6XzfWJWtEuAxEYAWXn64AE3xvi",
+              "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+              "slot": 473375492,
+              "instructionIndex": 2,
+              "lamports": 1000,
+              "significance": "DUST_SIZED_TRANSFER"
+            }
+          ],
+          "fundingCandidates": [],
+          "sharedFundingObservations": [],
+          "significancePolicy": {
+            "dustMaxLamports": 1000,
+            "candidateMinLamports": 1000000,
+            "meaning": "Dust is retained but excluded from shared-funder counts. Larger transfers are unverified candidates, not proof of financing."
+          },
+          "conclusion": "Observed transfers only. Shared funding does not establish common beneficial ownership; absence of evidence within this bounded window is not evidence of independence.",
+          "unresolved": [
+            "Historical funding outside sampled signatures",
+            "Transfers through intermediate wallets",
+            "Related ownership",
+            "Remaining Top-20 wallets not sampled",
+            "Infrastructure beyond known curve account"
+          ]
+        },
+        "security": {
+          "source": "Solana confirmed RPC",
+          "slot": 473605199,
+          "program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "mintAuthority": "BJE5MMbqXjVwjAF7oxwPYXnTXDyspzZyt4vwenNw5ruG",
+          "freezeAuthority": "7dGbd2QZcCKcTndnHcTL8q7SMVXAkp688NTQYwrRCrar",
+          "extensions": []
+        },
+        "creatorIntelligence": {
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "observedAt": "2026-11-25T04:02:36.337Z",
+          "status": "UNRESOLVED",
+          "observations": [],
+          "scope": {
+            "signaturesRetrieved": 200,
+            "transactionsRequested": 3,
+            "historyExhausted": false,
+            "errors": 3
+          },
+          "creator": null,
+          "limitation": "Mint initialization roles do not establish project creator identity. Bounded history may omit initialization."
+        }
+      },
+      "reportedProjectClaims": {
+        "description": null,
+        "websites": [],
+        "socials": [],
+        "source": "DAS mint-matched metadata",
+        "profile": {
+          "category": "ISSUER-CONTROLLED STABLECOIN",
+          "issuer": "Circle",
+          "source": "https://www.circle.com/multi-chain-usdc/solana",
+          "terms": "https://www.circle.com/legal/usdc-terms",
+          "identitySource": "https://help.circle.com/support/en/usdc-supported-blockchains-minting-redemption-faqs?id=kb_article_view&sysparm_article=KB0010590",
+          "utility": "Circle describes native USDC as a digital dollar used for payments, trading and financial services."
+        },
+        "identity": {
+          "name": "USD Coin",
+          "symbol": "USDC",
+          "source": "DexScreener exact-mint metadata; project identity not independently verified",
+          "logoUrl": "https://cdn.dexscreener.com/cms/images/913e72ef4901644569197a61dd198656ab488e9cd648a326fc2fca21b0d2521d?width=800&height=800&quality=95&format=auto"
+        }
+      },
+      "analyticalInterpretation": [
+        "For USDC, check its dollar peg, issuer redemption eligibility and reserve disclosures. Mint and freeze controls are relevant issuer risks, not evidence of manipulation.",
+        "These observations come from separate RPC reads, not a synchronized snapshot. Beneficial ownership and historical funding remain unresolved. This is not a token safety rating."
+      ],
+      "reportedMarketData": {
+        "source": "DexScreener",
+        "pairAddress": "DJNtGuBGEQiUCWE8F981M2C3ZghZt2XLD8f2sQdZ6rsZ",
+        "dex": "pancakeswap",
+        "priceUsd": 1.00049,
+        "liquidityUsd": 2247372.4,
+        "volume24h": 8796094.11,
+        "change24h": 0.09,
+        "marketCap": 68990460463,
+        "fdv": 9241496687,
+        "pairCreatedAt": null,
+        "buys24h": 78684,
+        "sells24h": 77832,
+        "quoteSymbol": "SOL",
+        "quoteMint": "So11111111111111111111111111111111111111112",
+        "pairCount": 30,
+        "eligiblePairCount": 27,
+        "websites": [],
+        "socials": [],
+        "scope": "Highest reported liquidity eligible exact-mint base pair against canonical WSOL, USDC or USDT; reported metrics, not aggregate market volume or independently verified price"
+      }
+    },
+    "scenes": [
+      {
+        "label": "TOKEN OVERVIEW",
+        "value": "USD Coin (USDC)",
+        "note": "ISSUER-CONTROLLED STABLECOIN \u00b7 SOLANA",
+        "caption": "Circle describes native USDC as a digital dollar used for payments, trading and financial services.",
+        "category": "REPORTED PROJECT CLAIMS",
+        "source": "https://www.circle.com/multi-chain-usdc/solana"
+      },
+      {
+        "label": "MARKET OVERVIEW",
+        "value": "$1.0005",
+        "note": "DEXSCREENER \u00b7 SELECTED PAIR",
+        "caption": "The selected eligible reported pair quotes $1.0005, with 24-hour pair volume of $8,796,100.",
+        "category": "REPORTED MARKET DATA",
+        "source": "DexScreener"
+      },
+      {
+        "label": "NON-EXCLUDED CONCENTRATION",
+        "value": "49.18%",
+        "note": "SAMPLED TOP 20 \u00b7 NOT INDEPENDENCE",
+        "caption": "After separating verified infrastructure, non-excluded sampled accounts hold 49.18 percent of supply. These accounts are not proven independent.",
+        "priority": 94,
+        "category": "VERIFIED OBSERVATIONS",
+        "source": "Solana RPC"
+      },
+      {
+        "label": "TOKEN AUTHORITIES",
+        "value": "MINT AUTHORITY SET",
+        "note": "FREEZE AUTHORITY SET",
+        "caption": "The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk.",
+        "priority": 85,
+        "category": "VERIFIED OBSERVATIONS",
+        "source": "Solana RPC"
+      },
+      {
+        "label": "PAIR LIQUIDITY",
+        "value": "$2,247,400",
+        "note": "DEXSCREENER \u00b7 SELECTED PAIR",
+        "caption": "The selected pair reports $2,247,400 in liquidity. Available liquidity affects execution and potential price impact.",
+        "priority": 80,
+        "category": "REPORTED MARKET DATA",
+        "source": "DexScreener"
+      },
+      {
+        "label": "TRADER TAKEAWAY",
+        "value": "CHECK THE EVIDENCE",
+        "note": "LEARN \u00b7 BUILD \u00b7 EVOLVE",
+        "caption": "For USDC, check its dollar peg, issuer redemption eligibility and reserve disclosures. Mint and freeze controls are relevant issuer risks, not evidence of manipulation.",
+        "category": "ANALYTICAL INTERPRETATION",
+        "source": "DOOM404 editorial interpretation"
+      },
+      {
+        "label": "LIMITATIONS",
+        "value": "PARTIAL EVIDENCE",
+        "note": "NOT A TOKEN SAFETY RATING",
+        "caption": "These observations come from separate RPC reads, not a synchronized snapshot. Beneficial ownership and historical funding remain unresolved. This is not a token safety rating.",
+        "category": "ANALYTICAL INTERPRETATION",
+        "source": "DOOM404 editorial interpretation"
+      }
+    ],
+    "findings": [
+      {
+        "label": "NON-EXCLUDED CONCENTRATION",
+        "value": "49.18%",
+        "note": "SAMPLED TOP 20 \u00b7 NOT INDEPENDENCE",
+        "caption": "After separating verified infrastructure, non-excluded sampled accounts hold 49.18 percent of supply. These accounts are not proven independent.",
+        "priority": 94,
+        "category": "VERIFIED OBSERVATIONS",
+        "source": "Solana RPC"
+      },
+      {
+        "label": "TOKEN AUTHORITIES",
+        "value": "MINT AUTHORITY SET",
+        "note": "FREEZE AUTHORITY SET",
+        "caption": "The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk.",
+        "priority": 85,
+        "category": "VERIFIED OBSERVATIONS",
+        "source": "Solana RPC"
+      },
+      {
+        "label": "PAIR LIQUIDITY",
+        "value": "$2,247,400",
+        "note": "DEXSCREENER \u00b7 SELECTED PAIR",
+        "caption": "The selected pair reports $2,247,400 in liquidity. Available liquidity affects execution and potential price impact.",
+        "priority": 80,
+        "category": "REPORTED MARKET DATA",
+        "source": "DexScreener"
+      },
+      {
+        "label": "EXTERNAL SWAP QUOTE",
+        "value": "ROUTE FOUND",
+        "note": "JUPITER \u00b7 READ ONLY",
+        "caption": "Jupiter returned a positive swap quote for this exact mint. This demonstrates quote availability, not an executed swap or a functioning project-owned application.",
+        "category": "VERIFIED OBSERVATIONS",
+        "source": "Jupiter quote API",
+        "priority": 76
+      },
+      {
+        "label": "ACCOUNT CONCENTRATION",
+        "value": "49.18%",
+        "note": "TOKEN ACCOUNTS \u00b7 NOT UNIQUE OWNERS",
+        "chart": {
+          "fraction": 0.4918163
+        },
+        "caption": "The largest 20 token accounts hold 49.18% of supply. This measures account concentration, not beneficial ownership.",
+        "priority": 70
+      },
+      {
+        "label": "TRADING ACTIVITY",
+        "value": "78684 / 77832",
+        "note": "24H BUY / SELL COUNTS \u00b7 SELECTED PAIR",
+        "caption": "The selected pair reports 78684 buys and 77832 sells over 24 hours. Trade counts do not establish unique traders or manipulation.",
+        "priority": 60
+      },
+      {
+        "label": "24H PRICE MOVEMENT",
+        "value": "0.09%",
+        "note": "SELECTED PAIR \u00b7 DEXSCREENER",
+        "caption": "The selected pair reports a 24-hour price change of 0.09 percent.",
+        "priority": 55
+      },
+      {
+        "label": "OWNER RESOLUTION",
+        "value": "20 / 20",
+        "note": "CONTROLLING ADDRESSES",
+        "chart": {
+          "fraction": 1
+        },
+        "caption": "Controlling addresses were identified for 20 of 20 sampled token accounts.",
+        "priority": 20
+      },
+      {
+        "label": "RECENT SAMPLE",
+        "value": "12",
+        "note": "TRANSACTIONS RETRIEVED",
+        "caption": "12 recent transactions were retrieved, with 0 direct transfer observations between sampled addresses.",
+        "priority": 10
+      },
+      {
+        "label": "SAMPLE COVERAGE",
+        "value": "20 ACCOUNTS",
+        "note": "BOUNDED HOLDER SAMPLE",
+        "caption": "The concentration calculation covers 20 largest token accounts from the confirmed RPC response.",
+        "priority": 5
+      }
+    ],
+    "unresolved": [
+      "Custody identity",
+      "Beneficial ownership",
+      "Holder independence",
+      "Historical funding",
+      "Trade coordination",
+      "Infrastructure outside bounded discovery may remain included",
+      "Historical funding outside sampled signatures",
+      "Transfers through intermediate wallets",
+      "Related ownership",
+      "Remaining Top-20 wallets not sampled",
+      "Infrastructure beyond known curve account",
+      "Unknown infrastructure may remain in sampled addresses",
+      "No wallet independence determination",
+      "Project creator identity not established",
+      "Mint initialization not observed within bounded creator history"
+    ],
+    "references": [],
+    "evidence": {
+      "holders": {
+        "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "supply": {
+          "raw": "9196424128728132",
+          "decimals": 6,
+          "slot": 473605194
+        },
+        "top10TokenAccountSharePercent": 44.64143,
+        "top20TokenAccountSharePercent": 49.18163,
+        "classifiedInfrastructureSharePercent": 0,
+        "classifiedInfrastructureCount": 0,
+        "verifiedBondingCurveSharePercent": 0,
+        "verifiedLiquidityPoolSharePercent": 0,
+        "verifiedCustodySharePercent": 0,
+        "custodyVerificationStatus": "NOT_ESTABLISHED",
+        "unclassifiedTop20SharePercent": 49.18163,
+        "nonExcludedTop20SharePercent": 49.18163,
+        "unresolvedAccountSharePercent": 0,
+        "purposeUnresolvedSharePercent": 49.18163,
+        "resolvedOwnerCount": 20,
+        "resolvedTokenAccountCount": 20,
+        "ownerGroups": [
+          {
+            "owner": "7VHUFJHWu2CuExkJcJrzhQPJ2oygupTWkL2A2For4BmE",
+            "rawAmount": "1782458515786417",
+            "nonExcludedRawAmount": "1782458515786417",
+            "tokenAccounts": [
+              "3emsAVdmGKERbHjmGfQ6oZ1e35dkf5iYcS6U4CPKFVaa"
+            ],
+            "count": 1,
+            "sharePercent": 19.382082,
+            "nonExcludedSharePercent": 19.382082,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "H8BgJgae6qhMtf7BM2JtddywSQt11WdxHHxkGLNX5hss",
+            "rawAmount": "1288493338186000",
+            "nonExcludedRawAmount": "1288493338186000",
+            "tokenAccounts": [
+              "DT78gNBH7enTRrAFcag4PAuQbSeemstmtj888w8pkvdf"
+            ],
+            "count": 1,
+            "sharePercent": 14.010808,
+            "nonExcludedSharePercent": 14.010808,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "4Dg89gRmz8rUrTRiBP6XzfWJWtEuAxEYAWXn64AE3xvi",
+            "rawAmount": "247891766433984",
+            "nonExcludedRawAmount": "247891766433984",
+            "tokenAccounts": [
+              "9piy5wGy8v1gpnGXigfmbssBgCuv2X6VKrACT5owmFVo"
+            ],
+            "count": 1,
+            "sharePercent": 2.695523,
+            "nonExcludedSharePercent": 2.695523,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "DBD8hAwLDRQkTsu6EqviaYNGKPnsAMmQonxf7AH8ZcFY",
+            "rawAmount": "151583047860864",
+            "nonExcludedRawAmount": "151583047860864",
+            "tokenAccounts": [
+              "FSxJ85FXVsXSr51SeWf9ciJWTcRnqKFSmBgRDeL3KyWw"
+            ],
+            "count": 1,
+            "sharePercent": 1.648282,
+            "nonExcludedSharePercent": 1.648282,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "E1bQJ8eMMn3zmeSewW3HQ8zmJr7KR75JonbwAtWx2bux",
+            "rawAmount": "144681771190019",
+            "nonExcludedRawAmount": "144681771190019",
+            "tokenAccounts": [
+              "6xTBTqJMBr5m7BKqVxmW2x11DfqUwtD3TJsqpxELx72L"
+            ],
+            "count": 1,
+            "sharePercent": 1.573239,
+            "nonExcludedSharePercent": 1.573239,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "6LY1JzAFVZsP2a2xKrtU6znQMQ5h4i7tocWdgrkZzkzF",
+            "rawAmount": "103075469860323",
+            "nonExcludedRawAmount": "103075469860323",
+            "tokenAccounts": [
+              "8g1gYt8tFYP8Yo4Wvz1VpUsfouH1kL79wxeiRvyB4hND"
+            ],
+            "count": 1,
+            "sharePercent": 1.120821,
+            "nonExcludedSharePercent": 1.120821,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "28nYGHJyUVcVdxZtzKByBXEj127XnrUkrE3VaGuWj1ZU",
+            "rawAmount": "102464601207512",
+            "nonExcludedRawAmount": "102464601207512",
+            "tokenAccounts": [
+              "ExFUyu3f5C9UW3zLZybVcXv156X2g5AxdZCZJvCh23w4"
+            ],
+            "count": 1,
+            "sharePercent": 1.114178,
+            "nonExcludedSharePercent": 1.114178,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "AVzP2GeRmqGphJsMxWoqjpUifPpCret7LqWhD8NWQK49",
+            "rawAmount": "101271261050847",
+            "nonExcludedRawAmount": "101271261050847",
+            "tokenAccounts": [
+              "WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS"
+            ],
+            "count": 1,
+            "sharePercent": 1.101202,
+            "nonExcludedSharePercent": 1.101202,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "8Vkgsarud8mSc1gkzayGA7XhNQfq4wDJRxTWDgq8RaJD",
+            "rawAmount": "100347742778065",
+            "nonExcludedRawAmount": "100347742778065",
+            "tokenAccounts": [
+              "Cp8wjBC7MVWeMeawTdyPzPdH7ThpBq1vRdBKtVRVTW2B"
+            ],
+            "count": 1,
+            "sharePercent": 1.09116,
+            "nonExcludedSharePercent": 1.09116,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "3csuXZKah5rgpb8RiwX9XfjrMxcp3u1K9mBdCwL51spj",
+            "rawAmount": "83147769868364",
+            "nonExcludedRawAmount": "83147769868364",
+            "tokenAccounts": [
+              "8MzrQK9MiFhgzFuh3RXyHXGM6xRChHyKy7VZQMqaTqtq"
+            ],
+            "count": 1,
+            "sharePercent": 0.904131,
+            "nonExcludedSharePercent": 0.904131,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "F6ZjiBm1WgVXzez5vxHeBDgaVPQRfLyFb7GFwXvyZVxD",
+            "rawAmount": "70117912905315",
+            "nonExcludedRawAmount": "70117912905315",
+            "tokenAccounts": [
+              "Ezo6p9nw16XJeDGmKnXSH9rHdGEkwpfZDWfHwb68rUa7"
+            ],
+            "count": 1,
+            "sharePercent": 0.762447,
+            "nonExcludedSharePercent": 0.762447,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "8DfHuYFv7VQ6wgcGtVDN2vtFn5ezF52hHNtPWYcqm8hU",
+            "rawAmount": "54993996842716",
+            "nonExcludedRawAmount": "54993996842716",
+            "tokenAccounts": [
+              "FUc4NrNsK4WCFxfB2LvkQCnPva3fabjdp32Lfm2gPJbA"
+            ],
+            "count": 1,
+            "sharePercent": 0.597993,
+            "nonExcludedSharePercent": 0.597993,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "7s1da8DduuBFqGra5bJBjpnvL5E9mGzCuMk1Qkh4or2Z",
+            "rawAmount": "51327808687000",
+            "nonExcludedRawAmount": "51327808687000",
+            "tokenAccounts": [
+              "BmkUoKMFYBxNSzWXyUjyMJjMAaVz4d8ZnxwwmhDCUXFB"
+            ],
+            "count": 1,
+            "sharePercent": 0.558127,
+            "nonExcludedSharePercent": 0.558127,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "2GAPBYrsxR8pUaDaWGKkAJUf6DcBZrxMjpZ423kLDia1",
+            "rawAmount": "50474811639694",
+            "nonExcludedRawAmount": "50474811639694",
+            "tokenAccounts": [
+              "cYoCXcb7kq5e4MMVogKpKPho4TVtmmxVsFkhR1Pk75Q"
+            ],
+            "count": 1,
+            "sharePercent": 0.548852,
+            "nonExcludedSharePercent": 0.548852,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "6fJxHzqAvnmsfb61Hkh7dNtUqLCaZdBtCvYq5X8BqHYj",
+            "rawAmount": "44900010000000",
+            "nonExcludedRawAmount": "44900010000000",
+            "tokenAccounts": [
+              "C6JXWwUgBwf9vRNktNjz3Q9eUxJP4LpBkdb7R7Pa9g1z"
+            ],
+            "count": 1,
+            "sharePercent": 0.488233,
+            "nonExcludedSharePercent": 0.488233,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "81w96XvKAZZFmmuzaohSQUyxtGnAPJmkjwoBFBmtytUj",
+            "rawAmount": "30777041000000",
+            "nonExcludedRawAmount": "30777041000000",
+            "tokenAccounts": [
+              "ABnvL6oaY7PqaD5EwNUfRgLFTmCuWxmwBudCzPLhDxkb"
+            ],
+            "count": 1,
+            "sharePercent": 0.334663,
+            "nonExcludedSharePercent": 0.334663,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "41zCUJsKk6cMB94DDtm99qWmyMZfp4GkAhhuz4xTwePu",
+            "rawAmount": "30726875752732",
+            "nonExcludedRawAmount": "30726875752732",
+            "tokenAccounts": [
+              "9gD46MnYLpskDiRisMZGY958JHgMSxLUiT56r8vdNzb8"
+            ],
+            "count": 1,
+            "sharePercent": 0.334117,
+            "nonExcludedSharePercent": 0.334117,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "9wZ4ngHgHw5BuEuHNS7PFQ8EYM3aHefesHQMpQRxybpR",
+            "rawAmount": "29400000012026",
+            "nonExcludedRawAmount": "29400000012026",
+            "tokenAccounts": [
+              "H5Te9HAvdY2Tv4s43GykN19bDQphwZxMaFMrrt5XTYWs"
+            ],
+            "count": 1,
+            "sharePercent": 0.319689,
+            "nonExcludedSharePercent": 0.319689,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "22D4D68xv6Wm6JtsUbVf2uZVBNLHsvQjLD5R1S8RRPcD",
+            "rawAmount": "27564351217007",
+            "nonExcludedRawAmount": "27564351217007",
+            "tokenAccounts": [
+              "G6nbKrnjosQys2yCtgtRSfRafK3e4nqHsGZhZQYwKmSA"
+            ],
+            "count": 1,
+            "sharePercent": 0.299729,
+            "nonExcludedSharePercent": 0.299729,
+            "classification": "PURPOSE_UNRESOLVED"
+          },
+          {
+            "owner": "3Ln6KEgLoMR2xFHfqtYazP7CxFQPDtUVVtwCVsLKVfmV",
+            "rawAmount": "27253279165732",
+            "nonExcludedRawAmount": "27253279165732",
+            "tokenAccounts": [
+              "J6nam4Er6sKBetuPpchrUF36usQuDxMendRGJ3FeGWXB"
+            ],
+            "count": 1,
+            "sharePercent": 0.296346,
+            "nonExcludedSharePercent": 0.296346,
+            "classification": "PURPOSE_UNRESOLVED"
+          }
+        ],
+        "largestObservedOwner": {
+          "owner": "7VHUFJHWu2CuExkJcJrzhQPJ2oygupTWkL2A2For4BmE",
+          "rawAmount": "1782458515786417",
+          "nonExcludedRawAmount": "1782458515786417",
+          "tokenAccounts": [
+            "3emsAVdmGKERbHjmGfQ6oZ1e35dkf5iYcS6U4CPKFVaa"
+          ],
+          "count": 1,
+          "sharePercent": 19.382082,
+          "nonExcludedSharePercent": 19.382082,
+          "classification": "PURPOSE_UNRESOLVED"
+        },
+        "largestObservedOwnerSharePercent": 19.382082,
+        "ownerConcentrationScope": "Non-excluded balances in sampled Top 20 only; controlling address is not beneficial ownership or independence",
+        "reconciliation": {
+          "supplyRaw": "9196424128728132",
+          "sampledRaw": "4522951371444617",
+          "verifiedInfrastructureRaw": "0",
+          "nonExcludedRaw": "4522951371444617",
+          "unresolvedOwnerRaw": "0",
+          "outsideSampleRaw": "4673472757283515",
+          "reconciled": true,
+          "percentagePrecision": 6
+        },
+        "accounts": [
+          {
+            "tokenAccount": "3emsAVdmGKERbHjmGfQ6oZ1e35dkf5iYcS6U4CPKFVaa",
+            "tokenOwner": "7VHUFJHWu2CuExkJcJrzhQPJ2oygupTWkL2A2For4BmE",
+            "rawAmount": "1782458515786417",
+            "sharePercent": 19.382082,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/3emsAVdmGKERbHjmGfQ6oZ1e35dkf5iYcS6U4CPKFVaa",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "DT78gNBH7enTRrAFcag4PAuQbSeemstmtj888w8pkvdf",
+            "tokenOwner": "H8BgJgae6qhMtf7BM2JtddywSQt11WdxHHxkGLNX5hss",
+            "rawAmount": "1288493338186000",
+            "sharePercent": 14.010808,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/DT78gNBH7enTRrAFcag4PAuQbSeemstmtj888w8pkvdf",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "9piy5wGy8v1gpnGXigfmbssBgCuv2X6VKrACT5owmFVo",
+            "tokenOwner": "4Dg89gRmz8rUrTRiBP6XzfWJWtEuAxEYAWXn64AE3xvi",
+            "rawAmount": "247891766433984",
+            "sharePercent": 2.695523,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/9piy5wGy8v1gpnGXigfmbssBgCuv2X6VKrACT5owmFVo",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "FSxJ85FXVsXSr51SeWf9ciJWTcRnqKFSmBgRDeL3KyWw",
+            "tokenOwner": "DBD8hAwLDRQkTsu6EqviaYNGKPnsAMmQonxf7AH8ZcFY",
+            "rawAmount": "151583047860864",
+            "sharePercent": 1.648282,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "CCTPiPYPc6AsJuwueEnWgSgucamXDZwBd53dQ11YiKX3",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/FSxJ85FXVsXSr51SeWf9ciJWTcRnqKFSmBgRDeL3KyWw",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "6xTBTqJMBr5m7BKqVxmW2x11DfqUwtD3TJsqpxELx72L",
+            "tokenOwner": "E1bQJ8eMMn3zmeSewW3HQ8zmJr7KR75JonbwAtWx2bux",
+            "rawAmount": "144681771190019",
+            "sharePercent": 1.573239,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "CCTPV2vPZJS2u2BBsUoscuikbYjnpFmbFsvVuJdgUMQe",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/6xTBTqJMBr5m7BKqVxmW2x11DfqUwtD3TJsqpxELx72L",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "8g1gYt8tFYP8Yo4Wvz1VpUsfouH1kL79wxeiRvyB4hND",
+            "tokenOwner": "6LY1JzAFVZsP2a2xKrtU6znQMQ5h4i7tocWdgrkZzkzF",
+            "rawAmount": "103075469860323",
+            "sharePercent": 1.120821,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/8g1gYt8tFYP8Yo4Wvz1VpUsfouH1kL79wxeiRvyB4hND",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "ExFUyu3f5C9UW3zLZybVcXv156X2g5AxdZCZJvCh23w4",
+            "tokenOwner": "28nYGHJyUVcVdxZtzKByBXEj127XnrUkrE3VaGuWj1ZU",
+            "rawAmount": "102464601207512",
+            "sharePercent": 1.114178,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/ExFUyu3f5C9UW3zLZybVcXv156X2g5AxdZCZJvCh23w4",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS",
+            "tokenOwner": "AVzP2GeRmqGphJsMxWoqjpUifPpCret7LqWhD8NWQK49",
+            "rawAmount": "101271261050847",
+            "sharePercent": 1.101202,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "Cp8wjBC7MVWeMeawTdyPzPdH7ThpBq1vRdBKtVRVTW2B",
+            "tokenOwner": "8Vkgsarud8mSc1gkzayGA7XhNQfq4wDJRxTWDgq8RaJD",
+            "rawAmount": "100347742778065",
+            "sharePercent": 1.09116,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/Cp8wjBC7MVWeMeawTdyPzPdH7ThpBq1vRdBKtVRVTW2B",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "8MzrQK9MiFhgzFuh3RXyHXGM6xRChHyKy7VZQMqaTqtq",
+            "tokenOwner": "3csuXZKah5rgpb8RiwX9XfjrMxcp3u1K9mBdCwL51spj",
+            "rawAmount": "83147769868364",
+            "sharePercent": 0.904131,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/8MzrQK9MiFhgzFuh3RXyHXGM6xRChHyKy7VZQMqaTqtq",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "Ezo6p9nw16XJeDGmKnXSH9rHdGEkwpfZDWfHwb68rUa7",
+            "tokenOwner": "F6ZjiBm1WgVXzez5vxHeBDgaVPQRfLyFb7GFwXvyZVxD",
+            "rawAmount": "70117912905315",
+            "sharePercent": 0.762447,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/Ezo6p9nw16XJeDGmKnXSH9rHdGEkwpfZDWfHwb68rUa7",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "FUc4NrNsK4WCFxfB2LvkQCnPva3fabjdp32Lfm2gPJbA",
+            "tokenOwner": "8DfHuYFv7VQ6wgcGtVDN2vtFn5ezF52hHNtPWYcqm8hU",
+            "rawAmount": "54993996842716",
+            "sharePercent": 0.597993,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/FUc4NrNsK4WCFxfB2LvkQCnPva3fabjdp32Lfm2gPJbA",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "BmkUoKMFYBxNSzWXyUjyMJjMAaVz4d8ZnxwwmhDCUXFB",
+            "tokenOwner": "7s1da8DduuBFqGra5bJBjpnvL5E9mGzCuMk1Qkh4or2Z",
+            "rawAmount": "51327808687000",
+            "sharePercent": 0.558127,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "jupeiUmn818Jg1ekPURTpr4mFo29p46vygyykFJ3wZC",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/BmkUoKMFYBxNSzWXyUjyMJjMAaVz4d8ZnxwwmhDCUXFB",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "cYoCXcb7kq5e4MMVogKpKPho4TVtmmxVsFkhR1Pk75Q",
+            "tokenOwner": "2GAPBYrsxR8pUaDaWGKkAJUf6DcBZrxMjpZ423kLDia1",
+            "rawAmount": "50474811639694",
+            "sharePercent": 0.548852,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/cYoCXcb7kq5e4MMVogKpKPho4TVtmmxVsFkhR1Pk75Q",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "C6JXWwUgBwf9vRNktNjz3Q9eUxJP4LpBkdb7R7Pa9g1z",
+            "tokenOwner": "6fJxHzqAvnmsfb61Hkh7dNtUqLCaZdBtCvYq5X8BqHYj",
+            "rawAmount": "44900010000000",
+            "sharePercent": 0.488233,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/C6JXWwUgBwf9vRNktNjz3Q9eUxJP4LpBkdb7R7Pa9g1z",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "ABnvL6oaY7PqaD5EwNUfRgLFTmCuWxmwBudCzPLhDxkb",
+            "tokenOwner": "81w96XvKAZZFmmuzaohSQUyxtGnAPJmkjwoBFBmtytUj",
+            "rawAmount": "30777041000000",
+            "sharePercent": 0.334663,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/ABnvL6oaY7PqaD5EwNUfRgLFTmCuWxmwBudCzPLhDxkb",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "9gD46MnYLpskDiRisMZGY958JHgMSxLUiT56r8vdNzb8",
+            "tokenOwner": "41zCUJsKk6cMB94DDtm99qWmyMZfp4GkAhhuz4xTwePu",
+            "rawAmount": "30726875752732",
+            "sharePercent": 0.334117,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/9gD46MnYLpskDiRisMZGY958JHgMSxLUiT56r8vdNzb8",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "H5Te9HAvdY2Tv4s43GykN19bDQphwZxMaFMrrt5XTYWs",
+            "tokenOwner": "9wZ4ngHgHw5BuEuHNS7PFQ8EYM3aHefesHQMpQRxybpR",
+            "rawAmount": "29400000012026",
+            "sharePercent": 0.319689,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/H5Te9HAvdY2Tv4s43GykN19bDQphwZxMaFMrrt5XTYWs",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "G6nbKrnjosQys2yCtgtRSfRafK3e4nqHsGZhZQYwKmSA",
+            "tokenOwner": "22D4D68xv6Wm6JtsUbVf2uZVBNLHsvQjLD5R1S8RRPcD",
+            "rawAmount": "27564351217007",
+            "sharePercent": 0.299729,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "OWNER_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": null,
+            "ownerAccountExecutable": null,
+            "ownerControlType": "UNRESOLVED",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/G6nbKrnjosQys2yCtgtRSfRafK3e4nqHsGZhZQYwKmSA",
+            "sameOwnerTokenAccounts": 1
+          },
+          {
+            "tokenAccount": "J6nam4Er6sKBetuPpchrUF36usQuDxMendRGJ3FeGWXB",
+            "tokenOwner": "3Ln6KEgLoMR2xFHfqtYazP7CxFQPDtUVVtwCVsLKVfmV",
+            "rawAmount": "27253279165732",
+            "sharePercent": 0.296346,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "SYSTEM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "11111111111111111111111111111111",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "SYSTEM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/J6nam4Er6sKBetuPpchrUF36usQuDxMendRGJ3FeGWXB",
+            "sameOwnerTokenAccounts": 1
+          }
+        ],
+        "targetedOwners": [
+          {
+            "tokenAccount": "FSxJ85FXVsXSr51SeWf9ciJWTcRnqKFSmBgRDeL3KyWw",
+            "tokenOwner": "DBD8hAwLDRQkTsu6EqviaYNGKPnsAMmQonxf7AH8ZcFY",
+            "rawAmount": "151583047860864",
+            "sharePercent": 1.648282,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "CCTPiPYPc6AsJuwueEnWgSgucamXDZwBd53dQ11YiKX3",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/FSxJ85FXVsXSr51SeWf9ciJWTcRnqKFSmBgRDeL3KyWw"
+          },
+          {
+            "tokenAccount": "6xTBTqJMBr5m7BKqVxmW2x11DfqUwtD3TJsqpxELx72L",
+            "tokenOwner": "E1bQJ8eMMn3zmeSewW3HQ8zmJr7KR75JonbwAtWx2bux",
+            "rawAmount": "144681771190019",
+            "sharePercent": 1.573239,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "CCTPV2vPZJS2u2BBsUoscuikbYjnpFmbFsvVuJdgUMQe",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/6xTBTqJMBr5m7BKqVxmW2x11DfqUwtD3TJsqpxELx72L"
+          },
+          {
+            "tokenAccount": "WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS",
+            "tokenOwner": "AVzP2GeRmqGphJsMxWoqjpUifPpCret7LqWhD8NWQK49",
+            "rawAmount": "101271261050847",
+            "sharePercent": 1.101202,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS"
+          },
+          {
+            "tokenAccount": "BmkUoKMFYBxNSzWXyUjyMJjMAaVz4d8ZnxwwmhDCUXFB",
+            "tokenOwner": "7s1da8DduuBFqGra5bJBjpnvL5E9mGzCuMk1Qkh4or2Z",
+            "rawAmount": "51327808687000",
+            "sharePercent": 0.558127,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "PROGRAM_ADDRESS_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": "jupeiUmn818Jg1ekPURTpr4mFo29p46vygyykFJ3wZC",
+            "ownerAccountExecutable": false,
+            "ownerControlType": "PROGRAM_OWNED_ADDRESS",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/BmkUoKMFYBxNSzWXyUjyMJjMAaVz4d8ZnxwwmhDCUXFB"
+          },
+          {
+            "tokenAccount": "G6nbKrnjosQys2yCtgtRSfRafK3e4nqHsGZhZQYwKmSA",
+            "tokenOwner": "22D4D68xv6Wm6JtsUbVf2uZVBNLHsvQjLD5R1S8RRPcD",
+            "rawAmount": "27564351217007",
+            "sharePercent": 0.299729,
+            "classification": "UNCLASSIFIED",
+            "ownerVerified": true,
+            "role": "OWNER_PURPOSE_UNRESOLVED",
+            "ownerAccountProgram": null,
+            "ownerAccountExecutable": null,
+            "ownerControlType": "UNRESOLVED",
+            "balanceChangedSinceRanking": false,
+            "explorer": "https://solscan.io/account/G6nbKrnjosQys2yCtgtRSfRafK3e4nqHsGZhZQYwKmSA"
+          }
+        ],
+        "provider": "configured",
+        "observedAt": "2026-11-25T04:02:34.328Z",
+        "largestAccountsSlot": 473605195,
+        "ownerResolutionSlot": 473605195,
+        "controlInspectionSlot": 473605195,
+        "controlInspection": "COMPLETE",
+        "infrastructureCheck": "NOT_ESTABLISHED",
+        "infrastructureSlot": 473605195,
+        "knownCurveState": "NOT_SEPARATELY_QUERIED",
+        "knownCurveBalanceRaw": null,
+        "knownCurveSlot": null,
+        "poolDiscovery": {
+          "queryLimit": 8,
+          "queries": 0,
+          "results": []
+        },
+        "observedWalletRelationships": {
+          "status": "NOT_QUERIED_HERE",
+          "source": "Reuse bounded relationships pipeline"
+        },
+        "classificationPolicy": "Only exact protocol pool/curve mint, vault and authority checks exclude infrastructure. All unresolved accounts remain included. Separate RPC reads are not a synchronized snapshot.",
+        "unresolved": [
+          "Custody identity",
+          "Beneficial ownership",
+          "Holder independence",
+          "Historical funding",
+          "Trade coordination",
+          "Infrastructure outside bounded discovery may remain included"
+        ]
+      },
+      "recent": {
+        "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "manipulationIndicators": {
+          "reciprocal": [],
+          "cycles": [],
+          "swapCandidates": [],
+          "roundTrips": [],
+          "coordinatedAcquisitions": [],
+          "decodedSwapInstructions": [],
+          "liquidityInstructions": [],
+          "withdrawalTransfers": [],
+          "swapVerification": "SELECTED_DISCRIMINATORS_RECOGNIZED_WALLET_ATTRIBUTION_PENDING",
+          "conclusion": "Transfer graph patterns only; chronology, economic purpose, swap execution and common control not established. No wash trading determination."
+        },
+        "relationshipGraph": {
+          "components": [],
+          "sharedFunding": [],
+          "scope": "Bounded recent sample; no beneficial ownership or trade coordination inference"
+        },
+        "provider": "configured",
+        "observedAt": "2026-11-25T04:02:34.970Z",
+        "scope": {
+          "topAccountsConsidered": 20,
+          "ownersSelected": [
+            "7VHUFJHWu2CuExkJcJrzhQPJ2oygupTWkL2A2For4BmE",
+            "H8BgJgae6qhMtf7BM2JtddywSQt11WdxHHxkGLNX5hss",
+            "4Dg89gRmz8rUrTRiBP6XzfWJWtEuAxEYAWXn64AE3xvi",
+            "DBD8hAwLDRQkTsu6EqviaYNGKPnsAMmQonxf7AH8ZcFY"
+          ],
+          "signaturesPerOwner": 3,
+          "transactionsRequested": 12,
+          "transactionsRetrieved": 12,
+          "retriesAttempted": 0,
+          "versionFallbacksAttempted": 0,
+          "transactionFailures": [],
+          "signatureQueriesFailed": 0,
+          "transactionQueriesFailed": 0
+        },
+        "directTransfers": [],
+        "inboundSolObservations": [
+          {
+            "type": "OBSERVED_INBOUND_SOL",
+            "source": "Cwqb8V5VQ3H2BKNrwNsNbmK7J2NrLNiL8Q14UNioLNzV",
+            "destination": "4Dg89gRmz8rUrTRiBP6XzfWJWtEuAxEYAWXn64AE3xvi",
+            "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+            "slot": 473375492,
+            "instructionIndex": 2,
+            "lamports": 1000,
+            "significance": "DUST_SIZED_TRANSFER"
+          }
+        ],
+        "dustTransfers": [
+          {
+            "type": "OBSERVED_INBOUND_SOL",
+            "source": "Cwqb8V5VQ3H2BKNrwNsNbmK7J2NrLNiL8Q14UNioLNzV",
+            "destination": "4Dg89gRmz8rUrTRiBP6XzfWJWtEuAxEYAWXn64AE3xvi",
+            "signature": "2ss1bv1tC7T9B6fQYsY2YRUCVqSukuy4AHYzBmsdzZHE5vrsHMWkBUKud79BZRHWtw3oHFEKpqfnKYTmg4Me8XRr",
+            "slot": 473375492,
+            "instructionIndex": 2,
+            "lamports": 1000,
+            "significance": "DUST_SIZED_TRANSFER"
+          }
+        ],
+        "fundingCandidates": [],
+        "sharedFundingObservations": [],
+        "significancePolicy": {
+          "dustMaxLamports": 1000,
+          "candidateMinLamports": 1000000,
+          "meaning": "Dust is retained but excluded from shared-funder counts. Larger transfers are unverified candidates, not proof of financing."
+        },
+        "conclusion": "Observed transfers only. Shared funding does not establish common beneficial ownership; absence of evidence within this bounded window is not evidence of independence.",
+        "unresolved": [
+          "Historical funding outside sampled signatures",
+          "Transfers through intermediate wallets",
+          "Related ownership",
+          "Remaining Top-20 wallets not sampled",
+          "Infrastructure beyond known curve account"
+        ]
+      }
+    },
+    "script": "Circle describes native USDC as a digital dollar used for payments, trading and financial services. The selected eligible reported pair quotes $1.0005, with 24-hour pair volume of $8,796,100. After separating verified infrastructure, non-excluded sampled accounts hold 49.18 percent of supply. These accounts are not proven independent. The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk. The selected pair reports $2,247,400 in liquidity. Available liquidity affects execution and potential price impact. For USDC, check its dollar peg, issuer redemption eligibility and reserve disclosures. Mint and freeze controls are relevant issuer risks, not evidence of manipulation. These observations come from separate RPC reads, not a synchronized snapshot. Beneficial ownership and historical funding remain unresolved. This is not a token safety rating."
+  },
+  "captionFrames": [
+    "Circle describes native USDC as a digital dollar used for payments, trading and financial services.",
+    "The selected eligible reported pair quotes $1.0005, with 24-hour pair volume of $8,796,100.",
+    "After separating verified infrastructure, non-excluded sampled accounts hold 49.18 percent of supply. These accounts are not proven independent.",
+    "The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk.",
+    "The selected pair reports $2,247,400 in liquidity. Available liquidity affects execution and potential price impact.",
+    "For USDC, check its dollar peg, issuer redemption eligibility and reserve disclosures. Mint and freeze controls are relevant issuer risks, not evidence of manipulation.",
+    "These observations come from separate RPC reads, not a synchronized snapshot. Beneficial ownership and historical funding remain unresolved. This is not a token safety rating."
+  ],
+  "captionTimeline": [
+    {
+      "caption": "Circle describes native USDC as a digital dollar used for payments, trading and financial services.",
+      "startSeconds": 0,
+      "endSeconds": 8.56798185941043
+    },
+    {
+      "caption": "The selected eligible reported pair quotes $1.0005, with 24-hour pair volume of $8,796,100.",
+      "startSeconds": 8.56798185941043,
+      "endSeconds": 21.167981859410432
+    },
+    {
+      "caption": "After separating verified infrastructure, non-excluded sampled accounts hold 49.18 percent of supply. These accounts are not proven independent.",
+      "startSeconds": 21.167981859410432,
+      "endSeconds": 31.271972789115647
+    },
+    {
+      "caption": "The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk.",
+      "startSeconds": 31.271972789115647,
+      "endSeconds": 45.479954648526075
+    },
+    {
+      "caption": "The selected pair reports $2,247,400 in liquidity. Available liquidity affects execution and potential price impact.",
+      "startSeconds": 45.479954648526075,
+      "endSeconds": 56.327936507936506
+    },
+    {
+      "caption": "For USDC, check its dollar peg, issuer redemption eligibility and reserve disclosures. Mint and freeze controls are relevant issuer risks, not evidence of manipulation.",
+      "startSeconds": 56.327936507936506,
+      "endSeconds": 68.92793650793651
+    },
+    {
+      "caption": "These observations come from separate RPC reads, not a synchronized snapshot. Beneficial ownership and historical funding remain unresolved. This is not a token safety rating.",
+      "startSeconds": 68.92793650793651,
+      "endSeconds": 81.57591836734694
+    }
+  ],
+  "exportAudio": "EMBEDDED",
+  "narratedExport": {
+    "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "presenter": "hud",
+    "filename": "doom404-v13-sync-doom-EPjFWdd5-1795579518711.webm",
+    "mimeType": "video/webm;codecs=vp8,opus",
+    "bytes": 2157933,
+    "rawBytes": 2158051,
+    "timelineNormalization": {
+      "normalizer": "DOOM404_WEBM_OPUS_CLOCK_V1",
+      "mediaReencoded": false,
+      "referenceBlockTreatment": "Chrome/libwebm previous-absolute timestamps recognized only when equal to preceding video packet; emitted spec-correct signed relative references",
+      "authoritativeSources": [
+        "https://www.matroska.org/technical/notes.html",
+        "https://www.matroska.org/technical/elements.html",
+        "https://www.rfc-editor.org/rfc/rfc6716.html#section-3.1",
+        "https://github.com/webmproject/libwebm/blob/1f795141409295f5bc16769d0230e269efd169f9/mkvmuxer/mkvmuxerutil.cc"
+      ],
+      "scope": "Observed Chrome VP8 alpha BlockGroups + unlaced Opus SimpleBlocks; 1ms scale",
+      "audioPackets": 1361,
+      "videoPackets": 85,
+      "encodedAudioDurationSeconds": 81.66,
+      "normalizedDurationSeconds": 81.702,
+      "originalAudioEndSeconds": 81.731,
+      "removedClockGapSeconds": 0.029,
+      "maximumTimestampQuantizationErrorMs": 0.49152542372758035,
+      "payloadPreservation": "Encoded block payloads and VP8 alpha additions copied without modification; caller must retain hash validation evidence",
+      "removedStaleIndexes": [
+        "SeekHead",
+        "Cues"
+      ],
+      "limitations": [
+        "Unsupported EBML layouts, lacing, track scales and reference targets other than the preceding video packet are rejected.",
+        "No speech intelligibility or factual-accuracy determination."
+      ]
+    },
+    "width": 540,
+    "height": 960,
+    "audio": "EMBEDDED",
+    "speechInputs": [
+      "Circle describes native USDC as a digital dollar used for payments, trading and financial services.",
+      "The selected eligible reported pair quotes one point zero zero zero five US dollars, with twenty four-hour pair volume of eight million seven hundred ninety six thousand one hundred US dollars.",
+      "After separating verified infrastructure, non-excluded sampled accounts hold forty nine point one eight percent of supply. These accounts are not proven independent.",
+      "The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk.",
+      "The selected pair reports two million two hundred forty seven thousand four hundred US dollars in liquidity. Available liquidity affects execution and potential price impact.",
+      "For USDC, check its dollar peg, issuer redemption eligibility and reserve disclosures. Mint and freeze controls are relevant issuer risks, not evidence of manipulation.",
+      "These observations come from separate RPC reads, not a synchronized snapshot. Beneficial ownership and historical funding remain unresolved. This is not a token safety rating."
+    ],
+    "narrationDurationSeconds": 81.57591836734694,
+    "sceneTimeline": [
+      {
+        "caption": "Circle describes native USDC as a digital dollar used for payments, trading and financial services.",
+        "startSeconds": 0,
+        "endSeconds": 8.56798185941043
+      },
+      {
+        "caption": "The selected eligible reported pair quotes $1.0005, with 24-hour pair volume of $8,796,100.",
+        "startSeconds": 8.56798185941043,
+        "endSeconds": 21.167981859410432
+      },
+      {
+        "caption": "After separating verified infrastructure, non-excluded sampled accounts hold 49.18 percent of supply. These accounts are not proven independent.",
+        "startSeconds": 21.167981859410432,
+        "endSeconds": 31.271972789115647
+      },
+      {
+        "caption": "The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk.",
+        "startSeconds": 31.271972789115647,
+        "endSeconds": 45.479954648526075
+      },
+      {
+        "caption": "The selected pair reports $2,247,400 in liquidity. Available liquidity affects execution and potential price impact.",
+        "startSeconds": 45.479954648526075,
+        "endSeconds": 56.327936507936506
+      },
+      {
+        "caption": "For USDC, check its dollar peg, issuer redemption eligibility and reserve disclosures. Mint and freeze controls are relevant issuer risks, not evidence of manipulation.",
+        "startSeconds": 56.327936507936506,
+        "endSeconds": 68.92793650793651
+      },
+      {
+        "caption": "These observations come from separate RPC reads, not a synchronized snapshot. Beneficial ownership and historical funding remain unresolved. This is not a token safety rating.",
+        "startSeconds": 68.92793650793651,
+        "endSeconds": 81.57591836734694
+      }
+    ],
+    "verification": "EXPORTED_REQUIRES_PLAYBACK_REVIEW"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "context": {
+    "apiVersion": "4.4.0",
+    "slot": 473605889
+  },
+  "value": [
+    {
+      "data": {
+        "parsed": {
+          "info": {
+            "isNative": false,
+            "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+            "owner": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+            "state": "initialized",
+            "tokenAmount": {
+              "amount": "42",
+              "decimals": 8,
+              "uiAmount": 4.2e-7,
+              "uiAmountString": "0.00000042"
+            }
+          },
+          "type": "account"
+        },
+        "program": "spl-token",
+        "space": 165
+      },
+      "executable": false,
+      "lamports": 2039280,
+      "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "rentEpoch": 18446744073709552000,
+      "space": 165
+    },
+    {
+      "data": {
+        "parsed": {
+          "info": {
+            "isNative": false,
+            "mint": "EUZ7aBJu8sQLXhW3AX3K93SGtTF4FCKU3pnZJj5opump",
+            "owner": "CjYhqifgibbZTYGejjPEdt6YctTdyCXLXmDo9uniHzb",
+            "state": "initialized",
+            "tokenAmount": {
+              "amount": "115498972951",
+              "decimals": 6,
+              "uiAmount": 115498.972951,
+              "uiAmountString": "115498.972951"
+            }
+          },
+          "type": "account"
+        },
+        "program": "spl-token",
+        "space": 165
+      },
+      "executable": false,
+      "lamports": 2039280,
+      "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "rentEpoch": 18446744073709552000,
+      "space": 165
+    },
+    {
+      "data": {
+        "parsed": {
+          "info": {
+            "isNative": false,
+            "mint": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+            "owner": "5zpyutJu9ee6jFymDGoK7F6S5Kczqtc9FomP3ueKuyA9",
+            "state": "initialized",
+            "tokenAmount": {
+              "amount": "7104012286578397",
+              "decimals": 5,
+              "uiAmount": 71040122865.78397,
+              "uiAmountString": "71040122865.78397"
+            }
+          },
+          "type": "account"
+        },
+        "program": "spl-token",
+        "space": 165
+      },
+      "executable": false,
+      "lamports": 2039293,
+      "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "rentEpoch": 18446744073709552000,
+      "space": 165
+    }
+  ]
+}

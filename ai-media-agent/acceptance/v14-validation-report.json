@@ -1,0 +1,1152 @@
+{
+  "generatedAt": "2026-11-25T04:07:51.305Z",
+  "testedCodeCommit": "6e4465a5ab9927b0461a9c1f1ed90320cd1e35ea",
+  "calibrationNote": "Final prioritization re-evaluated from captured live API evidence; final deployment must serve the updated commit",
+  "profiles": [
+    {
+      "profile": "graduated",
+      "mint": "7LSsEoJGhLeZzGvDofTdNg7M3JttxQqGWNLo6vWMpump",
+      "observedAt": "2026-11-25T03:59:32.676Z",
+      "slots": {
+        "largest": 473604346,
+        "supply": 473604346,
+        "owners": 473604346,
+        "control": 473604346
+      },
+      "rawTop20Percent": 92.370713,
+      "verifiedInfrastructurePercent": 67.56894,
+      "nonExcludedPercent": 24.801772,
+      "largestObservedOwnerPercent": 6.476443,
+      "classificationEvidence": [
+        {
+          "protocol": "PumpSwap",
+          "layoutSource": "https://github.com/pump-fun/pump-public-docs/blob/main/idl/pump_amm.json",
+          "mint": "7LSsEoJGhLeZzGvDofTdNg7M3JttxQqGWNLo6vWMpump",
+          "tokenAccount": "5jMpkf4JF4noHftLgNKyPNh6roVfPSGSjuEk3U4eLKRa",
+          "pool": "GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+          "owner": "GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+          "program": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+          "verifiedSlot": 473604346,
+          "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+          "discriminator": "Pool",
+          "explorer": "https://solscan.io/account/GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J"
+        }
+      ],
+      "topThree": [
+        {
+          "id": "editorial-RELATIONSHIP COVERAGE",
+          "priority": 88,
+          "observation": "Recent wallet relationship evidence could not be retrieved. Shared funding, trading patterns and liquidity withdrawals remain unresolved.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "protocol": "PumpSwap",
+                "layoutSource": "https://github.com/pump-fun/pump-public-docs/blob/main/idl/pump_amm.json",
+                "mint": "7LSsEoJGhLeZzGvDofTdNg7M3JttxQqGWNLo6vWMpump",
+                "tokenAccount": "5jMpkf4JF4noHftLgNKyPNh6roVfPSGSjuEk3U4eLKRa",
+                "pool": "GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+                "owner": "GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+                "program": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+                "verifiedSlot": 473604346,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "Pool",
+                "explorer": "https://solscan.io/account/GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+                "url": "https://solscan.io/account/5jMpkf4JF4noHftLgNKyPNh6roVfPSGSjuEk3U4eLKRa"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-VERIFIED INFRASTRUCTURE",
+          "priority": 82,
+          "observation": "Verified bonding curve and pool inventory accounts for 67.57 percent of supply within the Top 20 sample. This does not establish liquidity withdrawal safety.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "protocol": "PumpSwap",
+                "layoutSource": "https://github.com/pump-fun/pump-public-docs/blob/main/idl/pump_amm.json",
+                "mint": "7LSsEoJGhLeZzGvDofTdNg7M3JttxQqGWNLo6vWMpump",
+                "tokenAccount": "5jMpkf4JF4noHftLgNKyPNh6roVfPSGSjuEk3U4eLKRa",
+                "pool": "GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+                "owner": "GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+                "program": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+                "verifiedSlot": 473604346,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "Pool",
+                "explorer": "https://solscan.io/account/GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+                "url": "https://solscan.io/account/5jMpkf4JF4noHftLgNKyPNh6roVfPSGSjuEk3U4eLKRa"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-TRADING ACTIVITY",
+          "priority": 60,
+          "observation": "The selected pair reports 0 buys and 1 sells over 24 hours. Trade counts do not establish unique traders or manipulation.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "protocol": "PumpSwap",
+                "layoutSource": "https://github.com/pump-fun/pump-public-docs/blob/main/idl/pump_amm.json",
+                "mint": "7LSsEoJGhLeZzGvDofTdNg7M3JttxQqGWNLo6vWMpump",
+                "tokenAccount": "5jMpkf4JF4noHftLgNKyPNh6roVfPSGSjuEk3U4eLKRa",
+                "pool": "GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+                "owner": "GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+                "program": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+                "verifiedSlot": 473604346,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "Pool",
+                "explorer": "https://solscan.io/account/GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+                "url": "https://solscan.io/account/5jMpkf4JF4noHftLgNKyPNh6roVfPSGSjuEk3U4eLKRa"
+              }
+            ]
+          }
+        }
+      ],
+      "solscan": "https://solscan.io/token/7LSsEoJGhLeZzGvDofTdNg7M3JttxQqGWNLo6vWMpump",
+      "result": "PASS_LIVE_API_AND_REPLAYED_AGGREGATION",
+      "relationshipCoverage": "Not separately queried for this matrix; complete browser USDC report includes bounded relationships",
+      "reconciliation": {
+        "supplyRaw": "999199683221612",
+        "sampledRaw": "922967875187109",
+        "verifiedInfrastructureRaw": "675148640594619",
+        "nonExcludedRaw": "247819234592490",
+        "unresolvedOwnerRaw": "0",
+        "outsideSampleRaw": "76231808034503",
+        "reconciled": true,
+        "percentagePrecision": 6
+      }
+    },
+    {
+      "profile": "TOMO",
+      "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+      "observedAt": "2026-11-25T04:00:14.063Z",
+      "slots": {
+        "largest": 473604540,
+        "supply": 473604540,
+        "owners": 473604540,
+        "control": 473604541
+      },
+      "rawTop20Percent": 89.264752,
+      "verifiedInfrastructurePercent": 49.318167,
+      "nonExcludedPercent": 39.946585,
+      "largestObservedOwnerPercent": 4.863028,
+      "classificationEvidence": [
+        {
+          "protocol": "PumpSwap",
+          "layoutSource": "https://github.com/pump-fun/pump-public-docs/blob/main/idl/pump_amm.json",
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+          "tokenAccount": "4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41",
+          "pool": "4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+          "owner": "4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+          "program": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+          "verifiedSlot": 473604541,
+          "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+          "discriminator": "Pool",
+          "explorer": "https://solscan.io/account/4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9"
+        }
+      ],
+      "topThree": [
+        {
+          "id": "editorial-RELATIONSHIP COVERAGE",
+          "priority": 88,
+          "observation": "Recent wallet relationship evidence could not be retrieved. Shared funding, trading patterns and liquidity withdrawals remain unresolved.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "protocol": "PumpSwap",
+                "layoutSource": "https://github.com/pump-fun/pump-public-docs/blob/main/idl/pump_amm.json",
+                "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+                "tokenAccount": "4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41",
+                "pool": "4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+                "owner": "4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+                "program": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+                "verifiedSlot": 473604541,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "Pool",
+                "explorer": "https://solscan.io/account/4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+                "url": "https://solscan.io/account/4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-VERIFIED INFRASTRUCTURE",
+          "priority": 82,
+          "observation": "Verified bonding curve and pool inventory accounts for 49.32 percent of supply within the Top 20 sample. This does not establish liquidity withdrawal safety.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "protocol": "PumpSwap",
+                "layoutSource": "https://github.com/pump-fun/pump-public-docs/blob/main/idl/pump_amm.json",
+                "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+                "tokenAccount": "4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41",
+                "pool": "4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+                "owner": "4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+                "program": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+                "verifiedSlot": 473604541,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "Pool",
+                "explorer": "https://solscan.io/account/4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+                "url": "https://solscan.io/account/4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-PAIR LIQUIDITY",
+          "priority": 80,
+          "observation": "The selected pair reports $3,960 in liquidity. Available liquidity affects execution and potential price impact.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "protocol": "PumpSwap",
+                "layoutSource": "https://github.com/pump-fun/pump-public-docs/blob/main/idl/pump_amm.json",
+                "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+                "tokenAccount": "4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41",
+                "pool": "4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+                "owner": "4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+                "program": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+                "verifiedSlot": 473604541,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "Pool",
+                "explorer": "https://solscan.io/account/4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+                "url": "https://solscan.io/account/4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41"
+              }
+            ]
+          }
+        }
+      ],
+      "solscan": "https://solscan.io/token/EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+      "result": "PASS_LIVE_API_AND_REPLAYED_AGGREGATION",
+      "relationshipCoverage": "Not separately queried for this matrix; complete browser USDC report includes bounded relationships",
+      "reconciliation": {
+        "supplyRaw": "953716699509516",
+        "sampledRaw": "851332851343907",
+        "verifiedInfrastructureRaw": "470355599135367",
+        "nonExcludedRaw": "380977252208540",
+        "unresolvedOwnerRaw": "0",
+        "outsideSampleRaw": "102383848165609",
+        "reconciled": true,
+        "percentagePrecision": 6
+      }
+    },
+    {
+      "profile": "active-pump",
+      "mint": "XpTG8S9uTwaHCbJ2HM8ZUJGSQ9gEynAikHGdbLTpump",
+      "observedAt": "2026-11-25T04:00:03.889Z",
+      "slots": {
+        "largest": 473604493,
+        "supply": 473604493,
+        "owners": 473604493,
+        "control": 473604493
+      },
+      "rawTop20Percent": 100,
+      "verifiedInfrastructurePercent": 100,
+      "nonExcludedPercent": 0,
+      "largestObservedOwnerPercent": 0,
+      "classificationEvidence": [
+        {
+          "mint": "XpTG8S9uTwaHCbJ2HM8ZUJGSQ9gEynAikHGdbLTpump",
+          "tokenAccount": "GYccYiUMSPDMPbUfskyht2Qj9zhkisc4TpcmVcqtmm8A",
+          "owner": "AAMRqX266rQFEnSfkppqihRJT3MGERwZxrBh5KR1wrvE",
+          "program": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+          "verifiedSlot": 473604493,
+          "method": "MINT_PDA_ATA_AND_ACCOUNT_DISCRIMINATOR"
+        }
+      ],
+      "topThree": [
+        {
+          "id": "editorial-RELATIONSHIP COVERAGE",
+          "priority": 88,
+          "observation": "Recent wallet relationship evidence could not be retrieved. Shared funding, trading patterns and liquidity withdrawals remain unresolved.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "mint": "XpTG8S9uTwaHCbJ2HM8ZUJGSQ9gEynAikHGdbLTpump",
+                "tokenAccount": "GYccYiUMSPDMPbUfskyht2Qj9zhkisc4TpcmVcqtmm8A",
+                "owner": "AAMRqX266rQFEnSfkppqihRJT3MGERwZxrBh5KR1wrvE",
+                "program": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+                "verifiedSlot": 473604493,
+                "method": "MINT_PDA_ATA_AND_ACCOUNT_DISCRIMINATOR",
+                "url": "https://solscan.io/account/GYccYiUMSPDMPbUfskyht2Qj9zhkisc4TpcmVcqtmm8A"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-VERIFIED INFRASTRUCTURE",
+          "priority": 82,
+          "observation": "Verified bonding curve and pool inventory accounts for 100.00 percent of supply within the Top 20 sample. This does not establish liquidity withdrawal safety.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "mint": "XpTG8S9uTwaHCbJ2HM8ZUJGSQ9gEynAikHGdbLTpump",
+                "tokenAccount": "GYccYiUMSPDMPbUfskyht2Qj9zhkisc4TpcmVcqtmm8A",
+                "owner": "AAMRqX266rQFEnSfkppqihRJT3MGERwZxrBh5KR1wrvE",
+                "program": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+                "verifiedSlot": 473604493,
+                "method": "MINT_PDA_ATA_AND_ACCOUNT_DISCRIMINATOR",
+                "url": "https://solscan.io/account/GYccYiUMSPDMPbUfskyht2Qj9zhkisc4TpcmVcqtmm8A"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-NON-EXCLUDED CONCENTRATION",
+          "priority": 34,
+          "observation": "After separating verified infrastructure, non-excluded sampled accounts hold 0.00 percent of supply. These accounts are not proven independent.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "mint": "XpTG8S9uTwaHCbJ2HM8ZUJGSQ9gEynAikHGdbLTpump",
+                "tokenAccount": "GYccYiUMSPDMPbUfskyht2Qj9zhkisc4TpcmVcqtmm8A",
+                "owner": "AAMRqX266rQFEnSfkppqihRJT3MGERwZxrBh5KR1wrvE",
+                "program": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+                "verifiedSlot": 473604493,
+                "method": "MINT_PDA_ATA_AND_ACCOUNT_DISCRIMINATOR",
+                "url": "https://solscan.io/account/GYccYiUMSPDMPbUfskyht2Qj9zhkisc4TpcmVcqtmm8A"
+              }
+            ]
+          }
+        }
+      ],
+      "solscan": "https://solscan.io/token/XpTG8S9uTwaHCbJ2HM8ZUJGSQ9gEynAikHGdbLTpump",
+      "result": "PASS_LIVE_API_AND_REPLAYED_AGGREGATION",
+      "relationshipCoverage": "Not separately queried for this matrix; complete browser USDC report includes bounded relationships",
+      "reconciliation": {
+        "supplyRaw": "1000000000000000",
+        "sampledRaw": "1000000000000000",
+        "verifiedInfrastructureRaw": "1000000000000000",
+        "nonExcludedRaw": "0",
+        "unresolvedOwnerRaw": "0",
+        "outsideSampleRaw": "0",
+        "reconciled": true,
+        "percentagePrecision": 6
+      }
+    },
+    {
+      "profile": "cpmm-token",
+      "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+      "observedAt": "2026-11-25T04:00:24.932Z",
+      "slots": {
+        "largest": 473604586,
+        "supply": 473604586,
+        "owners": 473604586,
+        "control": 473604586
+      },
+      "rawTop20Percent": 58.954943,
+      "verifiedInfrastructurePercent": 14.785118,
+      "nonExcludedPercent": 44.169824,
+      "largestObservedOwnerPercent": 20.382371,
+      "classificationEvidence": [
+        {
+          "protocol": "Orca Whirlpool",
+          "layoutSource": "https://github.com/orca-so/whirlpools/blob/main/programs/whirlpool/src/state/whirlpool.rs",
+          "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+          "tokenAccount": "HGkoj4jLCqnp7Haku4hWJsr5aQ4Nxi8x6XVXuJXacUUb",
+          "pool": "BrVVTnrihfyXiHZMVwPsKeLN2vVxMGpgk7Wt6cdrkZLV",
+          "owner": "BrVVTnrihfyXiHZMVwPsKeLN2vVxMGpgk7Wt6cdrkZLV",
+          "program": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+          "verifiedSlot": 473604586,
+          "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+          "discriminator": "Whirlpool",
+          "explorer": "https://solscan.io/account/BrVVTnrihfyXiHZMVwPsKeLN2vVxMGpgk7Wt6cdrkZLV"
+        },
+        {
+          "protocol": "Raydium CPMM",
+          "layoutSource": "https://github.com/raydium-io/raydium-cp-swap/blob/master/programs/cp-swap/src/states/pool.rs",
+          "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+          "tokenAccount": "EHvMTGtFioVCN4cqSUrYguMGZqQcGrNfrCkFwjdFvinW",
+          "pool": "BY668k2zBEjqxFvrPmBnXtCQVgqxznuGrcBsm4JEn177",
+          "owner": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+          "program": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+          "verifiedSlot": 473604587,
+          "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+          "discriminator": "PoolState",
+          "explorer": "https://solscan.io/account/BY668k2zBEjqxFvrPmBnXtCQVgqxznuGrcBsm4JEn177"
+        },
+        {
+          "protocol": "Raydium CPMM",
+          "layoutSource": "https://github.com/raydium-io/raydium-cp-swap/blob/master/programs/cp-swap/src/states/pool.rs",
+          "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+          "tokenAccount": "8pA4GtKJjTy8rEA4bQU2QUaUBZbucf4JU7DhzoMhtcj8",
+          "pool": "6gDX9NNqRT5GPvpw2cJwUf1bMwuQpKS21SzZQpNYCNiD",
+          "owner": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+          "program": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+          "verifiedSlot": 473604587,
+          "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+          "discriminator": "PoolState",
+          "explorer": "https://solscan.io/account/6gDX9NNqRT5GPvpw2cJwUf1bMwuQpKS21SzZQpNYCNiD"
+        }
+      ],
+      "topThree": [
+        {
+          "id": "editorial-TOKEN AUTHORITIES",
+          "priority": 100,
+          "observation": "The mint authority can authorize additional issuance. No freeze authority is recorded. These settings alone do not establish misuse.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "protocol": "Orca Whirlpool",
+                "layoutSource": "https://github.com/orca-so/whirlpools/blob/main/programs/whirlpool/src/state/whirlpool.rs",
+                "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+                "tokenAccount": "HGkoj4jLCqnp7Haku4hWJsr5aQ4Nxi8x6XVXuJXacUUb",
+                "pool": "BrVVTnrihfyXiHZMVwPsKeLN2vVxMGpgk7Wt6cdrkZLV",
+                "owner": "BrVVTnrihfyXiHZMVwPsKeLN2vVxMGpgk7Wt6cdrkZLV",
+                "program": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+                "verifiedSlot": 473604586,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "Whirlpool",
+                "explorer": "https://solscan.io/account/BrVVTnrihfyXiHZMVwPsKeLN2vVxMGpgk7Wt6cdrkZLV",
+                "url": "https://solscan.io/account/HGkoj4jLCqnp7Haku4hWJsr5aQ4Nxi8x6XVXuJXacUUb"
+              },
+              {
+                "protocol": "Raydium CPMM",
+                "layoutSource": "https://github.com/raydium-io/raydium-cp-swap/blob/master/programs/cp-swap/src/states/pool.rs",
+                "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+                "tokenAccount": "EHvMTGtFioVCN4cqSUrYguMGZqQcGrNfrCkFwjdFvinW",
+                "pool": "BY668k2zBEjqxFvrPmBnXtCQVgqxznuGrcBsm4JEn177",
+                "owner": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+                "program": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+                "verifiedSlot": 473604587,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "PoolState",
+                "explorer": "https://solscan.io/account/BY668k2zBEjqxFvrPmBnXtCQVgqxznuGrcBsm4JEn177",
+                "url": "https://solscan.io/account/EHvMTGtFioVCN4cqSUrYguMGZqQcGrNfrCkFwjdFvinW"
+              },
+              {
+                "protocol": "Raydium CPMM",
+                "layoutSource": "https://github.com/raydium-io/raydium-cp-swap/blob/master/programs/cp-swap/src/states/pool.rs",
+                "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+                "tokenAccount": "8pA4GtKJjTy8rEA4bQU2QUaUBZbucf4JU7DhzoMhtcj8",
+                "pool": "6gDX9NNqRT5GPvpw2cJwUf1bMwuQpKS21SzZQpNYCNiD",
+                "owner": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+                "program": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+                "verifiedSlot": 473604587,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "PoolState",
+                "explorer": "https://solscan.io/account/6gDX9NNqRT5GPvpw2cJwUf1bMwuQpKS21SzZQpNYCNiD",
+                "url": "https://solscan.io/account/8pA4GtKJjTy8rEA4bQU2QUaUBZbucf4JU7DhzoMhtcj8"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-RELATIONSHIP COVERAGE",
+          "priority": 88,
+          "observation": "Recent wallet relationship evidence could not be retrieved. Shared funding, trading patterns and liquidity withdrawals remain unresolved.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "protocol": "Orca Whirlpool",
+                "layoutSource": "https://github.com/orca-so/whirlpools/blob/main/programs/whirlpool/src/state/whirlpool.rs",
+                "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+                "tokenAccount": "HGkoj4jLCqnp7Haku4hWJsr5aQ4Nxi8x6XVXuJXacUUb",
+                "pool": "BrVVTnrihfyXiHZMVwPsKeLN2vVxMGpgk7Wt6cdrkZLV",
+                "owner": "BrVVTnrihfyXiHZMVwPsKeLN2vVxMGpgk7Wt6cdrkZLV",
+                "program": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+                "verifiedSlot": 473604586,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "Whirlpool",
+                "explorer": "https://solscan.io/account/BrVVTnrihfyXiHZMVwPsKeLN2vVxMGpgk7Wt6cdrkZLV",
+                "url": "https://solscan.io/account/HGkoj4jLCqnp7Haku4hWJsr5aQ4Nxi8x6XVXuJXacUUb"
+              },
+              {
+                "protocol": "Raydium CPMM",
+                "layoutSource": "https://github.com/raydium-io/raydium-cp-swap/blob/master/programs/cp-swap/src/states/pool.rs",
+                "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+                "tokenAccount": "EHvMTGtFioVCN4cqSUrYguMGZqQcGrNfrCkFwjdFvinW",
+                "pool": "BY668k2zBEjqxFvrPmBnXtCQVgqxznuGrcBsm4JEn177",
+                "owner": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+                "program": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+                "verifiedSlot": 473604587,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "PoolState",
+                "explorer": "https://solscan.io/account/BY668k2zBEjqxFvrPmBnXtCQVgqxznuGrcBsm4JEn177",
+                "url": "https://solscan.io/account/EHvMTGtFioVCN4cqSUrYguMGZqQcGrNfrCkFwjdFvinW"
+              },
+              {
+                "protocol": "Raydium CPMM",
+                "layoutSource": "https://github.com/raydium-io/raydium-cp-swap/blob/master/programs/cp-swap/src/states/pool.rs",
+                "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+                "tokenAccount": "8pA4GtKJjTy8rEA4bQU2QUaUBZbucf4JU7DhzoMhtcj8",
+                "pool": "6gDX9NNqRT5GPvpw2cJwUf1bMwuQpKS21SzZQpNYCNiD",
+                "owner": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+                "program": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+                "verifiedSlot": 473604587,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "PoolState",
+                "explorer": "https://solscan.io/account/6gDX9NNqRT5GPvpw2cJwUf1bMwuQpKS21SzZQpNYCNiD",
+                "url": "https://solscan.io/account/8pA4GtKJjTy8rEA4bQU2QUaUBZbucf4JU7DhzoMhtcj8"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-VERIFIED INFRASTRUCTURE",
+          "priority": 82,
+          "observation": "Verified bonding curve and pool inventory accounts for 14.79 percent of supply within the Top 20 sample. This does not establish liquidity withdrawal safety.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "protocol": "Orca Whirlpool",
+                "layoutSource": "https://github.com/orca-so/whirlpools/blob/main/programs/whirlpool/src/state/whirlpool.rs",
+                "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+                "tokenAccount": "HGkoj4jLCqnp7Haku4hWJsr5aQ4Nxi8x6XVXuJXacUUb",
+                "pool": "BrVVTnrihfyXiHZMVwPsKeLN2vVxMGpgk7Wt6cdrkZLV",
+                "owner": "BrVVTnrihfyXiHZMVwPsKeLN2vVxMGpgk7Wt6cdrkZLV",
+                "program": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+                "verifiedSlot": 473604586,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "Whirlpool",
+                "explorer": "https://solscan.io/account/BrVVTnrihfyXiHZMVwPsKeLN2vVxMGpgk7Wt6cdrkZLV",
+                "url": "https://solscan.io/account/HGkoj4jLCqnp7Haku4hWJsr5aQ4Nxi8x6XVXuJXacUUb"
+              },
+              {
+                "protocol": "Raydium CPMM",
+                "layoutSource": "https://github.com/raydium-io/raydium-cp-swap/blob/master/programs/cp-swap/src/states/pool.rs",
+                "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+                "tokenAccount": "EHvMTGtFioVCN4cqSUrYguMGZqQcGrNfrCkFwjdFvinW",
+                "pool": "BY668k2zBEjqxFvrPmBnXtCQVgqxznuGrcBsm4JEn177",
+                "owner": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+                "program": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+                "verifiedSlot": 473604587,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "PoolState",
+                "explorer": "https://solscan.io/account/BY668k2zBEjqxFvrPmBnXtCQVgqxznuGrcBsm4JEn177",
+                "url": "https://solscan.io/account/EHvMTGtFioVCN4cqSUrYguMGZqQcGrNfrCkFwjdFvinW"
+              },
+              {
+                "protocol": "Raydium CPMM",
+                "layoutSource": "https://github.com/raydium-io/raydium-cp-swap/blob/master/programs/cp-swap/src/states/pool.rs",
+                "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+                "tokenAccount": "8pA4GtKJjTy8rEA4bQU2QUaUBZbucf4JU7DhzoMhtcj8",
+                "pool": "6gDX9NNqRT5GPvpw2cJwUf1bMwuQpKS21SzZQpNYCNiD",
+                "owner": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+                "program": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+                "verifiedSlot": 473604587,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "PoolState",
+                "explorer": "https://solscan.io/account/6gDX9NNqRT5GPvpw2cJwUf1bMwuQpKS21SzZQpNYCNiD",
+                "url": "https://solscan.io/account/8pA4GtKJjTy8rEA4bQU2QUaUBZbucf4JU7DhzoMhtcj8"
+              }
+            ]
+          }
+        }
+      ],
+      "solscan": "https://solscan.io/token/EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+      "result": "PASS_LIVE_API_AND_REPLAYED_AGGREGATION",
+      "relationshipCoverage": "Not separately queried for this matrix; complete browser USDC report includes bounded relationships",
+      "reconciliation": {
+        "supplyRaw": "113757326452263",
+        "sampledRaw": "67065567033986",
+        "verifiedInfrastructureRaw": "16819155372291",
+        "nonExcludedRaw": "50246411661695",
+        "unresolvedOwnerRaw": "0",
+        "outsideSampleRaw": "46691759418277",
+        "reconciled": true,
+        "percentagePrecision": 6
+      }
+    },
+    {
+      "profile": "clmm-token",
+      "mint": "EUZ7aBJu8sQLXhW3AX3K93SGtTF4FCKU3pnZJj5opump",
+      "observedAt": "2026-11-25T04:00:47.253Z",
+      "slots": {
+        "largest": 473604691,
+        "supply": 473604691,
+        "owners": 473604691,
+        "control": 473604691
+      },
+      "rawTop20Percent": 96.703322,
+      "verifiedInfrastructurePercent": 74.656834,
+      "nonExcludedPercent": 22.046488,
+      "largestObservedOwnerPercent": 8.060174,
+      "classificationEvidence": [
+        {
+          "protocol": "Raydium AMM V4",
+          "layoutSource": "https://github.com/raydium-io/raydium-sdk-V2/blob/master/src/raydium/liquidity/layout.ts",
+          "mint": "EUZ7aBJu8sQLXhW3AX3K93SGtTF4FCKU3pnZJj5opump",
+          "tokenAccount": "56VqTZ8w762ytzo1GN9m7HNyjw7ahVzCtY6MSqtZ51EH",
+          "pool": "DxtDW7Vg3kzvGn3X61rDTjoLcPB7xKtqsQv229nGgnBA",
+          "owner": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
+          "program": "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+          "verifiedSlot": 473604692,
+          "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+          "discriminator": "NOT_APPLICABLE_LEGACY_V4",
+          "explorer": "https://solscan.io/account/DxtDW7Vg3kzvGn3X61rDTjoLcPB7xKtqsQv229nGgnBA"
+        },
+        {
+          "protocol": "Raydium CLMM",
+          "layoutSource": "https://github.com/raydium-io/raydium-clmm/blob/master/programs/amm/src/states/pool.rs",
+          "mint": "EUZ7aBJu8sQLXhW3AX3K93SGtTF4FCKU3pnZJj5opump",
+          "tokenAccount": "C2ecAK7j3C1cNDJ1cE83q8tMzEQLrsFCVtrBaBULKLHR",
+          "pool": "3B6rvtoqv92PcenZRNf6mPYqRugsnyrV29BpaCHRt8ZG",
+          "owner": "3B6rvtoqv92PcenZRNf6mPYqRugsnyrV29BpaCHRt8ZG",
+          "program": "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK",
+          "verifiedSlot": 473604691,
+          "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+          "discriminator": "PoolState",
+          "explorer": "https://solscan.io/account/3B6rvtoqv92PcenZRNf6mPYqRugsnyrV29BpaCHRt8ZG"
+        }
+      ],
+      "topThree": [
+        {
+          "id": "editorial-RELATIONSHIP COVERAGE",
+          "priority": 88,
+          "observation": "Recent wallet relationship evidence could not be retrieved. Shared funding, trading patterns and liquidity withdrawals remain unresolved.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "protocol": "Raydium AMM V4",
+                "layoutSource": "https://github.com/raydium-io/raydium-sdk-V2/blob/master/src/raydium/liquidity/layout.ts",
+                "mint": "EUZ7aBJu8sQLXhW3AX3K93SGtTF4FCKU3pnZJj5opump",
+                "tokenAccount": "56VqTZ8w762ytzo1GN9m7HNyjw7ahVzCtY6MSqtZ51EH",
+                "pool": "DxtDW7Vg3kzvGn3X61rDTjoLcPB7xKtqsQv229nGgnBA",
+                "owner": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
+                "program": "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+                "verifiedSlot": 473604692,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "NOT_APPLICABLE_LEGACY_V4",
+                "explorer": "https://solscan.io/account/DxtDW7Vg3kzvGn3X61rDTjoLcPB7xKtqsQv229nGgnBA",
+                "url": "https://solscan.io/account/56VqTZ8w762ytzo1GN9m7HNyjw7ahVzCtY6MSqtZ51EH"
+              },
+              {
+                "protocol": "Raydium CLMM",
+                "layoutSource": "https://github.com/raydium-io/raydium-clmm/blob/master/programs/amm/src/states/pool.rs",
+                "mint": "EUZ7aBJu8sQLXhW3AX3K93SGtTF4FCKU3pnZJj5opump",
+                "tokenAccount": "C2ecAK7j3C1cNDJ1cE83q8tMzEQLrsFCVtrBaBULKLHR",
+                "pool": "3B6rvtoqv92PcenZRNf6mPYqRugsnyrV29BpaCHRt8ZG",
+                "owner": "3B6rvtoqv92PcenZRNf6mPYqRugsnyrV29BpaCHRt8ZG",
+                "program": "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK",
+                "verifiedSlot": 473604691,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "PoolState",
+                "explorer": "https://solscan.io/account/3B6rvtoqv92PcenZRNf6mPYqRugsnyrV29BpaCHRt8ZG",
+                "url": "https://solscan.io/account/C2ecAK7j3C1cNDJ1cE83q8tMzEQLrsFCVtrBaBULKLHR"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-VERIFIED INFRASTRUCTURE",
+          "priority": 82,
+          "observation": "Verified bonding curve and pool inventory accounts for 74.66 percent of supply within the Top 20 sample. This does not establish liquidity withdrawal safety.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "protocol": "Raydium AMM V4",
+                "layoutSource": "https://github.com/raydium-io/raydium-sdk-V2/blob/master/src/raydium/liquidity/layout.ts",
+                "mint": "EUZ7aBJu8sQLXhW3AX3K93SGtTF4FCKU3pnZJj5opump",
+                "tokenAccount": "56VqTZ8w762ytzo1GN9m7HNyjw7ahVzCtY6MSqtZ51EH",
+                "pool": "DxtDW7Vg3kzvGn3X61rDTjoLcPB7xKtqsQv229nGgnBA",
+                "owner": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
+                "program": "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+                "verifiedSlot": 473604692,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "NOT_APPLICABLE_LEGACY_V4",
+                "explorer": "https://solscan.io/account/DxtDW7Vg3kzvGn3X61rDTjoLcPB7xKtqsQv229nGgnBA",
+                "url": "https://solscan.io/account/56VqTZ8w762ytzo1GN9m7HNyjw7ahVzCtY6MSqtZ51EH"
+              },
+              {
+                "protocol": "Raydium CLMM",
+                "layoutSource": "https://github.com/raydium-io/raydium-clmm/blob/master/programs/amm/src/states/pool.rs",
+                "mint": "EUZ7aBJu8sQLXhW3AX3K93SGtTF4FCKU3pnZJj5opump",
+                "tokenAccount": "C2ecAK7j3C1cNDJ1cE83q8tMzEQLrsFCVtrBaBULKLHR",
+                "pool": "3B6rvtoqv92PcenZRNf6mPYqRugsnyrV29BpaCHRt8ZG",
+                "owner": "3B6rvtoqv92PcenZRNf6mPYqRugsnyrV29BpaCHRt8ZG",
+                "program": "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK",
+                "verifiedSlot": 473604691,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "PoolState",
+                "explorer": "https://solscan.io/account/3B6rvtoqv92PcenZRNf6mPYqRugsnyrV29BpaCHRt8ZG",
+                "url": "https://solscan.io/account/C2ecAK7j3C1cNDJ1cE83q8tMzEQLrsFCVtrBaBULKLHR"
+              }
+            ]
+          }
+        },
+        {
+          "id": "editorial-NON-EXCLUDED CONCENTRATION",
+          "priority": 34,
+          "observation": "After separating verified infrastructure, non-excluded sampled accounts hold 22.05 percent of supply. These accounts are not proven independent.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": [
+              {
+                "protocol": "Raydium AMM V4",
+                "layoutSource": "https://github.com/raydium-io/raydium-sdk-V2/blob/master/src/raydium/liquidity/layout.ts",
+                "mint": "EUZ7aBJu8sQLXhW3AX3K93SGtTF4FCKU3pnZJj5opump",
+                "tokenAccount": "56VqTZ8w762ytzo1GN9m7HNyjw7ahVzCtY6MSqtZ51EH",
+                "pool": "DxtDW7Vg3kzvGn3X61rDTjoLcPB7xKtqsQv229nGgnBA",
+                "owner": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
+                "program": "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+                "verifiedSlot": 473604692,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "NOT_APPLICABLE_LEGACY_V4",
+                "explorer": "https://solscan.io/account/DxtDW7Vg3kzvGn3X61rDTjoLcPB7xKtqsQv229nGgnBA",
+                "url": "https://solscan.io/account/56VqTZ8w762ytzo1GN9m7HNyjw7ahVzCtY6MSqtZ51EH"
+              },
+              {
+                "protocol": "Raydium CLMM",
+                "layoutSource": "https://github.com/raydium-io/raydium-clmm/blob/master/programs/amm/src/states/pool.rs",
+                "mint": "EUZ7aBJu8sQLXhW3AX3K93SGtTF4FCKU3pnZJj5opump",
+                "tokenAccount": "C2ecAK7j3C1cNDJ1cE83q8tMzEQLrsFCVtrBaBULKLHR",
+                "pool": "3B6rvtoqv92PcenZRNf6mPYqRugsnyrV29BpaCHRt8ZG",
+                "owner": "3B6rvtoqv92PcenZRNf6mPYqRugsnyrV29BpaCHRt8ZG",
+                "program": "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK",
+                "verifiedSlot": 473604691,
+                "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+                "discriminator": "PoolState",
+                "explorer": "https://solscan.io/account/3B6rvtoqv92PcenZRNf6mPYqRugsnyrV29BpaCHRt8ZG",
+                "url": "https://solscan.io/account/C2ecAK7j3C1cNDJ1cE83q8tMzEQLrsFCVtrBaBULKLHR"
+              }
+            ]
+          }
+        }
+      ],
+      "solscan": "https://solscan.io/token/EUZ7aBJu8sQLXhW3AX3K93SGtTF4FCKU3pnZJj5opump",
+      "result": "PASS_LIVE_API_AND_REPLAYED_AGGREGATION",
+      "relationshipCoverage": "Not separately queried for this matrix; complete browser USDC report includes bounded relationships",
+      "reconciliation": {
+        "supplyRaw": "972172511050834",
+        "sampledRaw": "940123118918214",
+        "verifiedInfrastructureRaw": "725793218031197",
+        "nonExcludedRaw": "214329900887017",
+        "unresolvedOwnerRaw": "0",
+        "outsideSampleRaw": "32049392132620",
+        "reconciled": true,
+        "percentagePrecision": 6
+      }
+    },
+    {
+      "profile": "BONK",
+      "mint": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+      "observedAt": "2026-11-25T04:03:23.855Z",
+      "slots": {
+        "largest": 473605426,
+        "supply": 473605426,
+        "owners": 473605426,
+        "control": 473605426
+      },
+      "rawTop20Percent": 50.41805,
+      "verifiedInfrastructurePercent": 0,
+      "nonExcludedPercent": 50.41805,
+      "largestObservedOwnerPercent": 10.395101,
+      "classificationEvidence": [],
+      "topThree": [
+        {
+          "id": "editorial-NON-EXCLUDED CONCENTRATION",
+          "priority": 94,
+          "observation": "After separating verified infrastructure, non-excluded sampled accounts hold 50.42 percent of supply. These accounts are not proven independent.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": []
+          }
+        },
+        {
+          "id": "editorial-ACCOUNT CONCENTRATION",
+          "priority": 90,
+          "observation": "The largest 20 token accounts hold 50.42% of supply. This measures account concentration, not beneficial ownership.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": []
+          }
+        },
+        {
+          "id": "editorial-RELATIONSHIP COVERAGE",
+          "priority": 88,
+          "observation": "Recent wallet relationship evidence could not be retrieved. Shared funding, trading patterns and liquidity withdrawals remain unresolved.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": []
+          }
+        }
+      ],
+      "solscan": "https://solscan.io/token/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+      "result": "PASS_LIVE_API_AND_REPLAYED_AGGREGATION",
+      "relationshipCoverage": "Not separately queried for this matrix; complete browser USDC report includes bounded relationships",
+      "reconciliation": {
+        "supplyRaw": "8799428722120055545",
+        "sampledRaw": "4436500397470821646",
+        "verifiedInfrastructureRaw": "0",
+        "nonExcludedRaw": "4436500397470821646",
+        "unresolvedOwnerRaw": "0",
+        "outsideSampleRaw": "4362928324649233899",
+        "reconciled": true,
+        "percentagePrecision": 6
+      }
+    },
+    {
+      "profile": "USDC",
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "observedAt": "2026-11-25T04:00:34.964Z",
+      "slots": {
+        "largest": 473604633,
+        "supply": 473604632,
+        "owners": 473604633,
+        "control": 473604633
+      },
+      "rawTop20Percent": 49.196317,
+      "verifiedInfrastructurePercent": 0,
+      "nonExcludedPercent": 49.196317,
+      "largestObservedOwnerPercent": 19.382082,
+      "classificationEvidence": [],
+      "topThree": [
+        {
+          "id": "editorial-TOKEN AUTHORITIES",
+          "priority": 100,
+          "observation": "The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": []
+          }
+        },
+        {
+          "id": "editorial-RELATIONSHIP COVERAGE",
+          "priority": 88,
+          "observation": "Recent wallet relationship evidence could not be retrieved. Shared funding, trading patterns and liquidity withdrawals remain unresolved.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": []
+          }
+        },
+        {
+          "id": "editorial-NON-EXCLUDED CONCENTRATION",
+          "priority": 64,
+          "observation": "After separating verified infrastructure, non-excluded sampled accounts hold 49.20 percent of supply. These accounts are not proven independent.",
+          "implication": "Review the linked evidence and bounded sample before acting.",
+          "evidence": {
+            "source": "existing universal evidence",
+            "references": []
+          }
+        }
+      ],
+      "solscan": "https://solscan.io/token/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "result": "PASS_LIVE_API_AND_REPLAYED_AGGREGATION",
+      "relationshipCoverage": "Not separately queried for this matrix; complete browser USDC report includes bounded relationships",
+      "reconciliation": {
+        "supplyRaw": "9196424245078867",
+        "sampledRaw": "4524302046449323",
+        "verifiedInfrastructureRaw": "0",
+        "nonExcludedRaw": "4524302046449323",
+        "unresolvedOwnerRaw": "0",
+        "outsideSampleRaw": "4672122198629544",
+        "reconciled": true,
+        "percentagePrecision": 6
+      }
+    }
+  ],
+  "protocolPositives": [
+    {
+      "protocol": "Raydium CPMM",
+      "layoutSource": "https://github.com/raydium-io/raydium-cp-swap/blob/master/programs/cp-swap/src/states/pool.rs",
+      "mint": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+      "tokenAccount": "HFkhmVE8rWhqv33VdPmrKY87yq8b83QEvsaBXhNmM66H",
+      "pool": "ESMFDQTxVoieSVUH1URwCEgUAH3tiEBwUecCerfMVPu",
+      "owner": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+      "program": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+      "verifiedSlot": 473602897,
+      "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+      "discriminator": "PoolState",
+      "explorer": "https://solscan.io/account/ESMFDQTxVoieSVUH1URwCEgUAH3tiEBwUecCerfMVPu",
+      "tokenBalanceRaw": "278",
+      "result": "PASS_CAPTURED_LIVE_POSITIVE"
+    },
+    {
+      "protocol": "Raydium CLMM",
+      "layoutSource": "https://github.com/raydium-io/raydium-clmm/blob/master/programs/amm/src/states/pool.rs",
+      "mint": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+      "tokenAccount": "EvxnaQ5Q9KRa9vuddi8svx4apKVRAWgyZ4UAcpwXWUr4",
+      "pool": "CjYhqifgibbZTYGejjPEdt6YctTdyCXLXmDo9uniHzb",
+      "owner": "CjYhqifgibbZTYGejjPEdt6YctTdyCXLXmDo9uniHzb",
+      "program": "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK",
+      "verifiedSlot": 473602897,
+      "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+      "discriminator": "PoolState",
+      "explorer": "https://solscan.io/account/CjYhqifgibbZTYGejjPEdt6YctTdyCXLXmDo9uniHzb",
+      "tokenBalanceRaw": "12904711220",
+      "result": "PASS_CAPTURED_LIVE_POSITIVE"
+    },
+    {
+      "protocol": "PumpSwap",
+      "layoutSource": "https://github.com/pump-fun/pump-public-docs/blob/main/idl/pump_amm.json",
+      "mint": "7LSsEoJGhLeZzGvDofTdNg7M3JttxQqGWNLo6vWMpump",
+      "tokenAccount": "5jMpkf4JF4noHftLgNKyPNh6roVfPSGSjuEk3U4eLKRa",
+      "pool": "GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+      "owner": "GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+      "program": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+      "verifiedSlot": 473601647,
+      "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+      "discriminator": "Pool",
+      "explorer": "https://solscan.io/account/GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+      "tokenBalanceRaw": "675148640594619",
+      "result": "PASS_CAPTURED_LIVE_POSITIVE"
+    },
+    {
+      "protocol": "Orca Whirlpool",
+      "layoutSource": "https://github.com/orca-so/whirlpools/blob/main/programs/whirlpool/src/state/whirlpool.rs",
+      "mint": "So11111111111111111111111111111111111111112",
+      "tokenAccount": "ES7yhSrYeFo4U1PfJHNRkbfCWxCwPLk2DjrEbmN8bg58",
+      "pool": "5zpyutJu9ee6jFymDGoK7F6S5Kczqtc9FomP3ueKuyA9",
+      "owner": "5zpyutJu9ee6jFymDGoK7F6S5Kczqtc9FomP3ueKuyA9",
+      "program": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+      "verifiedSlot": 473602492,
+      "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+      "discriminator": "Whirlpool",
+      "explorer": "https://solscan.io/account/5zpyutJu9ee6jFymDGoK7F6S5Kczqtc9FomP3ueKuyA9",
+      "tokenBalanceRaw": "839379770380",
+      "result": "PASS_CAPTURED_LIVE_POSITIVE"
+    },
+    {
+      "protocol": "Raydium AMM V4",
+      "layoutSource": "https://github.com/raydium-io/raydium-sdk-V2/blob/master/src/raydium/liquidity/layout.ts",
+      "mint": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+      "tokenAccount": "7KFdXKA5WkZBspxwqd9kSrDGTg9WhiX5TptUB3yRwEaE",
+      "pool": "HVNwzt7Pxfu76KHCMQPTLuTCLTm6WnQ1esLv4eizseSv",
+      "owner": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
+      "program": "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+      "verifiedSlot": 473602749,
+      "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+      "discriminator": "NOT_APPLICABLE_LEGACY_V4",
+      "explorer": "https://solscan.io/account/HVNwzt7Pxfu76KHCMQPTLuTCLTm6WnQ1esLv4eizseSv",
+      "tokenBalanceRaw": "292508288423295",
+      "result": "PASS_CAPTURED_LIVE_POSITIVE"
+    },
+    {
+      "protocol": "Raydium CPMM",
+      "layoutSource": "https://github.com/raydium-io/raydium-cp-swap/blob/master/programs/cp-swap/src/states/pool.rs",
+      "mint": "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz",
+      "tokenAccount": "JCe9vdhh4WahAvjJVcwKK1ihevDwu2EGjvZ2e6bKDaTn",
+      "pool": "ESMFDQTxVoieSVUH1URwCEgUAH3tiEBwUecCerfMVPu",
+      "owner": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+      "program": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+      "verifiedSlot": 473602897,
+      "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+      "discriminator": "PoolState",
+      "explorer": "https://solscan.io/account/ESMFDQTxVoieSVUH1URwCEgUAH3tiEBwUecCerfMVPu",
+      "tokenBalanceRaw": "42",
+      "result": "PASS_CAPTURED_LIVE_POSITIVE"
+    },
+    {
+      "protocol": "Raydium CLMM",
+      "layoutSource": "https://github.com/raydium-io/raydium-clmm/blob/master/programs/amm/src/states/pool.rs",
+      "mint": "EUZ7aBJu8sQLXhW3AX3K93SGtTF4FCKU3pnZJj5opump",
+      "tokenAccount": "6Aim96FYpRFJo9zyTqdttMbwqo8RxPoCADMq3kWYCHZN",
+      "pool": "CjYhqifgibbZTYGejjPEdt6YctTdyCXLXmDo9uniHzb",
+      "owner": "CjYhqifgibbZTYGejjPEdt6YctTdyCXLXmDo9uniHzb",
+      "program": "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK",
+      "verifiedSlot": 473602897,
+      "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+      "discriminator": "PoolState",
+      "explorer": "https://solscan.io/account/CjYhqifgibbZTYGejjPEdt6YctTdyCXLXmDo9uniHzb",
+      "tokenBalanceRaw": "115498972951",
+      "result": "PASS_CAPTURED_LIVE_POSITIVE"
+    },
+    {
+      "protocol": "Orca Whirlpool",
+      "layoutSource": "https://github.com/orca-so/whirlpools/blob/main/programs/whirlpool/src/state/whirlpool.rs",
+      "mint": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+      "tokenAccount": "4dmvFGeQH2eqa3ktNHMgm4wZ8vuTukBiK9M7gxW5oR9F",
+      "pool": "5zpyutJu9ee6jFymDGoK7F6S5Kczqtc9FomP3ueKuyA9",
+      "owner": "5zpyutJu9ee6jFymDGoK7F6S5Kczqtc9FomP3ueKuyA9",
+      "program": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+      "verifiedSlot": 473602492,
+      "method": "EXACT_POOL_MINT_VAULT_AUTHORITY",
+      "discriminator": "Whirlpool",
+      "explorer": "https://solscan.io/account/5zpyutJu9ee6jFymDGoK7F6S5Kczqtc9FomP3ueKuyA9",
+      "tokenBalanceRaw": "7104012286578397",
+      "result": "PASS_CAPTURED_LIVE_POSITIVE"
+    }
+  ],
+  "requestedProfileMapping": {
+    "TOMO": "TOMO",
+    "activePump": "active-pump",
+    "graduatedPumpSwap": "graduated",
+    "raydiumAMMV4": "BONK + exact AMM V4 pool positive",
+    "raydiumCPMM": "cpmm-token + exact CPMM pool positive",
+    "raydiumCLMM": "clmm-token + exact CLMM pool positive",
+    "orcaWhirlpool": "BONK + exact Orca pool positive",
+    "BONK": "BONK",
+    "USDC": "USDC",
+    "PLUME": "BLOCKED_EXACT_PREVIOUS_MINT_UNAVAILABLE"
+  },
+  "coverage": "Nine requested profiles covered with seven distinct mints; BONK reused for AMM V4, Whirlpool and BONK profile. PLUME not substituted.",
+  "transientFailures": [
+    {
+      "profile": "BONK",
+      "status": 503,
+      "retryStatus": 200
+    },
+    {
+      "profile": "TOMO browser",
+      "status": "Owner resolution unavailable",
+      "recovery": "USDC browser full report successful"
+    }
+  ],
+  "limitations": [
+    "Exact previously investigated PLUME mint not recoverable from provided context, repository, screenshot metadata or targeted personal-context searches.",
+    "No custody adapter or verified custody exclusions.",
+    "Only Top20 sampled accounts, not whole supply wallet ownership.",
+    "Pool discovery capped at eight exact-vault queries.",
+    "Separate RPC slots; balances may move between reads.",
+    "Four existing WebM regression tests skipped for absent raw V13 exports.",
+    "Solscan links are inspection references; classifications are decoded from Alchemy RPC and official layouts, not independently asserted from Solscan UI.",
+    "Scanner route inspected read-only: wallet-only SOL transfers lack token-scoped classification evidence; no incompatible data reused."
+  ],
+  "browserSmoke": {
+    "preview": "https://doom404-ai-media-agent-5f2092oyv-doom-404.vercel.app/",
+    "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "aggregatorVersion": "V14_EVIDENCE_AGGREGATOR_2",
+    "scenes": 7,
+    "audio": "EMBEDDED",
+    "export": {
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "presenter": "hud",
+      "filename": "doom404-v13-sync-doom-EPjFWdd5-1795579518711.webm",
+      "mimeType": "video/webm;codecs=vp8,opus",
+      "bytes": 2157933,
+      "rawBytes": 2158051,
+      "timelineNormalization": {
+        "normalizer": "DOOM404_WEBM_OPUS_CLOCK_V1",
+        "mediaReencoded": false,
+        "referenceBlockTreatment": "Chrome/libwebm previous-absolute timestamps recognized only when equal to preceding video packet; emitted spec-correct signed relative references",
+        "authoritativeSources": [
+          "https://www.matroska.org/technical/notes.html",
+          "https://www.matroska.org/technical/elements.html",
+          "https://www.rfc-editor.org/rfc/rfc6716.html#section-3.1",
+          "https://github.com/webmproject/libwebm/blob/1f795141409295f5bc16769d0230e269efd169f9/mkvmuxer/mkvmuxerutil.cc"
+        ],
+        "scope": "Observed Chrome VP8 alpha BlockGroups + unlaced Opus SimpleBlocks; 1ms scale",
+        "audioPackets": 1361,
+        "videoPackets": 85,
+        "encodedAudioDurationSeconds": 81.66,
+        "normalizedDurationSeconds": 81.702,
+        "originalAudioEndSeconds": 81.731,
+        "removedClockGapSeconds": 0.029,
+        "maximumTimestampQuantizationErrorMs": 0.49152542372758035,
+        "payloadPreservation": "Encoded block payloads and VP8 alpha additions copied without modification; caller must retain hash validation evidence",
+        "removedStaleIndexes": [
+          "SeekHead",
+          "Cues"
+        ],
+        "limitations": [
+          "Unsupported EBML layouts, lacing, track scales and reference targets other than the preceding video packet are rejected.",
+          "No speech intelligibility or factual-accuracy determination."
+        ]
+      },
+      "width": 540,
+      "height": 960,
+      "audio": "EMBEDDED",
+      "speechInputs": [
+        "Circle describes native USDC as a digital dollar used for payments, trading and financial services.",
+        "The selected eligible reported pair quotes one point zero zero zero five US dollars, with twenty four-hour pair volume of eight million seven hundred ninety six thousand one hundred US dollars.",
+        "After separating verified infrastructure, non-excluded sampled accounts hold forty nine point one eight percent of supply. These accounts are not proven independent.",
+        "The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk.",
+        "The selected pair reports two million two hundred forty seven thousand four hundred US dollars in liquidity. Available liquidity affects execution and potential price impact.",
+        "For USDC, check its dollar peg, issuer redemption eligibility and reserve disclosures. Mint and freeze controls are relevant issuer risks, not evidence of manipulation.",
+        "These observations come from separate RPC reads, not a synchronized snapshot. Beneficial ownership and historical funding remain unresolved. This is not a token safety rating."
+      ],
+      "narrationDurationSeconds": 81.57591836734694,
+      "sceneTimeline": [
+        {
+          "caption": "Circle describes native USDC as a digital dollar used for payments, trading and financial services.",
+          "startSeconds": 0,
+          "endSeconds": 8.56798185941043
+        },
+        {
+          "caption": "The selected eligible reported pair quotes $1.0005, with 24-hour pair volume of $8,796,100.",
+          "startSeconds": 8.56798185941043,
+          "endSeconds": 21.167981859410432
+        },
+        {
+          "caption": "After separating verified infrastructure, non-excluded sampled accounts hold 49.18 percent of supply. These accounts are not proven independent.",
+          "startSeconds": 21.167981859410432,
+          "endSeconds": 31.271972789115647
+        },
+        {
+          "caption": "The mint authority can authorize additional issuance. The freeze authority can freeze token accounts. Circle documents issuance and redemption controls and address blocking; these capabilities create issuer-related risk.",
+          "startSeconds": 31.271972789115647,
+          "endSeconds": 45.479954648526075
+        },
+        {
+          "caption": "The selected pair reports $2,247,400 in liquidity. Available liquidity affects execution and potential price impact.",
+          "startSeconds": 45.479954648526075,
+          "endSeconds": 56.327936507936506
+        },
+        {
+          "caption": "For USDC, check its dollar peg, issuer redemption eligibility and reserve disclosures. Mint and freeze controls are relevant issuer risks, not evidence of manipulation.",
+          "startSeconds": 56.327936507936506,
+          "endSeconds": 68.92793650793651
+        },
+        {
+          "caption": "These observations come from separate RPC reads, not a synchronized snapshot. Beneficial ownership and historical funding remain unresolved. This is not a token safety rating.",
+          "startSeconds": 68.92793650793651,
+          "endSeconds": 81.57591836734694
+        }
+      ],
+      "verification": "EXPORTED_REQUIRES_PLAYBACK_REVIEW"
+    },
+    "videoSHA256": "bf1f785f3938c75a5f414d3bf463aef9d6bb79a3f2eabbcb81bf2c6215314e52",
+    "ffprobe": {
+      "video": "VP8",
+      "audio": "Opus",
+      "audioSampleRate": 48000,
+      "channels": 2,
+      "width": 540,
+      "height": 960,
+      "durationSeconds": 81.702,
+      "bytes": 2157933
+    },
+    "result": "PASS_GENERATION_AND_PLAYBACK_SMOKE; MANUAL_QUALITY_REVIEW_PENDING"
+  },
+  "solscanCrossCheck": {
+    "status": "Account program ownership and allocated size independently corroborated for PumpSwap, AMM V4 and Orca via Solscan. CPMM, CLMM and active curve pages were unavailable through retrieval. Exact vault, mint and PDA proofs are RPC-decoded for all six protocols.",
+    "pumpSwap": {
+      "pool": "GseMAnNDvntR5uFePZ51yZBXzNSn7GdFPkfHwfr6d77J",
+      "size": 300
+    },
+    "ammV4": {
+      "pool": "HVNwzt7Pxfu76KHCMQPTLuTCLTm6WnQ1esLv4eizseSv",
+      "size": 752
+    },
+    "orca": {
+      "pool": "5zpyutJu9ee6jFymDGoK7F6S5Kczqtc9FomP3ueKuyA9",
+      "size": 653
+    }
+  }
+}

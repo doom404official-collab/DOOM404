@@ -38,9 +38,18 @@ function aggregate({mint,holders,relationships,context,creator,credibility,scene
  for(const a of rows)if(a.classificationEvidence)references.push({...a.classificationEvidence,url:"https://solscan.io/account/"+a.tokenAccount});
  // Existing editorial observations already carry protocol and transaction filtering.
  // Reuse these observations without repeating RPC work or changing scene rendering.
- for(const scene of sceneCandidates){if(!scene||!Number.isFinite(scene.priority)||typeof scene.caption!=="string")continue;add("editorial-"+scene.label,scene.priority,scene.caption,"Review the linked evidence and bounded sample before acting.",{source:scene.source||"existing universal evidence",references});}
+ const rankedScenes=sceneCandidates.map(scene=>{
+ let priority=scene.priority;
+ if(scene.label==="NON-EXCLUDED CONCENTRATION"&&validPct(nonExcluded))priority=nonExcluded>=50?94:nonExcluded>=25?64:34;
+ if(scene.label==="ACCOUNT CONCENTRATION"&&validPct(p)){const exposure=validPct(nonExcluded)?nonExcluded:p;priority=exposure>=50?90:exposure>=25?60:30;}
+ if(scene.label==="TOKEN AUTHORITIES"&&security)priority=security.mintAuthority||security.freezeAuthority?100:20;
+ if(scene.label==="PAIR LIQUIDITY"&&Number.isFinite(market?.liquidityUsd))priority=market.liquidityUsd<10000?80:40;
+ return {...scene,priority};
+ }).sort((a,b)=>b.priority-a.priority);
+ for(const scene of rankedScenes){if(!scene||!Number.isFinite(scene.priority)||typeof scene.caption!=="string")continue;add("editorial-"+scene.label,scene.priority,scene.caption,"Review the linked evidence and bounded sample before acting.",{source:scene.source||"existing universal evidence",references});}
  const sorted=findings.sort((a,b)=>b.priority-a.priority||a.id.localeCompare(b.id));
- const rankedScenes=sceneCandidates.slice().sort((a,b)=>b.priority-a.priority);
+
+
  return {mint,version:"V14_EVIDENCE_AGGREGATOR_2",findings:sorted,topInsights:rankedScenes.length?rankedScenes.slice(0,3).map(s=>sorted.find(f=>f.id==="editorial-"+s.label)):sorted.slice(0,3),rankedScenes,holderGroups:ranked,holderGroupScope:"Resolved non-excluded token accounts within sampled Top 20; not economic ownership",references:[...new Map(references.map(r=>[(r.signature||r.tokenAccount)+":"+(r.slot||r.verifiedSlot),r])).values()],coverage:{security:!!security,holders:!!holders,relationships:!!relationships,liquidity:!!market,creator:!!creator,credibility:!!credibility,historicalFunding:!!relationships?.sharedFundingObservations?.length},prioritization:{type:"EDITORIAL_HEURISTIC",validatedRiskScore:false,thresholds:{concentrationPercent:[25,50],reportedLiquidityUsd:10000},limitation:"Review thresholds prioritize evidence; they are not calibrated probabilities or scientifically validated risk scores."},gaps:[...new Set(gaps)]};
 }
 if(typeof module!=="undefined"&&module.exports)module.exports={aggregate};
