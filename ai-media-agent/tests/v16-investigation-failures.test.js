@@ -1,6 +1,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
 const mint='EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y',sessionId='12345678-1234-1234-1234-123456789abc';
-function harness({generationError=null,approvals=[false,false]}={}){let generations=0,reviews=0,collections=0;const report={mint,eligible:true,scenes:Array.from({length:7},()=>({caption:'Evidence-backed scene.'}))};const modules={
+function harness({generationError=null,approvals=[false,false]}={}){let generations=0,reviews=0,collections=0;const admitted=new Set();const report={mint,eligible:true,scenes:Array.from({length:7},()=>({caption:'Evidence-backed scene.'}))};const modules={
+ '../lib/durable-admission':{admit:async(req,res,purpose,nonce)=>{if(admitted.has(nonce)){res.status(409).json({error:'ADMISSION_REPLAY'});return false;}admitted.add(nonce);return true;}},
  '../lib/research-security':{MINT:/^[1-9A-HJ-NP-Za-km-z]{32,44}$/,SESSION:/^[a-f0-9-]{36}$/,gate:()=>true,sign:()=> 'signed-unit-script'},
  '../lib/early-launch':{earlyLaunch:()=>({})},'../universal':{build:()=>structuredClone(report)},
  '../lib/editorial-synthesis':{synthesize:async()=>{generations++;if(generationError)throw generationError;return {draft:{headline:'Evidence',scenes:report.scenes.map(s=>({...s,role:'opening',evidenceIds:[]}))},evidence:{facts:[]},usage:{input_tokens:1}}}},
@@ -12,3 +13,4 @@ test('successful correction replaces script before narration is signed',async()=
 for(const [name,error,expected] of [['timeout',Object.assign(Error('timeout'),{name:'TimeoutError'}),'UPSTREAM_TIMEOUT'],['generation provider failure',Error('EDITORIAL_PROVIDER_ERROR_503'),'EDITORIAL_PROVIDER_ERROR_503'],['invalid structured draft',Error('EDITORIAL_SCHEMA_OR_REFERENCE_INVALID'),'EDITORIAL_SCHEMA_OR_REFERENCE_INVALID']])test(name+' returns labeled deterministic fallback',async()=>{const h=harness({generationError:error}),r=await h.call();assert.equal(r.body.status,'DETERMINISTIC_FALLBACK');assert.equal(r.body.diagnostics.reason,expected);assert.equal(h.counts().reviews,0)});
 test('fabricated evidence is rejected before research; completed session cannot replay',async()=>{const h=harness();const bad=await h.call({report:{creatorSales:900}});assert.equal(bad.code,400);assert.equal(h.counts().collections,0);await h.call();assert.equal((await h.call()).code,409)});
 test('mint and session schema reject array coercion before provider calls',async()=>{for(const extra of [{mint:[mint]},{sessionId:[sessionId]}]){const h=harness();assert.equal((await h.call(extra)).code,400);assert.equal(h.counts().collections,0)}});
+

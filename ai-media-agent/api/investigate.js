@@ -6,7 +6,6 @@ const {synthesize}=require('../lib/editorial-synthesis');
 const {review}=require('../lib/editorial-validation');
 const {buildEvidence}=require('../lib/editorial-evidence');
 const {admit}=require('../lib/durable-admission');
-const inFlight=new Set(),usedSessions=new Map();
 async function collect(name,mint){
  const handler=require('./'+name);let value,status=200;
  const response={setHeader(){},status(n){status=n;return this},json(d){value=d;return this},end(){},send(d){value=d;return this}};
@@ -15,14 +14,11 @@ async function collect(name,mint){
 }
 module.exports=async(req,res)=>{
  if(!gate(req,res))return;
- const {mint,sessionId,...extra}=req.body||{};
+ if(!req.body||typeof req.body!=='object'||Array.isArray(req.body))return res.status(400).json({error:'INVALID_RESEARCH_REQUEST'});
+ const {mint,sessionId,...extra}=req.body;
  if(typeof mint!=='string'||typeof sessionId!=='string'||!MINT.test(mint||'')||!SESSION.test(sessionId||'')||Object.keys(extra).length)return res.status(400).json({error:'INVALID_RESEARCH_REQUEST'});
  if(!await admit(req,res,'research',sessionId))return;
- for(const [id,until] of usedSessions)if(until<Date.now())usedSessions.delete(id);
- if(usedSessions.has(sessionId))return res.status(409).json({error:'RESEARCH_SESSION_REPLAY'});
- if(usedSessions.size>=10000)return res.status(429).json({error:'RESEARCH_CAPACITY'});
- if(inFlight.has(sessionId))return res.status(409).json({error:'RESEARCH_IN_PROGRESS'});
- inFlight.add(sessionId);usedSessions.set(sessionId,Date.now()+3600000);const started=Date.now(),stages=[];
+ const started=Date.now(),stages=[];
  try{
  const h=await collect('owners',mint);
  const results=await Promise.allSettled(['relationships','token-context','project-credibility','creator-intelligence'].map(n=>collect(n,mint)));
@@ -44,5 +40,6 @@ module.exports=async(req,res)=>{
  report.editorialStatus=status;
  const narrationTicket=key?sign({purpose:'narration',mint,sessionId,sentences:report.scenes.map(s=>s.caption)}):null;
  return res.status(200).json({mint,sessionId,status,report,narrationTicket,diagnostics:{reason,elapsedMs:Date.now()-started,stages,quotaScope:'DURABLE_SUPABASE'}});
- }catch{return res.status(503).json({mint,sessionId,error:'RESEARCH_EVIDENCE_UNAVAILABLE'});}finally{inFlight.delete(sessionId);}
+ }catch{return res.status(503).json({mint,sessionId,error:'RESEARCH_EVIDENCE_UNAVAILABLE'});}
 };
+
