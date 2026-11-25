@@ -1,6 +1,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
 const mint='EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y',sessionId='12345678-1234-1234-1234-123456789abc';
 function harness({generationError=null,approvals=[false,false]}={}){let generations=0,reviews=0,collections=0;const admitted=new Set();const report={mint,eligible:true,scenes:Array.from({length:7},()=>({caption:'Evidence-backed scene.'}))};const modules={
+ '../lib/research-permit':{verify:()=>({})},
  '../lib/durable-admission':{admit:async(req,res,purpose,nonce)=>{if(admitted.has(nonce)){res.status(409).json({error:'ADMISSION_REPLAY'});return false;}admitted.add(nonce);return true;}},
  '../lib/research-security':{MINT:/^[1-9A-HJ-NP-Za-km-z]{32,44}$/,SESSION:/^[a-f0-9-]{36}$/,gate:()=>true,sign:()=> 'signed-unit-script'},
  '../lib/early-launch':{earlyLaunch:()=>({})},'../universal':{build:()=>structuredClone(report)},

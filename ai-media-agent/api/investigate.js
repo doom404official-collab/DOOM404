@@ -6,6 +6,7 @@ const {synthesize}=require('../lib/editorial-synthesis');
 const {review}=require('../lib/editorial-validation');
 const {buildEvidence}=require('../lib/editorial-evidence');
 const {admit}=require('../lib/durable-admission');
+const permits=require('../lib/research-permit');
 async function collect(name,mint){
  const handler=require('./'+name);let value,status=200;
  const response={setHeader(){},status(n){status=n;return this},json(d){value=d;return this},end(){},send(d){value=d;return this}};
@@ -15,9 +16,12 @@ async function collect(name,mint){
 module.exports=async(req,res)=>{
  if(!gate(req,res))return;
  if(!req.body||typeof req.body!=='object'||Array.isArray(req.body))return res.status(400).json({error:'INVALID_RESEARCH_REQUEST'});
- const {mint,sessionId,...extra}=req.body;
+ const {mint,sessionId,researchPermit,...extra}=req.body;
  if(typeof mint!=='string'||typeof sessionId!=='string'||!MINT.test(mint||'')||!SESSION.test(sessionId||'')||Object.keys(extra).length)return res.status(400).json({error:'INVALID_RESEARCH_REQUEST'});
+ try{permits.verify(req,researchPermit,{mint,sessionId});}catch{return res.status(403).json({error:'RESEARCH_PERMIT_REQUIRED'});}
+ // Consume the signed session, not the replaceable permit nonce.
  if(!await admit(req,res,'research',sessionId))return;
+ try{permits.verify(req,researchPermit,{mint,sessionId});}catch{return res.status(403).json({error:'RESEARCH_PERMIT_REQUIRED'});}
  const started=Date.now(),stages=[];
  try{
  const h=await collect('owners',mint);
