@@ -1,0 +1,554 @@
+[
+  {
+    "token": "tomo",
+    "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+    "sessionId": "6a1ab2a5-0222-4f2a-aa83-6c990503b375",
+    "status": "AI_REVIEW_PASSED",
+    "elapsedMs": 34320,
+    "evidenceBytes": 21061,
+    "stages": [
+      {
+        "stage": "evidence",
+        "bytes": 21061,
+        "facts": 11,
+        "failedModules": []
+      },
+      {
+        "stage": "generation",
+        "attempt": 1,
+        "ms": 18406,
+        "usage": {
+          "input_tokens": 8692,
+          "input_tokens_details": {
+            "cache_write_tokens": 7988,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 7988
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 1052,
+          "output_tokens_details": {
+            "reasoning_tokens": 264
+          },
+          "total_tokens": 9744
+        }
+      },
+      {
+        "stage": "review",
+        "attempt": 1,
+        "ms": 15365,
+        "approved": true,
+        "usage": {
+          "input_tokens": 8697,
+          "input_tokens_details": {
+            "cache_write_tokens": 8593,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 8593
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 722,
+          "output_tokens_details": {
+            "reasoning_tokens": 703
+          },
+          "total_tokens": 9419
+        },
+        "issueCount": 0,
+        "issues": []
+      }
+    ],
+    "creatorRpcConsumption": {
+      "providerRequests": 16,
+      "methods": {
+        "getTransactionsForAddress": 3,
+        "getTransaction": 10,
+        "getTokenAccountsByOwner": 2,
+        "getSignaturesForAddress": 1
+      }
+    },
+    "source": "DexScreener",
+    "price": 5.966e-06
+  },
+  {
+    "token": "togi",
+    "mint": "BWf4eXFYSj3eFMdQn7nDfAmnVMWVHygyu3rEN6Bcpump",
+    "sessionId": "ba2f8bb9-a562-4518-af2a-4375ebac76a9",
+    "status": "AI_REVIEW_PASSED",
+    "elapsedMs": 62637,
+    "evidenceBytes": 24073,
+    "stages": [
+      {
+        "stage": "evidence",
+        "bytes": 24073,
+        "facts": 12,
+        "failedModules": []
+      },
+      {
+        "stage": "generation",
+        "attempt": 1,
+        "ms": 14753,
+        "usage": {
+          "input_tokens": 10028,
+          "input_tokens_details": {
+            "cache_write_tokens": 9324,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 9324
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 877,
+          "output_tokens_details": {
+            "reasoning_tokens": 160
+          },
+          "total_tokens": 10905
+        }
+      },
+      {
+        "stage": "review",
+        "attempt": 1,
+        "ms": 23461,
+        "approved": false,
+        "usage": {
+          "input_tokens": 9963,
+          "input_tokens_details": {
+            "cache_write_tokens": 9859,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 9859
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 1145,
+          "output_tokens_details": {
+            "reasoning_tokens": 1034
+          },
+          "total_tokens": 11108
+        },
+        "issueCount": 2,
+        "issues": [
+          "Holders/integrity: Replace \u201cone verified pool owner\u201d with \u201cthe verified PumpSwap pool address that owns the vault token account.\u201d The evidence verifies ownership of the vault account, not ownership of the pool itself.",
+          "Liquidity: State that the quoted outputs exclude network fees and may differ from actual execution. Saying that no trade was executed does not tell readers that the quoted amounts are not net sale proceeds."
+        ]
+      },
+      {
+        "stage": "generation",
+        "attempt": 2,
+        "ms": 9078,
+        "usage": {
+          "input_tokens": 10722,
+          "input_tokens_details": {
+            "cache_write_tokens": 10018,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 10018
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 732,
+          "output_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "total_tokens": 11454
+        }
+      },
+      {
+        "stage": "review",
+        "attempt": 2,
+        "ms": 14939,
+        "approved": true,
+        "usage": {
+          "input_tokens": 9980,
+          "input_tokens_details": {
+            "cache_write_tokens": 9876,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 9876
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 783,
+          "output_tokens_details": {
+            "reasoning_tokens": 764
+          },
+          "total_tokens": 10763
+        },
+        "issueCount": 0,
+        "issues": []
+      }
+    ],
+    "creatorRpcConsumption": {
+      "providerRequests": 18,
+      "methods": {
+        "getTransactionsForAddress": 3,
+        "getTransaction": 13,
+        "getTokenAccountsByOwner": 2
+      }
+    },
+    "source": "Verified PumpSwap constant-product reserve reference",
+    "price": 2.9451350737733077e-05
+  },
+  {
+    "token": "usdc",
+    "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "sessionId": "ce313d97-9797-496f-8fe3-ec9632c041ce",
+    "status": "AI_REVIEW_PASSED",
+    "elapsedMs": 44454,
+    "evidenceBytes": 19692,
+    "stages": [
+      {
+        "stage": "evidence",
+        "bytes": 19692,
+        "facts": 11,
+        "failedModules": []
+      },
+      {
+        "stage": "generation",
+        "attempt": 1,
+        "ms": 12282,
+        "usage": {
+          "input_tokens": 7227,
+          "input_tokens_details": {
+            "cache_write_tokens": 6523,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 6523
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 760,
+          "output_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "total_tokens": 7987
+        }
+      },
+      {
+        "stage": "review",
+        "attempt": 1,
+        "ms": 10188,
+        "approved": false,
+        "usage": {
+          "input_tokens": 7203,
+          "input_tokens_details": {
+            "cache_write_tokens": 7099,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 7099
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 559,
+          "output_tokens_details": {
+            "reasoning_tokens": 331
+          },
+          "total_tokens": 7762
+        },
+        "issueCount": 4,
+        "issues": [
+          "Opening: Tie the $1.0017 price to the tracked DexScreener pair and the November 25, 2026 snapshot. E001 supports a price for one pair at that time, not a current or Solana-wide price.",
+          "Liquidity: State that direct redemption is subject to Circle\u2019s terms and jurisdictional restrictions as well as having an eligible Circle Mint account in good standing (E002, E003).",
+          "Holders/integrity: Specify that the transaction review covered just 12 transactions across four owner addresses, not all 20 largest token accounts (E009). The caveat about independence is accurate, but the sample\u2019s scope is unclear.",
+          "Takeaway: Identify the figures as issuer-wide, not specific to the Solana mint, and give the full date: September 30, 2026. Clarify that the report examined management\u2019s reserve assertion under stated criteria as of specified dates, rather than assessing solvency (E003)."
+        ]
+      },
+      {
+        "stage": "generation",
+        "attempt": 2,
+        "ms": 10040,
+        "usage": {
+          "input_tokens": 8074,
+          "input_tokens_details": {
+            "cache_write_tokens": 7370,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 7370
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 815,
+          "output_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "total_tokens": 8889
+        }
+      },
+      {
+        "stage": "review",
+        "attempt": 2,
+        "ms": 11287,
+        "approved": true,
+        "usage": {
+          "input_tokens": 7258,
+          "input_tokens_details": {
+            "cache_write_tokens": 7154,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 7154
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 576,
+          "output_tokens_details": {
+            "reasoning_tokens": 557
+          },
+          "total_tokens": 7834
+        },
+        "issueCount": 0,
+        "issues": []
+      }
+    ],
+    "creatorRpcConsumption": {
+      "providerRequests": 5,
+      "methods": {
+        "getTransactionsForAddress": 1,
+        "getTransaction": 3,
+        "getTokenAccountsByOwner": 1
+      }
+    },
+    "source": "DexScreener",
+    "price": 1.0017
+  },
+  {
+    "token": "bonk",
+    "mint": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+    "sessionId": "780b67c2-0e35-4383-a975-9c3a9163a641",
+    "status": "AI_REVIEW_PASSED",
+    "elapsedMs": 43626,
+    "evidenceBytes": 17931,
+    "stages": [
+      {
+        "stage": "evidence",
+        "bytes": 17931,
+        "facts": 11,
+        "failedModules": []
+      },
+      {
+        "stage": "generation",
+        "attempt": 1,
+        "ms": 11590,
+        "usage": {
+          "input_tokens": 6920,
+          "input_tokens_details": {
+            "cache_write_tokens": 6216,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 6216
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 722,
+          "output_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "total_tokens": 7642
+        }
+      },
+      {
+        "stage": "review",
+        "attempt": 1,
+        "ms": 12017,
+        "approved": false,
+        "usage": {
+          "input_tokens": 6862,
+          "input_tokens_details": {
+            "cache_write_tokens": 6758,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 6758
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 613,
+          "output_tokens_details": {
+            "reasoning_tokens": 371
+          },
+          "total_tokens": 7475
+        },
+        "issueCount": 4,
+        "issues": [
+          "Qualify the headline\u2019s unqualified BONK label. E003 records independent corroboration for the exact mint, but the reviewed project pages did not confirm it. Use the opening\u2019s phrasing, \u201cthe mint listed as BONK,\u201d or make that distinction explicit near the headline.",
+          "Clarify the market-cap explanation. \u201cMarket cap values the supply at the quoted price\u201d can be read as referring to the same total on-chain supply used for the holder percentages. E001 reports about $181 million in market cap and a separate fully diluted valuation of about $183 million. Do not imply that the reported market cap uses the total-supply denominator.",
+          "Describe the initialization-role balance as held in a token account associated with the observed fee payer and initial mint authority, not directly \u201cat the address.\u201d E005 documents a bounded role-and-balance observation, not a verified project creator.",
+          "State that the 0.13% quote gap excludes network fees and changes at execution. E007 supports a comparison with the reference price, not net sale proceeds."
+        ]
+      },
+      {
+        "stage": "generation",
+        "attempt": 2,
+        "ms": 8993,
+        "usage": {
+          "input_tokens": 7748,
+          "input_tokens_details": {
+            "cache_write_tokens": 7044,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 7044
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 718,
+          "output_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "total_tokens": 8466
+        }
+      },
+      {
+        "stage": "review",
+        "attempt": 2,
+        "ms": 10545,
+        "approved": true,
+        "usage": {
+          "input_tokens": 6858,
+          "input_tokens_details": {
+            "cache_write_tokens": 6754,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 6754
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 509,
+          "output_tokens_details": {
+            "reasoning_tokens": 485
+          },
+          "total_tokens": 7367
+        },
+        "issueCount": 0,
+        "issues": []
+      }
+    ],
+    "creatorRpcConsumption": {
+      "providerRequests": 5,
+      "methods": {
+        "getTransactionsForAddress": 1,
+        "getTransaction": 3,
+        "getTokenAccountsByOwner": 1
+      }
+    },
+    "source": "DexScreener",
+    "price": 2.053e-06
+  },
+  {
+    "token": "launch",
+    "mint": "3uE7FvyRfXhXZ8UPN2zjQ5vzpQ6Nmwnoe5UNUJ8Vpump",
+    "sessionId": "820bee8b-93df-4ae0-8639-ab1f1e994d10",
+    "status": "AI_REVIEW_PASSED",
+    "elapsedMs": 44952,
+    "evidenceBytes": 22913,
+    "stages": [
+      {
+        "stage": "evidence",
+        "bytes": 22913,
+        "facts": 12,
+        "failedModules": []
+      },
+      {
+        "stage": "generation",
+        "attempt": 1,
+        "ms": 14440,
+        "usage": {
+          "input_tokens": 9644,
+          "input_tokens_details": {
+            "cache_write_tokens": 8940,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 8940
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 815,
+          "output_tokens_details": {
+            "reasoning_tokens": 86
+          },
+          "total_tokens": 10459
+        }
+      },
+      {
+        "stage": "review",
+        "attempt": 1,
+        "ms": 9690,
+        "approved": false,
+        "usage": {
+          "input_tokens": 9588,
+          "input_tokens_details": {
+            "cache_write_tokens": 9484,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 9484
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 481,
+          "output_tokens_details": {
+            "reasoning_tokens": 303
+          },
+          "total_tokens": 10069
+        },
+        "issueCount": 2,
+        "issues": [
+          "The headline says \u201cfirst half hour,\u201d but the holdings snapshot and sell quotes were recorded about 30 minutes and 14 seconds after mint creation. Use \u201cabout 30 minutes after minting\u201d to describe the snapshot rather than implying coverage of the first 30 minutes.",
+          "The opening asks what sellers can \u201cactually get out,\u201d but all three quotes were hypothetical. Even the smallest input was about 3.02% of total supply, more than the roughly 2.79% outside the curve at the holdings snapshot. State that none of the quoted sizes was shown to be available to a seller at that snapshot, and that quoted outputs were not realized net proceeds: no trades were executed, and the comparison excluded network fees and execution changes."
+        ]
+      },
+      {
+        "stage": "generation",
+        "attempt": 2,
+        "ms": 12854,
+        "usage": {
+          "input_tokens": 10414,
+          "input_tokens_details": {
+            "cache_write_tokens": 9710,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 9710
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 1008,
+          "output_tokens_details": {
+            "reasoning_tokens": 222
+          },
+          "total_tokens": 11422
+        }
+      },
+      {
+        "stage": "review",
+        "attempt": 2,
+        "ms": 7704,
+        "approved": true,
+        "usage": {
+          "input_tokens": 9643,
+          "input_tokens_details": {
+            "cache_write_tokens": 9539,
+            "cache_write_tokens_details": {
+              "ttl_12h_tokens": 0,
+              "ttl_30m_tokens": 9539
+            },
+            "cached_tokens": 0
+          },
+          "output_tokens": 368,
+          "output_tokens_details": {
+            "reasoning_tokens": 344
+          },
+          "total_tokens": 10011
+        },
+        "issueCount": 0,
+        "issues": []
+      }
+    ],
+    "creatorRpcConsumption": {
+      "providerRequests": 18,
+      "methods": {
+        "getTransactionsForAddress": 3,
+        "getTransaction": 13,
+        "getTokenAccountsByOwner": 2
+      }
+    },
+    "source": "https://api.jup.ag/price/v3?ids=3uE7FvyRfXhXZ8UPN2zjQ5vzpQ6Nmwnoe5UNUJ8Vpump",
+    "price": 3.3075115596980443e-06
+  }
+]

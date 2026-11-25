@@ -1,0 +1,42 @@
+[
+  {
+    "token": "tomo",
+    "fullDecodePassed": false,
+    "decodeErrors": "[null @ 0x55d591024ec0] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 98 >= 98\n[null @ 0x55d591024ec0] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 146 >= 146\n[null @ 0x55d591024ec0] Application provided invalid, non mono",
+    "mp4Bytes": 9824873,
+    "sceneCount": 7,
+    "durationDifferenceSeconds": 0.0971
+  },
+  {
+    "token": "togi",
+    "fullDecodePassed": false,
+    "decodeErrors": "[null @ 0x55a4587f8ec0] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 130 >= 130\n[null @ 0x55a4587f8ec0] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 134 >= 134\n[null @ 0x55a4587f8ec0] Application provided invalid, non mo",
+    "mp4Bytes": 11754145,
+    "sceneCount": 7,
+    "durationDifferenceSeconds": 0.1111
+  },
+  {
+    "token": "usdc",
+    "fullDecodePassed": true,
+    "decodeErrors": "",
+    "mp4Bytes": 13265811,
+    "sceneCount": 7,
+    "durationDifferenceSeconds": 0.0941
+  },
+  {
+    "token": "bonk",
+    "fullDecodePassed": true,
+    "decodeErrors": "",
+    "mp4Bytes": 7543464,
+    "sceneCount": 7,
+    "durationDifferenceSeconds": 0.1301
+  },
+  {
+    "token": "launch",
+    "fullDecodePassed": true,
+    "decodeErrors": "",
+    "mp4Bytes": 8636049,
+    "sceneCount": 7,
+    "durationDifferenceSeconds": 0.1331
+  }
+]

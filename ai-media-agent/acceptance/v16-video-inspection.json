@@ -1,0 +1,182 @@
+[
+  {
+    "token": "tomo",
+    "file": "tomo.webm",
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "vp8",
+        "codec_type": "video",
+        "width": 540,
+        "height": 960
+      },
+      {
+        "index": 1,
+        "codec_name": "opus",
+        "codec_type": "audio"
+      }
+    ],
+    "format": {
+      "duration": "174.745000",
+      "size": "40902229"
+    },
+    "timing": {
+      "0": {
+        "packets": 4016,
+        "averageFps": 22.987189907616226,
+        "maximumGapSeconds": 0.09999999999999432,
+        "backwardsTimestamps": 0
+      },
+      "1": {
+        "packets": 2912,
+        "averageFps": 16.672392076033436,
+        "maximumGapSeconds": 0.060000000000002274,
+        "backwardsTimestamps": 0
+      }
+    }
+  },
+  {
+    "token": "togi",
+    "file": "togi.webm",
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "vp8",
+        "codec_type": "video",
+        "width": 540,
+        "height": 960
+      },
+      {
+        "index": 1,
+        "codec_name": "opus",
+        "codec_type": "audio"
+      }
+    ],
+    "format": {
+      "duration": "158.775000",
+      "size": "37223183"
+    },
+    "timing": {
+      "0": {
+        "packets": 3650,
+        "averageFps": 22.991257023356596,
+        "maximumGapSeconds": 0.11400000000000077,
+        "backwardsTimestamps": 0
+      },
+      "1": {
+        "packets": 2646,
+        "averageFps": 16.672967863894137,
+        "maximumGapSeconds": 0.060000000000002274,
+        "backwardsTimestamps": 0
+      }
+    }
+  },
+  {
+    "token": "bonk",
+    "file": "bonk.webm",
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "vp8",
+        "codec_type": "video",
+        "width": 540,
+        "height": 960
+      },
+      {
+        "index": 1,
+        "codec_name": "opus",
+        "codec_type": "audio"
+      }
+    ],
+    "format": {
+      "duration": "151.834000",
+      "size": "35470358"
+    },
+    "timing": {
+      "0": {
+        "packets": 3487,
+        "averageFps": 22.974646847986506,
+        "maximumGapSeconds": 0.126,
+        "backwardsTimestamps": 0
+      },
+      "1": {
+        "packets": 2530,
+        "averageFps": 16.673256886780017,
+        "maximumGapSeconds": 0.060000000000016485,
+        "backwardsTimestamps": 0
+      }
+    }
+  },
+  {
+    "token": "launch",
+    "file": "launch.webm",
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "vp8",
+        "codec_type": "video",
+        "width": 540,
+        "height": 960
+      },
+      {
+        "index": 1,
+        "codec_name": "opus",
+        "codec_type": "audio"
+      }
+    ],
+    "format": {
+      "duration": "172.765000",
+      "size": "40362655"
+    },
+    "timing": {
+      "0": {
+        "packets": 3970,
+        "averageFps": 22.985577563297184,
+        "maximumGapSeconds": 0.10500000000000398,
+        "backwardsTimestamps": 0
+      },
+      "1": {
+        "packets": 2879,
+        "averageFps": 16.672457725272178,
+        "maximumGapSeconds": 0.060000000000002274,
+        "backwardsTimestamps": 0
+      }
+    }
+  },
+  {
+    "token": "usdc",
+    "file": "usdc.webm",
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "vp8",
+        "codec_type": "video",
+        "width": 540,
+        "height": 960
+      },
+      {
+        "index": 1,
+        "codec_name": "opus",
+        "codec_type": "audio"
+      }
+    ],
+    "format": {
+      "duration": "181.750000",
+      "size": "42883901"
+    },
+    "timing": {
+      "0": {
+        "packets": 4184,
+        "averageFps": 23.021646069703205,
+        "maximumGapSeconds": 0.12399999999999523,
+        "backwardsTimestamps": 0
+      },
+      "1": {
+        "packets": 3029,
+        "averageFps": 16.672170849845884,
+        "maximumGapSeconds": 0.060000000000016485,
+        "backwardsTimestamps": 0
+      }
+    }
+  }
+]

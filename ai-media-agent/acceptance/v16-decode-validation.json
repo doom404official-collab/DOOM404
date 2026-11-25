@@ -1,0 +1,32 @@
+[
+  {
+    "token": "tomo",
+    "fullDecodePassed": true,
+    "errors": "",
+    "method": "Full decode, passthrough VFR, millisecond output timebase. Avoids null mux frame-rate quantization artifacts."
+  },
+  {
+    "token": "togi",
+    "fullDecodePassed": true,
+    "errors": "",
+    "method": "Full decode, passthrough VFR, millisecond output timebase. Avoids null mux frame-rate quantization artifacts."
+  },
+  {
+    "token": "usdc",
+    "fullDecodePassed": true,
+    "errors": "",
+    "method": "Full decode, passthrough VFR, millisecond output timebase. Avoids null mux frame-rate quantization artifacts."
+  },
+  {
+    "token": "bonk",
+    "fullDecodePassed": true,
+    "errors": "",
+    "method": "Full decode, passthrough VFR, millisecond output timebase. Avoids null mux frame-rate quantization artifacts."
+  },
+  {
+    "token": "launch",
+    "fullDecodePassed": true,
+    "errors": "",
+    "method": "Full decode, passthrough VFR, millisecond output timebase. Avoids null mux frame-rate quantization artifacts."
+  }
+]

@@ -1,3 +1,4 @@
+-- NOT APPLIED: hosted provider confirmation expired. Durable enforcement is not enabled.
 -- Dedicated media-agent preview admission state. No existing tables are changed.
 create table public.ai_media_v16_preview_quota (
  purpose text not null check (purpose in ('research','narration')),
