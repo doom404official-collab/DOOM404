@@ -22,6 +22,12 @@ function classify({mint,tokenAccount,parsed,control,slot}){
  if(raw.length>=49&&raw.subarray(0,8).equals(disc)&&decode(info.owner).equals(curveAddress(mint)))return {...base,classification:"PUMP_FUN_BONDING_CURVE_INFRASTRUCTURE",role:"VERIFIED_BONDING_CURVE",classificationEvidence:{mint,tokenAccount,owner:info.owner,program:PUMP,verifiedSlot:slot,method:"MINT_PDA_AND_ACCOUNT_DISCRIMINATOR"}};
  }catch{}
  }
+ if(control.owner==="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA"&&control.executable===false&&Number.isSafeInteger(slot)){
+ try{const raw=Buffer.from(control.data?.[0]||"","base64"),disc=crypto.createHash("sha256").update("account:Pool").digest().subarray(0,8);
+ const m=decode(mint),v=decode(tokenAccount);
+ if(raw.length>=211&&raw.subarray(0,8).equals(disc)&&((raw.subarray(43,75).equals(m)&&raw.subarray(139,171).equals(v))||(raw.subarray(75,107).equals(m)&&raw.subarray(171,203).equals(v))))return {...base,classification:"VERIFIED_PUMPSWAP_POOL_VAULT",role:"VERIFIED_POOL_VAULT",classificationEvidence:{mint,tokenAccount,owner:info.owner,program:control.owner,verifiedSlot:slot,method:"POOL_STATE_EXACT_MINT_VAULT_MATCH"}};
+ }catch{}
+ }
  return {...base,role:"PROGRAM_ADDRESS_PURPOSE_UNRESOLVED"};
 }
 module.exports={classify,curveAddress};
