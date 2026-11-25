@@ -11,6 +11,9 @@
     },
     "api/creator-intelligence.js": {
       "maxDuration": 60
+    },
+    "api/editorial.js": {
+      "maxDuration": 300
     }
   }
 }
