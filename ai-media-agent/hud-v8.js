@@ -4,7 +4,7 @@ async function begin(mode){stop();selectedMode=mode;catMode=mode==="hud-cat"||mo
 function stop(){if(cat){cat.pause();cat.removeAttribute("src");cat.load();cat=null}catMode=false}
 const labels=["REPORT OVERVIEW","VERIFIED INFRASTRUCTURE","ACCOUNT CONCENTRATION","UNRESOLVED CLASSIFICATION","VERIFIED TRANSFER","FUNDING SIGNIFICANCE","LIMITATIONS"];
 function reset(){last=-1;changed=0}
-function paint(c,i,p,episode,scenes){
+function paint(c,i,p,episode,scenes,sceneProgress=0){
  const dynamic=episode?.universal?episode.scenes[i]:null;const now=performance.now();if(last!==i){last=i;changed=now}
  const t=Math.min(1,(now-changed)/300);
  c.fillStyle="#090a0e";c.fillRect(0,0,540,960);
@@ -26,14 +26,22 @@ function paint(c,i,p,episode,scenes){
  if(dynamic?.label==="OWNER RESOLUTION"){const h=episode.evidence.holders;const ratio=h.accounts.filter(a=>a.ownerVerified).length/h.accounts.length;c.fillStyle="#353740";c.fillRect(42,245,450,14);c.fillStyle="#ff4053";c.fillRect(42,245,450*ratio,14)}if((!dynamic&&i===2||dynamic?.label==="ACCOUNT CONCENTRATION")&&Number.isFinite(share)){c.fillStyle="#353740";c.fillRect(42,245,450,14);c.fillStyle="#ff4053";c.fillRect(42,245,450*Math.max(0,Math.min(100,share))/100,14)}
  const refTypes={"TOKEN WITHDRAWAL TRANSFERS":"TOKEN_SCOPED_WITHDRAWAL_TRANSFER","MATCHED ROUND TRIPS":"MATCHED_TRANSACTION_NET_ROUND_TRIP","SAME SLOT ACQUISITIONS":"SAME_SLOT_ACQUISITIONS","RECIPROCAL TRANSFERS":"RECIPROCAL_TRANSFERS","TRANSFER CYCLE PATTERNS":"TRANSFER_CYCLE","SHARED FUNDING OBSERVATIONS":"SHARED_FUNDING_OBSERVATION","OBSERVED TRANSFERS":"DIRECT_TRANSFER"};const tx=(episode?.references||[]).find(r=>r.type===(dynamic?refTypes[dynamic.label]:"VERIFIED_SOL_TRANSFER"));
  c.font="14px monospace";c.fillStyle="#c5a0aa";if(tx?.signature&&(dynamic||i===4)){c.fillText("TX "+tx.signature.slice(0,12)+"…"+tx.signature.slice(-8),42,278);if(tx.slot)c.fillText("SLOT "+tx.slot,42,300)}if(!dynamic&&i===1&&episode?.curveSlot)c.fillText("SLOT "+episode.curveSlot,42,278);
+ if(dynamic?.evidenceCards?.length){
+ c.fillStyle="#101219";c.fillRect(30,145,480,195);c.fillStyle="#ff5268";c.font="bold 18px sans-serif";c.fillText("SCENE EVIDENCE",42,172);let y=199;
+ const leaves=[];function visit(x,path,id){if(x===null||typeof x!=="object"){if((typeof x==="number"||typeof x==="string"&&/^[-+]?\d/.test(x))&&/priceUsd|SharePercent|liquidityUsd|outputAmount|proceedsUsdc|postRaw|rawBalance|preRaw|pegTarget/i.test(path))leaves.push({id,path,value:String(x)});return;}for(const [k,v]of Object.entries(x))visit(v,path?path+"."+k:k,id);}
+ for(const f of dynamic.evidenceCards)visit(f.value,"",f.id);
+ const visible=leaves.slice(0,4);if(!visible.length){for(const f of dynamic.evidenceCards.slice(0,4)){c.fillStyle="#dedee7";c.font="16px sans-serif";c.fillText(f.id+" · "+f.domain,42,y,450);y+=28;}}
+ for(const row of visible){c.fillStyle="#b9bac4";c.font="12px sans-serif";c.fillText(row.id+" · "+row.path,42,y,450);c.fillStyle="#f4f4f6";c.font="bold 18px monospace";c.fillText(row.value,42,y+22,450);y+=42;}
+ }
  c.globalAlpha=.12;c.fillStyle="#ff4053";c.fillRect(24,90+(now/30)%260,492,2);c.restore();
  if(catMode&&cat){const x=16,y=360,w=508,h=340;const sw=cat.videoWidth,sh=cat.videoHeight;const scale=Math.min(w/sw,h/sh);c.fillStyle="#090a0e";c.fillRect(x,y,w,h);if(sw&&sh)c.drawImage(cat,x+(w-sw*scale)/2,y+(h-sh*scale)/2,sw*scale,sh*scale)}else{c.save();c.translate(0,215);window.doom404Prerecorded.draw(c,1,episode);c.restore()}
  // Fixed angular HUD, independent of caption changes.
  c.fillStyle="#14161c";c.strokeStyle="#79303d";c.lineWidth=1.5;c.beginPath();c.moveTo(16,730);c.lineTo(34,712);c.lineTo(524,712);c.lineTo(524,925);c.lineTo(506,943);c.lineTo(16,943);c.closePath();c.fill();c.stroke();
  c.strokeStyle="#ff4053";c.lineWidth=3;c.beginPath();c.moveTo(16,760);c.lineTo(16,730);c.lineTo(34,712);c.lineTo(130,712);c.moveTo(410,943);c.lineTo(506,943);c.lineTo(524,925);c.lineTo(524,900);c.stroke();
  c.save();c.globalAlpha=.65+.35*t;c.fillStyle="#ff5268";c.font="bold 15px sans-serif";c.fillText(String(i+1).padStart(2,"0")+" / "+(dynamic?.label||labels[i]),32,739,476);
- c.fillStyle="#f4f4f6";let lines=[],fontSize=21;const splitCaption=()=>{const out=[];let line="";for(const word of scenes[i].split(/\s+/)){const next=line?line+" "+word:word;if(c.measureText(next).width>476&&line){out.push(line);line=word}else line=next}if(line)out.push(line);return out};do{c.font=fontSize+"px sans-serif";lines=splitCaption();if(lines.length*(fontSize+3)<=132)break;fontSize--}while(fontSize>=15);let y=768;for(const line of lines){c.fillText(line,32,y);y+=fontSize+3}c.restore();
- c.fillStyle="#aeb0ba";c.font="12px sans-serif";c.fillText("PARTIAL EVIDENCE · NOT A SAFETY RATING",32,910);
+ c.fillStyle="#f4f4f6";c.font="22px sans-serif";
+ const layout=window.doom404CaptionPages.paginate(scenes[i],line=>c.measureText(line).width,476,4),page=window.doom404CaptionPages.at(layout,sceneProgress);let y=777;for(const line of page.lines){c.fillText(line,32,y,476);y+=29}c.restore();
+ c.fillStyle="#aeb0ba";c.font="12px sans-serif";c.fillText(episode?.editorialStatus==="AI_REVIEW_PASSED"?"AI-REVIEWED EDITORIAL · SOURCE-LINKED":"DETERMINISTIC BRIEFING · SOURCE-LINKED",32,910);
  for(let j=0;j<7;j++){c.fillStyle=j<=i?"#ff4053":"#383943";c.fillRect(32+j*69,923,63,4)}
 }
 window.doom404HudV8={paint,reset,begin,stop};

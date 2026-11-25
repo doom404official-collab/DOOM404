@@ -7,8 +7,8 @@ function buildEvidence(report){
  const facts=[];const add=(domain,value,provenance)=>{if(value==null)return;facts.push({id:"E"+String(facts.length+1).padStart(3,"0"),domain,provenance,value});};
  const c=report.context||{},e=report.evidenceCategories||{},h=report.evidence?.holders||e.verifiedObservations?.holders,r=report.evidence?.recent||e.verifiedObservations?.recent;
  const ci=c.creatorIntelligence?.mint===report.mint?c.creatorIntelligence:null, hist=ci?.history;
- add("market",c.market&&pick(c.market,["priceUsd","marketCap","marketCapUsd","fdv","volume24h","liquidityUsd","change24h","buys24h","sells24h","pairAddress","pairCreatedAt","dexId","source","observedAt","confidence","freshness","crossSource"]),"reported_market_data");
- add("integrity",c.earlyLaunch,"bounded_early_launch_observations_not_bundle_proof");
+ add("market",!c.market?{status:"NO_ELIGIBLE_REFERENCE_PRICE",selection:c.marketSelection}:pick(c.market,["priceUsd","marketCap","marketCapUsd","fdv","volume24h","liquidityUsd","change24h","buys24h","sells24h","pairAddress","pairCreatedAt","dexId","source","observedAt","confidence","freshness","crossSource","reserveEvidence","quotePrice"]),"reported_market_data");
+ if(c.earlyLaunch&&(c.earlyLaunch.pairAgeSeconds<86400&&c.earlyLaunch.pairAgeSeconds!==null||c.earlyLaunch.mintCreationTime&&Date.now()-Date.parse(c.earlyLaunch.mintCreationTime)<604800000))add("integrity",pick(c.earlyLaunch,["mint","observedAt","mintCreationTime","mintCreationEvidence","pairCreatedAt","pairAgeSeconds","activityWindow","scope","limitation"]),"bounded_early_launch_timing");
  add("utility",c.classification,"curated_authoritative_identity_with_dated_sources");
  add("utility",c.tokenProfile,"authoritative_source_provenance");
  add("security",c.security,"on_chain_observation");

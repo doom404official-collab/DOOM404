@@ -23,6 +23,7 @@ module.exports=async(req,res)=>{
  const results=await Promise.allSettled(['relationships','token-context','project-credibility','creator-intelligence'].map(n=>collect(n,mint)));
  const [relationships,contextResult,credibility,creator]=results.map(x=>x.status==='fulfilled'?x.value:null);
  const context=contextResult||{mint};context.credibility=credibility;context.creatorIntelligence=creator;
+ if(!context.market){const poolPrice=await require("../lib/verified-pool-price").verifiedPoolPrice({mint,holders:h});context.poolPriceDiagnostics=poolPrice.status;if(poolPrice.market){context.market=poolPrice.market;context.exitRisk=await require("../lib/exit-quotes").exitQuotes({mint,priceUsd:context.market.priceUsd,decimals:h.supply.decimals});}}
  context.tokenProfile=await require("../lib/token-profile").profile(mint);
  context.earlyLaunch=earlyLaunch({mint,creator,relationships,market:context.market});
  const report=build(mint,h,relationships,context);report.sessionId=sessionId;

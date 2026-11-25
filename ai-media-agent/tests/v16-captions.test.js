@@ -1,0 +1,4 @@
+const test=require('node:test'),assert=require('node:assert/strict');const {paginate,at}=require('../lib/caption-pages');
+test('long creator narration paginates without losing or clipping words',()=>{const text=Array.from({length:150},(_,i)=>'word'+i).join(' '),layout=paginate(text,s=>s.length*11,476,4);assert.ok(layout.pages.length>1);assert.equal(layout.pages.flatMap(p=>p.lines).join(' '),text);assert.ok(layout.pages.every(p=>p.lines.length<=4&&p.lines.every(l=>l.length*11<=476)));assert.equal(at(layout,0),layout.pages[0]);assert.equal(at(layout,1),layout.pages.at(-1))});
+const {reserveRatio}=require('../lib/verified-pool-price');
+test('reserve ratio preserves quote orientation and decimals',()=>{assert.equal(reserveRatio('2000000','1000000000',6,9),.5);assert.equal(reserveRatio('1000000000','2000000',9,6),2);assert.throws(()=>reserveRatio('0','1',6,9));assert.throws(()=>reserveRatio('1','1',-1,9));});
