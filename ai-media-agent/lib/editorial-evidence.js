@@ -1,17 +1,23 @@
 const DOMAINS=["market","security","creator","holders","liquidity","integrity","utility","relationships"];
+const pick=(o,keys)=>Object.fromEntries(keys.filter(k=>o&&Object.hasOwn(o,k)).map(k=>[k,o[k]]));
+const list=(a,keys)=>Array.isArray(a)?a.map(x=>pick(x,keys)):undefined;
+const ref=["signature","slot","url","status","limitation"];
 function buildEvidence(report){
  if(!report||typeof report.mint!=="string"||report.eligible!==true)throw Error("Invalid intelligence report");
  const facts=[];const add=(domain,value,provenance)=>{if(value==null)return;facts.push({id:"E"+String(facts.length+1).padStart(3,"0"),domain,provenance,value});};
  const c=report.context||{},e=report.evidenceCategories||{},h=report.evidence?.holders||e.verifiedObservations?.holders,r=report.evidence?.recent||e.verifiedObservations?.recent;
- add("market",c.market,"reported_market_data");
+ const ci=c.creatorIntelligence?.mint===report.mint?c.creatorIntelligence:null, hist=ci?.history;
+ add("market",c.market&&pick(c.market,["priceUsd","marketCap","marketCapUsd","fdv","volume24h","liquidityUsd","change24h","buys24h","sells24h","pairAddress","pairCreatedAt","dexId","source","observedAt"]),"reported_market_data");
  add("security",c.security,"on_chain_observation");
- add("creator",c.creatorIntelligence,"bounded_on_chain_observation");
- if(h)add("holders",{top20TokenAccountSharePercent:h.top20TokenAccountSharePercent,nonExcludedTop20SharePercent:h.nonExcludedTop20SharePercent,classifiedInfrastructureSharePercent:h.classifiedInfrastructureSharePercent,accounts:h.accounts},"bounded_on_chain_observation");
+ if(ci)add("creator",{...pick(ci,["creator","creatorStatus","status","limitation","scope"]),creationEvidence:list(ci.creationEvidence,[...ref,"mint","creator","initiator","instruction","program"]),roleEvidence:list(ci.roleEvidence,[...ref,"address","roles","rawBalance","tokenAccounts"]),history:hist&&{scope:hist.scope,initialAllocation:hist.initialAllocation,incomingSol:list(hist.incomingSol,[...ref,"source","lamports","preLaunch"]),tokenDisposals:list(hist.tokenDisposals,[...ref,"rawDecrease","transfers","sales","burns","quoteGains"]),recipientTraces:list(hist.recipientTraces,[...ref,"originSignature","recipient","destination","rawAmount","decimals"]),previousLaunches:hist.previousLaunches}},"bounded_on_chain_observation");
+ if(h)add("holders",{...pick(h,["top20TokenAccountSharePercent","nonExcludedTop20SharePercent","classifiedInfrastructureSharePercent","observedAt","unresolved"]),accounts:list(h.accounts,["tokenOwner","tokenAccount","ownerVerified","classification","sharePercent","rawAmount","amount","percentage","supplyPercent"])},"bounded_on_chain_observation");
  add("liquidity",c.exitRisk,"read_only_quote_not_execution");
- add("integrity",r?.manipulationIndicators,"bounded_indicators_not_proof");
- if(r)add("relationships",{scope:r.scope,directTransfers:r.directTransfers,sharedFundingObservations:r.sharedFundingObservations,relationshipGraph:r.relationshipGraph},"bounded_observations_not_common_control");
- add("utility",report.credibility,"project_evidence_with_source_specific_limitations");
+ const indicators=r?.manipulationIndicators;
+ if(indicators)add("integrity",pick(indicators,["roundTrips","coordinatedAcquisitions","withdrawalTransfers","reciprocal","cycles","unresolved"]),"bounded_indicators_not_proof");
+ if(r){const selected=r.scope?.ownersSelected||[];const infrastructure=new Set((h?.accounts||[]).filter(a=>["PUMP_FUN_BONDING_CURVE_INFRASTRUCTURE","VERIFIED_PUMPSWAP_POOL_VAULT","VERIFIED_RAYDIUM_POOL_VAULT","VERIFIED_ORCA_POOL_VAULT"].includes(a.classification)).flatMap(a=>[a.tokenOwner,a.tokenAccount]).filter(Boolean));add("relationships",{scope:pick(r.scope,["transactionsRequested","transactionsRetrieved","ownersSelected","topAccountsConsidered","signaturesPerOwner","transactionQueriesFailed","signatureQueriesFailed"]),selectedAddressCount:selected.length,selectedKnownInfrastructureCount:selected.filter(a=>infrastructure.has(a)).length,selectedOtherAddressCount:selected.filter(a=>!infrastructure.has(a)).length,directTransfers:list(r.directTransfers,[...ref,"source","destination","owner","recipient","rawAmount","mint","type"]),sharedFundingObservations:r.sharedFundingObservations,conclusion:r.conclusion,unresolved:r.unresolved,limitation:"Negative findings apply only to retrieved transactions and selected addresses; other addresses are not proven independent."},"bounded_observations_not_common_control");}
+ const cred=report.credibility;if(cred)add("utility",{...Object.fromEntries(["product","application","development","integrations","usage","utilityAttribution"].filter(k=>cred[k]).map(k=>[k,pick(cred[k],["status","detail","source","limitation","url"])])),repositories:list(cred.repositories,["name","url","archived","commit"])},"project_evidence_with_source_specific_limitations");
  add("utility",e.reportedProjectClaims,"reported_claims_not_verified");
- return {version:1,mint:report.mint,identity:report.identity||{},observedAt:report.observedAt||null,coverage:DOMAINS.map(domain=>({domain,available:facts.some(f=>f.domain===domain)})),facts,unresolved:report.unresolved||[],references:report.references||[]};
+ const references=[...new Map((report.references||[]).filter(x=>x.signature).map(x=>[x.signature,pick(x,["signature","slot","url"])] )).values()];
+ return {version:2,mint:report.mint,identity:report.identity||{},observedAt:report.observedAt||null,coverage:DOMAINS.map(domain=>({domain,available:facts.some(f=>f.domain===domain)})),facts,unresolved:[...new Set(report.unresolved||[])],references};
 }
 module.exports={buildEvidence};
