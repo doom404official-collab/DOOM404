@@ -1,12 +1,18 @@
 import {writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-const signatures=[
+const batches={holder_origin:[
  '5BEqVfb2EhzfYmaefvmhwpay1eN2jWvTADKbs3DYZcJLGjhsKGG93qLGqDcXETh39iuQfbsvrGKjhui7ne1AJjKL',
  'KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs',
  '4vMXPSiiUQgdsEfVmRkHGFvdWyf8EQJX8n1tVqjRj7qnwu9W31dmxyVGwxm4CsjzPywxvEiJPidjPkGdgbd3PxdN'
-];
+],creator_outflows:[
+ '2tqJx2jEhP8Rx5SMB9qqw7RYrekqmgH78dRdeVmv6oSor4Rgb4m4tLjZLT9DCPLd4VwVsFUJhxYzwZUvTxwQShCN',
+ '3i8UBbXPmQUBaX9sReQ9bR1LZC1C14DzjfRorXydy2FDzWAVmWpPyxHarmoVpwNQuoA2RQiXyBPTTVmW5VwcucTj',
+ '4FP1JbrUgBRuHvMkYGVY9kawZY4fnqwDFddFYAGCkQNemthtLasGyP1J9xtFAiN3TDfPgYgfntkguyNTVHHscSgV'
+]};
+const signatures=batches[process.env.RECONCILIATION_BATCH??'holder_origin'];
 const endpoint=process.env.HELIUS_RPC_URL;let requests=0;const records=[];
 try{
+ if(!signatures)throw Error('RECONCILIATION_BATCH_INVALID');
  if(!endpoint?.startsWith('https://'))throw Error('HELIUS_ACCESS_UNAVAILABLE');
  for(const signature of signatures){
   requests++;const response=await fetch(endpoint,{method:'POST',redirect:'error',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:requests,method:'getTransaction',params:[signature,{encoding:'jsonParsed',commitment:'finalized',maxSupportedTransactionVersion:1}]}),signal:AbortSignal.timeout(30000)});

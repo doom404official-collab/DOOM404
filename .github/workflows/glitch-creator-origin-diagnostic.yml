@@ -7,6 +7,11 @@ on:
         type: choice
         options: [diagnostic, reconciliation]
         default: diagnostic
+      batch:
+        description: 'Three pinned holder/origin or retained creator outflow transactions'
+        type: choice
+        options: [holder_origin, creator_outflows]
+        default: holder_origin
       reviewed_sha:
         description: 'Exact reviewed integration SHA required for reconciliation'
         type: string
@@ -83,6 +88,7 @@ jobs:
       - name: Capture three pinned public-chain transactions without history restart
         env:
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          RECONCILIATION_BATCH: ${{ inputs.batch }}
         run: node scripts/capture-reconciliation-transactions.mjs
       - name: Preserve targeted transaction evidence even on partial failure
         if: always()
