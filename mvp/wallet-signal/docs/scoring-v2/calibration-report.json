@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "generatedAt": "2026-11-26T10:11:47.334Z",
+  "generatedAt": "2026-11-26T10:16:44.993Z",
   "providerRequests": 0,
   "mode": "offline replay of retained live evidence",
   "securityControls": [
@@ -109,7 +109,22 @@
       "Provider-reported price impact is not fee-inclusive protocol exit cost.",
       "Reference token amounts scale from a 0.01-SOL executable buy quote; approximate notional.",
       "LP controls and all-pool inventory unverified."
-    ]
+    ],
+    "derivedRecovery": [
+      {
+        "referenceNotional": 1,
+        "recoveryShortfallPct": 0
+      },
+      {
+        "referenceNotional": 10,
+        "recoveryShortfallPct": 0
+      },
+      {
+        "referenceNotional": 100,
+        "recoveryShortfallPct": 0
+      }
+    ],
+    "recoveryDefinition": "Actual quoted SOL output versus the explicitly scaled 0.01-SOL buy-quote nominal; not independent spot impact or guaranteed fee coverage."
   },
   "liquidityComparisons": [
     {

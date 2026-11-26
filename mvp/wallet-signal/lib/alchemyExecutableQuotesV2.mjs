@@ -1,6 +1,11 @@
 import {PublicKey} from '@solana/web3.js';
 const SOL='So11111111111111111111111111111111111111112';
 const raw=x=>typeof x==='string'&&/^[1-9][0-9]*$/.test(x)&&BigInt(x)<=18446744073709551615n;
+export function quoteRecoveryShortfallPct(nominalRaw,outputRaw){
+ if(!raw(nominalRaw)||!raw(outputRaw))return null;
+ const nominal=BigInt(nominalRaw),output=BigInt(outputRaw);
+ return output>=nominal?0:Number((nominal-output)*100000000n/nominal)/1000000;
+}
 export function validateAlchemyOrder(q,{inputMint,outputMint,amount}){
  try{
   if(q?.inputMint!==inputMint||q.outputMint!==outputMint||q.inAmount!==amount||!raw(q.outAmount)||q.swapMode!=='ExactIn'||q.transaction!=null||!Array.isArray(q.routePlan)||!q.routePlan.length||q.routePlan.length>40||typeof q.priceImpact!=='number'||!Number.isFinite(q.priceImpact)||Math.abs(q.priceImpact)>100)return null;
@@ -24,8 +29,8 @@ export async function collectAlchemyQuotesV2({mint,rpcUrl,fetchImpl=fetch,signal
   const referenceQuotes=await Promise.all([1,10,100].map(async size=>{
    const amount=(BigInt(baseline.outputRaw)*BigInt(size)*100n).toString();if(!raw(amount))throw Error('AMOUNT_OUT_OF_RANGE');
    const q=await get(mint,SOL,amount);
-   return {referenceNotional:size,referenceNotionalSol:size,quoteSymbol:'SOL',baseInputRaw:amount,quoteOutputRaw:q.outputRaw,providerPriceImpactPct:q.providerPriceImpactPct,providerSignedPriceImpactPct:q.providerSignedPriceImpactPct,routePoolAddresses:q.routePoolAddresses,observedAt:q.observedAt,measurement:'provider_reported_price_impact',referenceDefinition:'Token quantity scaled from a 0.01-SOL executable buy quote; approximate SOL notional, not an independently verified spot valuation.'};
+   return {referenceNotional:size,referenceNotionalSol:size,quoteSymbol:'SOL',baseInputRaw:amount,quoteOutputRaw:q.outputRaw,providerPriceImpactPct:q.providerPriceImpactPct,providerSignedPriceImpactPct:q.providerSignedPriceImpactPct,routePoolAddresses:q.routePoolAddresses,observedAt:q.observedAt,referenceQuoteValueRaw:(BigInt(size)*1000000000n).toString(),quoteRecoveryShortfallPct:quoteRecoveryShortfallPct((BigInt(size)*1000000000n).toString(),q.outputRaw),measurement:'reference_quote_recovery',referenceDefinition:'Token quantity scaled from a 0.01-SOL executable buy quote; approximate SOL notional, not an independently verified spot valuation.'};
   }));
-  return {version:2,mint,protocol:'alchemy_executable_routes',provider:'alchemy',observedAt:new Date().toISOString(),atomic:false,referenceQuotes,executableDepth:{verified:true,method:'provider_executable_quote',transactionSimulation:false},withdrawal:null,liquidityToMarketCapPct:null,flags:[{id:'route_lp_controls_unassessed',severity:'high',detail:'Executable routes are quoted, but pool-specific LP custody and withdrawal controls remain unassessed.'}],limitations:['Quoted routes may span PumpSwap, Raydium, Orca or other venues; no common LP-control model is assumed.','Quotes are observations, not guaranteed fills; protocol/network fee coverage and spot valuation are not independently certified.','Reference token amounts use an executable 0.01-SOL quote, and may differ from spot-value equivalents.','Negative provider price-impact signs are retained but are not converted into an adverse-risk number without verified sign semantics.']};
+  return {version:2,mint,protocol:'alchemy_executable_routes',provider:'alchemy',observedAt:new Date().toISOString(),atomic:false,referenceQuotes,executableDepth:{verified:true,method:'provider_executable_quote',transactionSimulation:false},withdrawal:null,liquidityToMarketCapPct:null,flags:[{id:'route_lp_controls_unassessed',severity:'high',detail:'Executable routes are quoted, but pool-specific LP custody and withdrawal controls remain unassessed.'}],limitations:['Quoted routes may span PumpSwap, Raydium, Orca or other venues; no common LP-control model is assumed.','Quotes are observations, not guaranteed fills; protocol/network fee coverage and spot valuation are not independently certified.','Reference token amounts use an executable 0.01-SOL quote, and may differ from spot-value equivalents.','Signed provider impact is retained separately. Scoring uses observable quoted SOL recovery shortfall against the scaled small-buy reference, not an assumed impact sign or independent spot valuation.']};
  }catch{return null;}
 }

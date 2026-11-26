@@ -1,3 +1,4 @@
+import {quoteRecoveryShortfallPct} from '../lib/alchemyExecutableQuotesV2.mjs';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {PublicKey} from '@solana/web3.js';
@@ -24,7 +25,7 @@ const old=load('docs/token-security-live-calibration-474051450.json'),controls=o
 assert.deepEqual(controls.map(c=>c.riskScore),[65,0,0]);
 const py=load('tests/fixtures/pyusd-live-privileged-controls.json'),pyScore=security(py.mint,py.response.value,py.response.context.slot,py.observedAt).assessment;assert.equal(pyScore.riskScore,100);assert.equal(pyScore.coveragePct,100);assert.ok(pyScore.flags.some(f=>f.id==='permanent_delegate'));
 const pump=projectPumpLiquidityV2(current,mint),rayRaw=load('tests/fixtures/raydium-cpmm-live-calibration.json'),ray=projectRaydiumCpmmV2(rayRaw,rayRaw.addresses[4]);assert.ok(pump&&ray);assert.ok(ray.referenceQuotes[2].impactIncludingFeesPct>pump.referenceQuotes[2].impactIncludingFeesPct+80);
-const deep=load('tests/fixtures/usdc-executable-route-calibration.json');assert.ok(deep.referenceQuotes.every(q=>q.providerPriceImpactPct<0.01));assert.ok(pump.referenceQuotes[2].impactIncludingFeesPct>7);
+const deep=load('tests/fixtures/usdc-executable-route-calibration.json');deep.derivedRecovery=deep.referenceQuotes.map(q=>({referenceNotional:q.referenceNotional,recoveryShortfallPct:quoteRecoveryShortfallPct((BigInt(q.referenceNotional)*1000000000n).toString(),q.quoteOutputRaw)}));assert.ok(deep.derivedRecovery.every(q=>q.recoveryShortfallPct===0));deep.recoveryDefinition='Actual quoted SOL output versus the explicitly scaled 0.01-SOL buy-quote nominal; not independent spot impact or guaranteed fee coverage.';assert.ok(deep.referenceQuotes.every(q=>q.providerPriceImpactPct<0.01));assert.ok(pump.referenceQuotes[2].impactIncludingFeesPct>7);
 const h=load('tests/fixtures/canonical-holder-checkpoint-20261126.json'),relationships=projectHolderRelationshipsV2({mint,holder_set_hash:h.snapshot.holderSetHash,checkpoint:h},mint);assert.equal(relationships.relationshipCount,1);assert.ok(relationships.connectedExposurePct>2);
 const launch=load('tests/fixtures/creator-launch-447328096.json'),purchase=reconcileCreatorLaunchTransaction({mint,creator,signature:launch.signature,transaction:launch.transaction}).event;
 const outflows=[...load('tests/fixtures/creator-outflows-447393595.json').records,...load('tests/fixtures/creator-burn-449458654.json').records].map(r=>reconcileCreatorNonSaleOutflow({mint,creator,signature:r.signature,transaction:r.transaction}).event);assert.ok(outflows.every(Boolean));
