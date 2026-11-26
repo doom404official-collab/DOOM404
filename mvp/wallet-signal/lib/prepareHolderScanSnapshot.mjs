@@ -1,4 +1,4 @@
-import {createHash} from "node:crypto";
+import {holderSetHash as computeHolderSetHash} from './holderSetIdentity.mjs';
 import {PublicKey} from "@solana/web3.js";
 import {createHolderHistoryCheckpoint} from "./holderHistoryCheckpoint.mjs";
 /** Create a stable holder snapshot from fresh RPC balances. */
@@ -48,8 +48,7 @@ export async function prepareHolderScanSnapshot({mint,connection}){
  // eligible-holder source rather than silently accepting only 19 holders.
  if(holders.some(h=>h.ownerWallet==="1nc1nerator11111111111111111111111111111111"))
   throw Error("ELIGIBLE_HOLDER_SET_REQUIRED");
- const identity=JSON.stringify({mint:key.toBase58(),accounts:holders.map(row=>[row.tokenAccount,row.ownerWallet])});
- const holderSetHash=createHash("sha256").update(identity).digest("hex");
+ const holderSetHash=computeHolderSetHash({mint:key.toBase58(),holders});
  const checkpoint=createHolderHistoryCheckpoint({mint:key.toBase58(),holders});
  checkpoint.snapshot={source:"solana_rpc",commitment:"confirmed",supplyRaw:rawSupply,largestAccountsSlot:largest.context.slot,supplySlot:supply.context.slot,ownerSlots:accounts.map(a=>a.context.slot),capturedAt:new Date().toISOString(),sameSlot:accounts.every(a=>a.context.slot===largest.context.slot)&&supply.context.slot===largest.context.slot};
  // Multiple RPC reads are a dated observation, not an atomic or historical snapshot.
