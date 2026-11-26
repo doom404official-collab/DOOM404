@@ -8,9 +8,9 @@ on:
         options: [diagnostic, reconciliation]
         default: diagnostic
       batch:
-        description: 'Three pinned holder/origin or retained creator outflow transactions'
+        description: 'Pinned holder/origin, creator outflows, or one seven-day sale candidate'
         type: choice
-        options: [holder_origin, creator_outflows]
+        options: [holder_origin, creator_outflows, creator_sale]
         default: holder_origin
       reviewed_sha:
         description: 'Exact reviewed integration SHA required for reconciliation'

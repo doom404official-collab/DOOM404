@@ -8,7 +8,7 @@ const batches={holder_origin:[
  '2tqJx2jEhP8Rx5SMB9qqw7RYrekqmgH78dRdeVmv6oSor4Rgb4m4tLjZLT9DCPLd4VwVsFUJhxYzwZUvTxwQShCN',
  '3i8UBbXPmQUBaX9sReQ9bR1LZC1C14DzjfRorXydy2FDzWAVmWpPyxHarmoVpwNQuoA2RQiXyBPTTVmW5VwcucTj',
  '4FP1JbrUgBRuHvMkYGVY9kawZY4fnqwDFddFYAGCkQNemthtLasGyP1J9xtFAiN3TDfPgYgfntkguyNTVHHscSgV'
-]};
+],creator_sale:['4vj9cbKxKPSrFnz5kaWkx1je1zdr3VaSs73Q4gC9Uc9qCDijTwBdbCxEgp9iWqvHZz9D9fT8NukTyHyef2tkZDGa']};
 const signatures=batches[process.env.RECONCILIATION_BATCH??'holder_origin'];
 const endpoint=process.env.HELIUS_RPC_URL;let requests=0;const records=[];
 try{
