@@ -8,7 +8,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   run:
-    if: github.event_name == 'workflow_dispatch' || github.repository == 'doom404official-collab/DOOM404'
+    # Historical unpinned runner quarantined on integration; use reviewed reconciliation jobs.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

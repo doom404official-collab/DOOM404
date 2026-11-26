@@ -82,7 +82,7 @@ test('read bridge and scoring adapter withhold stale or legacy ledgers; coherent
   }});
   const out=adaptDashboardEvidence({result:{mint,tokenProgram:'spl-token',mintAuthority:null,freezeAuthority:null},now:Date.parse(updatedAt),creatorEvidence:{mint,creator,status:'VERIFIED',independentlyReviewed:true},workerEvidence});
   assert.equal(out.scores.creator_intelligence.components[2].points,index===0?30:null);
-  assert.equal(out.scores.creator_intelligence.score,null);assert.deepEqual(calls,['GET','GET']);assert.deepEqual(row,before);
+  assert.equal(out.scores.creator_intelligence.score,null);assert.deepEqual(calls,['GET','GET','GET']);assert.deepEqual(row,before);
   assert.ok(!JSON.stringify(workerEvidence).includes('test-only'));assert.equal(workerEvidence.creator.creatorVerifiedAcquisitionEvents,undefined);
  }
 });

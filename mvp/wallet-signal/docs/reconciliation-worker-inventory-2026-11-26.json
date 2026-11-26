@@ -1,0 +1,530 @@
+{
+  "workflowsOnIntegration": [
+    {
+      "path": ".github/workflows/glitch-controlled-network-merge.yml",
+      "name": "GLITCH controlled network evidence merge",
+      "role": "holder network/roles",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-creator-buy-readonly-diagnostic.yml",
+      "name": "GLITCH creator buy read-only diagnostic",
+      "role": "creator acquisition/selling",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-creator-origin-diagnostic.yml",
+      "name": "GLITCH creator origin diagnostic",
+      "role": "creator acquisition/selling",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "inputs.mode != 'reconciliation' && github.ref == 'refs/heads/feature/glitch-assessment-sprint1'",
+        "inputs.mode == 'reconciliation'"
+      ],
+      "reviewedShaControl": true,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-creator-worker.yml",
+      "name": "GLITCH creator historical worker",
+      "role": "creator acquisition/selling",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": true,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-evidence-validation-manual.yml",
+      "name": "GLITCH evidence validation manual",
+      "role": "holder evidence validation",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "${{ false }}"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": true
+    },
+    {
+      "path": ".github/workflows/glitch-holder-assessment-readonly.yml",
+      "name": "GLITCH holder assessment read-only verification",
+      "role": "holder discovery/decoding",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-holder-h06-alchemy.yml",
+      "name": "GLITCH H06 Alchemy historical pool audit",
+      "role": "holder network/roles",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-holder-h06-counterpart-roles.yml",
+      "name": "GLITCH H06 counterpart roles",
+      "role": "holder network/roles",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-holder-h06-pump-operation.yml",
+      "name": "GLITCH H06 Pump operation",
+      "role": "holder network/roles",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-holder-h06-sensitivity.yml",
+      "name": "GLITCH H06 sensitivity report",
+      "role": "holder network/roles",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-holder-h06-vault-history.yml",
+      "name": "GLITCH H06 historical vault verification",
+      "role": "holder network/roles",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-holder-history-checkpoint.yml",
+      "name": "GLITCH holder history checkpoint",
+      "role": "holder discovery/decoding",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "github.ref == 'refs/heads/feature/glitch-assessment-sprint1'"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-holder-worker-auto.yml",
+      "name": "GLITCH holder worker automatic",
+      "role": "holder discovery/decoding",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "${{ false }}"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": true
+    },
+    {
+      "path": ".github/workflows/glitch-holder-worker-controlled-test.yml",
+      "name": "GLITCH holder worker scheduled",
+      "role": "holder discovery/decoding",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "${{ false }}"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": true
+    },
+    {
+      "path": ".github/workflows/glitch-holder-worker-manual.yml",
+      "name": "GLITCH holder worker manual",
+      "role": "holder discovery/decoding",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "${{ false }}"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": true
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-archive-state.yml",
+      "name": "GLITCH liquidity archive state",
+      "role": "liquidity history/accounts",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": true,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-checkpoint-discovery-shadow.yml",
+      "name": "GLITCH liquidity checkpoint discovery shadow",
+      "role": "liquidity history/accounts",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-evidence-worker.yml",
+      "name": "GLITCH liquidity evidence worker (stage 1)",
+      "role": "liquidity history/accounts",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-focused-transaction.yml",
+      "name": "GLITCH focused liquidity transaction",
+      "role": "liquidity history/accounts",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-historical-replay.yml",
+      "name": "GLITCH liquidity historical replay (isolated)",
+      "role": "liquidity history/accounts",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-history-controlled-worker.yml",
+      "name": "GLITCH liquidity history controlled worker",
+      "role": "liquidity history/accounts",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-history-investigator.yml",
+      "name": "GLITCH liquidity historical investigation",
+      "role": "liquidity history/accounts",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-history-shadow.yml",
+      "name": "GLITCH liquidity automatic history shadow",
+      "role": "liquidity history/accounts",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-lq08-auto-worker-offline.yml",
+      "name": "GLITCH LQ08 automatic worker offline gate",
+      "role": "liquidity history/accounts",
+      "events": [
+        "pull_request"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-lq08-runtime-contract-offline.yml",
+      "name": "GLITCH Liquidity LQ08 runtime contract offline",
+      "role": "liquidity history/accounts",
+      "events": [
+        "pull_request"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-lq08c-offline.yml",
+      "name": "GLITCH LQ08C offline execution contract",
+      "role": "liquidity history/accounts",
+      "events": [
+        "pull_request"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-pending-recovery.yml",
+      "name": "GLITCH pending liquidity evidence recovery",
+      "role": "liquidity history/accounts",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-pr46-offline-tests.yml",
+      "name": "GLITCH Liquidity PR46 offline validation",
+      "role": "liquidity history/accounts",
+      "events": [
+        "pull_request"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-reconcile-history.yml",
+      "name": "GLITCH liquidity reconcile historical evidence",
+      "role": "liquidity history/accounts",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        "github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'"
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-recovery-offline-tests.yml",
+      "name": "GLITCH Liquidity offline recovery tests",
+      "role": "liquidity history/accounts",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/glitch-liquidity-worker-offline-tests.yml",
+      "name": "GLITCH Liquidity worker offline safety tests",
+      "role": "liquidity history/accounts",
+      "events": [
+        "pull_request"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/holder-concentration-live-assessment.yml",
+      "name": "Holder Concentration Live Assessment",
+      "role": "holder discovery/decoding",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/holder-network-live-diagnostic.yml",
+      "name": "Holder Network Live Diagnostic",
+      "role": "holder network/roles",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": false,
+      "quarantined": false
+    },
+    {
+      "path": ".github/workflows/holder-snapshot-rpc-diagnostic.yml",
+      "name": "Holder Snapshot RPC Diagnostic",
+      "role": "holder discovery/decoding",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "schedules": [],
+      "jobConditions": [
+        null
+      ],
+      "reviewedShaControl": true,
+      "quarantined": false
+    }
+  ],
+  "latestScheduleRuns": [
+    {
+      "id": 39752751653,
+      "name": "GLITCH holder worker scheduled",
+      "head_branch": "main",
+      "head_sha": "fe5b845b8f0ecb618ff00770881ded26c0ee0e96",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-22T09:05:44Z"
+    },
+    {
+      "id": 39751887367,
+      "name": "GLITCH creator historical worker",
+      "head_branch": "main",
+      "head_sha": "fe5b845b8f0ecb618ff00770881ded26c0ee0e96",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-22T08:59:08Z"
+    },
+    {
+      "id": 39748276525,
+      "name": "GLITCH evidence validation manual",
+      "head_branch": "main",
+      "head_sha": "fe5b845b8f0ecb618ff00770881ded26c0ee0e96",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-22T08:30:42Z"
+    },
+    {
+      "id": 39747405811,
+      "name": "GLITCH holder worker scheduled",
+      "head_branch": "main",
+      "head_sha": "fe5b845b8f0ecb618ff00770881ded26c0ee0e96",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-22T08:23:46Z"
+    },
+    {
+      "id": 39744743225,
+      "name": "GLITCH creator historical worker",
+      "head_branch": "main",
+      "head_sha": "fe5b845b8f0ecb618ff00770881ded26c0ee0e96",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-22T08:02:02Z"
+    }
+  ],
+  "scopeNote": "Integration branch workflow definitions only. Quarantine does not claim a repository-wide disable of historical registered entries or change main."
+}

@@ -20,6 +20,9 @@ import { summarizeCreatorAcquisitionLedger } from './creatorAcquisitionLedger.mj
 import { produceCreatorLaunchDistributions } from './creatorLaunchDistributionProducer.mjs';
 import { inspectCreatorLaunchDistributionTransaction } from './creatorLaunchDistributionProtocol.mjs';
 import { mergeCreatorAcquisitionEvidence } from './creatorAcquisitionEvidenceMerge.mjs';
+import { reconcileCreatorLaunchTransaction } from './creatorLaunchTransactionReconciliation.mjs';
+import { reconcileCreatorNonSaleOutflow } from './creatorOutflowReconciliation.mjs';
+import { summarizeCreatorSellingLedger } from './creatorSellingLedgerEvidence.mjs';
 
 /** One bounded creator-origin tick. No numeric creator score is produced.
  * Later holdings, selling and previous-launch stages remain explicitly incomplete.
@@ -94,7 +97,7 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
    const existingProcessed=new Set(previous.creatorProcessedSignatures||[]);
    const outstanding=[...new Set([...(previous.creatorPendingSignatures||[]),...(previous.creatorHistorySignatures||[])])].filter(sig=>!existingProcessed.has(sig));
    // Drain backlog before discovering another bounded page. Never discard pending work.
-   const history=outstanding.length>CREATOR_RETENTION_LIMIT-300?
+   const history=previous.creatorHistoryRpcExhausted===true||outstanding.length>CREATOR_RETENTION_LIMIT-300?
     {nextCursor:previous.creatorHistoryCursor||null,signatures:[],rpcHistoryExhausted:previous.creatorHistoryRpcExhausted===true}:
     await discoverCreatorWalletHistory({creator:creators[0],rpc,before:previous.creatorHistoryCursor||null,maxPages:3,maxSignatures:300});
    state={...state,lastError:null,creatorHistoryCursor:history.nextCursor,
@@ -145,15 +148,35 @@ export async function runCreatorIntelligenceTick({mint,store,rpcUrl,fetchImpl=fe
      events:state.creatorVerifiedAcquisitionEvents||[],retainedDistributions:previous.verifiedLaunchDistributions||[]})};
     assertCreatorRetention(state);
    }
-   const allocation=Number.isSafeInteger(launchTimestamp)&&launchTimestamp>0?
+   let allocation=Number.isSafeInteger(launchTimestamp)&&launchTimestamp>0?
     assessCreatorInitialAllocation({mint,creator:creators[0],launchTimestamp,
      distributions:state.verifiedLaunchDistributions||[],coverageComplete:state.launchDistributionCoverageComplete===true}):null;
+   // Re-derive retained launch proof instead of trusting persisted eligibility flags
+   // or fetching an already retained creation transaction on every worker tick.
+   const retainedLaunch=previous.launchReconciliationTransaction;
+   if(retainedLaunch){
+    const recovered=reconcileCreatorLaunchTransaction({mint,creator:creators[0],signature:previous.originRecheck?.signature,transaction:retainedLaunch});
+    if(recovered.status==='VERIFIED_TRANSACTION_LOCAL_LAUNCH'&&recovered.event.timestamp===launchTimestamp){
+     allocation=recovered.initialAllocationEvidence;
+     state={...state,launchReconciliation:recovered,launchDistributionCoverageComplete:true,
+      creatorVerifiedAcquisitionEvents:mergeCreatorAcquisitionEvidence(state.creatorVerifiedAcquisitionEvents||[],[recovered.event])};
+     const retainedOutflows=previous.creatorReconciledOutflowTransactions;
+     if(Array.isArray(retainedOutflows)&&retainedOutflows.length<=4){
+      const events=retainedOutflows.map(r=>reconcileCreatorNonSaleOutflow({mint,creator:creators[0],signature:r.signature,transaction:r.transaction})).filter(r=>r.status==='VERIFIED_NON_SALE_OUTFLOW').map(r=>r.event);
+      state.creatorVerifiedAcquisitionEvents=mergeCreatorAcquisitionEvidence(state.creatorVerifiedAcquisitionEvents,events);
+     }
+     state.creatorAcquisitionLedger=summarizeCreatorAcquisitionLedger({mint,creator:creators[0],events:state.creatorVerifiedAcquisitionEvents,
+      historyComplete:state.creatorHistoryComplete===true,attributionComplete:previous.creatorAcquisitionAttributionComplete===true});
+    }
+   }
    state={...state,initialAllocationEvidence:allocation||{status:'LAUNCH_TIME_UNVERIFIED',initialAttributableRaw:null,coverageComplete:false,zeroAllocationVerified:false}};
    const initialAttributableRaw=allocation?.initialAttributableRaw??null;
    if(!Number.isSafeInteger(launchTimestamp)||launchTimestamp<=0||!/^[0-9]+$/.test(String(initialAttributableRaw||''))){
     state={...state,sellingStatus:launchTimestamp>0?'AWAITING_VERIFIED_INITIAL_ALLOCATION':'AWAITING_VERIFIED_LAUNCH_TIME',lastTickAt:new Date().toISOString()};
    }else{
-    const selling=summarizeCreatorSelling({launchTimestamp,initialAttributableRaw,transactions:state.verifiedSwapSales||[],historyCompleteByWindow:previous.historyCompleteByWindow||{}});
+    const selling=allocation?.zeroAllocationVerified===true&&state.launchReconciliation?.status==='VERIFIED_TRANSACTION_LOCAL_LAUNCH'?
+     summarizeCreatorSellingLedger({mint,creator:creators[0],launchTimestamp,events:state.creatorVerifiedAcquisitionEvents||[],historyCompleteByWindow:previous.historyCompleteByWindow||{},archiveVerified:historicalCoverage.archiveVerified===true,attributionComplete:previous.creatorAcquisitionAttributionComplete===true}):
+     summarizeCreatorSelling({launchTimestamp,initialAttributableRaw,transactions:state.verifiedSwapSales||[],historyCompleteByWindow:previous.historyCompleteByWindow||{}});
     state={...state,selling,sellingStatus:selling.creatorSellingScoreEligible?'EVIDENCE_READY':'HISTORICAL_COVERAGE_INCOMPLETE',lastTickAt:new Date().toISOString()};
     if(selling.creatorSellingScoreEligible)stage='previous_launches';
    }

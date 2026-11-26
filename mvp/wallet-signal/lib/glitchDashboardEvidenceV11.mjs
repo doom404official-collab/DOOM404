@@ -65,5 +65,11 @@ export function adaptDashboardEvidence({liquidity:reportedLiquidity,result,exten
  }
  return {scores:{token_security:security,holder_intelligence:holder,creator_intelligence:creatorScore,liquidity_quality_safety:liquidityScore},
   fee, effectiveFee, top20,creatorVerified,matchedHolder,creator:creatorVerified&&same(creator)&&creator.creator===creatorEvidence.creator?creator:null,liquidity:freshLiquidity,lpObservation,
+  lq09Observation:same(liquidity?.lq09Observation)&&liquidity.lq09Observation.schemaVersion===1&&liquidity.lq09Observation.amountReconciled===true&&liquidity.lq09Observation.authorizationVerified===false&&liquidity.lq09Observation.scoreEligible===false&&Number.isSafeInteger(liquidity.lq09Observation.transactionSlot)&&typeof liquidity.lq09Observation.creatorRecipientMatchesHistoricalState==='boolean'&&typeof liquidity.lq09Observation.protocolRecipientMatchesHistoricalState==='boolean'?liquidity.lq09Observation:null,
+  canonicalHolderObservation:same(bridge?.canonicalHolder)&&bridge.canonicalHolder.schemaVersion===2&&bridge.canonicalHolder.status==='canonical_observation'&&bridge.canonicalHolder.scoreEligible===false&&bridge.canonicalHolder.historyComplete===false&&finite(bridge.canonicalHolder.top20SharePct)&&bridge.canonicalHolder.eligibleHolderCount===20&&Number.isSafeInteger(bridge.canonicalHolder.contextSlots?.inventory)&&Number.isFinite(Date.parse(bridge.canonicalHolder.observedAt))?bridge.canonicalHolder:null,
+  creatorLaunchObservation:same(creator)&&creator.launchObservation?.schemaVersion===1&&creator.launchObservation.creator===creator.creator&&
+   /^[1-9][0-9]*$/.test(creator.launchObservation.purchasedRaw||'')&&creator.launchObservation.decimals===6&&creator.launchObservation.scoreEligible===false&&creator.launchObservation.historyComplete===false&&
+   Number.isSafeInteger(creator.launchObservation.slot)&&creator.launchObservation.slot>=0&&Number.isSafeInteger(creator.launchObservation.timestamp)&&creator.launchObservation.timestamp>0&&
+   /^[1-9A-HJ-NP-Za-km-z]{64,88}$/.test(creator.launchObservation.signature||'')?creator.launchObservation:null,
   reportedLiquidity:reported,creatorCompatible,creatorMissing:creator?.missing||['Persisted creator evidence unavailable'],liquidityMissing:freshLiquidity?.missing||['Persisted liquidity evidence unavailable or stale']};
 }

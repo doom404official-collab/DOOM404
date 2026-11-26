@@ -63,7 +63,7 @@ test('mixed valid event types preserve accounting and sell-through outputs',()=>
  const types=['LAUNCH_DISTRIBUTION','PURCHASE','EXTERNAL_RECEIPT','EXTERNAL_TRANSFER_OUT','VERIFIED_SALE','INTERNAL_TRANSFER'];
  const events=types.map((type,i)=>({...base,type,signature:String(i),amountRaw:['100','200','50','25','65','999'][i],bothWalletsAttributed:true,launchInstructionVerified:true}));
  assert.deepEqual(run([...events,events[0]]),{
-  status:'EVIDENCE_READY',acceptedCount:6,rejected:[],launchRaw:'100',purchasedRaw:'200',externalReceivedRaw:'50',externalTransferredOutRaw:'25',verifiedSoldRaw:'65',totalAcquiredRaw:'350',reconciledRemainingRaw:'260',historyComplete:true,attributionComplete:true,scoreEligible:true,zeroLaunchAllocationVerified:false,sellThroughPct:18.5714
+  status:'EVIDENCE_READY',acceptedCount:6,rejected:[],launchRaw:'100',purchasedRaw:'200',externalReceivedRaw:'50',externalTransferredOutRaw:'25',verifiedSoldRaw:'65',burnedRaw:'0',totalAcquiredRaw:'350',reconciledRemainingRaw:'260',historyComplete:true,attributionComplete:true,scoreEligible:true,zeroLaunchAllocationVerified:false,sellThroughPct:18.5714
  });
 });
 test('resumed selling tick rejects malformed persisted acquisitions using only an in-memory store and mock RPC',async()=>{

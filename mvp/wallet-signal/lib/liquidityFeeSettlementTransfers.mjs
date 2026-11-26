@@ -1,5 +1,6 @@
 import {extractFeeSweepAccounts} from './liquidityFeeSweepAccounts.mjs';
 import {inspectHistoricalTransactionProof} from './liquidityHistoricalDecoder.mjs';
+import {extractHolderNetworkTransfers} from './holderNetworkTransfers.mjs';
 import {decodeInstructionBytes} from "./liquidityInstructionBytes.mjs";
 const TOKEN_PROGRAMS=new Set(["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA","TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"]);
 const key=k=>typeof k==="string"?k:k?.pubkey?.toBase58?.()??k?.toBase58?.()??(typeof k?.pubkey==='string'?k.pubkey:null);
@@ -23,13 +24,32 @@ export function inspectFeeSettlementTransfers(tx,sweepEvidence,{signature,slot}=
   const actual=extractFeeSweepAccounts(tx,sweep.pool).sweeps.filter(s=>s.outerInstructionIndex===sweep.outerInstructionIndex);
   if(actual.length!==1||actual[0].poolMatched!==true||actual[0].accountLayoutComplete!==true||['operation','pool','quoteMint','quoteTokenProgram','quoteVault','recipient','recipientTokenAccount'].some(k=>actual[0][k]!==sweep[k]))return unavailable('SWEEP_PARENT_UNVERIFIED');
  }
- const transfers=[];
+ const transfers=[];let parsedNetwork;
  for(const group of tx?.meta?.innerInstructions??[]){
   for(const [innerInstructionIndex,ix] of group.instructions.entries()){
    if(!ix||typeof ix!=='object')return unavailable('INSTRUCTION_EVIDENCE_UNAVAILABLE');
    const program=ix.programId!==undefined?key(ix.programId):keys[ix.programIdIndex];
    if(typeof program!=='string'||!program)return unavailable('INSTRUCTION_EVIDENCE_UNAVAILABLE');
    if(!TOKEN_PROGRAMS.has(program))continue;
+   if(ix.parsed!==undefined){
+    if(!['transfer','transferChecked'].includes(ix.parsed?.type))continue;
+    const i=ix.parsed.info;
+    const matched=sweeps.find(s=>s.quoteVault===i?.source&&s.recipientTokenAccount===i?.destination&&s.outerInstructionIndex===group.index);
+    if(!matched)continue;
+    // Parsed fee settlement needs explicit mint and stable transaction-local
+    // owners; labels or a balance delta alone cannot establish the transfer.
+    if(ix.parsed.type!=='transferChecked'||i.mint!==matched.quoteMint||matched.quoteTokenProgram!==program||i.authority!==matched.pool||
+     typeof i.tokenAmount?.amount!=='string'||!/^(0|[1-9][0-9]*)$/.test(i.tokenAmount.amount)||BigInt(i.tokenAmount.amount)>18446744073709551615n)return unavailable('PARSED_TRANSFER_UNVERIFIED');
+    parsedNetwork??=extractHolderNetworkTransfers({transaction:tx,signature});
+    if(!parsedNetwork.valid||!parsedNetwork.transfers.some(t=>t.outerInstructionIndex===group.index&&t.innerInstructionIndex===innerInstructionIndex&&t.sourceTokenAccount===i.source&&t.destinationTokenAccount===i.destination&&t.from===matched.pool&&t.to===matched.recipient&&t.mint===i.mint&&t.amountRaw===i.tokenAmount.amount))return unavailable('PARSED_TRANSFER_TIMELINE_UNVERIFIED');
+    for(const [account,owner] of [[i.source,matched.pool],[i.destination,matched.recipient]]){
+     const rows=name=>(tx.meta[name]??[]).filter(b=>keys[b.accountIndex]===account);
+     const before=rows('preTokenBalances'),after=rows('postTokenBalances');
+     if(before.length!==1||after.length!==1||[...before,...after].some(b=>b.mint!==i.mint||b.owner!==owner||b.programId!==program))return unavailable('PARSED_TRANSFER_OWNERSHIP_UNVERIFIED');
+    }
+    transfers.push({operation:matched.operation,source:i.source,destination:i.destination,amountRaw:i.tokenAmount.amount,tokenInstruction:'transfer_checked',outerInstructionIndex:group.index,innerInstructionIndex,signature,slot:tx.slot,mint:i.mint,tokenProgram:program,authority:i.authority,parentInstructionMatched:true,recipient:matched.recipient});
+    continue;
+   }
    const data=decodeInstructionBytes(ix.data);
    if(!data||![3,12].includes(data[0]))continue;
    if(data.length!==(data[0]===3?9:10))return unavailable('INVALID_TRANSFER_LAYOUT');

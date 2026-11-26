@@ -1,3 +1,7 @@
+## 26 November 2026 replacement baseline
+
+Canonical positive-balance holder baseline: slot 474029636; classifications slot 474029653; non-atomic across these reads. Snapshot 0596510d6dc07e1dce934fba0dcf96a5594b38807383bd6d829d9d6fe441177b, holder-set hash 77f749040d291e057c546d1f4872f4de9432bdda4be512a0dc94bda14bc20daa. All 20 eligible wallet-account mappings retained; Top-20 share 24.5379%. Old checkpoints 1812/2138 remain audit evidence and are not canonical. Zero-only account mapping retention and historical independence remain limited.
+
 # Holder Intelligence — single completion register (22 October 2026)
 
 Scope: frozen Snapshot #2, TOP20_NETWORK_V1, test mint 98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump. No score promotion, checkpoint reset, production deployment or main merge.

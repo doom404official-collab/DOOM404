@@ -7,107 +7,41 @@
   "milestones": [
     {
       "id": 1,
-      "status": "BLOCKED_ACCESS",
-      "completed": [
-        "Bounded old mapping search closed without reconstruction",
-        "Replacement full-inventory builder and reviewed-SHA workflow prepared",
-        "Old jobs preserved at versions 1812 and 2138"
-      ],
-      "blockers": [
-        "Alchemy Token-2022 getProgramAccounts rejected full and owner-filtered queries with too-many-accounts error",
-        "GitHub browser is signed out; connector does not expose workflow dispatch",
-        "New canonical snapshot, persistence and compatible evidence replay remain unexecuted"
-      ]
+      "status": "CANONICAL_BASELINE_ESTABLISHED_WITH_LIMITATIONS",
+      "acceptance": "Holder-set hash, positive-balance mapping, supply, ranking, exclusions and targeted recovery validated; zero-only account mapping retention remains incomplete. Old versions 1812 and 2138 unchanged. Historical independence remains unverified."
     },
     {
       "id": 2,
-      "status": "PARTIAL_EVIDENCE_BLOCKED",
-      "processedSignatures": 4656,
-      "retainedTransactionObservations": 1000,
-      "retainedAcquisitionMovements": 3119,
-      "verifiedAcquisitionEvents": 0,
-      "verifiedSales": 0,
-      "retainedWindowObservations": {
-        "1h": 4,
-        "24h": 12,
-        "7d": 334
-      },
-      "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
-      "creationSignature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
-      "blockers": [
-        "Initial allocation has no verified instruction evidence",
-        "Both parsed and base64 creation responses truncated by connector; not usable as complete transaction evidence",
-        "Existing observation outflows remain unclassified; no sale or purchase promotion",
-        "Provider pagination exhausted does not prove archival completeness"
-      ]
+      "status": "PARTIAL_RECONCILIATION",
+      "acceptance": "Creator identity and launch purchase recovered; two burns and two transfers separated from sales; five-event ledger persisted. Full acquisition attribution and archival selling windows incomplete."
     },
     {
       "id": 3,
-      "status": "PARTIAL_RECOVERED_AND_PERSISTED",
-      "completed": [
-        "Recovered and persisted 60-to-87 successor workflow attestation",
-        "Separated earlier failed 86-record attempt with two errors from later validated 87-record successor with zero errors",
-        "Recovered and persisted current two-account LP observation; exact observed sum equals LP supply"
-      ],
-      "baselineRun": 39594375245,
-      "failedRun": 39596576585,
-      "validatedSuccessorRun": 39729408869,
-      "artifactSha256": "589fb75ab907686a77db8044242d063ccf29bcd36d2db197e59844c1f93393f5",
-      "rawCheckpointRecovered": false,
-      "blockers": [
-        "30-day historical artifacts no longer listed; exact signatures/cursor unavailable for resume",
-        "Failed-86 subset of successor-87 cannot be reverified without raw records",
-        "Original STOP_RECONCILE_NO_RETRY failure-stage receipt unavailable; no blind collector rerun",
-        "LQ-09 historical fee-recipient authorization, executable depth and LP withdrawal control remain unresolved"
-      ]
+      "status": "PARTIAL_RECONCILIATION",
+      "acceptance": "87-record success attestation recovered, current LP evidence persisted, LQ09 two-account historical evidence retained. Raw 87-record checkpoint, old STOP root-stage receipt and full fee authorization remain unresolved."
     },
     {
       "id": 4,
-      "status": "IMPLEMENTED_REGRESSION_VERIFIED",
-      "completed": [
-        "Version2 liquidity scoring projection and shared writer validation",
-        "Checkpoint writer preserves schema version",
-        "Database constraints admit complete only for version2 envelopes",
-        "Existing version1 partial checkpoints remain supported",
-        "No missing inputs receive positive points",
-        "Independent LP observation freshness and client display",
-        "Nine-second server and twelve-second client deadlines preserved"
-      ],
-      "limitation": "No real complete score-eligible liquidity producer evidence has been recovered; calibration remains false"
+      "status": "IMPLEMENTED_TESTED",
+      "acceptance": "Liquidity schema2 scoring projection and creator ledger selling v2 validate completed evidence; partial evidence preserved; independent 9-second reads and 12-second client deadline unchanged; no weights changed."
     },
     {
       "id": 5,
-      "status": "RECONCILED_NOT_RESTARTED",
-      "completed": [
-        "Queried GitHub workflow enabled states and recent worker run metadata",
-        "Prepared three-request canonical capture with no retries and exact reviewed SHA, integration branch, run-attempt1 and single-concurrency checks"
-      ],
-      "blockers": [
-        "Authenticated workflow dispatch unavailable in browser",
-        "Legacy workflows target old feature branches/previews; new snapshot must be established before selective resume",
-        "No checkpoint leases or historical workers manually reset"
-      ]
+      "status": "SELECTIVE_WORKER_RECONCILIATION",
+      "acceptance": "Reviewed-SHA targeted captures executed. Legacy unpinned automatic runners quarantined on integration. Canonical decode-only resume validated offline; creator cached resume prepared for live execution."
     },
     {
       "id": 6,
-      "status": "SOURCE_VALIDATED_PREVIEW_PENDING",
-      "tests": {
-        "integratedPassed": 1966,
-        "failed": 0,
-        "nextBuild": "PASS",
-        "creatorPersistenceDuringBuild": "SKIPPED_NOT_OPTED_IN"
-      },
-      "localBrowserHarness": "Blocked: installed chromium wrapper points to missing executable; no visual pass claimed",
-      "deployment": "To be recorded in final handover",
-      "baselineFrozen": false
+      "status": "REGRESSION_PASSED_PREVIEW_PENDING",
+      "acceptance": "2013 integrated tests passed and Next build passed. Exact-commit preview verification and cached worker readback are final execution checks. Production baseline not frozen."
     }
   ],
   "providerRequests": {
-    "alchemy": 10,
-    "helius": 0,
-    "solscan": 0,
-    "lq09HistoricalAccountReads": 0,
-    "lq09MaximumHistoricalAccountReads": 3
+    "helius": 18,
+    "alchemy": 15,
+    "directTotal": 33,
+    "lq09HistoricalAccountReads": 2,
+    "excluded": "Application-initiated inspection traffic is not included because its per-provider request count is not exposed."
   },
   "databaseChanges": {
     "checkpointUpdates": 2,
@@ -134,5 +68,102 @@
   "postLaunchEnhancements": [
     "Broader intermediary histories beyond material-risk stopping criteria",
     "Additional protocol support outside the reference token scope"
+  ],
+  "executionContinuedFrom": "8442899537edb8ab622ca38658e37f4bd55a8a65",
+  "canonicalHolder": {
+    "snapshotId": "0596510d6dc07e1dce934fba0dcf96a5594b38807383bd6d829d9d6fe441177b",
+    "inventorySlot": 474029636,
+    "mintSlot": 474029636,
+    "classificationSlot": 474029653,
+    "commitment": "finalized",
+    "atomic": false,
+    "holderSetHash": "77f749040d291e057c546d1f4872f4de9432bdda4be512a0dc94bda14bc20daa",
+    "hashAlgorithm": "sha256-ordered-eligible-wallet-token-accounts-v2",
+    "checkpointId": "49feee9f-7c79-4d6f-9767-151db38e1fca",
+    "checkpointVersion": 1,
+    "positiveBalanceWallets": 37115,
+    "retainedTokenAccountMappings": 37207,
+    "zeroOnlyAccountMappingsOmitted": 105447,
+    "eligibleTop20SharePct": 24.5379,
+    "excludedAuthorityCount": 6,
+    "transactionsRevalidated": 3,
+    "directRelationshipObservations": 2,
+    "riskIncludedFundingObservations": 1,
+    "unrelatedAssetTransferExcludedFromRisk": 1,
+    "oldVerifiedRowsEvaluated": 550,
+    "oldUniqueVerifiedSignaturesEvaluated": 349,
+    "oldNetworkTransfersEvaluated": 31587,
+    "uniqueMemberRelevantCandidateSignatures": 1549,
+    "gasSponsorCandidatesNotRevalidated": 133,
+    "legacyAggregateScoresCopied": false,
+    "historicalIndependenceEstablished": false,
+    "optionalFullRetentionCapture": {
+      "runId": 45766280447,
+      "status": "failed",
+      "providerRequests": 2,
+      "reason": "SNAPSHOT_PROVIDER_RESPONSE_INVALID",
+      "replacementPromoted": false,
+      "retryPerformed": false
+    }
+  },
+  "creatorReconciliation": {
+    "identityStatus": "VERIFIED",
+    "creationSlot": 447328096,
+    "zeroDirectLaunchAllocationVerified": true,
+    "purchasedRaw": "15664233491746",
+    "burnedRaw": "9867978045081",
+    "externalTransferredOutRaw": "5200000000000",
+    "verifiedSoldRaw": "0",
+    "verifiedLedgerNetRaw": "596255446665",
+    "currentObservedHoldingRaw": "599036011328",
+    "unclassifiedNetDifferenceRaw": "2780564663",
+    "acceptedLedgerEvents": 5,
+    "processedSignaturesPreserved": 4656,
+    "pendingSignatures": 0,
+    "retainedAcquisitionMovements": 3119,
+    "retainedTransactionObservations": 1000,
+    "archiveCoverageVerified": false,
+    "scoreEligible": false,
+    "sellingMethodology": "CREATOR_SELLING_LEDGER_V2",
+    "verifiedSalesRecovered": 0,
+    "note": "Four selected outflows are two burns and two external transfers; this does not prove zero sales in unverified history."
+  },
+  "liquidityReconciliation": {
+    "latestWorkflowAttestedHistoryRecords": 87,
+    "raw87CheckpointRecovered": false,
+    "earlier86DiagnosticNotResumable": true,
+    "currentLpObservationPersisted": true,
+    "lpObservedBalanceSumEqualsSupply": true,
+    "lpCustodyVerified": false,
+    "lq09HistoricalAccountReads": 2,
+    "lq09MaximumHistoricalAccountReads": 3,
+    "lq09Slot": 458811200,
+    "feeCollectionRaw": "2603773",
+    "feeAmountsReconciled": true,
+    "protocolRecipientMatchesHistoricalState": true,
+    "creatorRecipientMatchesHistoricalState": false,
+    "authorizationVerified": false,
+    "withdrawalConfirmed": false,
+    "originalStopReceiptRecovered": false,
+    "scoreEligible": false,
+    "provenanceRun": 45764969879
+  },
+  "regression": {
+    "integratedTests": 2013,
+    "passed": 2013,
+    "failed": 0,
+    "build": "passed",
+    "initialIntegratedRun": {
+      "passed": 2008,
+      "failed": 5,
+      "correction": "Updated four assertions for intentional no-pagination-on-exhaustion and independent canonical read behavior; restored the pinned legacy manual workflow byte-for-byte."
+    }
+  },
+  "remainingReleaseBlockers": [
+    "Verified creator acquisition/sale attribution and archival window coverage",
+    "Creator/team holdings and previous-launch scoring producers",
+    "Holder classification, network/breadth scoring eligibility for the replacement baseline",
+    "Verified executable liquidity depth, LP withdrawal control, independent pool concentration, reference sell impact and reserve-history criteria",
+    "Scoring calibration and final production acceptance under unchanged weights"
   ]
 }

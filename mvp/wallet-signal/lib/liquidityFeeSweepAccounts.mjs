@@ -1,14 +1,14 @@
 import {decodeInstructionBytes} from "./liquidityInstructionBytes.mjs";
 const PUMP_AMM="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";
 const SWEEPS=new Map([["0830be07b644b7e5","sweep_protocol_fee"],["20f6bf3408c949ba","sweep_creator_fee"]]);
-const key=k=>typeof k==="string"?k:k?.pubkey?.toBase58?.()??k?.toBase58?.()??String(k);
+const key=k=>typeof k==="string"?k:typeof k?.pubkey==='string'?k.pubkey:k?.pubkey?.toBase58?.()??k?.toBase58?.()??null;
 export function extractFeeSweepAccounts(tx,poolAddress){
  const m=tx?.transaction?.message;
  const keys=[...(m?.staticAccountKeys??m?.accountKeys??[]),...(tx?.meta?.loadedAddresses?.writable??[]),...(tx?.meta?.loadedAddresses?.readonly??[])].map(key);
  const instructions=m?.compiledInstructions??m?.instructions??[];
  const sweeps=[];
  for(const [outerInstructionIndex,ix] of instructions.entries()){
-  const program=ix.programId?.toBase58?.()??keys[ix.programIdIndex];
+  const program=key(ix.programId)??keys[ix.programIdIndex];
   if(program!==PUMP_AMM)continue;
   const data=decodeInstructionBytes(ix.data);
   const operation=SWEEPS.get(data?.subarray(0,8).toString("hex"));

@@ -1,8 +1,6 @@
 name: GLITCH evidence validation manual
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "*/30 * * * *"
 permissions:
   contents: read
 concurrency:
@@ -10,6 +8,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   validate:
+    # Historical unpinned runner quarantined on integration; use reviewed reconciliation jobs.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:

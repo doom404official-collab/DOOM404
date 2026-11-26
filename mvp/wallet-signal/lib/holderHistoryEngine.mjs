@@ -5,6 +5,7 @@ import {nextHolderScanOrder,advanceHolderScanCursor,holderScanCoverage} from "./
 import {extractDirectHolderTransfers} from "./directHolderTransfers.mjs";
 import {recordHolderNetworkTransaction,holderNetworkSnapshotIdentity,NETWORK_RETENTION_LIMITS} from "./holderNetworkCheckpoint.mjs";
 import {buildHolderConnectionGraph} from "./holderConnectionGraph.mjs";
+import {createHash} from 'node:crypto';
 
 /** Shared history batch for diagnostic and future server-side background workers.
  * The caller owns checkpoint persistence, RPC pacing, budgets, and concurrency.
@@ -12,6 +13,13 @@ import {buildHolderConnectionGraph} from "./holderConnectionGraph.mjs";
 export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,pageLimit=10}={}){
  if(!checkpoint||typeof rpc!=="function")throw Error("INVALID_SCAN_INPUT");
  if(!Number.isInteger(maxRequests)||maxRequests<1||maxRequests>500)throw Error("INVALID_REQUEST_BUDGET");
+ const policy=checkpoint.collectionPolicy,targetedOnly=policy!==undefined;
+ if(targetedOnly){
+  if(policy?.version!==1||policy.mode!=='targeted_only'||policy.discoveryEnabled!==false||!Number.isInteger(policy.maxRequestsPerCycle)||policy.maxRequestsPerCycle<1||policy.maxRequestsPerCycle>3||checkpoint.snapshot?.canonicalSchemaVersion!==2||!Array.isArray(checkpoint.holders)||checkpoint.holders.length!==20||new Set(checkpoint.holders.map(h=>h.ownerWallet)).size!==20||checkpoint.holders.some(h=>!Array.isArray(h.tokenAccounts)||h.tokenAccounts.length<1))throw Error('TARGETED_CHECKPOINT_POLICY_INVALID');
+  const hash=createHash('sha256').update(JSON.stringify({version:2,mint:checkpoint.mint,holders:checkpoint.holders.map(h=>[h.ownerWallet,h.tokenAccounts.map(t=>t.tokenAccount)])})).digest('hex');
+  if(hash!==checkpoint.snapshot.holderSetHash)throw Error('TARGETED_HOLDER_SET_INCOMPATIBLE');
+  maxRequests=Math.min(maxRequests,policy.maxRequestsPerCycle);
+ }
  let used=0,reason=null,decodeAttempts=0,decodeSuccesses=0,discoveryRequests=0,decodeUnavailable=0,decodeUnverified=0,decodeUnresolved=0;
  const attemptedThisBatch=new Set();
  const limitedRpc=async(method,params)=>{
@@ -60,12 +68,12 @@ export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,page
   // The counter is persisted in the existing checkpoint; no new database schema.
   const priorDecodeOnly=Math.max(0,Math.min(3,Number(checkpoint.decodeOnlyBatches)||0));
   const highBacklog=pendingCount>=Math.max(100,pageLimit*2);
-  const shouldDiscover=hasUnexhaustedWallet&&(highBacklog?priorDecodeOnly>=3:maxRequests===1&&pendingCount>0?priorDecodeOnly>=1:true);
+  const shouldDiscover=!targetedOnly&&hasUnexhaustedWallet&&(highBacklog?priorDecodeOnly>=3:maxRequests===1&&pendingCount>0?priorDecodeOnly>=1:true);
   const reserveForPagination=shouldDiscover?1:0;
   const decodeFirst=pendingCount>=pageLimit
    ?Math.max(0,maxRequests-reserveForPagination)
    :Math.min(maxRequests-reserveForPagination,Math.max(1,Math.floor(maxRequests/3)));
-  await decodePending(decodeFirst);
+  await decodePending(targetedOnly?maxRequests:decodeFirst);
   // Reserve one discovery request when the decode backlog is high.
   // Do not deliberately exceed the bounded worker request budget.
   if(shouldDiscover&&used<maxRequests){
@@ -85,6 +93,7 @@ export async function scanHolderHistoryBatch({checkpoint,rpc,maxRequests=65,page
   if(pendingCount>0&&hasUnexhaustedWallet){
    checkpoint.decodeOnlyBatches=discoveryRequests>0?0:Math.min(3,priorDecodeOnly+1);
   }else checkpoint.decodeOnlyBatches=0;
+  if(targetedOnly)reason=Object.values(checkpoint.signatures).some(s=>s==='pending')?'TARGETED_EVIDENCE_REVIEW_REQUIRED':'TARGETED_BATCH_COMPLETE';
  }catch(error){reason=String(error?.message||"SCAN_INTERRUPTED");}
  const observations=[];
  for(const edge of Object.values(checkpoint.edges||{})){

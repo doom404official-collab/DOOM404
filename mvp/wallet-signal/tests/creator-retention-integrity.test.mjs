@@ -80,5 +80,5 @@ test('complete small history remains eligible and repeated ticks do not duplicat
   await tick(h);assert.equal(h.state.creatorHistoryComplete,true);assert.equal(h.state.creatorAcquisitionLedger.scoreEligible,true);
   assert.equal(h.state.creatorAcquisitionLedger.totalAcquiredRaw,'10');assert.equal(h.state.creatorVerifiedAcquisitionEvents.length,1);
  }
- assert.deepEqual(h.methods,['getSignaturesForAddress','getSignaturesForAddress']);
+ assert.deepEqual(h.methods,['getSignaturesForAddress']);
 });

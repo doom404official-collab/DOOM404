@@ -5,7 +5,7 @@ const AUXILIARY_PUMP_DISCRIMINATORS={
  "20f6bf3408c949ba":"sweep_creator_fee",
  "e445a52e51cb9a1d":"anchor_event_cpi_marker"
 };
-const asKey=k=>typeof k==="string"?k:k?.pubkey?.toBase58?.()??k?.toBase58?.()??String(k);
+const asKey=k=>typeof k==="string"?k:typeof k?.pubkey==='string'?k.pubkey:k?.pubkey?.toBase58?.()??k?.toBase58?.()??null;
 export function inspectPumpAmmParsedTransaction(tx,poolAddress) {
  if(!tx)return {status:"unavailable",candidateOperations:[],withdrawalConfirmed:false};
  if(tx.meta?.err)return {status:"failed_transaction",candidateOperations:[],withdrawalConfirmed:false};
@@ -17,7 +17,7 @@ export function inspectPumpAmmParsedTransaction(tx,poolAddress) {
  const instructionDiagnostics=[];
  for(const [source,instructions] of [["outer",outer],["inner",inner]]){
   for(const ix of instructions){
-   const program=ix.programId?.toBase58?.()??keys[ix.programIdIndex]??"";
+   const program=asKey(ix.programId)??keys[ix.programIdIndex]??"";
    const data=decodeInstructionBytes(ix.data);
    const isPumpAmm=program==="pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA";
    const discriminatorHex=isPumpAmm&&data?.length>=8?data.subarray(0,8).toString("hex"):null;

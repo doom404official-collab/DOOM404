@@ -95,7 +95,7 @@ test('interrupted provider work preserves pending signatures for the next indepe
  }});
  assert.deepEqual(h.state.creatorPendingSignatures,['2'.repeat(88)]);assert.equal(h.state.creatorHistoryComplete,false);assert.equal(calls,2);
  const methods=[];await runCreatorIntelligenceTick({mint,store:h.store,rpcUrl:'https://offline.invalid',fetchImpl:async(_,o)=>{methods.push(JSON.parse(o.body).method);return {ok:true,json:async()=>({result:methods.at(-1)==='getTransaction'?null:[]})}}});
- assert.deepEqual(methods,['getSignaturesForAddress','getTransaction']);assert.deepEqual(h.state.creatorPendingSignatures,['2'.repeat(88)]);
+ assert.deepEqual(methods,['getTransaction']);assert.deepEqual(h.state.creatorPendingSignatures,['2'.repeat(88)]);
 });
 test('origin retention rejects overflow and unverifiable legacy boundaries without pruning evidence',async()=>{
  const {assertCreatorRetention}=await import('../lib/creatorRetentionIntegrity.mjs');

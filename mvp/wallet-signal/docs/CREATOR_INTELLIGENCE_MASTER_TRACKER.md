@@ -1,3 +1,7 @@
+## 26 November 2026 reconciliation update
+
+Creator identity reviewed against retained creation transaction at slot 447328096. Direct creation issuance to creator is zero; paid launch acquisition is 15,664,233.491746 tokens. Five validated ledger events include two burns and two external transfers; none is a verified sale. Existing 4,656 processed signatures preserved. Archive coverage, complete acquisitions and selling windows remain incomplete. Creator ledger selling v2 supports validated acquisition denominators without changing weights.
+
 # CREATOR INTELLIGENCE — MASTER ACCEPTANCE TRACKER
 Updated: 2026-10-22. Branch: feature/creator-history-worker-500.
 Single source of truth. Do not infer completion from code existence, synthetic tests, or build status alone.
