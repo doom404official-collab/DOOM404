@@ -80,3 +80,7 @@ Swap-disable flags (and a future Raydium CPMM opening time) make reference exits
 The indexed origin request explicitly accepts parsed legacy, v0 and v1 transaction envelopes. The live provider returned -32015 with the prior version-0 ceiling; this is a transaction-version compatibility error, not evidence of missing provider entitlement. Unknown future envelope versions are rejected. Strict mint birth, protocol instruction, account roles and signer requirements remain unchanged. The narrow cryptographic burn verifier still supports only its existing legacy/v0 message shapes.
 
 The existing deployment names its Alchemy integration ALCHEMY_SOLANA_ARCHIVE_RPC_URL; bounded index/quote consumers reuse it with no credential changes. Normal pool selection prefers the inspected mint as base with a supported SOL/USDC quote, rather than blindly selecting a pool where the inspected mint is an unrelated quote asset.
+
+Current RPC capacity failures may use the existing Alchemy endpoint after Helius; explicit configured fallback lists take precedence. Each actual attempt is metered. The 429/fallback and response-size boundaries have offline regression checks. No endpoint value, credential or billing configuration changed.
+
+Signed quote price impact is retained. Negative values have no adverse-risk interpretation until their sign semantics are independently verified; they do not silently become either favorable zero or an absolute adverse percentage. Small positive percentages retain up to six decimals in evidence displays, including nonzero LP claims.

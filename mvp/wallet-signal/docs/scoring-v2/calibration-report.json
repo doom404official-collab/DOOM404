@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "generatedAt": "2026-11-26T09:57:19.888Z",
+  "generatedAt": "2026-11-26T10:04:54.814Z",
   "providerRequests": 0,
   "mode": "offline replay of retained live evidence",
   "securityControls": [
@@ -26,6 +26,38 @@
       "expected": "Permission risk, not issuer legitimacy or fraud probability."
     }
   ],
+  "recentLaunch": {
+    "schemaVersion": 2,
+    "sourceCommit": "311cef9ce6fd68be31516e369b553caf0360ce31",
+    "sourceDeployment": "dpl_Ea8VAPErwYTAEs6CGnVFKkiFMxBG",
+    "capture": "Deployed bounded origin projection observed through authenticated browser; retains signatures and assigned on-chain role, not a raw transaction or off-chain identity certification",
+    "version": 2,
+    "mint": "EGiRRwVAKQrD8gk7e4hNyPCRormANKiNo5uKtY46pump",
+    "creator": "Dqv8whmAjdC4EtQ22AEgaYymfaD4mCPvyz5Uy3ghE67c",
+    "attribution": {
+      "version": 2,
+      "mint": "EGiRRwVAKQrD8gk7e4hNyPCRormANKiNo5uKtY46pump",
+      "creator": "Dqv8whmAjdC4EtQ22AEgaYymfaD4mCPvyz5Uy3ghE67c",
+      "creationUser": "Dqv8whmAjdC4EtQ22AEgaYymfaD4mCPvyz5Uy3ghE67c",
+      "role": "protocol_assigned_creator",
+      "verified": true,
+      "verification": "transaction_local_protocol_creator",
+      "creationSlot": 474084555,
+      "creationTime": 1795682430,
+      "creationSignature": "GJoH3fzjPTt7wJofgbs7MPFLewVabv2HwfKW6MaU8Z7gfX2ZDWzdENDwvcEeMC62sKNBXsr3ELmqDfH6ZpgRZ7S",
+      "decoderVersion": "pump-fun-create_v2-prefix-v1",
+      "programId": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+      "independentlyReviewed": false,
+      "scope": "Assigned on-chain creator role; does not establish off-chain identity or ownership of other wallets."
+    },
+    "status": "verified_current_wallet",
+    "rawBalance": "0",
+    "accountCount": 0,
+    "slot": 474106802,
+    "observedAt": "2026-11-26T09:59:59.347Z",
+    "scope": "verified_creator_wallet_only",
+    "linkedWalletsAssessed": false
+  },
   "privilegedToken": {
     "mint": "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
     "slot": 474087750,
@@ -206,11 +238,11 @@
     "protocolIntegerMath": true,
     "observedRelationshipScope": true,
     "burnVersusSaleDistinction": true,
-    "completeCrossTokenCalibration": false,
+    "definedLiveCalibrationCasesPassed": true,
+    "completeProductionAcceptance": false,
     "remaining": [
-      "Recent-profile token creation age must be verified before calling it a newly launched-token case.",
       "Pool-level depth comparisons are not token-wide all-pool coverage.",
-      "Live browser, responsive viewport and measured latency receipts are recorded after deployment."
+      "Browser responsive widths and timings are documented in release acceptance; a physical Android device is not part of the remote browser environment."
     ]
   }
 }

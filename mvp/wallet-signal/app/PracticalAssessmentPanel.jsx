@@ -1,6 +1,6 @@
 "use client";
 const names={token_security:'Token Security',holder_intelligence:'Holder Intelligence',liquidity_quality_safety:'Liquidity & Safety',creator_intelligence:'Creator Intelligence'};
-const fmt=(n,s='')=>typeof n==='number'&&Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:2})+s:'Not assessed';
+const fmt=(n,s='')=>typeof n==='number'&&Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:n>0&&n<0.01?6:2})+s:'Not assessed';
 export default function PracticalAssessmentPanel({assessment,selected,providerUsage,inspectionTiming}){
  const a=assessment.scores[selected],flags=(a?a.flags:assessment.flags).filter(f=>f.severity!=='information');
  const liq=assessment.scores.liquidity_quality_safety.metrics,holders=assessment.scores.holder_intelligence.metrics,creator=assessment.scores.creator_intelligence.metrics;

@@ -7,7 +7,7 @@ import { Connection } from "@solana/web3.js";
  */
 export function createReliableConnection({
   primary = process.env.SOLANA_RPC_URL || process.env.ALCHEMY_RPC_URL || process.env.HELIUS_RPC_URL || "https://api.mainnet-beta.solana.com",
-  fallbacks = process.env.SOLANA_RPC_FALLBACK_URLS || "",
+  fallbacks = process.env.SOLANA_RPC_FALLBACK_URLS || process.env.ALCHEMY_RPC_URL || process.env.ALCHEMY_SOLANA_ARCHIVE_RPC_URL || "",
   timeoutMs = 8000,
   retries = 2,
   fetchImpl = fetch,
