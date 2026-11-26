@@ -72,6 +72,7 @@ export function adaptDashboardEvidence({liquidity:reportedLiquidity,result,exten
    /^[1-9][0-9]*$/.test(creator.launchObservation.purchasedRaw||'')&&creator.launchObservation.decimals===6&&creator.launchObservation.scoreEligible===false&&creator.launchObservation.historyComplete===false&&
    Number.isSafeInteger(creator.launchObservation.slot)&&creator.launchObservation.slot>=0&&Number.isSafeInteger(creator.launchObservation.timestamp)&&creator.launchObservation.timestamp>0&&
    /^[1-9A-HJ-NP-Za-km-z]{64,88}$/.test(creator.launchObservation.signature||'')?creator.launchObservation:null,
+  creatorWalletObservation:creatorVerified&&creator?.creator===creatorEvidence.creator&&same(creator.currentWalletObservation)&&creator.currentWalletObservation.scope==='verified_creator_wallet_only'&&creator.currentWalletObservation.scoreEligible===false&&evidenceFresh(creator.currentWalletObservation.observedAt,now)?creator.currentWalletObservation:null,
   reserveObservation:same(liquidity?.reserveObservation)&&liquidity.reserveObservation.schemaVersion===1&&evidenceFresh(liquidity.reserveObservation.observedAt,now)&&liquidity.reserveObservation.reservesVerified===true?liquidity.reserveObservation:null,
   reportedLiquidity:reported,creatorCompatible,creatorMissing:creator?.missing||['Persisted creator evidence unavailable'],liquidityMissing:freshLiquidity?.missing||['Persisted liquidity evidence unavailable or stale']};
 }

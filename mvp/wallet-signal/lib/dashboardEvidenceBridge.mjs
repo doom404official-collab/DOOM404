@@ -1,3 +1,4 @@
+import {projectCreatorWalletObservation} from './creatorWalletObservation.mjs';
 import {projectCurrentPoolReserves} from './currentPoolReserves.mjs';
 import {summarizeCreatorAcquisitionLedger} from './creatorAcquisitionLedger.mjs';
 import {projectLiquidityScoring} from './liquidityScoringProjection.mjs';
@@ -61,6 +62,7 @@ export function projectCreatorCheckpoint(row,mint){
  return {mint,status:['queued','running','partial','complete','failed'].includes(row.status)?row.status:'unknown',
   stage:['identification','holdings','selling','previous_launches','complete'].includes(row.stage)?row.stage:'unknown',
   updatedAt:stamp(row.updated_at),creator,holdings,launchObservation,
+  currentWalletObservation:projectCreatorWalletObservation(s.currentWalletAccountsObservation,mint,creator),
   selling:complete?{historyComplete:true,percentages:[3600,86400,604800].map(seconds=>windows.find(w=>w.seconds===seconds).sellThroughPct)}:null,
   previousLaunchCount:count(s.previousLaunches?.attributedLaunchCount),
   missing:['Verified creator/team holdings attribution','Comparable previous-launch scoring evidence',...(!complete?[retainedLaunch?.status==='VERIFIED_TRANSACTION_LOCAL_LAUNCH'?'Complete archival selling windows and acquisition attribution':'Verified initial allocation and complete selling windows']:[])]};
