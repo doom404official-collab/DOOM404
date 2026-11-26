@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {Keypair} from '@solana/web3.js';
-import {buildCanonicalHolderSnapshot} from '../lib/canonicalHolderSnapshot.mjs';
+import {Keypair,PublicKey} from '@solana/web3.js';
+import {buildCanonicalHolderSnapshot,normalizeBinaryHolderInventory} from '../lib/canonicalHolderSnapshot.mjs';
 const token='TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',system='11111111111111111111111111111111';
 const key=i=>Keypair.fromSeed(Uint8Array.from({length:32},(_,n)=>(i+n)%256)).publicKey.toBase58();
 function fixture(){
@@ -11,6 +11,25 @@ function fixture(){
  return {mint,observedAt:'2026-11-26T06:00:00Z',mintResponse:{context:{slot:10},value:{owner:token,executable:false,data:{parsed:{type:'mint',info:{supply:String(accounts.reduce((n,r)=>n+Number(r.account.data.parsed.info.tokenAmount.amount),0)),decimals:6}}}}},
   inventory:{context:{slot:11},value:accounts},ownerAddresses:owners,ownerResponse:{context:{slot:12},value:owners.map(()=>({owner:system,executable:false}))}};
 }
+function binaryFixture(){const input=fixture();return {input,response:{context:input.inventory.context,value:input.inventory.value.map(r=>{
+ const b=Buffer.alloc(166),info=r.account.data.parsed.info;Buffer.from(new PublicKey(input.mint).toBytes()).copy(b,0);
+ Buffer.from(new PublicKey(info.owner).toBytes()).copy(b,32);b.writeBigUInt64LE(BigInt(info.tokenAmount.amount),64);b[108]=1;b[165]=2;
+ return {pubkey:r.pubkey,account:{owner:token,executable:false,data:[b.toString('base64'),'base64']}};
+})}};}
+test('bounded binary account prefixes preserve canonical wallet ranking and hash',()=>{
+ const {input,response}=binaryFixture(),parsed=buildCanonicalHolderSnapshot(input);
+ input.inventory=normalizeBinaryHolderInventory({mint:input.mint,response});
+ const binary=buildCanonicalHolderSnapshot(input);
+ assert.equal(binary.snapshot.holderSetHash,parsed.snapshot.holderSetHash);
+ assert.deepEqual(binary.snapshot.eligibleHolders.map(h=>[h.wallet,h.balance]),parsed.snapshot.eligibleHolders.map(h=>[h.wallet,h.balance]));
+ assert.match(binary.inventory[0].tokenAccounts[0].prefixSha256,/^[a-f0-9]{64}$/);
+});
+test('binary inventory rejects wrong Token-2022 account type and missing state prefix',()=>{
+ for(const mode of ['type','short']){const {input,response}=binaryFixture();let b=Buffer.from(response.value[0].account.data[0],'base64');
+  if(mode==='type')b[165]=1;else b=b.subarray(0,72);response.value[0].account.data[0]=b.toString('base64');
+  assert.throws(()=>normalizeBinaryHolderInventory({mint:input.mint,response}),/HOLDER_BINARY_ACCOUNT_INVALID/);
+ }
+});
 test('canonical capture retains raw mapping, exclusions, aggregation and distinct slots',()=>{
  const input=fixture(),before=JSON.stringify(input),out=buildCanonicalHolderSnapshot(input);
  assert.equal(out.snapshot.eligibleHolders.length,20);assert.equal(out.snapshot.excludedWallets[0].reason,'INCINERATOR');

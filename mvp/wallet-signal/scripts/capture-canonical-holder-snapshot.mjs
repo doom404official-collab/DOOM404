@@ -1,5 +1,5 @@
 import {writeFileSync} from 'node:fs';
-import {aggregateHolderInventory,buildCanonicalHolderSnapshot} from '../lib/canonicalHolderSnapshot.mjs';
+import {aggregateHolderInventory,buildCanonicalHolderSnapshot,normalizeBinaryHolderInventory} from '../lib/canonicalHolderSnapshot.mjs';
 const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
 const token='TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb';
 const endpoint=process.env.HELIUS_RPC_URL;
@@ -9,14 +9,15 @@ async function rpc(method,params){
  const response=await fetch(endpoint,{method:'POST',redirect:'error',headers:{'Content-Type':'application/json'},
   body:JSON.stringify({jsonrpc:'2.0',id:requests,method,params}),signal:AbortSignal.timeout(30000)});
  if(!response.ok)throw Error('SNAPSHOT_PROVIDER_HTTP_FAILURE');
- const body=await response.text();if(body.length>64000000)throw Error('SNAPSHOT_RESPONSE_TOO_LARGE');
+ const body=await response.text();if(body.length>128000000)throw Error('SNAPSHOT_RESPONSE_TOO_LARGE');
  const data=JSON.parse(body);if(data.error||!data.result)throw Error('SNAPSHOT_PROVIDER_RESPONSE_INVALID');return data.result;
 }
 try{
  if(!endpoint?.startsWith('https://'))throw Error('HELIUS_ACCESS_UNAVAILABLE');
  const mintResponse=await rpc('getAccountInfo',[mint,{commitment:'finalized',encoding:'jsonParsed'}]);
- const inventory=await rpc('getProgramAccounts',[token,{commitment:'finalized',encoding:'jsonParsed',withContext:true,
+ const binaryInventory=await rpc('getProgramAccounts',[token,{commitment:'finalized',encoding:'base64',dataSlice:{offset:0,length:166},withContext:true,
   minContextSlot:mintResponse.context.slot,filters:[{memcmp:{offset:0,bytes:mint}}]}]);
+ const inventory=normalizeBinaryHolderInventory({mint,response:binaryInventory});
  const ranked=aggregateHolderInventory({mint,inventory});
  const ownerAddresses=ranked.ranking.slice(0,100).map(w=>w.wallet);
  const ownerResponse=await rpc('getMultipleAccounts',[ownerAddresses,{commitment:'finalized',encoding:'base64',minContextSlot:inventory.context.slot}]);

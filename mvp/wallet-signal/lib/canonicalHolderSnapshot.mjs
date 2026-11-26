@@ -6,6 +6,23 @@ const pool='6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA';
 const raw=x=>typeof x==='string'&&/^(0|[1-9][0-9]*)$/.test(x)&&BigInt(x)<=18446744073709551615n;
 const slot=x=>Number.isSafeInteger(x)&&x>=0;
 const compare=(a,b)=>a<b?-1:a>b?1:0;
+/** Retain the standard account prefix, including account state and Token-2022
+ * account-type byte. Extension payloads are not needed for holder balances. */
+export function normalizeBinaryHolderInventory({mint,response}){
+ if(!slot(response?.context?.slot)||!Array.isArray(response.value))throw Error('HOLDER_INVENTORY_UNAVAILABLE');
+ return {context:response.context,value:response.value.map(row=>{
+  const account=row?.account,data=account?.data;
+  if(account?.owner!==TOKEN||account.executable!==false||!Array.isArray(data)||data[1]!=='base64'||typeof data[0]!=='string')throw Error('HOLDER_BINARY_ACCOUNT_INVALID');
+  const bytes=Buffer.from(data[0],'base64');
+  if(bytes.toString('base64')!==data[0]||![165,166].includes(bytes.length)||
+   (bytes.length===166&&bytes[165]!==2)||![1,2].includes(bytes[108])||
+   ![0,1].includes(bytes.readUInt32LE(72))||![0,1].includes(bytes.readUInt32LE(129))||
+   new PublicKey(bytes.subarray(0,32)).toBase58()!==mint)throw Error('HOLDER_BINARY_ACCOUNT_INVALID');
+  return {pubkey:row.pubkey,account:{owner:TOKEN,executable:false,prefixSha256:createHash('sha256').update(bytes).digest('hex'),
+   data:{parsed:{type:'account',info:{mint,owner:new PublicKey(bytes.subarray(32,64)).toBase58(),
+    tokenAmount:{amount:bytes.readBigUInt64LE(64).toString()}}}}}};
+ })};
+}
 export function aggregateHolderInventory({mint,inventory}){
  if(!slot(inventory?.context?.slot)||!Array.isArray(inventory.value)||!inventory.value.length)throw Error('HOLDER_INVENTORY_UNAVAILABLE');
  const seen=new Set(),wallets=new Map();let total=0n;
@@ -16,7 +33,7 @@ export function aggregateHolderInventory({mint,inventory}){
   new PublicKey(row.pubkey);new PublicKey(info.owner);seen.add(row.pubkey);
   const amount=BigInt(info.tokenAmount.amount);total+=amount;
   if(!wallets.has(info.owner))wallets.set(info.owner,{wallet:info.owner,balance:0n,tokenAccounts:[]});
-  const w=wallets.get(info.owner);w.balance+=amount;w.tokenAccounts.push({tokenAccount:row.pubkey,amountRaw:amount.toString()});
+  const w=wallets.get(info.owner);w.balance+=amount;w.tokenAccounts.push({tokenAccount:row.pubkey,amountRaw:amount.toString(),...(account.prefixSha256?{prefixSha256:account.prefixSha256}:{})});
  }
  const ranking=[...wallets.values()].filter(w=>w.balance>0n).sort((a,b)=>a.balance===b.balance?compare(a.wallet,b.wallet):a.balance>b.balance?-1:1)
   .map(w=>({...w,balance:w.balance.toString(),tokenAccounts:w.tokenAccounts.sort((a,b)=>compare(a.tokenAccount,b.tokenAccount))}));
