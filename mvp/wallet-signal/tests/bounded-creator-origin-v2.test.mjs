@@ -9,3 +9,7 @@ test('mint reuse, failed execution and absent signer cannot become creator attri
  const changed=structuredClone(f.transaction);const i=changed.transaction.message.accountKeys.findIndex(k=>k.pubkey===mint);changed.meta.preBalances[i]=1;assert.equal(verifyBoundedCreatorOrigin(changed,mint),null);
  assert.equal(verifyBoundedCreatorOrigin(f.transaction,'So11111111111111111111111111111111111111112'),null);
 });
+
+test('versioned indexed JSON must retain explicit supported transaction semantics',()=>{
+ const v1=structuredClone(f.transaction);v1.version=1;assert.ok(verifyBoundedCreatorOrigin(v1,mint));v1.version=2;assert.equal(verifyBoundedCreatorOrigin(v1,mint),null);
+});

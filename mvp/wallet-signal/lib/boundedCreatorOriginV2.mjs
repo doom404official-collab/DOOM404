@@ -3,7 +3,7 @@ import {decodePumpFunCreate,PUMP_PROGRAM_ID} from './pumpFunCreation.mjs';
  * creation, mint-account birth and signers independently establish assigned role. */
 export function verifyBoundedCreatorOrigin(transaction,mint){
  try{
-  const tx=transaction;if(tx?.meta?.err!==null||!Number.isSafeInteger(tx.slot)||!Number.isSafeInteger(tx.blockTime)||tx.blockTime<=0||!Array.isArray(tx.transaction?.message?.accountKeys)||!Array.isArray(tx.transaction.message.instructions)||!tx.transaction.signatures?.length)return null;
+  const tx=transaction;if(!["legacy",0,1].includes(tx?.version)||tx?.meta?.err!==null||!Number.isSafeInteger(tx.slot)||!Number.isSafeInteger(tx.blockTime)||tx.blockTime<=0||!Array.isArray(tx.transaction?.message?.accountKeys)||!Array.isArray(tx.transaction.message.instructions)||!tx.transaction.signatures?.length)return null;
   const keys=tx.transaction.message.accountKeys,mi=keys.findIndex(k=>k.pubkey===mint);if(mi<0||keys[mi].signer!==true||tx.meta.preBalances?.[mi]!==0||!(tx.meta.postBalances?.[mi]>0))return null;
   const all=[...tx.transaction.message.instructions,...(tx.meta.innerInstructions||[]).flatMap(g=>g.instructions)];
   const births=all.filter(i=>i.programId==='11111111111111111111111111111111'&&i.parsed?.type==='createAccount'&&i.parsed.info?.newAccount===mint&&['TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA','TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'].includes(i.parsed.info.owner));if(births.length!==1)return null;

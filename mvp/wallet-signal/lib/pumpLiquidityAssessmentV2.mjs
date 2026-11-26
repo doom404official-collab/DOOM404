@@ -26,6 +26,7 @@ export function projectPumpLiquidityV2(raw,mint){
   if(Object.values(fees).some(v=>v.isNeg()||v.gtn(10000)))return null;
   const quote=base=>sellBaseInput({base,slippage:0,baseReserve:x,quoteReserve:q,virtualQuoteReserves:pool.virtualQuoteReserves,feeBucketsTotal:buckets,globalConfig:global,feeConfig,baseMintAccount:mintInfo,baseMint:pool.baseMint,coinCreator:pool.coinCreator,creator:pool.creator,quoteMint:pool.quoteMint,isMayhemMode:false,creatorFeeBps:pool.creatorFeeBps});
   const referenceQuotes=[1,10,100].map(sol=>{
+   if(global.disableFlags&16)return {referenceNotionalSol:sol,referenceNotional:sol,quoteSymbol:"SOL",quoteOutputRaw:null,impactIncludingFeesPct:100,executable:false,reason:"selling_disabled"};
    const notional=b(sol).mul(b(1e9)),base=notional.mul(x).div(effective);if(base.lten(0))throw Error();
    let r;try{r=quote(base);}catch(error){if(String(error?.message).includes('Insufficient real quote reserves'))return {referenceNotionalSol:sol,referenceNotional:sol,quoteSymbol:'SOL',baseInputRaw:base.toString(),quoteOutputRaw:null,impactIncludingFeesPct:100,executable:false,reason:'insufficient_real_quote_reserves'};throw error;}const spot=base.mul(effective).div(x);
    return {referenceNotionalSol:sol,referenceNotional:sol,quoteSymbol:"SOL",baseInputRaw:base.toString(),quoteOutputRaw:r.uiQuote.toString(),impactIncludingFeesPct:percent(spot.sub(r.uiQuote).toString(),spot.toString()),curveImpactPct:percent(spot.sub(r.internalQuoteAmountOut).toString(),spot.toString())};
@@ -37,10 +38,12 @@ export function projectPumpLiquidityV2(raw,mint){
   const lpHolders=[];let lpSum=0n;
   for(const key of raw.lpTokenAccounts||raw.addresses.slice(8,10)){
    const i=raw.addresses.indexOf(key);if(i<8)return null;
-   const a=get(i),d=a.data;if(d.length<165||new PublicKey(d.subarray(0,32)).toBase58()!==pool.lpMint.toBase58()||![1,2].includes(d[108]))return null;
+   const a=get(i),d=a.data;if(a.owner!==get(4).owner||d.length<165||new PublicKey(d.subarray(0,32)).toBase58()!==pool.lpMint.toBase58()||![1,2].includes(d[108]))return null;
    const owner=new PublicKey(d.subarray(32,64)).toBase58(),amount=d.readBigUInt64LE(64).toString();lpSum+=BigInt(amount);lpHolders.push({tokenAccount:raw.addresses[i],owner,amountRaw:amount,delegated:d.readUInt32LE(72)!==0,frozen:d[108]===2});
   }
   const flags=[];
+  const delegatedVault=[1,2].some(i=>{const d=get(i).data;return d.readUInt32LE(72)!==0&&d.readBigUInt64LE(121)>0n&&new PublicKey(d.subarray(76,108)).toBase58()!==raw.addresses[0];});
+  if(delegatedVault)flags.push({id:"external_vault_delegate",severity:"critical",detail:"A pool vault retains an external spending delegate. LP claims alone do not bound withdrawal exposure."});
   if(referenceQuotes.some(q=>q.executable===false))flags.push({id:'reference_exit_unavailable',severity:'critical',detail:'A defined reference sale cannot be funded by the real quote reserves under the current protocol calculation.'});
   if(global.disableFlags&16)flags.push({id:'selling_disabled',severity:'critical',detail:'PumpSwap global configuration currently disables selling.'});
   if(global.disableFlags&4)flags.push({id:'withdrawals_disabled',severity:'high',detail:'PumpSwap global configuration currently disables withdrawals.'});
@@ -49,7 +52,7 @@ export function projectPumpLiquidityV2(raw,mint){
   return {...reserve,evidenceId:createHash('sha256').update(JSON.stringify({slot:raw.response.context.slot,addresses:raw.addresses,accounts:raw.response.value.map(a=>a?.data)})).digest('hex'),version:2,protocol:'pump_amm',decoder:'@pump-fun/pump-swap-sdk@2.1.0',effectiveQuoteReserveRaw:effective.toString(),realQuoteReserveRaw:real.toString(),feeBucketsRaw:buckets.toString(),virtualQuoteReservesRaw:pool.virtualQuoteReserves.toString(),feesBps:Object.fromEntries(Object.entries(fees).map(([k,v])=>[k,v.toNumber()])),referenceQuotes,
    liquidityToMarketCapPct:percent(2n*BigInt(real.toString())*BigInt(reserve.baseReserveRaw),BigInt(reserve.mintSupplyRaw)*BigInt(effective.toString())),valuationDefinition:'Two-sided pool liquidity divided by spot fully diluted valuation, both denominated in SOL; not circulating market capitalization.',
    executableDepth:{method:'protocol_state_calculation',verified:true,maxReferenceQuoteSol:100,networkFeesIncluded:false,transactionSimulation:false},
-   withdrawal:{maxCurrentWithdrawalPct,maxQuoteClaimRaw:redemption.quote.toString(),maxBaseClaimRaw:redemption.base.toString(),outstandingLpRaw:outstanding.toString(),protocolLpDenominatorRaw:pool.lpSupply.toString(),holderBalancesReconcile:lpSum===BigInt(outstanding.toString()),lpHolders,currentInstructionRulesOnly:true,adminOrProgramUpgradeRiskAssessed:false},
+   withdrawal:{maxCurrentWithdrawalPct:delegatedVault?null:maxCurrentWithdrawalPct,lpClaimOnlyMaxPct:maxCurrentWithdrawalPct,maxQuoteClaimRaw:redemption.quote.toString(),maxBaseClaimRaw:redemption.base.toString(),outstandingLpRaw:outstanding.toString(),protocolLpDenominatorRaw:pool.lpSupply.toString(),holderBalancesReconcile:lpSum===BigInt(outstanding.toString()),lpHolders,currentInstructionRulesOnly:true,adminOrProgramUpgradeRiskAssessed:false},
    flags,poolInventoryComplete:false,limitations:['Protocol quote at the observed slot, not a guaranteed transaction fill.','Pool concentration covers returned pools only; other architectures require their own decoder.','Historical fee-recipient authorization is a separate unresolved observation.']};
  }catch{return null;}
 }

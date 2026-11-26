@@ -72,3 +72,11 @@ Normal old-snapshot reconstruction/lineage fetching is no longer automatic. Reta
 For other mints the existing concentration endpoint now batches the mint and sampled token accounts in one RPC context. It groups on-curve authorities and excludes PDA/program and incinerator authorities before deriving a **lower bound** from the returned largest-account sample. Discovery and balance slots are retained separately; the full ranking is not called atomic or complete. Owner aggregation outside the sample and custodian attribution remain limitations.
 
 Distribution coverage is 70 × observed eligible authorities / 20, capped at 70, rather than treating a short sample as a full ranked inventory. A verified positive lower bound that already saturates the distribution-risk component can stop collection: additional holdings cannot reduce that maximum observed pressure. Risk points themselves are never normalized by the sampled count. The accepted frozen canonical snapshot retains its full 70-point distribution coverage and unchanged provenance.
+
+## Release hardening
+
+Swap-disable flags (and a future Raydium CPMM opening time) make reference exits unavailable with maximum observed exit pressure, rather than emitting benign executable figures. A non-owner vault delegate with nonzero spending allowance prevents LP supply alone from bounding withdrawal exposure and produces a critical flag. Raydium vault token programs and mint decimals must match the pool state.
+
+The indexed origin request explicitly accepts parsed legacy, v0 and v1 transaction envelopes. The live provider returned -32015 with the prior version-0 ceiling; this is a transaction-version compatibility error, not evidence of missing provider entitlement. Unknown future envelope versions are rejected. Strict mint birth, protocol instruction, account roles and signer requirements remain unchanged. The narrow cryptographic burn verifier still supports only its existing legacy/v0 message shapes.
+
+The existing deployment names its Alchemy integration ALCHEMY_SOLANA_ARCHIVE_RPC_URL; bounded index/quote consumers reuse it with no credential changes. Normal pool selection prefers the inspected mint as base with a supported SOL/USDC quote, rather than blindly selecting a pool where the inspected mint is an unrelated quote asset.
