@@ -73,3 +73,12 @@ jobs:
           if-no-files-found: error
           retention-days: 90
           overwrite: false
+      - name: Preserve captured public-chain inventory if classification stops
+        if: failure() && inputs.mode == 'canonical'
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-holder-recovery-${{ github.run_id }}
+          path: mvp/wallet-signal/canonical-holder-snapshot-recovery.json
+          if-no-files-found: ignore
+          retention-days: 90
+          overwrite: false

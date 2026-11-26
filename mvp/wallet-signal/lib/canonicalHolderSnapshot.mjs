@@ -57,14 +57,14 @@ export function buildCanonicalHolderSnapshot({mint,observedAt,mintResponse,inven
   let reason=w.wallet===burn?'INCINERATOR':w.wallet===pool?'PUMP_AMM_POOL':null;
   const state=owners.get(w.wallet);
   if(!reason){
-   if(!owners.has(w.wallet)||!state)throw Error('OWNER_CLASSIFICATION_UNAVAILABLE');
-   if(state.executable===true)reason='EXECUTABLE_PROGRAM';
-   else if(state.owner!==SYSTEM)reason='PROGRAM_OWNED_AUTHORITY';
+   if(!owners.has(w.wallet))throw Error('OWNER_CLASSIFICATION_UNAVAILABLE');
+   if(state?.executable===true)reason='EXECUTABLE_PROGRAM';
+   else if(state&&state.owner!==SYSTEM)reason='PROGRAM_OWNED_AUTHORITY';
    else if(!PublicKey.isOnCurve(new PublicKey(w.wallet).toBytes()))reason='PROGRAM_DERIVED_AUTHORITY';
   }
   const authorityAccount={programOwner:state?.owner??null,executable:state?.executable??null,contextSlot:ownerResponse.context.slot};
   if(reason){excluded.push({...w,reason,authorityAccount});continue;}
-  eligible.push({...w,rank:eligible.length+1,classification:'SYSTEM_WALLET_CUSTODIAN_STATUS_UNRESOLVED',authorityAccount});
+  eligible.push({...w,rank:eligible.length+1,classification:state?'SYSTEM_WALLET_CUSTODIAN_STATUS_UNRESOLVED':'ABSENT_ON_CURVE_AUTHORITY_CUSTODIAN_STATUS_UNRESOLVED',authorityAccount});
   if(eligible.length===20)break;
  }
  if(eligible.length!==20)throw Error('ELIGIBLE_HOLDER_SET_INCOMPLETE');

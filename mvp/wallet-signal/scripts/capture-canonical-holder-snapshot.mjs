@@ -18,6 +18,8 @@ try{
  const binaryInventory=await rpc('getProgramAccounts',[token,{commitment:'finalized',encoding:'base64',dataSlice:{offset:0,length:166},withContext:true,
   minContextSlot:mintResponse.context.slot,filters:[{memcmp:{offset:0,bytes:mint}}]}]);
  const inventory=normalizeBinaryHolderInventory({mint,response:binaryInventory});
+ writeFileSync('canonical-holder-snapshot-recovery.json',JSON.stringify({schemaVersion:1,status:'INVENTORY_CAPTURED_CLASSIFICATION_PENDING',mint,
+  observedAt:new Date().toISOString(),provider:'helius',commitment:'finalized',mintResponse,inventory}),{flag:'wx',mode:0o600});
  const ranked=aggregateHolderInventory({mint,inventory});
  const ownerAddresses=ranked.ranking.slice(0,100).map(w=>w.wallet);
  const ownerResponse=await rpc('getMultipleAccounts',[ownerAddresses,{commitment:'finalized',encoding:'base64',minContextSlot:inventory.context.slot}]);

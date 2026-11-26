@@ -43,10 +43,17 @@ test('wallet balances aggregate multiple accounts before ranking and hashing',()
  input.inventory.value.push(copy);input.mintResponse.value.data.parsed.info.supply=String(BigInt(input.mintResponse.value.data.parsed.info.supply)+1n);
  const out=buildCanonicalHolderSnapshot(input);assert.equal(out.snapshot.eligibleHolders[0].balance,'100');assert.equal(out.snapshot.eligibleHolders[0].tokenAccounts.length,2);
 });
+test('absent on-curve authority remains a holder without an independence claim',()=>{
+ const input=fixture();input.ownerResponse.value[1]=null;
+ const out=buildCanonicalHolderSnapshot(input).snapshot;
+ assert.equal(out.eligibleHolders[0].classification,'ABSENT_ON_CURVE_AUTHORITY_CUSTODIAN_STATUS_UNRESOLVED');
+ assert.equal(out.eligibleHolders[0].authorityAccount.programOwner,null);
+ assert.equal(out.commonOwnershipEstablished,false);assert.equal(out.custodialClassificationComplete,false);
+});
 for(const [name,change] of [
  ['supply disagreement',i=>i.mintResponse.value.data.parsed.info.supply='1'],
  ['duplicate account',i=>i.inventory.value.push(i.inventory.value[0])],
- ['missing owner',i=>i.ownerResponse.value[2]=null],
+ ['missing owner',i=>{i.ownerAddresses.splice(2,1);i.ownerResponse.value.splice(2,1);}],
  ['wrong mint',i=>i.inventory.value[1].account.data.parsed.info.mint=key(99)],
  ['unsafe raw balance',i=>i.inventory.value[1].account.data.parsed.info.tokenAmount.amount=1.1],
 ])test(`capture rejects ${name}`,()=>{const input=fixture();change(input);assert.throws(()=>buildCanonicalHolderSnapshot(input));});
