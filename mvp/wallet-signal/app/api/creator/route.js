@@ -1,3 +1,4 @@
+import {withProviderUsage} from '../../../lib/providerUsage.mjs';
 import { mintAuthorityEvidence } from "../../../lib/mintAuthorityEvidence.mjs";
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
@@ -168,7 +169,7 @@ async function inspectSolscanCreator(mint, connection) {
  * Mint authority is a permission and may not identify the original deployer.
  * Historical creator attribution requires a verified launch transaction/indexer.
  */
-export async function GET(request) {
+async function handle(request) {
   const url = new URL(request.url);
   const address = url.searchParams.get("mint") || "";
   const mode = url.searchParams.get("mode") || "full";
@@ -346,3 +347,5 @@ export async function GET(request) {
     return NextResponse.json({ error: "Unable to inspect token mint using the configured RPC", detail: /429|rate limit/i.test(String(error?.message)) ? "RPC rate limited" : "RPC request failed" }, { status: 503 });
   }
 }
+
+export async function GET(request){return withProviderUsage(handle,request);}

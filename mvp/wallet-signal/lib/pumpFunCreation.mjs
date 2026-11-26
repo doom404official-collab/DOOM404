@@ -93,3 +93,6 @@ export function decodePumpFunCreate({ instruction, transaction, mint, programId 
   } catch { return null; }
 }
 export const pumpFunDecoders = Object.freeze({ [PUMP_PROGRAM_ID]: decodePumpFunCreate });
+
+// Reuse the strict base58 codec for offline signed-instruction verification.
+export {decode58 as decodeBase58Bytes,encode58 as encodeBase58Bytes};

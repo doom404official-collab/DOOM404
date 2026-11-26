@@ -17,8 +17,9 @@ test("liquidity refresh is independent of token inspection", () => {
   assert.match(page, /async function refreshLiquidity\(/);
   assert.match(dashboard, /Available Liquidity/);
   assert.match(page, /liquidityRefreshing/);
+  assert.match(page, /await Promise\.allSettled\(tasks\)/);
   assert.match(liquidity, /provider: "DexScreener"/);
-  assert.match(page, /if \(!historyOnly\) await Promise\.race\(\[refreshLiquidity\(address,controller\.signal\),cancelled\]\)/);
+  assert.match(page, /Promise\.race\(\[refreshLiquidity\(address,controller\.signal\),cancelled\]\)/);
 });
 test("market-data claims remain explicitly limited", () => {
   assert.match(liquidity, /lpLocksVerified: false/);

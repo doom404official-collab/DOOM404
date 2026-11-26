@@ -1,3 +1,4 @@
+import {projectSecurityConfiguration} from '../lib/securityConfigurationV2.mjs';
 import {projectTokenMintControls} from '../lib/tokenMintControls.mjs';
 import {decodeToken2022BinaryMint} from '../lib/token2022BinaryMint.mjs';
 import test from 'node:test';
@@ -9,7 +10,7 @@ import * as fees from '../lib/tokenTransferFeeEvidence.mjs';
 const source=readFileSync(new URL('../app/api/token-extensions/route.js',import.meta.url),'utf8')
  .replace(/^import .*;\n/gm,'').replace('export const dynamic','const dynamic').replace('export async function GET','async function GET');
 function handler(connection){
- return new Function('NextResponse','PublicKey','createReliableConnection','normalizeTransferFee','resolveEpochFee','consistentEpochContext','decodeToken2022BinaryMint','projectTokenMintControls',`${source}; return GET;`)({json:(body,options)=>({body,...options})},PublicKey,()=>connection,fees.normalizeTransferFee,fees.resolveEpochFee,fees.consistentEpochContext,decodeToken2022BinaryMint,projectTokenMintControls);
+ return new Function('NextResponse','PublicKey','createReliableConnection','normalizeTransferFee','resolveEpochFee','consistentEpochContext','decodeToken2022BinaryMint','projectTokenMintControls','projectSecurityConfiguration','withProviderUsage',`${source}; return GET;`)({json:(body,options)=>({body,...options})},PublicKey,()=>connection,fees.normalizeTransferFee,fees.resolveEpochFee,fees.consistentEpochContext,decodeToken2022BinaryMint,projectTokenMintControls,projectSecurityConfiguration,(fn,req)=>fn(req));
 }
 const token2022='TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb';
 const mint='So11111111111111111111111111111111111111112';

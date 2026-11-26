@@ -1,0 +1,170 @@
+{
+  "version": "2.0",
+  "generatedAt": "2026-11-26T09:39:05.718Z",
+  "providerRequests": 0,
+  "mode": "offline replay of retained live evidence",
+  "securityControls": [
+    {
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "slot": 474051450,
+      "riskScore": 65,
+      "coveragePct": 100,
+      "expected": "Permission risk, not issuer legitimacy or fraud probability."
+    },
+    {
+      "mint": "So11111111111111111111111111111111111111112",
+      "slot": 474051450,
+      "riskScore": 0,
+      "coveragePct": 100,
+      "expected": "Permission risk, not issuer legitimacy or fraud probability."
+    },
+    {
+      "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+      "slot": 474051450,
+      "riskScore": 0,
+      "coveragePct": 100,
+      "expected": "Permission risk, not issuer legitimacy or fraud probability."
+    }
+  ],
+  "privilegedToken": {
+    "mint": "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
+    "slot": 474087750,
+    "riskScore": 100,
+    "coveragePct": 100,
+    "expectation": "Regulated PYUSD still has issuer seizure, freeze and mutable-control powers; no malicious behavior claim."
+  },
+  "liquidityComparisons": [
+    {
+      "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+      "pool": "6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA",
+      "slot": 474083510,
+      "quotes": [
+        {
+          "referenceNotionalSol": 1,
+          "referenceNotional": 1,
+          "quoteSymbol": "SOL",
+          "baseInputRaw": "68466127672",
+          "quoteOutputRaw": "989762168",
+          "impactIncludingFeesPct": 1.023783,
+          "curveImpactPct": 0.07449
+        },
+        {
+          "referenceNotionalSol": 10,
+          "referenceNotional": 10,
+          "quoteSymbol": "SOL",
+          "baseInputRaw": "684661276726",
+          "quoteOutputRaw": "9831708331",
+          "impactIncludingFeesPct": 1.682916,
+          "curveImpactPct": 0.739946
+        },
+        {
+          "referenceNotionalSol": 100,
+          "referenceNotional": 100,
+          "quoteSymbol": "SOL",
+          "baseInputRaw": "6846612767265",
+          "quoteOutputRaw": "92178445479",
+          "impactIncludingFeesPct": 7.821554,
+          "curveImpactPct": 6.93746
+        }
+      ],
+      "maxOutstandingLpClaimPct": 0.003645
+    },
+    {
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "pool": "7JuwJuNU88gurFnyWeiyGKbFmExMWcmRZntn9imEzdny",
+      "slot": 474087347,
+      "quotes": [
+        {
+          "referenceNotional": 1,
+          "quoteSymbol": "SOL",
+          "baseInputRaw": "70923266",
+          "quoteOutputRaw": "338931853",
+          "impactIncludingFeesPct": 66.106814
+        },
+        {
+          "referenceNotional": 10,
+          "quoteSymbol": "SOL",
+          "baseInputRaw": "709232669",
+          "quoteOutputRaw": "488235966",
+          "impactIncludingFeesPct": 95.11764
+        },
+        {
+          "referenceNotional": 100,
+          "quoteSymbol": "SOL",
+          "baseInputRaw": "7092326692",
+          "quoteOutputRaw": "510734519",
+          "impactIncludingFeesPct": 99.489265
+        }
+      ],
+      "withdrawalScope": "Upper bound only; locks unverified."
+    }
+  ],
+  "concentratedAuthoritySample": {
+    "classificationSlot": 474099836,
+    "sampleSharePct": 65.7334,
+    "largestAuthoritySharePct": 53.8344,
+    "authorities": 4,
+    "slot": 474094762,
+    "scope": "Positive-balance on-curve, System-owned authority lower bound in a 10-account sample. Classifications observed at a separate slot. Custodians are unclassified; no beneficial ownership inference."
+  },
+  "verifiedRelationships": {
+    "pairs": 1,
+    "exposurePct": 2.6223,
+    "ownershipProven": false
+  },
+  "creatorObservedBehaviour": {
+    "verifiedEvents": 6,
+    "ledger": {
+      "acceptedCount": 6,
+      "purchasedRaw": "15664233491746",
+      "verifiedSoldRaw": "0",
+      "burnedRaw": "9870122682565",
+      "externalTransferredOutRaw": "5200000000000",
+      "rejectedCount": 0
+    },
+    "signedBurnProofs": [
+      {
+        "signature": "5bD5WmRn7qbkU8KJTxreVUssLHs3S3yfTmXSQ3z5Ccqtja2AtCqiHW2DCfpgNZpnrEpRqPnYsB5KKPsYJ6PFjchM",
+        "slot": 473944704,
+        "amountRaw": "2144637484",
+        "instructionSignatureVerified": true,
+        "executionEvidence": "finalized_rpc_balances"
+      }
+    ],
+    "lifetimeSellingPct": null
+  },
+  "referenceReplay": {
+    "observedRiskScore": 12.07,
+    "coveragePct": 82.5,
+    "attributes": {
+      "token_security": {
+        "riskScore": 0,
+        "coveragePct": 100
+      },
+      "holder_intelligence": {
+        "riskScore": 17.28,
+        "coveragePct": 70
+      },
+      "liquidity_quality_safety": {
+        "riskScore": 24.36,
+        "coveragePct": 100
+      },
+      "creator_intelligence": {
+        "riskScore": 6.64,
+        "coveragePct": 60
+      }
+    }
+  },
+  "acceptance": {
+    "controlPolicy": true,
+    "protocolIntegerMath": true,
+    "observedRelationshipScope": true,
+    "burnVersusSaleDistinction": true,
+    "completeCrossTokenCalibration": false,
+    "remaining": [
+      "Recent-profile token creation age must be verified before calling it a newly launched-token case.",
+      "Pool-level depth comparisons are not token-wide all-pool coverage.",
+      "Live browser, responsive viewport and measured latency receipts are recorded after deployment."
+    ]
+  }
+}

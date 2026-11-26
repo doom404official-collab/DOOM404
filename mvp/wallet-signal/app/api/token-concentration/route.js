@@ -1,3 +1,4 @@
+import {withProviderUsage} from '../../../lib/providerUsage.mjs';
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
@@ -8,13 +9,17 @@ import { hasAlignedConcentrationContext } from "../../../lib/concentrationContex
 export const dynamic = "force-dynamic";
 
 // RPC returns token ACCOUNTS, not unique beneficial owners. This is not holder concentration.
-export async function GET(request) {
+async function handle(request) {
   const address = new URL(request.url).searchParams.get("mint") || "";
   let mint;
   try { mint = new PublicKey(address); }
   catch { return NextResponse.json({ error: "Invalid token mint address" }, { status: 400 }); }
+  const deadlineController=new AbortController(),deadlineTimer=setTimeout(()=>deadlineController.abort(),9000);
   try {
-    const connection = createReliableConnection();
+    const connection = createReliableConnection({timeoutMs:2500,retries:0,maxResponseBytes:2000000,fetchImpl:(url,init)=>{
+      if(deadlineController.signal.aborted)throw Error('READ_DEADLINE');
+      return fetch(url,{...init,signal:AbortSignal.any([init.signal,deadlineController.signal,request.signal].filter(Boolean))});
+    }});
     const [largest, supply] = await Promise.all([
       connection.getTokenLargestAccounts(mint, "confirmed"),
       connection.getTokenSupply(mint, "confirmed")
@@ -27,13 +32,36 @@ export async function GET(request) {
       amount: row.amount, uiAmount: row.uiAmountString,
       sharePct: aligned && total > 0n ? Number(BigInt(row.amount) * 1000000n / total) / 10000 : null
     }));
-    const parsedResults = await Promise.allSettled(accounts.map(row =>
-      connection.getParsedAccountInfo(new PublicKey(row.tokenAccount), "confirmed")));
-    const ownership = summarizeResolvedTokenAccounts(accounts,parsedResults.map(r=>r.status==="fulfilled"?r.value:null));
+    const parsedBatch = await connection.getMultipleParsedAccounts([mint,...accounts.map(row=>new PublicKey(row.tokenAccount))],{commitment:"confirmed",minContextSlot:largest.context?.slot}).catch(()=>null);
+    const ownership = summarizeResolvedTokenAccounts(accounts,accounts.map((_,i)=>parsedBatch?.value?.[i+1]?{context:parsedBatch.context,value:parsedBatch.value[i+1]}:null));
+    const sampledMint=parsedBatch?.value?.[0]?.data?.parsed;
+    const mintAccount=parsedBatch?.value?.[0],mintProgram=mintAccount?.owner?.toBase58?.();
+    const sampledSupply=mintAccount?.executable===false&&['TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA','TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'].includes(mintProgram)&&sampledMint?.type==='mint'&&sampledMint.info?.isInitialized===true&&/^(0|[1-9][0-9]{0,19})$/.test(sampledMint.info?.supply||'')&&BigInt(sampledMint.info.supply)<=18446744073709551615n?BigInt(sampledMint.info.supply):null;
+    const sampledGroups=new Map();let excludedSampleAccounts=0,resolvedSampleAccounts=0;
+    for(let i=0;i<accounts.length;i++){
+      const a=parsedBatch?.value?.[i+1],info=a?.data?.parsed?.type==='account'?a.data.parsed.info:null;
+      const ownerProgram=a?.owner?.toBase58?.();
+      if(a?.executable!==false||!info||info.mint!==mint.toBase58()||!['TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA','TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'].includes(ownerProgram)||typeof info.owner!=='string'||! /^(0|[1-9][0-9]{0,19})$/.test(info.tokenAmount?.amount||''))continue;
+      resolvedSampleAccounts++;
+      if(info.owner==='1nc1nerator11111111111111111111111111111111'||!PublicKey.isOnCurve(new PublicKey(info.owner).toBytes())){excludedSampleAccounts++;continue;}
+      sampledGroups.set(info.owner,(sampledGroups.get(info.owner)||0n)+BigInt(info.tokenAmount.amount));
+    }
+    const candidateOwners=[...sampledGroups.keys()];
+    const ownerBatch=sampledSupply!==null&&candidateOwners.length?await connection.getMultipleAccountsInfoAndContext(candidateOwners.map(x=>new PublicKey(x)),{commitment:"confirmed",minContextSlot:parsedBatch.context.slot}).catch(()=>null):null;
+    for(let i=0;i<candidateOwners.length;i++){
+      const a=ownerBatch?.value?.[i];
+      if(!Number.isSafeInteger(ownerBatch?.context?.slot)||ownerBatch.context.slot<parsedBatch.context.slot||ownerBatch.value?.length!==candidateOwners.length||a!==null&&(a?.owner?.toBase58?.()!=="11111111111111111111111111111111"||a.executable!==false))sampledGroups.delete(candidateOwners[i]);
+    }
+    const values=[...sampledGroups.values()].sort((a,b)=>a>b?-1:a<b?1:0),sampleTotal=values.reduce((n,x)=>n+x,0n);
+    const sampledWalletObservation=sampledSupply!==null&&sampledSupply>0n&&sampleTotal<=sampledSupply&&Number.isSafeInteger(parsedBatch?.context?.slot)?{
+      version:2,observedAt:new Date().toISOString(),observedSharePct:Number(sampleTotal*1000000n/sampledSupply)/10000,largestSharePct:values.length?Number(values[0]*1000000n/sampledSupply)/10000:0,
+      eligibleWallets:sampledGroups.size,returnedAccounts:accounts.length,resolvedSampleAccounts,excludedSampleAccounts,rankingComplete:false,supplyRaw:sampledSupply.toString(),
+      contextSlots:{discovery:largest.context?.slot,mint:parsedBatch.context.slot,sampledAccounts:parsedBatch.context.slot,classifications:ownerBatch?.context?.slot??null},atomicSubset:true,atomic:false,
+      scope:'Same-slot balances and mint supply within a discovered largest-account sample; on-curve authorities grouped, PDA, observed program-owned and incinerator authorities excluded; classifications use a separate slot. Not a complete eligible-wallet ranking, beneficial ownership proof or custodian classification.'}:null;
     const sum = (n) => accounts.slice(0, n).reduce((a, x) => a + BigInt(x.amount), 0n);
     const percent = n => aligned && total > 0n ? Number(sum(n) * 1000000n / total) / 10000 : null;
     return NextResponse.json({
-      status: "observed_token_accounts", ratioContext, mint: mint.toBase58(), decimals: supply.value.decimals,
+      status: "observed_token_accounts", ratioContext, sampledWalletObservation, mint: mint.toBase58(), decimals: supply.value.decimals,
       totalRawSupply: supply.value.amount, returnedAccounts: accounts.length,
       largestAccountSharePct: percent(1), top5TokenAccountSharePct: percent(5),
       top10TokenAccountSharePct: percent(10), top20TokenAccountSharePct: percent(20), accounts: ownership.accounts,
@@ -48,5 +76,6 @@ export async function GET(request) {
     }, { headers: { "Cache-Control": "no-store" } });
   } catch {
     return NextResponse.json({ status: "unavailable", error: "Largest token-account balances unavailable from RPC; do not infer concentration." }, { status: 503, headers: { "Cache-Control": "no-store" } });
-  }
+  } finally {clearTimeout(deadlineTimer);deadlineController.abort();}
 }
+export async function GET(request){return withProviderUsage(handle,request);}

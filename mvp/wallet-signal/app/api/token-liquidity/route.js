@@ -1,10 +1,11 @@
+import {withProviderUsage} from '../../../lib/providerUsage.mjs';
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import { normalizeReportedPools } from "../../../lib/poolEvidence.js";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request) {
+async function handle(request) {
   const value = new URL(request.url).searchParams.get("mint") || "";
   let mint;
   try { mint = new PublicKey(value).toBase58(); }
@@ -42,3 +43,5 @@ export async function GET(request) {
     return NextResponse.json({ status: "unavailable", reason: "Market-data lookup timed out or failed. Liquidity remains unassessed." }, { status: 503 });
   } finally { clearTimeout(timer); }
 }
+
+export async function GET(request){return withProviderUsage(handle,request);}

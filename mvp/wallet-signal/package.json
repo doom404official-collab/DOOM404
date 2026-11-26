@@ -43,6 +43,8 @@
     "validate:creator:evidence-persist": "node scripts/preview-evidence-persistence.mjs"
   },
   "dependencies": {
+    "@pump-fun/pump-swap-sdk": "2.1.0",
+    "@raydium-io/raydium-sdk-v2": "0.2.87-alpha",
     "@solana/web3.js": "^1.98.0",
     "next": "^15.0.0",
     "pg": "8.23.1",

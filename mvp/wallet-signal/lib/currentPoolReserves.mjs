@@ -10,7 +10,7 @@ const WSOL='So11111111111111111111111111111111111111112';
  * execution proof, LP custody certification or historical-state claims. */
 export function projectCurrentPoolReserves(raw,mint){
  try{
-  if(raw?.schemaVersion!==1||raw.provider!=='alchemy'||raw.network!=='solana-mainnet'||raw.commitment!=='finalized'||!Number.isFinite(Date.parse(raw.observedAt))||!Array.isArray(raw.addresses)||raw.addresses.length!==6||new Set(raw.addresses).size!==6||!Number.isSafeInteger(raw.response?.context?.slot)||raw.response.context.slot<0||raw.response.value?.length!==6)return null;
+  if(raw?.schemaVersion!==1||!['alchemy','helius','configured_rpc'].includes(raw.provider)||raw.network!=='solana-mainnet'||raw.commitment!=='finalized'||!Number.isFinite(Date.parse(raw.observedAt))||!Array.isArray(raw.addresses)||raw.addresses.length!==6||new Set(raw.addresses).size!==6||!Number.isSafeInteger(raw.response?.context?.slot)||raw.response.context.slot<0||raw.response.value?.length!==6)return null;
   const accounts=raw.response.value.map(a=>{
    if(!a||a.executable!==false||!Array.isArray(a.data)||a.data[1]!=='base64'||typeof a.data[0]!=='string'||a.data[0].length>16384)throw Error();
    const data=Buffer.from(a.data[0],'base64');if(data.length!==a.space||data.toString('base64')!==a.data[0])throw Error();
@@ -31,7 +31,7 @@ export function projectCurrentPoolReserves(raw,mint){
   const flags=[];
   for(const [i,label] of [[1,'base'],[2,'quote']])if(accounts[i].data.readUInt32LE(72)!==0||accounts[i].data.readUInt32LE(129)!==0)flags.push(label+'_vault_delegate_or_close_authority_present');
   if(lp.supply!==pool.lpSupply)flags.push('pool_issued_lp_counter_differs_from_current_mint_supply');
-  return {schemaVersion:1,mint,pool:raw.addresses[0],observedAt:raw.observedAt,slot:raw.response.context.slot,commitment:'finalized',provider:'alchemy',atomic:true,
+  return {schemaVersion:1,mint,pool:raw.addresses[0],observedAt:raw.observedAt,slot:raw.response.context.slot,commitment:'finalized',provider:raw.provider,atomic:true,
    evidenceId:createHash('sha256').update(JSON.stringify({slot:raw.response.context.slot,addresses:raw.addresses,data:raw.response.value.map(a=>a.data[0])})).digest('hex'),
    baseReserveRaw:base.rawAmount,quoteReserveRaw:quote.rawAmount,baseDecimals:token.decimals,quoteDecimals:9,mintSupplyRaw:token.supply,
    lpMint:pool.lpMint,lpSupplyRaw:lp.supply,poolIssuedLpCounterRaw:pool.lpSupply,flags,

@@ -1,7 +1,7 @@
 import {PublicKey} from '@solana/web3.js';
 const OWNER='TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb';
 // Strict, bounded subset. Unknown binary layouts remain Unknown, never absence.
-export function decodeToken2022BinaryMint(account,mint) {
+export function decodeToken2022BinaryMint(account,mint,{allowUnknownExtensions=false}={}) {
  try {
   const key=x=>typeof x==='string'&&new PublicKey(x).toBase58()===x;
   const owner=account?.owner instanceof PublicKey?account.owner.toBase58():account?.owner;
@@ -29,6 +29,27 @@ export function decodeToken2022BinaryMint(account,mint) {
      const older=fee(72),newer=fee(90);
      if(older.transferFeeBasisPoints>10000||newer.transferFeeBasisPoints>10000||BigInt(older.epoch)>BigInt(newer.epoch))return null;
      info.extensions.push({extension:'transferFeeConfig',state:{transferFeeConfigAuthority:address(v.subarray(0,32)),withdrawWithheldAuthority:address(v.subarray(32,64)),withheldAmount:v.readBigUInt64LE(64).toString(),olderTransferFee:older,newerTransferFee:newer}});
+    }else if(type===4){
+     if(length!==65||v[32]>1)return null;
+     info.extensions.push({extension:'confidentialTransferMint',state:{authority:address(v.subarray(0,32)),autoApproveNewAccounts:v[32]===1}});
+    }else if(type===16){
+     if(length!==129||v[64]>1)return null;
+     info.extensions.push({extension:'confidentialTransferFeeConfig',state:{authority:address(v.subarray(0,32)),harvestToMintEnabled:v[64]===1}});
+    }else if(type===3||type===12){
+     if(length!==32)return null;
+     info.extensions.push({extension:type===3?'mintCloseAuthority':'permanentDelegate',state:type===3?{closeAuthority:address(v)}:{delegate:address(v)}});
+    }else if(type===6){
+     if(length!==1||![1,2].includes(v[0]))return null;
+     info.extensions.push({extension:'defaultAccountState',state:{state:v[0]===2?'frozen':'initialized'}});
+    }else if(type===9){
+     if(length!==0)return null;
+     info.extensions.push({extension:'nonTransferable',state:{}});
+    }else if(type===14){
+     if(length!==64)return null;
+     info.extensions.push({extension:'transferHook',state:{authority:address(v.subarray(0,32)),programId:address(v.subarray(32,64))}});
+    }else if(type===26){
+     if(length!==33||v[32]>1)return null;
+     info.extensions.push({extension:'pausableConfig',state:{authority:address(v.subarray(0,32)),paused:v[32]===1}});
     }else if(type===18){
      if(length!==64)return null;
      info.extensions.push({extension:'metadataPointer',state:{authority:address(v.subarray(0,32)),metadataAddress:address(v.subarray(32,64))}});
@@ -40,7 +61,7 @@ export function decodeToken2022BinaryMint(account,mint) {
      for(let i=0;i<count;i++)state.additionalMetadata.push([string(),string()]);
      if(q!==v.length)return null;
      info.extensions.push({extension:'tokenMetadata',state});
-    }else return null;
+    }else if(allowUnknownExtensions)info.extensions.push({extension:'unsupported_'+type,state:{}});else return null;
    }
   }
   return {...account,data:{program:'spl-token-2022',parsed:{type:'mint',info}}};

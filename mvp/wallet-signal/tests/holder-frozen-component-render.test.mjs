@@ -12,9 +12,9 @@ const {transformSync}=require('next/dist/build/swc');
 const dir=await mkdtemp(new URL('./.holder-component-render-',import.meta.url));
 let Dashboard;
 try {
- for(const name of ['HolderBubbleMap','GlitchV11Dashboard']) {
+ for(const name of ['HolderBubbleMap','PracticalAssessmentPanel','GlitchV11Dashboard']) {
   let source=await readFile(new URL(`../app/${name}.jsx`,import.meta.url),'utf8');
-  source=source.replaceAll('"../lib/','"../../lib/').replace('"./HolderBubbleMap"','"./HolderBubbleMap.mjs"');
+  source=source.replaceAll('"../lib/','"../../lib/').replace('"./HolderBubbleMap"','"./HolderBubbleMap.mjs"').replace('"./PracticalAssessmentPanel"','"./PracticalAssessmentPanel.mjs"');
   // Static label fixtures select Holder Intelligence; real default/navigation is browser-tested.
   if(name==='GlitchV11Dashboard'){
    assert.ok(source.includes('useState("overall")'));

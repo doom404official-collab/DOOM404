@@ -374,13 +374,24 @@ function CreatorLookup() {
   // from live balances. Never substitute current balances into historical nodes.
   const mapHolderConnections=currentHolderConnections||holderConnections;
   const historicalMapOnly=Boolean(holderConnections&&!currentHolderConnections);
+  const [currentLiquidity,setCurrentLiquidity]=useState(null);
+  const [legacyEvidenceRequested,setLegacyEvidenceRequested]=useState(false);
+  const [inspectionTiming,setInspectionTiming]=useState(null);
+  const inspectionStartedAt=useRef(null),inspectionMint=useRef('');
+  const [currentCreator,setCurrentCreator]=useState(null);
+  const [providerUsage,setProviderUsage]=useState({rpcRequests:0,rpcCalls:0,quoteRequests:0,providerHttpRequests:0,marketRequests:0});
+  function recordUsage(response,requestMint){
+    if(requestMint&&inspectionMint.current!==requestMint)return;
+    const n=k=>{const x=Number(response.headers.get(k));return Number.isSafeInteger(x)&&x>=0?x:0;};
+    setProviderUsage(p=>({rpcRequests:p.rpcRequests+n('X-Glitch-Rpc-Requests'),rpcCalls:p.rpcCalls+n('X-Glitch-Rpc-Calls'),marketRequests:p.marketRequests+n('X-Glitch-Market-Requests'),quoteRequests:(p.quoteRequests||0)+n('X-Glitch-Quote-Requests'),providerHttpRequests:(p.providerHttpRequests||0)+n('X-Glitch-Provider-Http-Requests')}));
+  }
   const [extensions, setExtensions] = useState(null);
   const [extensionsError, setExtensionsError] = useState("");
   const [liquidity, setLiquidity] = useState(null);
   const [liquidityError, setLiquidityError] = useState("");
   const [liquidityRefreshing, setLiquidityRefreshing] = useState(false);
   const liquidityReader=useRef(null);
-  if(!liquidityReader.current)liquidityReader.current=createLiquidityReadController({publish:state=>{setLiquidity(state.data);setLiquidityError(state.error);setLiquidityRefreshing(state.loading);}});
+  if(!liquidityReader.current)liquidityReader.current=createLiquidityReadController({fetchImpl:async(...args)=>{const response=await fetch(...args);recordUsage(response,new URL(args[0],'https://scanner.invalid').searchParams.get('mint'));return response;},publish:state=>{setLiquidity(state.data);setLiquidityError(state.error);setLiquidityRefreshing(state.loading);}});
   useEffect(()=>()=>liquidityReader.current.reset('',true),[]);
   const [poolEvidence, setPoolEvidence] = useState(null);
   const [poolEvidenceError, setPoolEvidenceError] = useState("");
@@ -433,7 +444,7 @@ function CreatorLookup() {
   },[result?.mint]);
   useEffect(()=>{
     const address=result?.mint;setFrozenHolderObservation(null);
-    if(address!==HOLDER_RETAIN19_POLICY.mint)return;
+    if(address!==HOLDER_RETAIN19_POLICY.mint||!legacyEvidenceRequested)return;
     let stopped=false;const controller=new AbortController();
     async function readFrozen(){
       try{
@@ -450,7 +461,7 @@ function CreatorLookup() {
       }catch{if(!stopped)setFrozenHolderObservation(null);}
     }
     readFrozen();return ()=>{stopped=true;controller.abort();};
-  },[result?.mint]);
+  },[result?.mint,legacyEvidenceRequested]);
   useEffect(() => {
     const address=result?.mint;
     setWorkerEvidence(null);
@@ -468,6 +479,24 @@ function CreatorLookup() {
     refresh();
     const interval=setInterval(refresh,30000);
     return ()=>{stopped=true;controller?.abort();clearInterval(interval);};
+  },[result?.mint]);
+  const currentPool=result?.mint==='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump'?'6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA':result?.mint&&liquidity?.mint===result.mint?liquidity.pools?.[0]?.pairAddress:null;
+  useEffect(()=>{
+    setCurrentLiquidity(null);if(!result?.mint||!currentPool)return;
+    const address=result.mint,controller=new AbortController();let stopped=false;
+    const timer=setTimeout(()=>controller.abort(),12000);
+    (async()=>{try{
+      const response=await fetch('/api/current-liquidity?mint='+encodeURIComponent(address)+'&pool='+encodeURIComponent(currentPool),{cache:'no-store',signal:controller.signal});recordUsage(response,address);
+      const data=await response.json();if(!stopped&&response.ok&&data.mint===address){setCurrentLiquidity(data.observation||null);if(data.observation&&inspectionStartedAt.current!==null)setInspectionTiming(p=>({...p,liquidityMs:Math.round(performance.now()-inspectionStartedAt.current)}));}
+    }catch{}finally{clearTimeout(timer);}})();
+    return ()=>{stopped=true;controller.abort();clearTimeout(timer);};
+  },[result?.mint,currentPool]);
+  useEffect(()=>{
+    setCurrentCreator(null);if(!result?.mint)return;
+    const address=result.mint,controller=new AbortController();let stopped=false;
+    const timer=setTimeout(()=>controller.abort(),12000);
+    (async()=>{try{const response=await fetch('/api/current-creator?mint='+encodeURIComponent(address),{cache:'no-store',signal:controller.signal});recordUsage(response,address);const data=await response.json();if(!stopped&&response.ok&&data.version===2&&data.mint===address){setCurrentCreator(data);if(inspectionStartedAt.current!==null)setInspectionTiming(p=>({...p,creatorMs:Math.round(performance.now()-inspectionStartedAt.current)}));}}catch{}finally{clearTimeout(timer);}})();
+    return ()=>{stopped=true;controller.abort();clearTimeout(timer);};
   },[result?.mint]);
   const MAX_HISTORY_BATCHES = 5;
   async function refreshLiquidity(address = mint.trim(), signal) {
@@ -510,7 +539,7 @@ function CreatorLookup() {
     async function read(path){
       if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
       return Promise.race([(async()=>{
-        const response=await fetch(path,{cache:'no-store',signal:controller.signal});
+        const response=await fetch(path,{cache:'no-store',signal:controller.signal});recordUsage(response,address);
         if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
         const data=await response.json();
         if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
@@ -519,11 +548,11 @@ function CreatorLookup() {
         return data;
       })(),cancelled]);
     }
-    const timer=setTimeout(()=>controller.abort(),45000);
-    setBusy(true); setError(""); if (!historyOnly) { liquidityReader.current.reset(address); setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
+    const timer=setTimeout(()=>controller.abort(),historyOnly?45000:12000);
+    setBusy(true); setError(""); if (!historyOnly) { inspectionStartedAt.current=performance.now();inspectionMint.current=address;setInspectionTiming(null);setLegacyEvidenceRequested(false);setProviderUsage({rpcRequests:0,rpcCalls:0,quoteRequests:0,providerHttpRequests:0,marketRequests:0}); liquidityReader.current.reset(address); setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
     if(historyOnly){setHistoryBatches(n=>n+1);setHistoryCursor(null);}
     try {
-      const data=await read('/api/creator?mint='+encodeURIComponent(address)+'&mode='+(historyOnly?'history':'current')+(cursor?'&before='+encodeURIComponent(cursor):''));
+      const data=await read(historyOnly?'/api/creator?mint='+encodeURIComponent(address)+'&mode=history'+(cursor?'&before='+encodeURIComponent(cursor):''):'/api/token-current?mint='+encodeURIComponent(address));
       if(!current())return;
       if(historyOnly){
         if(data.inspectionMode!=="history")throw Error('Historical evidence contract mismatch');
@@ -533,35 +562,21 @@ function CreatorLookup() {
         setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
         return;
       }
-      setResult(data);primaryAccepted=true;
+      setResult(data);primaryAccepted=true;if(inspectionStartedAt.current!==null)setInspectionTiming({firstEvidenceMs:Math.round(performance.now()-inspectionStartedAt.current)});if(data.currentExtensions)setExtensions(data.currentExtensions);
       setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
-      if (!historyOnly) {
-        try {
-          const record=await read('/api/creator-evidence?mint='+encodeURIComponent(address));
-          if(!current())return;
-          setCreatorEvidence(record);
-          setCreatorEvidenceDiagnostic(record?.creator && ["VERIFIED","ONCHAIN_MATCH_PENDING_INDEPENDENT_REVIEW"].includes(record.status) ? "record_available" : record?.status === "INDEXED_UNVERIFIED" ? "indexed_candidate" : record?.status === "CACHE_MISS" ? "cache_miss" : record?.status === "EVIDENCE_INCOMPLETE" ? "evidence_incomplete" : record?.status === "CONFLICT" ? "evidence_conflict" : "record_not_established");
-        } catch { if(!current()||controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});setCreatorEvidenceDiagnostic("lookup_failed"); }
-      }
-      if (!historyOnly) {
-        try {
-          const accountData=await read('/api/token-concentration?mint='+encodeURIComponent(address));
-          if(!current())return;
-          setConcentration(withConcentrationContext(accountData));
-        } catch (failure) { if(!current()||controller.signal.aborted)throw failure;setConcentrationError('Token-account balances unavailable'); }
-      }
-      if (!historyOnly && data.tokenProgram === "spl-token-2022") {
-        try {
-          const extensionData=await read('/api/token-extensions?mint='+encodeURIComponent(address));
-          if(!current())return;
-          setExtensions(extensionData);
-        } catch (failure) { if(!current()||controller.signal.aborted)throw failure;setExtensionsError('Extension data unavailable'); }
-      }
-      if (!historyOnly) await Promise.race([refreshLiquidity(address,controller.signal),cancelled]);
+      // Independent sources publish as soon as each returns. A failed market
+      // provider cannot erase current mint controls or persisted evidence.
+      const tasks=[
+       (async()=>{try{const record=await read('/api/creator-evidence?mint='+encodeURIComponent(address));if(current()){setCreatorEvidence(record);setCreatorEvidenceDiagnostic(record.status==='VERIFIED'?'record_available':'record_not_established');}}catch{if(current())setCreatorEvidenceDiagnostic('lookup_failed');}})(),
+       address==='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump'?Promise.resolve():(async()=>{try{const accountData=await read('/api/token-concentration?mint='+encodeURIComponent(address));if(current())setConcentration(withConcentrationContext(accountData));}catch{if(current())setConcentrationError('Token-account balances unavailable');}})(),
+       data.tokenProgram==='spl-token-2022'&&(!data.currentExtensions||data.currentExtensions.transferFee?.status==='observed'&&(!data.currentExtensions.transferFee.configAuthorityReported||data.currentExtensions.transferFee.configAuthority===null&&!data.currentExtensions.transferFee.effectiveFee))?(async()=>{try{const e=await read('/api/token-extensions?mint='+encodeURIComponent(address));if(current())setExtensions(e);}catch{if(current())setExtensionsError('Extension data unavailable');}})():Promise.resolve(),
+       Promise.race([refreshLiquidity(address,controller.signal),cancelled])
+      ];
+      await Promise.allSettled(tasks);
       if(!current()||controller.signal.aborted)return;
 
     } catch (failure) { if(current()){if(!primaryAccepted)setResult(null);setError(primaryAccepted?"Additional evidence unavailable or timed out. Current mint observation retained; unresolved attributes remain Unknown.":failure.name === "AbortError" ? "Token inspection timed out. Evidence remains incomplete; no automatic retry was made." : "Token inspection unavailable or mismatched. Evidence remains Unknown.");} }
-    finally { clearTimeout(timer);controller.signal.removeEventListener('abort',cancel);if(current()){inspection.current=null;setBusy(false);} }
+    finally { clearTimeout(timer);controller.signal.removeEventListener('abort',cancel);if(current()){inspection.current=null;setBusy(false);if(!historyOnly&&inspectionStartedAt.current!==null)setInspectionTiming(p=>({...p,initialSourcesMs:Math.round(performance.now()-inspectionStartedAt.current)}));} }
   }
   return <section aria-label="GLITCH Scanner Token Analysis" className="doom-token-inspect" style={{ ...cardStyle, border: "none", boxShadow: "none" }}>
     <p style={{ color: "#ff7777", fontSize: 12, fontWeight: 700, letterSpacing: 2 }}>DOOM404 // GLITCH SCANNER · TOKEN ANALYSIS</p>
@@ -572,10 +587,10 @@ function CreatorLookup() {
       <button type="submit" disabled={busy} style={{ padding: "12px 18px", border: 0, borderRadius: 8, background: "#a52222", color: "white", cursor: "pointer" }}>{busy ? "INSPECTING..." : "INSPECT TOKEN"}</button>
     </form>
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
-    {busy && <p role="status" style={{ color: "#ddd" }}>Reading evidence. Unresolved attributes remain Unknown; this request is bounded to 45 seconds.</p>}
+    {busy && <p role="status" style={{ color: "#ddd" }}>Reading evidence. Unresolved attributes remain Unknown; initial evidence reads are bounded to 12 seconds.</p>}
     {result && <button type="button" disabled={busy||historyBatches>=MAX_HISTORY_BATCHES||historyBatches>0&&!historyCursor} onClick={event=>inspect(event,historyCursor,true)} style={{padding:10,background:"#281a20",color:"white",border:"1px solid #76424a",borderRadius:8}}> {historyBatches===0?"Investigate creator history":historyCursor?"Continue creator history":"Historical investigation stopped"} </button>}
     {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
-      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} liquidityError={liquidityError} liquidityRefreshing={liquidityRefreshing} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} frozenHolderObservation={frozenHolderObservation} workerEvidence={workerEvidence} />
+      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} liquidityError={liquidityError} liquidityRefreshing={liquidityRefreshing} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} frozenHolderObservation={frozenHolderObservation} workerEvidence={workerEvidence} currentLiquidity={currentLiquidity} currentCreator={currentCreator} providerUsage={providerUsage} inspectionTiming={inspectionTiming} onRequestLegacyEvidence={()=>setLegacyEvidenceRequested(true)} />
       {/* Previous token evidence panels retired from the layout; raw data and scan workers remain unchanged. */}
     </div>}
   </section>;

@@ -6,11 +6,12 @@ import { Connection } from "@solana/web3.js";
  * Never expose provider credentials through NEXT_PUBLIC_ variables.
  */
 export function createReliableConnection({
-  primary = process.env.SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com",
+  primary = process.env.SOLANA_RPC_URL || process.env.ALCHEMY_RPC_URL || process.env.HELIUS_RPC_URL || "https://api.mainnet-beta.solana.com",
   fallbacks = process.env.SOLANA_RPC_FALLBACK_URLS || "",
   timeoutMs = 8000,
   retries = 2,
-  fetchImpl = fetch
+  fetchImpl = fetch,
+  maxResponseBytes
 } = {}) {
   const endpoints = [...new Set([primary, ...fallbacks.split(",").map((x) => x.trim())].filter(Boolean))];
   if (!endpoints.length || !endpoints.every((url) => /^https:\/\//i.test(url))) {
@@ -40,7 +41,14 @@ export function createReliableConnection({
         let retryWait = 700 * (2 ** attempt);
         try {
           await pace();
-          const response = await fetchImpl(endpoint, { ...init, signal: controller.signal });
+          let response = await fetchImpl(endpoint, { ...init, signal: controller.signal });
+          if(Number.isSafeInteger(maxResponseBytes)&&maxResponseBytes>0&&response.body?.getReader){
+            const reader=response.body.getReader(),chunks=[];let size=0;
+            try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>maxResponseBytes){controller.abort();throw Error("RPC response exceeds bounded size");}chunks.push(value);}}
+            finally{reader.releaseLock();}
+            const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+            response=new Response(bytes,{status:response.status,statusText:response.statusText,headers:response.headers});
+          }
           if (response.ok) {
             // JSON-RPC errors can arrive with HTTP 200. Retry only transient server errors.
             const payload = await response.clone().json();

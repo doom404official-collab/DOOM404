@@ -1,3 +1,5 @@
+import {withProviderUsage} from '../../../lib/providerUsage.mjs';
+import {projectSecurityConfiguration} from '../../../lib/securityConfigurationV2.mjs';
 import { projectTokenMintControls } from '../../../lib/tokenMintControls.mjs';
 import { decodeToken2022BinaryMint } from '../../../lib/token2022BinaryMint.mjs';
 import { NextResponse } from "next/server";
@@ -20,13 +22,17 @@ const TYPES = {
   transferFeeAmount: "Transfer fee amount",
   tokenMetadata: "Token metadata"
 };
-export async function GET(request) {
+async function handle(request) {
   const value = new URL(request.url).searchParams.get("mint") || "";
   let mint;
   try { mint = new PublicKey(value); }
   catch { return NextResponse.json({ error: "Invalid token mint address" }, { status: 400 }); }
+  const deadlineController=new AbortController(),deadlineTimer=setTimeout(()=>deadlineController.abort(),9000);
   try {
-    const connection = createReliableConnection();
+    const connection = createReliableConnection({timeoutMs:2500,retries:0,maxResponseBytes:2000000,fetchImpl:(url,init)=>{
+      if(deadlineController.signal.aborted)throw Error('READ_DEADLINE');
+      return fetch(url,{...init,signal:AbortSignal.any([init.signal,deadlineController.signal,request.signal].filter(Boolean))});
+    }});
     // Bracket the account read; never resolve activation across an epoch boundary.
     const before = await connection.getEpochInfo("confirmed").catch(() => null);
     const response = await connection.getParsedAccountInfo(mint, {
@@ -36,7 +42,7 @@ export async function GET(request) {
     const epochContext = consistentEpochContext(before, after, response.context?.slot, "confirmed");
     const observedAt = new Date().toISOString();
     const binary = Array.isArray(response.value?.data) || Buffer.isBuffer(response.value?.data);
-    const account = binary ? decodeToken2022BinaryMint(response.value, mint.toBase58()) : response.value;
+    const account = binary ? decodeToken2022BinaryMint(response.value, mint.toBase58(),{allowUnknownExtensions:true}) : response.value;
     // A parsed program label alone is not account ownership evidence. Accept the
     // SDK PublicKey or its canonical RPC string, never arbitrary coercible objects.
     let owner = null;
@@ -87,6 +93,7 @@ export async function GET(request) {
       status: "parsed_extensions_observed", mint: mint.toBase58(), verified: true,
       extensions, extensionCount: extensions.length, transferFee, observedAt, epochContext,
       encoding: binary ? "base64" : "jsonParsed", owner,
+      configuration: projectSecurityConfiguration(info,{slot:response.context?.slot,commitment:"confirmed"}),
       mintControls: projectTokenMintControls(info, {slot:response.context?.slot,commitment:"confirmed"}),
       coverage: { source: "Solana RPC getParsedAccountInfo", accountType: "mint", program: "spl-token-2022",
         limitations: "Presence is observed from RPC parsed data or a strictly decoded supported binary mint layout. Fee configuration is parsed when available; epoch selection is resolved only when bracketed RPC observations agree. Actual transfers, hooks and future configuration changes are not verified. No risk rating, hook behavior, or delegate power is asserted. Account-level extensions are not covered." },
@@ -94,5 +101,6 @@ export async function GET(request) {
     }, { headers: { "Cache-Control": "no-store" } });
   } catch {
     return NextResponse.json({ status: "unavailable", error: "Token-2022 extension inspection unavailable; no absence or safety conclusion can be made." }, { status: 503 });
-  }
+  } finally {clearTimeout(deadlineTimer);deadlineController.abort();}
 }
+export async function GET(request){return withProviderUsage(handle,request);}

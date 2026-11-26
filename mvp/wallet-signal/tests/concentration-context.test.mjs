@@ -11,13 +11,13 @@ import {assessTokenEvidence} from '../lib/tokenAssessmentV11.js';
 const mint='7'.repeat(32),now=Date.parse('2026-11-23T10:00:00Z'),updatedAt=new Date(now).toISOString();
 const source=readFileSync(new URL('../app/api/token-concentration/route.js',import.meta.url),'utf8');
 // Execute the actual route body; substitute imports only, never invoke real RPC.
-const buildRoute=new Function('NextResponse','PublicKey','createReliableConnection','summarizeResolvedTokenAccounts','hasAlignedConcentrationContext',source.replace(/^import .*;\n/gm,'').replace('export const dynamic','const dynamic').replace('export async function GET','async function GET')+'\nreturn GET;');
+const buildRoute=new Function('NextResponse','PublicKey','createReliableConnection','summarizeResolvedTokenAccounts','hasAlignedConcentrationContext','withProviderUsage',source.replace(/^import .*;\n/gm,'').replace('export const dynamic','const dynamic').replace('export async function GET','async function GET')+'\nreturn GET;');
 async function observe(supply=100,largestSlot,supplySlot){
  if(arguments.length<2)largestSlot=100;if(arguments.length<3)supplySlot=100;
- let calls=0;class PublicKey{constructor(x){this.x=x;}toBase58(){return this.x;}}
- const connection={getTokenLargestAccounts:async()=>{calls++;return {context:{slot:largestSlot},value:Array.from({length:20},(_,i)=>({address:new PublicKey('account'+i),amount:'3',uiAmountString:'3'}))};},getTokenSupply:async()=>{calls++;return {context:{slot:supplySlot},value:{amount:String(supply),decimals:0}};},getParsedAccountInfo:async()=>{calls++;return {context:{slot:300},value:{data:{parsed:{type:'account',info:{owner:'synthetic-owner'}}}}};}};
- const get=buildRoute({json:(body,options)=>({body,options})},PublicKey,()=>connection,summarizeResolvedTokenAccounts,hasAlignedConcentrationContext);
- const response=await get({url:'https://fixture.invalid/api/token-concentration?mint='+mint});assert.equal(calls,22);assert.equal(response.options.headers['Cache-Control'],'no-store');return response.body;
+ let calls=0;class PublicKey{constructor(x){this.x=x;}toBase58(){return this.x;}toBytes(){return [];}static isOnCurve(){return true;}}
+ const connection={getTokenLargestAccounts:async()=>{calls++;return {context:{slot:largestSlot},value:Array.from({length:20},(_,i)=>({address:new PublicKey('account'+i),amount:'3',uiAmountString:'3'}))};},getTokenSupply:async()=>{calls++;return {context:{slot:supplySlot},value:{amount:String(supply),decimals:0}};},getMultipleParsedAccounts:async keys=>{calls++;return {context:{slot:300},value:keys.map(()=>({data:{parsed:{type:'account',info:{owner:'synthetic-owner'}}}}))};}};
+ const get=buildRoute({json:(body,options)=>({body,options})},PublicKey,()=>connection,summarizeResolvedTokenAccounts,hasAlignedConcentrationContext,(fn,req)=>fn(req));
+ const response=await get({url:'https://fixture.invalid/api/token-concentration?mint='+mint});assert.equal(calls,3);assert.equal(response.options.headers['Cache-Control'],'no-store');return response.body;
 }
 const adapt=concentration=>adaptDashboardEvidence({result:{mint},concentration,now});
 test('aligned actual route preserves 60/100 formula, raw observations and ownership limitations',async()=>{

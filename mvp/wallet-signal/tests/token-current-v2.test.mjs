@@ -1,0 +1,13 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {PublicKey} from '@solana/web3.js';
+import {mintBaseObservation} from '../lib/mintBaseObservation.mjs';import {mintAuthorityEvidence,normalizeMintAuthority} from '../lib/mintAuthorityEvidence.mjs';import {normalizeTransferFee} from '../lib/tokenTransferFeeEvidence.mjs';import {decodeToken2022BinaryMint} from '../lib/token2022BinaryMint.mjs';import {projectSecurityConfiguration} from '../lib/securityConfigurationV2.mjs';import {assessSecurityV2} from '../lib/securityAssessmentV2.mjs';
+const source=fs.readFileSync(new URL('../app/api/token-current/route.js',import.meta.url),'utf8').replace(/^import .*;\n/gm,'').replace('export const dynamic','const dynamic').replace('export async function GET','async function GET');
+function handler(value){let calls=0;const fn=new Function('NextResponse','PublicKey','createReliableConnection','decodeToken2022BinaryMint','projectSecurityConfiguration','withProviderUsage','mintBaseObservation','mintAuthorityEvidence','normalizeMintAuthority','normalizeTransferFee',source+';return GET;')({json:(body,options)=>({body,...options})},PublicKey,()=>({getParsedAccountInfo:async()=>{calls++;return {context:{slot:100},value};}}),decodeToken2022BinaryMint,projectSecurityConfiguration,(fn,r)=>fn(r),mintBaseObservation,mintAuthorityEvidence,normalizeMintAuthority,normalizeTransferFee);return {call:mint=>fn(new Request('https://fixture.invalid?mint='+mint)),calls:()=>calls};}
+const f=JSON.parse(fs.readFileSync(new URL('./fixtures/pyusd-live-privileged-controls.json',import.meta.url))),a={...f.response.value,owner:new PublicKey(f.response.value.owner),data:Buffer.from(f.response.value.data[0],'base64')};
+test('one current RPC exposes real PYUSD powers without calling them malicious or charging observed zero fees',async()=>{
+ const h=handler(a),r=await h.call(f.mint);assert.equal(h.calls(),1);assert.equal(r.body.currentExtensions.transferFee.effectiveFee.percentage,0);
+ const score=assessSecurityV2({tokenProgram:r.body.tokenProgram,authoritiesParsed:true,mintAuthority:r.body.mintAuthority,freezeAuthority:r.body.freezeAuthority,extensions:r.body.currentExtensions});assert.equal(score.riskScore,100);assert.equal(score.coveragePct,100);assert.ok(score.flags.some(f=>f.id==='permanent_delegate'));assert.ok(!JSON.stringify(score).includes('proven malicious'));
+});
+test('mint, executable state and program validation fail closed before scoring',async()=>{
+ assert.equal((await handler(a).call('bad')).status,400);
+ for(const value of [null,{...a,executable:true},{...a,owner:new PublicKey(f.mint)}])assert.equal((await handler(value).call(f.mint)).status,422);
+});

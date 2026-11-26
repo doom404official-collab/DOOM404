@@ -1,3 +1,6 @@
+import {projectHolderRelationshipsV2} from './holderRelationshipsV2.mjs';
+import {projectCreatorBehaviourV2} from './creatorBehaviourV2.mjs';
+import {projectPumpLiquidityV2} from './pumpLiquidityAssessmentV2.mjs';
 import {projectCreatorWalletObservation} from './creatorWalletObservation.mjs';
 import {projectCurrentPoolReserves} from './currentPoolReserves.mjs';
 import {summarizeCreatorAcquisitionLedger} from './creatorAcquisitionLedger.mjs';
@@ -63,6 +66,7 @@ export function projectCreatorCheckpoint(row,mint){
   stage:['identification','holdings','selling','previous_launches','complete'].includes(row.stage)?row.stage:'unknown',
   updatedAt:stamp(row.updated_at),creator,holdings,launchObservation,
   currentWalletObservation:projectCreatorWalletObservation(s.currentWalletAccountsObservation,mint,creator),
+  behaviourV2:projectCreatorBehaviourV2(s,mint,creator),
   selling:complete?{historyComplete:true,percentages:[3600,86400,604800].map(seconds=>windows.find(w=>w.seconds===seconds).sellThroughPct)}:null,
   previousLaunchCount:count(s.previousLaunches?.attributedLaunchCount),
   missing:['Verified creator/team holdings attribution','Comparable previous-launch scoring evidence',...(!complete?[retainedLaunch?.status==='VERIFIED_TRANSACTION_LOCAL_LAUNCH'?'Complete archival selling windows and acquisition attribution':'Verified initial allocation and complete selling windows']:[])]};
@@ -81,6 +85,7 @@ export function projectLiquidityCheckpoint(row,mint){
   reportedPoolCount:count(e.providerReportedPools),failedBatchCount:e.batchErrors.length,
   lpObservation:projectCurrentLpObservation(e.currentLpObservation,mint),lq09Observation,
   reserveObservation:projectCurrentPoolReserves(e.currentPoolReserves,mint),
+  currentScoringV2:projectPumpLiquidityV2(e.practicalScoringEvidenceV2,mint),
   ...(scoring?{scoringEvidence:{...scoring,mint,provenance:scoring.provenance.map(p=>({...p,mint,validated:true,coverageComplete:true}))},finalScore:e.finalScore,verifiedDepth:e.verifiedDepth,lpSecurityVerified:e.lpSecurityVerified}:{}),
   missing:scoring?scoring.assessment.components.filter(c=>c.points===null).map(c=>c.id):['Verified executable depth and market cap','Verified LP withdrawal control','Independent pool concentration','Verified reference sell impact','30-day reserve history']};
 }
@@ -105,9 +110,10 @@ export async function readDashboardEvidence({mint,url,key,fetchImpl=fetch}={}){
   }catch{return {mint,status:'unavailable',missing:['Persisted evidence unavailable or incompatible']};}
   finally{clearTimeout(timer);controller.abort();}
  }
- const [creator,liquidity,canonicalHolder]=await Promise.all([
+ const [creator,liquidity,canonicalHolder,holderRelationships]=await Promise.all([
   read('creator_intelligence_jobs','mint,status,stage,state,updated_at',projectCreatorCheckpoint),
   read('liquidity_evidence_checkpoints','mint,evidence,updated_at',projectLiquidityCheckpoint),
-  mint===CANONICAL_HOLDER_BASELINE.mint?read('glitch_top20_snapshots','id,mint,status,snapshot_slot,supply_raw,holder_ranking,observation',projectCanonicalHolderObservation,'&id=eq.'+CANONICAL_HOLDER_BASELINE.snapshotId):Promise.resolve({mint,status:'not_started'})]);
- return {version:'1.1',mint,creator,liquidity,canonicalHolder};
+  mint===CANONICAL_HOLDER_BASELINE.mint?read('glitch_top20_snapshots','id,mint,status,snapshot_slot,supply_raw,holder_ranking,observation',projectCanonicalHolderObservation,'&id=eq.'+CANONICAL_HOLDER_BASELINE.snapshotId):Promise.resolve({mint,status:'not_started'}),
+  mint===CANONICAL_HOLDER_BASELINE.mint?read('glitch_holder_scan_jobs','mint,holder_set_hash,version,checkpoint,updated_at',projectHolderRelationshipsV2,'&id=eq.49feee9f-7c79-4d6f-9767-151db38e1fca'):Promise.resolve(null)]);
+ return {version:'1.1',mint,creator,liquidity,canonicalHolder,holderRelationships};
 }
