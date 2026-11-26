@@ -23,7 +23,7 @@ async function handle(request){
    const connection=createReliableConnection({timeoutMs:2500,retries:0,maxResponseBytes:2000000,fetchImpl:scopedFetch});
    if(attribution.status!=='VERIFIED'||attribution.independentlyReviewed!==true){
     // At most one indexed historical transaction. Never paginate or backfill.
-    const indexConnection=createReliableConnection({primary:process.env.ALCHEMY_RPC_URL||process.env.HELIUS_RPC_URL||process.env.SOLANA_RPC_URL,timeoutMs:2500,retries:0,maxResponseBytes:2000000,fetchImpl:scopedFetch});
+    const indexConnection=createReliableConnection({primary:process.env.ALCHEMY_RPC_URL||process.env.ALCHEMY_SOLANA_ARCHIVE_RPC_URL||process.env.SOLANA_RPC_URL||process.env.HELIUS_RPC_URL,timeoutMs:2500,retries:0,maxResponseBytes:2000000,fetchImpl:scopedFetch});
     const indexed=await indexConnection._rpcRequest('getTransactionsForAddress',[mint,{transactionDetails:'full',sortOrder:'asc',limit:1,commitment:'finalized',encoding:'jsonParsed',maxSupportedTransactionVersion:0,filters:{status:'succeeded'}}]);
     if(indexed.error){const code=Number.isSafeInteger(indexed.error.code)?indexed.error.code:null;console.info('GLITCH_ORIGIN_PROVIDER_STATUS',JSON.stringify({code}));return {mint,status:'bounded_origin_provider_unavailable',providerStatus:code===-32601?'indexed_method_unavailable':code===-32602?'indexed_request_rejected':'indexed_provider_error'};}
     const first=indexed.result?.data?.[0];const proof=verifyBoundedCreatorOrigin(first,mint);

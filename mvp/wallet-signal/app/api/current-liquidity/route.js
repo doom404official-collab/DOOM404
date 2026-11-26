@@ -28,7 +28,7 @@ async function handle(request){
      const observation=projectRaydiumCpmmV2(raw,mint);return observation?{mint,status:'verified_protocol_calculation',observation}:{mint,status:'unsupported_or_incompatible_configuration'};
     }
     if(!first||first.owner.toBase58()!==PUMP_AMM_PROGRAM_ID.toBase58()||first.executable!==false){
-     const observation=await collectAlchemyQuotesV2({mint,rpcUrl:process.env.ALCHEMY_RPC_URL,signal:controller.signal});
+     const observation=await collectAlchemyQuotesV2({mint,rpcUrl:process.env.ALCHEMY_RPC_URL||process.env.ALCHEMY_SOLANA_ARCHIVE_RPC_URL||process.env.SOLANA_RPC_URL,signal:controller.signal});
      return observation?{mint,status:'verified_executable_routes',observation}:{mint,status:'unsupported_pool_architecture',missing:['Pool-specific controls and executable quote evidence unavailable; no constant-product assumptions applied.']};
     }
     const p=PUMP_AMM_SDK.decodePool(first);

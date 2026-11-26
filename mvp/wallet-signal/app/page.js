@@ -480,7 +480,7 @@ function CreatorLookup() {
     const interval=setInterval(refresh,30000);
     return ()=>{stopped=true;controller?.abort();clearInterval(interval);};
   },[result?.mint]);
-  const currentPool=result?.mint==='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump'?'6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA':result?.mint&&liquidity?.mint===result.mint?liquidity.pools?.[0]?.pairAddress:null;
+  const currentPool=result?.mint==='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump'?'6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA':result?.mint&&liquidity?.mint===result.mint?(liquidity.pools?.find(p=>p.baseMint===result.mint&&['So11111111111111111111111111111111111111112','EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'].includes(p.quoteMint))||liquidity.pools?.[0])?.pairAddress:null;
   useEffect(()=>{
     setCurrentLiquidity(null);if(!result?.mint||!currentPool)return;
     const address=result.mint,controller=new AbortController();let stopped=false;
