@@ -5,7 +5,7 @@ export async function persistLiquidityCheckpoint(evidence, { url, serviceRoleKey
  const origin=validateLiquidityStorage({url,serviceRoleKey});
  const row = {
   mint:evidence.mint,
-  schema_version:1,
+  schema_version:evidence.schemaVersion??1,
   status:evidence.status,
   observed_at:evidence.observedAt,
   reported_pool_count:evidence.providerReportedPools,

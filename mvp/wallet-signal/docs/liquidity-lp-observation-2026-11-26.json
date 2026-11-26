@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+  "pool": "6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA",
+  "lpMint": "CWQgvR86mZPz5bmFGx8HF137yoqzMfGQWdFM1X7xhZ1G",
+  "observedAt": "2026-11-26T04:44:18.373Z",
+  "source": "alchemy",
+  "commitment": "finalized",
+  "discoverySlot": 474018335,
+  "observationSlot": 474018385,
+  "atomic": false,
+  "scope": "nonzero_accounts_returned_by_getTokenLargestAccounts",
+  "providerReturnedAccountCount": 15,
+  "holders": [
+    {
+      "tokenAccount": "D2G1bS9UNZSdr8ES8ZDaNMRce9moVFtDfnHBByBF4EGB",
+      "owner": "9nmjFUaE87hrJBycGyry7ZB3XXD4zUUhHyYEuYa5jVbM",
+      "amountRaw": "148929078",
+      "discoveryAmountRaw": "148929078",
+      "delegate": null,
+      "delegatedRaw": "0",
+      "closeAuthority": null,
+      "state": "initialized",
+      "immutableOwner": true,
+      "sha256": "6521150dfe4d4d3992b97ece1e355bf2f0c0dea9bb2647e1ca1dfed60db03247"
+    },
+    {
+      "tokenAccount": "GASEYC6kS6TR9uo93V23W3PrHhPqWQL84iikx92gSULU",
+      "owner": "DfpXG5oPTed85EDwpRE16h1jBnFsdQD4kfdgRBxmqFbn",
+      "amountRaw": "3934590",
+      "discoveryAmountRaw": "3934590",
+      "delegate": null,
+      "delegatedRaw": "0",
+      "closeAuthority": null,
+      "state": "initialized",
+      "immutableOwner": true,
+      "sha256": "3d84ba5ac530b1e99085ad92d36197475e226f845369e14b55ac3f2a0f5bdba8"
+    }
+  ],
+  "mintSupplyRaw": "152863668",
+  "observedRaw": "152863668",
+  "observedBalanceSumEqualsSupply": true,
+  "mintAuthority": "6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA",
+  "freezeAuthority": null,
+  "inventoryComplete": false,
+  "withdrawalRightsVerified": false,
+  "lpSecurityVerified": false,
+  "scoreEligible": false,
+  "historicalOwnershipVerified": false
+}

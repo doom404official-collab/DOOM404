@@ -5,6 +5,8 @@ import {scoreTokenSecurity,scoreHolderIntelligence,scoreCreatorIntelligence,scor
 import {resolveEpochFee,consistentEpochContext} from './tokenTransferFeeEvidence.mjs';
 import {attributes} from './glitchScoringV11.mjs';
 import {reconcileHolderSnapshot} from './reconcileHolderSnapshot.mjs';
+import {projectLiquidityScoring} from './liquidityScoringProjection.mjs';
+import {projectCurrentLpObservation} from './currentLpObservation.mjs';
 const finite=(v,max=100)=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=max;
 // Match the existing token-insights stale/undated presentation boundary. This is
 // only an evidence display guard, not a changed scoring threshold.
@@ -53,9 +55,15 @@ export function adaptDashboardEvidence({liquidity:reportedLiquidity,result,exten
  const creatorScore=scoreCreatorIntelligence({creatorVerified,creatorHistoryComplete:!!selling,soldPct1h:selling?.[0],soldPct24h:selling?.[1],soldPct7d:selling?.[2]});
  const providerLiquidity=same(reportedLiquidity)&&evidenceFresh(reportedLiquidity.observedAt,now)&&['pools_reported','no_pools_reported'].includes(reportedLiquidity.status)?reportedLiquidity:null;
  const reported={amount:finite(providerLiquidity?.reportedLiquidityUsd,Number.MAX_SAFE_INTEGER)?providerLiquidity.reportedLiquidityUsd:null,poolCount:Number.isSafeInteger(providerLiquidity?.poolCountReturned)&&providerLiquidity.poolCountReturned>=0?providerLiquidity.poolCountReturned:null};
- const freshLiquidity=same(liquidity)&&evidenceFresh(liquidityAccountObservationAt(liquidity),now)&&['partial','account_checks_completed'].includes(liquidity.status)?liquidity:null;
- const liquidityScore=scoreLiquidityQuality({}); // Stage-1 producer explicitly has no verified scoring inputs.
+ let freshLiquidity=same(liquidity)&&evidenceFresh(liquidityAccountObservationAt(liquidity),now)&&['partial','account_checks_completed','complete'].includes(liquidity.status)?liquidity:null;
+ let liquidityScore=scoreLiquidityQuality({});
+ let lpObservation=null;
+ try{if(same(liquidity)&&evidenceFresh(liquidity.lpObservation?.observedAt,now))lpObservation=projectCurrentLpObservation(liquidity.lpObservation,mint);}catch{}
+ if(freshLiquidity?.schemaVersion===2){
+  try{liquidityScore=projectLiquidityScoring(freshLiquidity,mint).assessment;}
+  catch{freshLiquidity=null;}
+ }
  return {scores:{token_security:security,holder_intelligence:holder,creator_intelligence:creatorScore,liquidity_quality_safety:liquidityScore},
-  fee, effectiveFee, top20,creatorVerified,matchedHolder,creator:creatorVerified&&same(creator)&&creator.creator===creatorEvidence.creator?creator:null,liquidity:freshLiquidity,
+  fee, effectiveFee, top20,creatorVerified,matchedHolder,creator:creatorVerified&&same(creator)&&creator.creator===creatorEvidence.creator?creator:null,liquidity:freshLiquidity,lpObservation,
   reportedLiquidity:reported,creatorCompatible,creatorMissing:creator?.missing||['Persisted creator evidence unavailable'],liquidityMissing:freshLiquidity?.missing||['Persisted liquidity evidence unavailable or stale']};
 }

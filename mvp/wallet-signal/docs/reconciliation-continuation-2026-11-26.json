@@ -1,0 +1,138 @@
+{
+  "date": "2026-11-26",
+  "baselineCommit": "8442899537edb8ab622ca38658e37f4bd55a8a65",
+  "branch": "integration/glitch-app-main-20261118",
+  "productionPromoted": false,
+  "canonicalBaselineFrozen": false,
+  "milestones": [
+    {
+      "id": 1,
+      "status": "BLOCKED_ACCESS",
+      "completed": [
+        "Bounded old mapping search closed without reconstruction",
+        "Replacement full-inventory builder and reviewed-SHA workflow prepared",
+        "Old jobs preserved at versions 1812 and 2138"
+      ],
+      "blockers": [
+        "Alchemy Token-2022 getProgramAccounts rejected full and owner-filtered queries with too-many-accounts error",
+        "GitHub browser is signed out; connector does not expose workflow dispatch",
+        "New canonical snapshot, persistence and compatible evidence replay remain unexecuted"
+      ]
+    },
+    {
+      "id": 2,
+      "status": "PARTIAL_EVIDENCE_BLOCKED",
+      "processedSignatures": 4656,
+      "retainedTransactionObservations": 1000,
+      "retainedAcquisitionMovements": 3119,
+      "verifiedAcquisitionEvents": 0,
+      "verifiedSales": 0,
+      "retainedWindowObservations": {
+        "1h": 4,
+        "24h": 12,
+        "7d": 334
+      },
+      "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+      "creationSignature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+      "blockers": [
+        "Initial allocation has no verified instruction evidence",
+        "Both parsed and base64 creation responses truncated by connector; not usable as complete transaction evidence",
+        "Existing observation outflows remain unclassified; no sale or purchase promotion",
+        "Provider pagination exhausted does not prove archival completeness"
+      ]
+    },
+    {
+      "id": 3,
+      "status": "PARTIAL_RECOVERED_AND_PERSISTED",
+      "completed": [
+        "Recovered and persisted 60-to-87 successor workflow attestation",
+        "Separated earlier failed 86-record attempt with two errors from later validated 87-record successor with zero errors",
+        "Recovered and persisted current two-account LP observation; exact observed sum equals LP supply"
+      ],
+      "baselineRun": 39594375245,
+      "failedRun": 39596576585,
+      "validatedSuccessorRun": 39729408869,
+      "artifactSha256": "589fb75ab907686a77db8044242d063ccf29bcd36d2db197e59844c1f93393f5",
+      "rawCheckpointRecovered": false,
+      "blockers": [
+        "30-day historical artifacts no longer listed; exact signatures/cursor unavailable for resume",
+        "Failed-86 subset of successor-87 cannot be reverified without raw records",
+        "Original STOP_RECONCILE_NO_RETRY failure-stage receipt unavailable; no blind collector rerun",
+        "LQ-09 historical fee-recipient authorization, executable depth and LP withdrawal control remain unresolved"
+      ]
+    },
+    {
+      "id": 4,
+      "status": "IMPLEMENTED_REGRESSION_VERIFIED",
+      "completed": [
+        "Version2 liquidity scoring projection and shared writer validation",
+        "Checkpoint writer preserves schema version",
+        "Database constraints admit complete only for version2 envelopes",
+        "Existing version1 partial checkpoints remain supported",
+        "No missing inputs receive positive points",
+        "Independent LP observation freshness and client display",
+        "Nine-second server and twelve-second client deadlines preserved"
+      ],
+      "limitation": "No real complete score-eligible liquidity producer evidence has been recovered; calibration remains false"
+    },
+    {
+      "id": 5,
+      "status": "RECONCILED_NOT_RESTARTED",
+      "completed": [
+        "Queried GitHub workflow enabled states and recent worker run metadata",
+        "Prepared three-request canonical capture with no retries and exact reviewed SHA, integration branch, run-attempt1 and single-concurrency checks"
+      ],
+      "blockers": [
+        "Authenticated workflow dispatch unavailable in browser",
+        "Legacy workflows target old feature branches/previews; new snapshot must be established before selective resume",
+        "No checkpoint leases or historical workers manually reset"
+      ]
+    },
+    {
+      "id": 6,
+      "status": "SOURCE_VALIDATED_PREVIEW_PENDING",
+      "tests": {
+        "integratedPassed": 1966,
+        "failed": 0,
+        "nextBuild": "PASS",
+        "creatorPersistenceDuringBuild": "SKIPPED_NOT_OPTED_IN"
+      },
+      "localBrowserHarness": "Blocked: installed chromium wrapper points to missing executable; no visual pass claimed",
+      "deployment": "To be recorded in final handover",
+      "baselineFrozen": false
+    }
+  ],
+  "providerRequests": {
+    "alchemy": 10,
+    "helius": 0,
+    "solscan": 0,
+    "lq09HistoricalAccountReads": 0,
+    "lq09MaximumHistoricalAccountReads": 3
+  },
+  "databaseChanges": {
+    "checkpointUpdates": 2,
+    "migration": "liquidity_scoring_projection_v2",
+    "statusConstraintsUpdated": 2,
+    "historicalSnapshotsPreserved": 21,
+    "holderJobsModified": 0,
+    "creatorJobModified": false,
+    "safetyScorePromoted": false,
+    "grantsChanged": false
+  },
+  "productionReleaseBlockers": [
+    "Capture and persist replacement canonical Top20 eligible snapshot; validate and deduplicate all compatible retained evidence against it",
+    "Resolve creator allocation/acquisition attribution and material selling-window gaps without treating missing observations as zero sales",
+    "Recover resumable historical liquidity bytes or establish a justified targeted successor; resolve material withdrawal control and historical authorization",
+    "Produce eligible, validated attribute evidence and complete scoring calibration/overall acceptance under existing weights",
+    "Authenticate required worker execution, verify progression and complete live preview acceptance before production review"
+  ],
+  "nonBlockingLimitations": [
+    "Exact October snapshot provenance is no longer required",
+    "Observed relationships do not establish common ownership",
+    "Provider pagination exhaustion alone is not archive coverage"
+  ],
+  "postLaunchEnhancements": [
+    "Broader intermediary histories beyond material-risk stopping criteria",
+    "Additional protocol support outside the reference token scope"
+  ]
+}

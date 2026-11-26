@@ -1,4 +1,7 @@
 import {summarizeCreatorAcquisitionLedger} from './creatorAcquisitionLedger.mjs';
+import {projectLiquidityScoring} from './liquidityScoringProjection.mjs';
+import {projectCurrentLpObservation} from './currentLpObservation.mjs';
+import {validateLiquidityCheckpoint} from './liquidityEvidenceCheckpoint.mjs';
 /** Read-only projections of existing worker checkpoints. Never expose raw state,
  * leases, provider errors, credentials, or candidate transactions to the client. */
 const address=/^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
@@ -46,12 +49,16 @@ export function projectCreatorCheckpoint(row,mint){
 export function projectLiquidityCheckpoint(row,mint){
  if(!row)return {status:'not_started',mint};
  const e=row.evidence;
- if(row.mint!==mint||!e||e.mint!==mint||e.schemaVersion!==1||!Array.isArray(e.pools)||!Array.isArray(e.batchErrors)||
-  e.finalScore!==null||e.verifiedDepth!==false||e.lpSecurityVerified!==false)throw Error('LIQUIDITY_CHECKPOINT_UNSUPPORTED');
- return {mint,status:['partial','account_checks_completed'].includes(e.status)?e.status:'unknown',
+ if(row.mint!==mint||!e||e.mint!==mint||![1,2].includes(e.schemaVersion)||!Array.isArray(e.pools)||!Array.isArray(e.batchErrors))throw Error('LIQUIDITY_CHECKPOINT_UNSUPPORTED');
+ if(e.schemaVersion===1&&(e.finalScore!==null||e.verifiedDepth!==false||e.lpSecurityVerified!==false))throw Error('LIQUIDITY_CHECKPOINT_UNSUPPORTED');
+ validateLiquidityCheckpoint(e);
+ const scoring=e.schemaVersion===2?projectLiquidityScoring(e,mint):null;
+ return {mint,schemaVersion:e.schemaVersion,status:['partial','account_checks_completed','complete'].includes(e.status)?e.status:'unknown',
   updatedAt:stamp(row.updated_at),observedAt:stamp(e.observedAt),checkedPoolCount:e.pools.length,
   reportedPoolCount:count(e.providerReportedPools),failedBatchCount:e.batchErrors.length,
-  missing:['Verified executable depth and market cap','Verified LP withdrawal control','Independent pool concentration','Verified reference sell impact','30-day reserve history']};
+  lpObservation:projectCurrentLpObservation(e.currentLpObservation,mint),
+  ...(scoring?{scoringEvidence:{...scoring,mint,provenance:scoring.provenance.map(p=>({...p,mint,validated:true,coverageComplete:true}))},finalScore:e.finalScore,verifiedDepth:e.verifiedDepth,lpSecurityVerified:e.lpSecurityVerified}:{}),
+  missing:scoring?scoring.assessment.components.filter(c=>c.points===null).map(c=>c.id):['Verified executable depth and market cap','Verified LP withdrawal control','Independent pool concentration','Verified reference sell impact','30-day reserve history']};
 }
 export async function readDashboardEvidence({mint,url,key,fetchImpl=fetch}={}){
  if(!address.test(mint||''))throw Error('INVALID_MINT');
