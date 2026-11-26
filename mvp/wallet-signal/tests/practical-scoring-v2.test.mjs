@@ -17,3 +17,9 @@ test('fresh direct wallet exposure can be measured without claiming completed hi
  const a=args();a.creatorEvidence={mint,creator,status:'VERIFIED',independentlyReviewed:true};a.currentCreator={version:2,mint,creator,status:'verified_current_wallet',rawBalance:'599036011328',observedAt:raw.observedAt,slot:raw.response.context.slot};
  const r=practicalAssessmentV2(a);assert.equal(r.scores.creator_intelligence.coveragePct,60);assert.equal(r.scores.creator_intelligence.riskScore,0);assert.equal(r.scores.creator_intelligence.metrics.lifetimeSellingPct,null);assert.equal(r.coveragePct,82.5);
 });
+
+test('render recomputation never mutates retained flags or duplicates current warnings',()=>{
+ const a=args();a.reportedLiquidity={mint,status:'pools_reported',observedAt:raw.observedAt,poolCountReturned:1,largestReportedPoolSharePct:99};a.workerEvidence.liquidity.lq09Observation={mint,creatorRecipientMatchesHistoricalState:false};
+ const before=JSON.stringify(a);for(let i=0;i<5;i++){const result=practicalAssessmentV2(a),flags=result.scores.liquidity_quality_safety.flags;assert.equal(flags.filter(f=>f.id==='reported_pool_concentration').length,1);assert.equal(flags.filter(f=>f.id==='historical_fee_recipient_mismatch').length,1);}
+ assert.equal(JSON.stringify(a),before);
+});

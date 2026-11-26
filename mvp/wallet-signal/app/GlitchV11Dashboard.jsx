@@ -53,6 +53,7 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
  const [selected,setSelected]=useState("overall");
  const [fullScreen,setFullScreen]=useState(false);
  const dashboardRef=useRef(null),fullScreenToggleRef=useRef(null);
+ useEffect(()=>{dashboardRef.current?.scrollIntoView?.({block:"start",behavior:"instant"});},[result?.mint]);
  useEffect(()=>{
   if(!fullScreen)return;
   const panel=dashboardRef.current,toggle=fullScreenToggleRef.current;

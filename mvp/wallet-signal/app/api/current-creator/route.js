@@ -19,13 +19,13 @@ async function handle(request){
   const work=(async()=>{
    const scopedFetch=(url,init)=>fetch(url,{...init,signal:AbortSignal.any([controller.signal,init?.signal].filter(Boolean))});
    const vault=createIntelligenceVault({url:process.env.SUPABASE_URL,serviceRoleKey:process.env.SUPABASE_SERVICE_ROLE_KEY,fetchImpl:scopedFetch});
-   let attribution=await resolveCachedCreator({mint,vault});
+   let attribution;try{attribution=await resolveCachedCreator({mint,vault});}catch{attribution={status:"CACHE_UNAVAILABLE"};}
    const connection=createReliableConnection({timeoutMs:2500,retries:0,maxResponseBytes:2000000,fetchImpl:scopedFetch});
    if(attribution.status!=='VERIFIED'||attribution.independentlyReviewed!==true){
     // At most one indexed historical transaction. Never paginate or backfill.
     const indexConnection=createReliableConnection({primary:process.env.ALCHEMY_RPC_URL||process.env.HELIUS_RPC_URL||process.env.SOLANA_RPC_URL,timeoutMs:2500,retries:0,maxResponseBytes:2000000,fetchImpl:scopedFetch});
     const indexed=await indexConnection._rpcRequest('getTransactionsForAddress',[mint,{transactionDetails:'full',sortOrder:'asc',limit:1,commitment:'finalized',encoding:'jsonParsed',maxSupportedTransactionVersion:0,filters:{status:'succeeded'}}]);
-    if(indexed.error)return {mint,status:'bounded_origin_provider_unavailable'};
+    if(indexed.error){const code=Number.isSafeInteger(indexed.error.code)?indexed.error.code:null;console.info('GLITCH_ORIGIN_PROVIDER_STATUS',JSON.stringify({code}));return {mint,status:'bounded_origin_provider_unavailable',providerStatus:code===-32601?'indexed_method_unavailable':code===-32602?'indexed_request_rejected':'indexed_provider_error'};}
     const first=indexed.result?.data?.[0];const proof=verifyBoundedCreatorOrigin(first,mint);
     if(!proof)return {mint,status:'attribution_unavailable'};
     attribution={creator:proof.creator,status:'ONCHAIN_PROTOCOL_CREATOR',proof};

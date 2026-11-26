@@ -6,7 +6,7 @@ const pct=(n,d)=>raw(n)&&raw(d)&&BigInt(d)>0n?Number(BigInt(n)*1000000n/BigInt(d
 const ramp=(x,low,high)=>Math.max(0,Math.min(1,(x-low)/(high-low)));
 const fresh=(x,now,max=3600000)=>Number.isFinite(Date.parse(x))&&Date.parse(x)<=now&&now-Date.parse(x)<=max;
 const part=(id,max,risk,complete)=>({id,max,riskPoints:number(risk)?round(Math.min(max,risk)):0,complete:complete===true});
-const assessment=(id,components,flags=[],missing=[],metrics={})=>({version:'2.0',attribute:id,riskScore:round(components.reduce((n,c)=>n+c.riskPoints,0)),coveragePct:round(components.reduce((n,c)=>n+(number(c.observedWeight)?Math.min(c.max,c.observedWeight):c.complete?c.max:0),0)),components,flags,missing,metrics});
+const assessment=(id,components,flags=[],missing=[],metrics={})=>({version:'2.0',attribute:id,riskScore:round(components.reduce((n,c)=>n+c.riskPoints,0)),coveragePct:round(components.reduce((n,c)=>n+(number(c.observedWeight)?Math.min(c.max,c.observedWeight):c.complete?c.max:0),0)),components,flags:flags.map(f=>({...f})),missing:[...missing],metrics});
 /** Risk points are observed adverse evidence, higher = more observed risk.
  * Unknown criteria never generate safety credit or shrink the denominator.
  * A limited risk floor is never labelled low risk or a complete rating. */
