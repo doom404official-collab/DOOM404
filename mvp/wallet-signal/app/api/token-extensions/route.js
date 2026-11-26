@@ -1,3 +1,4 @@
+import { projectTokenMintControls } from '../../../lib/tokenMintControls.mjs';
 import { decodeToken2022BinaryMint } from '../../../lib/token2022BinaryMint.mjs';
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
@@ -86,6 +87,7 @@ export async function GET(request) {
       status: "parsed_extensions_observed", mint: mint.toBase58(), verified: true,
       extensions, extensionCount: extensions.length, transferFee, observedAt, epochContext,
       encoding: binary ? "base64" : "jsonParsed", owner,
+      mintControls: projectTokenMintControls(info, {slot:response.context?.slot,commitment:"confirmed"}),
       coverage: { source: "Solana RPC getParsedAccountInfo", accountType: "mint", program: "spl-token-2022",
         limitations: "Presence is observed from RPC parsed data or a strictly decoded supported binary mint layout. Fee configuration is parsed when available; epoch selection is resolved only when bracketed RPC observations agree. Actual transfers, hooks and future configuration changes are not verified. No risk rating, hook behavior, or delegate power is asserted. Account-level extensions are not covered." },
       interpretation: "Observed Token-2022 mint extensions are evidence, not proof of malicious behavior."

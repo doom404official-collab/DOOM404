@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "engineeringBaseline": "accepted separately from production acceptance",
+  "productionReady": false,
+  "weightsChanged": false,
+  "providerRequestsThisContinuation": 4,
+  "lq09HistoricalReadsConsumed": 2,
+  "lq09HistoricalReadsRemaining": 1,
+  "criteria": {
+    "tokenSecurity": {
+      "A": ["program owner", "mint authority", "freeze authority", "raw supply and decimals", "strict supported Token-2022 mint extension inspection"],
+      "B": ["broader supported-extension configuration decoding and live privileged-control calibration", "transfer-fee amount reference and execution validation"],
+      "C": ["Define how privileged controls outside the four existing components constrain a final security rating"],
+      "referenceProvisionalScore": 100,
+      "approvedComponentCoveragePct": 100,
+      "calibrationAccepted": false,
+      "scope": "Mint authority formula; not a complete guarantee of transfer execution or token safety"
+    },
+    "holders": {
+      "A": ["accepted eligible Top-20 concentration: 24.5379%, 28.32/35 points", "retained verified observations; no common ownership inference"],
+      "B": ["material relationship attribution on the accepted holder set"],
+      "C": ["Bounded observed-relationship network methodology instead of exhaustive history"],
+      "D": ["Absolute wallet independence as a provable scoring requirement"]
+    },
+    "liquidity": {
+      "A": ["same-finalized-slot reserve accounts and mint verification", "historical fee amounts retained separately from authorization"],
+      "B": ["executable quote or simulation", "reference sell impact", "verified price source and market cap denominator", "LP custody and withdrawal controls", "independent pool coverage"],
+      "C": ["Practical observation-window alternative to mandatory 30-day reserve history"]
+    },
+    "creator": {
+      "A": ["verified creator identity", "transaction-local zero direct initial allocation and launch purchase", "five verified purchase/burn/transfer events; 4656 processed signatures preserved"],
+      "B": ["fresh creator-wallet balance observation and supply denominator"],
+      "C": ["Observed disposal amounts and evidence coverage instead of a complete selling percentage with an incomplete acquisition denominator", "Bounded positively attributed previous launches; no no-launch safety claim"]
+    }
+  },
+  "consolidatedMethodologyDecisionRequired": {
+    "purpose": "Do not silently replace approved criteria or manufacture final scores",
+    "proposal": "Keep all four attribute weights and existing component weights. Present earned points and uncertainty bounds while criteria are unresolved. Replace absolute independence assertions with explicitly bounded observed-relationship evidence; replace incomplete-denominator creator selling percentages with verified disposal amounts plus coverage; define a bounded reserve-observation window. Final point curves and evidence eligibility for these replacements require one consolidated owner review before activation.",
+    "activated": false
+  },
+  "releaseBlockers": [
+    "Unaccepted scoring alternatives and full cross-attribute calibration",
+    "Executable liquidity, price-impact and withdrawal-control evidence",
+    "Creator disposal coverage and previous-launch attribution",
+    "Representative risky-token and full deployed failure-mode acceptance",
+    "Production authorization"
+  ]
+}

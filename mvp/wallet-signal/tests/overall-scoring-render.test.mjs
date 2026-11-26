@@ -29,7 +29,7 @@ test('actual GET projections, adapters and JSX withhold fabricated complete scor
   assert.equal(adapted.creatorVerified,reviewed===true);
   assert.equal(adapted.creatorCompatible,reviewed===true&&!stale);
   assert.ok(Object.values(adapted.scores).every(s=>s.calibrated===false));
-  assert.match(renderToStaticMarkup(createElement(Dashboard,props)),/Overall Score: Pending/);
+  assert.match(renderToStaticMarkup(createElement(Dashboard,props)),/Limited assessment:/);
   assert.deepEqual(raw,baseline);
  }
 });
@@ -37,14 +37,14 @@ test('actual GET missing/error evidence remains Pending',async()=>{
  const GET=api(async()=>{throw Error('SYNTHETIC_PRIVATE_ERROR');});
  const response=await GET(new Request('https://example.invalid/api/scoring-evidence?mint='+mint));
  assert.doesNotMatch(JSON.stringify(response.body),/SYNTHETIC_PRIVATE_ERROR|synthetic-only/);
- const props={result,workerEvidence:response.body};assert.equal(consolidate(adaptDashboardEvidence(props).scores).score,null);assert.match(renderToStaticMarkup(createElement(Dashboard,props)),/Overall Score: Pending/);
+ const props={result,workerEvidence:response.body};assert.equal(consolidate(adaptDashboardEvidence(props).scores).score,null);assert.match(renderToStaticMarkup(createElement(Dashboard,props)),/Limited assessment:/);
 });
 
 test('dashboard observations do not invent running scans, ranking or missing numeric evidence',()=>{
  const html=renderToStaticMarkup(createElement(Dashboard,{result}));
  assert.match(html,/Evidence observations · not ranked/);
  assert.doesNotMatch(html,/Top 3 Overall Findings|Historical scanning continues|evidence is still being collected/);
- assert.match(html,/Overall Score: Pending/);
+ assert.match(html,/Limited assessment:/);
  assert.match(html,/aria-current="page"[^>]*>Overall/);
  assert.equal((html.match(/class="g11-action"[^>]*>.*?<\/button>/g)||[]).length>=5,true);
  assert.match(html,/Liquidity &amp; Safety/);

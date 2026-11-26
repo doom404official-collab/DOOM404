@@ -1,3 +1,4 @@
+import {projectCurrentPoolReserves} from './currentPoolReserves.mjs';
 import {summarizeCreatorAcquisitionLedger} from './creatorAcquisitionLedger.mjs';
 import {projectLiquidityScoring} from './liquidityScoringProjection.mjs';
 import {projectCurrentLpObservation} from './currentLpObservation.mjs';
@@ -77,6 +78,7 @@ export function projectLiquidityCheckpoint(row,mint){
   updatedAt:stamp(row.updated_at),observedAt:stamp(e.observedAt),checkedPoolCount:e.pools.length,
   reportedPoolCount:count(e.providerReportedPools),failedBatchCount:e.batchErrors.length,
   lpObservation:projectCurrentLpObservation(e.currentLpObservation,mint),lq09Observation,
+  reserveObservation:projectCurrentPoolReserves(e.currentPoolReserves,mint),
   ...(scoring?{scoringEvidence:{...scoring,mint,provenance:scoring.provenance.map(p=>({...p,mint,validated:true,coverageComplete:true}))},finalScore:e.finalScore,verifiedDepth:e.verifiedDepth,lpSecurityVerified:e.lpSecurityVerified}:{}),
   missing:scoring?scoring.assessment.components.filter(c=>c.points===null).map(c=>c.id):['Verified executable depth and market cap','Verified LP withdrawal control','Independent pool concentration','Verified reference sell impact','30-day reserve history']};
 }

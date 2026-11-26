@@ -37,13 +37,13 @@ test('approved observed component renders on its own denominator with unchanged 
  assert.match(html,/Component only — not a Holder or Overall score/);
  assert.match(html,/Snapshot #2 at slot 457305617/);
  assert.match(html,/Exact-slot account-state certification and historical-job association remain unverified; final score remains Pending/);
- assert.match(html,/Overall Score: Pending/);
+ assert.match(html,/Limited assessment:/);
 });
 test('absent, foreign or malformed component is not displayed as numerical evidence',()=>{
  const cases=[null,{...observation(),snapshotId:'foreign'},{...observation(),policy:{id:'foreign'}},{...observation(),eligibilityPolicy:'foreign'},{...observation(),calibrated:true},{...observation(),scorePromoted:true},{...observation(),finalScore:100}];
  for(const points of [null,false,'32.2',NaN,Infinity,-1,36])cases.push({...observation(),component:{...observation().component,points}});
  for(const change of [{id:'foreign'},{max:100},{status:'verified'}])cases.push({...observation(),component:{...observation().component,...change}});
- for(const value of cases){const html=render(value);assert.doesNotMatch(html,/data-testid="frozen-concentration-component"/);assert.match(html,/Overall Score: Pending/);}
+ for(const value of cases){const html=render(value);assert.doesNotMatch(html,/data-testid="frozen-concentration-component"/);assert.match(html,/Limited assessment:/);}
  assert.doesNotMatch(render(observation(),'7'.repeat(32)),/data-testid="frozen-concentration-component"/);
 });
 
@@ -51,6 +51,6 @@ test('serialized or forged lineage flags cannot render verified collection linea
  for(const collectionLineage of [undefined,{status:'verified',canonicalRowHashVerified:true,snapshotId:policy.snapshotId,runId:'38769967061'},true]){
   const html=render({...observation(),collectionLineage});
   assert.match(html,/Collection lineage unverified/);assert.doesNotMatch(html,/data-testid="frozen-collection-lineage"/);
-  assert.match(html,/Overall Score: Pending/);
+  assert.match(html,/Limited assessment:/);
  }
 });

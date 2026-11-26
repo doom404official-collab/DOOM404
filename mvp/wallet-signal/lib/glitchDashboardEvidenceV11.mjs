@@ -30,7 +30,8 @@ export function adaptDashboardEvidence({liquidity:reportedLiquidity,result,exten
   feeExtensionVerified:ext?.verified===true,feeApplicable:fee?.status==='observed'?true:fee?.status==='not_observed'?false:undefined,
   // Resolved schedule is evidence, not verified transfer behavior or a cap-adjusted score.
   feeConfigAuthorityReported:ext?.verified===true&&fee?.configAuthorityReported===true,feeConfigAuthority:fee?.configAuthority});
- const top20=same(concentration)&&finite(concentration.top20TokenAccountSharePct)?concentration.top20TokenAccountSharePct:undefined;
+ const canonical=workerEvidence?.version==='1.1'&&same(workerEvidence)&&same(workerEvidence.canonicalHolder)&&workerEvidence.canonicalHolder.snapshotId==='0596510d6dc07e1dce934fba0dcf96a5594b38807383bd6d829d9d6fe441177b'&&workerEvidence.canonicalHolder.holderSetHash==='77f749040d291e057c546d1f4872f4de9432bdda4be512a0dc94bda14bc20daa'&&workerEvidence.canonicalHolder.contextSlots?.inventory===474029636&&workerEvidence.canonicalHolder.status==='canonical_observation'&&finite(workerEvidence.canonicalHolder.top20SharePct)?workerEvidence.canonicalHolder:null;
+ const top20=canonical?canonical.top20SharePct:same(concentration)&&finite(concentration.top20TokenAccountSharePct)?concentration.top20TokenAccountSharePct:undefined;
  let holder=scoreHolderIntelligence({top20SharePct:top20});
  const matchedHolder=hasAlignedConcentrationContext(concentration)&&same(concentration)&&same(historicalHolders)&&same(verifiedHolderEnvelope)&&
   !!historicalHolders.jobId&&historicalHolders.jobId===verifiedHolderEnvelope.jobId&&
@@ -71,5 +72,6 @@ export function adaptDashboardEvidence({liquidity:reportedLiquidity,result,exten
    /^[1-9][0-9]*$/.test(creator.launchObservation.purchasedRaw||'')&&creator.launchObservation.decimals===6&&creator.launchObservation.scoreEligible===false&&creator.launchObservation.historyComplete===false&&
    Number.isSafeInteger(creator.launchObservation.slot)&&creator.launchObservation.slot>=0&&Number.isSafeInteger(creator.launchObservation.timestamp)&&creator.launchObservation.timestamp>0&&
    /^[1-9A-HJ-NP-Za-km-z]{64,88}$/.test(creator.launchObservation.signature||'')?creator.launchObservation:null,
+  reserveObservation:same(liquidity?.reserveObservation)&&liquidity.reserveObservation.schemaVersion===1&&evidenceFresh(liquidity.reserveObservation.observedAt,now)&&liquidity.reserveObservation.reservesVerified===true?liquidity.reserveObservation:null,
   reportedLiquidity:reported,creatorCompatible,creatorMissing:creator?.missing||['Persisted creator evidence unavailable'],liquidityMissing:freshLiquidity?.missing||['Persisted liquidity evidence unavailable or stale']};
 }

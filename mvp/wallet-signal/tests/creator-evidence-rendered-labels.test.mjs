@@ -42,7 +42,7 @@ function fixture(){
 function props(row){return {result:{mint},creatorEvidence:{mint,creator,status:'VERIFIED',independentlyReviewed:true},workerEvidence:{version:'1.1',mint,creator:projectCreatorCheckpoint(row,mint)}};}
 const render=p=>renderToStaticMarkup(createElement(Dashboard,p));
 const label=(html,name)=>html.match(new RegExp('<span class="g11-kicker">'+name+'</span><strong>(.*?)</strong>'))?.[1];
-function pendingScore(html){assert.match(html,/Overall Score: Pending/);assert.match(html,/Final score: Pending/);}
+function pendingScore(html){assert.match(html,/Limited assessment:/);assert.match(html,/Assessed points:/);assert.match(html,/incomplete/);}
 test('projected numeric zeros render as observations and eligible selling, never a final score',()=>{
  const p=props(fixture()),html=render(p);
  assert.equal(label(html,'Creator Holdings'),'0% observed');

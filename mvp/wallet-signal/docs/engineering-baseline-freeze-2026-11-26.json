@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "status": "engineering_baseline_accepted",
+  "reviewedCommit": "3cc15b9d6d12034f0fe1e9fe43945285df0eee04",
+  "deploymentId": "dpl_HwosKccgq3zFeNLbgUS884cyYSV2",
+  "productionAccepted": false,
+  "evidenceComplete": false,
+  "canonicalHolderCheckpoint": "49feee9f-7c79-4d6f-9767-151db38e1fca",
+  "checkpointVersion": 2,
+  "inventorySlot": 474029636,
+  "classificationSlot": 474029653,
+  "holderSetHash": "77f749040d291e057c546d1f4872f4de9432bdda4be512a0dc94bda14bc20daa",
+  "verifiedMigrations": [
+    "liquidity_scoring_projection_v2",
+    "canonical_holder_snapshot_observation_v2"
+  ],
+  "limitations": [
+    "Zero-only token account mappings incompletely retained; positive balances reconcile to mint supply. Accepted for operational concentration baseline by owner.",
+    "Historical relationship and creator selling coverage incomplete.",
+    "Historical liquidity authorization unresolved; LQ-09 account reads consumed 2 of 3."
+  ],
+  "historicalCheckpoints": "1812 and 2138 preserved unchanged",
+  "verificationDate": "2026-11-26"
+}
