@@ -46,3 +46,9 @@ No database schema or credentials changed. Two new evidence objects were appende
 Holder relationship coverage remains bounded. Creator acquisitions, sales, funding and previous-launch attribution remain incomplete; unobserved events do not receive safety credit. The historical fee-recipient mismatch remains unresolved, independently of current executable depth and LP claims. Quote-only fallback does not certify LP locks, upgrade authority or an all-pool inventory. Unknown protocol/extension/transaction configurations fail closed.
 
 The product delivers useful numerical control/exposure assessments with these limits visible. It must not be described as a complete forensic history, a safety guarantee, a fraud predictor, or a BUY/SELL recommendation. Production promotion remains separately gated on final deployed acceptance and owner authorization. Physical Android acceptance is not silently inferred from responsive desktop rendering.
+
+## Final live corrections
+
+The freeze candidate at `519307214049c0b7c57fb64b0283783d3e34e300` passed 2,051 integrated tests and produced a 12.09 / 82.5% reference assessment in 3.76 seconds. Its normal recent-launch scan produced 20.42 observed risk at 81.63% coverage, with a decisive 100-SOL-reference exit-unavailable flag, demonstrating a material risk difference from the reference pool.
+
+The same live pass found a quote-only null-LP rendering error. It was corrected with a consumer/renderer regression: missing withdrawal controls retain 50% liquidity coverage, without a client exception or invented LP evidence. An unavailable sale now carries an explicit unavailable state and maximum exit-risk pressure; its impact percentage is null, rather than a fictional 100% execution cost. Eleven focused checks passed across the affected consumer, renderer and protocol calculations. The successor deployment is checked after this correction.

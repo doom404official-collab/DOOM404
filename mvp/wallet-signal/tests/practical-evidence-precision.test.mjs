@@ -13,3 +13,8 @@ test('small verified LP claims are not rounded into a false zero-withdrawal clai
  const assessment={flags:[],unresolved:[],scores:{token_security:empty,holder_intelligence:empty,liquidity_quality_safety:a,creator_intelligence:empty}};
  const html=renderToStaticMarkup(createElement(Panel,{assessment,selected:'liquidity_quality_safety'}));assert.match(html,/0\.003645%/);assert.doesNotMatch(html,/maximum claim: 0%/);
 });
+
+test('unexecutable reference sale is not rendered as an invented 100-percent fill cost',()=>{
+ const a={riskScore:50,coveragePct:100,flags:[],missing:[],components:[],metrics:{quotes:[{referenceNotional:1,quoteSymbol:'SOL'},{referenceNotional:10,quoteSymbol:'SOL'},{referenceNotional:100,quoteSymbol:'SOL',impactIncludingFeesPct:null,executable:false}]}},empty={metrics:{}};const assessment={flags:[],unresolved:[],scores:{token_security:empty,holder_intelligence:empty,liquidity_quality_safety:a,creator_intelligence:empty}};
+ assert.match(renderToStaticMarkup(createElement(Panel,{assessment,selected:'liquidity_quality_safety'})),/Unavailable under the observed pool state/);assert.doesNotMatch(renderToStaticMarkup(createElement(Panel,{assessment,selected:'overall'})),/100% including/);
+});

@@ -23,3 +23,8 @@ test('render recomputation never mutates retained flags or duplicates current wa
  const before=JSON.stringify(a);for(let i=0;i<5;i++){const result=practicalAssessmentV2(a),flags=result.scores.liquidity_quality_safety.flags;assert.equal(flags.filter(f=>f.id==='reported_pool_concentration').length,1);assert.equal(flags.filter(f=>f.id==='historical_fee_recipient_mismatch').length,1);}
  assert.equal(JSON.stringify(a),before);
 });
+
+test('quote-only liquidity keeps unknown LP controls without crashing or inventing coverage',()=>{
+ const a=args();a.currentLiquidity={...load('./fixtures/usdc-executable-route-calibration.json'),version:2,mint,observedAt:raw.observedAt,withdrawal:null};const r=practicalAssessmentV2(a);assert.equal(r.scores.liquidity_quality_safety.coveragePct,50);assert.equal(r.scores.liquidity_quality_safety.metrics.maxCurrentWithdrawalPct,null);assert.equal(r.scores.liquidity_quality_safety.metrics.lpHolders,undefined);
+ const b=args();b.workerEvidence.liquidity.currentScoringV2.referenceQuotes[2]={referenceNotional:100,quoteSymbol:'SOL',impactIncludingFeesPct:null,executable:false,reason:'insufficient_real_quote_reserves'};const blocked=practicalAssessmentV2(b);assert.equal(blocked.scores.liquidity_quality_safety.components[0].riskPoints,50);assert.equal(blocked.scores.liquidity_quality_safety.components[0].complete,true);
+});

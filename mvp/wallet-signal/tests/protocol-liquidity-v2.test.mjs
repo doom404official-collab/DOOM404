@@ -22,6 +22,6 @@ test('incompatible architecture, account ownership and changed mint cannot inher
 
 test('disabled swaps and external vault delegates cannot inherit benign exit or LP bounds',()=>{
  const disabled=structuredClone(pump),g=Buffer.from(disabled.response.value[6].data[0],'base64');g[56]|=16;disabled.response.value[6].data[0]=g.toString('base64');
- const d=projectPumpLiquidityV2(disabled,pump.addresses[3]);assert.ok(d);assert.ok(d.referenceQuotes.every(q=>q.executable===false&&q.impactIncludingFeesPct===100));assert.ok(d.flags.some(f=>f.id==='selling_disabled'));
+ const d=projectPumpLiquidityV2(disabled,pump.addresses[3]);assert.ok(d);assert.ok(d.referenceQuotes.every(q=>q.executable===false&&q.impactIncludingFeesPct===null));assert.ok(d.flags.some(f=>f.id==='selling_disabled'));
  for(const [fixture,project,mintIndex] of [[pump,projectPumpLiquidityV2,3],[cp,projectRaydiumCpmmV2,4]]){const raw=structuredClone(fixture),bytes=Buffer.from(raw.response.value[1].data[0],'base64');bytes.writeUInt32LE(1,72);bytes.fill(1,76,108);bytes.writeBigUInt64LE(1n,121);raw.response.value[1].data[0]=bytes.toString('base64');const a=project(raw,raw.addresses[mintIndex]);assert.ok(a);assert.equal(a.withdrawal.maxCurrentWithdrawalPct,null);assert.ok(a.flags.some(f=>f.id==='external_vault_delegate'));}
 });

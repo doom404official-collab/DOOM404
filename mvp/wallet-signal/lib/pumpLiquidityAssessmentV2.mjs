@@ -26,9 +26,9 @@ export function projectPumpLiquidityV2(raw,mint){
   if(Object.values(fees).some(v=>v.isNeg()||v.gtn(10000)))return null;
   const quote=base=>sellBaseInput({base,slippage:0,baseReserve:x,quoteReserve:q,virtualQuoteReserves:pool.virtualQuoteReserves,feeBucketsTotal:buckets,globalConfig:global,feeConfig,baseMintAccount:mintInfo,baseMint:pool.baseMint,coinCreator:pool.coinCreator,creator:pool.creator,quoteMint:pool.quoteMint,isMayhemMode:false,creatorFeeBps:pool.creatorFeeBps});
   const referenceQuotes=[1,10,100].map(sol=>{
-   if(global.disableFlags&16)return {referenceNotionalSol:sol,referenceNotional:sol,quoteSymbol:"SOL",quoteOutputRaw:null,impactIncludingFeesPct:100,executable:false,reason:"selling_disabled"};
+   if(global.disableFlags&16)return {referenceNotionalSol:sol,referenceNotional:sol,quoteSymbol:"SOL",quoteOutputRaw:null,impactIncludingFeesPct:null,executable:false,reason:"selling_disabled"};
    const notional=b(sol).mul(b(1e9)),base=notional.mul(x).div(effective);if(base.lten(0))throw Error();
-   let r;try{r=quote(base);}catch(error){if(String(error?.message).includes('Insufficient real quote reserves'))return {referenceNotionalSol:sol,referenceNotional:sol,quoteSymbol:'SOL',baseInputRaw:base.toString(),quoteOutputRaw:null,impactIncludingFeesPct:100,executable:false,reason:'insufficient_real_quote_reserves'};throw error;}const spot=base.mul(effective).div(x);
+   let r;try{r=quote(base);}catch(error){if(String(error?.message).includes('Insufficient real quote reserves'))return {referenceNotionalSol:sol,referenceNotional:sol,quoteSymbol:'SOL',baseInputRaw:base.toString(),quoteOutputRaw:null,impactIncludingFeesPct:null,executable:false,reason:'insufficient_real_quote_reserves'};throw error;}const spot=base.mul(effective).div(x);
    return {referenceNotionalSol:sol,referenceNotional:sol,quoteSymbol:"SOL",baseInputRaw:base.toString(),quoteOutputRaw:r.uiQuote.toString(),impactIncludingFeesPct:percent(spot.sub(r.uiQuote).toString(),spot.toString()),curveImpactPct:percent(spot.sub(r.internalQuoteAmountOut).toString(),spot.toString())};
   });
   // Max outstanding LP claim uses protocol accounting supply, not the mint supply.
