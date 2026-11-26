@@ -23,6 +23,7 @@ try{
  const ranked=aggregateHolderInventory({mint,inventory});
  const ownerAddresses=ranked.ranking.slice(0,100).map(w=>w.wallet);
  const ownerResponse=await rpc('getMultipleAccounts',[ownerAddresses,{commitment:'finalized',encoding:'base64',minContextSlot:inventory.context.slot}]);
+ writeFileSync('canonical-holder-classifications.json',JSON.stringify({mint,mintResponse,ownerAddresses,ownerResponse,provider:'helius',commitment:'finalized'}),{flag:'wx',mode:0o600});
  const result=buildCanonicalHolderSnapshot({mint,observedAt:new Date().toISOString(),mintResponse,inventory,ownerResponse,ownerAddresses,provider:'helius'});
  writeFileSync('canonical-holder-snapshot.json',JSON.stringify(result,null,2)+'\n',{flag:'wx',mode:0o600});
  console.log(JSON.stringify({status:'CAPTURED_NOT_YET_PERSISTED',holderSetHash:result.snapshot.holderSetHash,requests,atomic:false,

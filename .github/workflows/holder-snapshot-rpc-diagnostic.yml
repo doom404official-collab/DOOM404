@@ -69,7 +69,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: canonical-holder-snapshot-${{ github.run_id }}
-          path: mvp/wallet-signal/canonical-holder-snapshot.json
+          path: |
+            mvp/wallet-signal/canonical-holder-snapshot.json
+            mvp/wallet-signal/canonical-holder-snapshot-recovery.json
+            mvp/wallet-signal/canonical-holder-classifications.json
           if-no-files-found: error
           retention-days: 90
           overwrite: false
