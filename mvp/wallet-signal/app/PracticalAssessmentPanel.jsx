@@ -1,4 +1,5 @@
 "use client";
+import {RiskGauge,CoverageGauge,RiskOverview} from "./TokenIntelligenceHUD";
 import EvidenceHUD,{CriterionContributions} from "./EvidenceHUD";
 import {formatTokenQuantity,assessmentDisplay,holderSampleLabel} from "../lib/evidenceHudPresentation.mjs";
 import {RISK_WEIGHTS,RISK_METHODOLOGY_VERSION} from "../lib/riskMethodology.mjs";
@@ -12,26 +13,18 @@ export default function PracticalAssessmentPanel({assessment,selected,providerUs
  const display=assessmentDisplay(assessment,selected);
  const a=assessment.scores[selected],flags=(a?a.flags:assessment.flags).filter(f=>f.severity!=='information').sort((x,y)=>({critical:0,high:1}[x.severity]??2)-({critical:0,high:1}[y.severity]??2));
  const liq=assessment.scores.liquidity_quality_safety.metrics,holders=assessment.scores.holder_intelligence.metrics,creator=assessment.scores.creator_intelligence.metrics;
- const insights=[...assessment.flags.filter(f=>f.severity==='critical').map(f=>({name:'Critical control',detail:f.detail})),
-  ...assessment.flags.filter(f=>f.id==='creator_disposition_unresolved').map(f=>({name:'Creator disposition unresolved',detail:f.detail})),
-  ...(liq.quotes?[{name:'Reference exit cost',detail:liq.quotes[2]?.executable===false?'Defined reference sale is unavailable under the observed pool state; no execution-cost percentage is asserted.':String(liq.quotes[2]?.referenceNotional)+' '+liq.quotes[2]?.quoteSymbol+'-equivalent sell: '+fmt(liq.quotes[2]?.impactIncludingFeesPct??liq.quotes[2]?.quoteRecoveryShortfallPct??liq.quotes[2]?.providerPriceImpactPct,'%')+(liq.quotes[2]?.measurement==='reference_quote_recovery'?' quoted SOL recovery shortfall versus the scaled small-buy reference.':liq.quotes[2]?.measurement==='provider_reported_price_impact'?' provider-quoted price impact.':' including protocol fees.')+''}]:[{name:'Liquidity limitation',detail:'Executable depth and withdrawal controls are not sufficiently verified for this token.'}]),
-  {name:'Holder distribution',detail:holderSampleLabel(holders.eligibleObservedWallets)+' share: '+fmt(holders.top20Pct,'%')+'. Observed relationships do not establish common ownership.'},
-  ...assessment.flags.filter(f=>f.severity==='high').map(f=>({name:flagNames[f.id]||flagCategory(f),detail:f.detail})),
-  {name:'Creator evidence',detail:creator.creator?'Creator attributed; verified burns and transfers are separated from sales. Historical selling coverage remains limited.':'Creator attribution or behavior evidence is incomplete.'}].slice(0,3);
  return <div data-testid="practical-assessment-v2">
   <article className="g11-panel g11-verdict" aria-label={a?names[selected]+' assessment':'Overall assessment'}>
    <div className="g11-kicker">{a?names[selected]:'Overall assessment'}</div>
-   <div className="g11-score-row"><div><span className="g11-score-label">Observed risk</span><div className="g11-big">{!display.assessed?<span className="g11-insufficient">{display.label}</span>:<>{fmt(display.score)}<small>/100</small></>}</div></div><div className="g11-coverage"><span className="g11-score-label">Evidence coverage</span><strong>{fmt(a?a.coveragePct:assessment.coveragePct,'%')}</strong><progress value={a?a.coveragePct:assessment.coveragePct} max="100" aria-label="Evidence coverage"/></div></div>
-   {!a&&assessment.criticalRisk&&<div className="g11-flag g11-flag--critical" role="alert"><strong>Critical risk observed</strong><p>{assessment.flags.find(f=>f.severity==='critical')?.detail}</p></div>}
-   {!a&&<div className="g11-foot">Token Maturity: {assessment.maturity?.label||'Maturity not established'}{assessment.maturity?.basis&&<details><summary>Observation basis</summary>{assessment.maturity.basis} · {assessment.maturity.createdAt} · slot {assessment.maturity.slot}</details>}</div>}
-   {display.assessed&&<><div className="g11-risk-scale" role="img" aria-label={'Observed risk '+fmt(a?a.riskScore:assessment.riskScore)+' out of 100; higher risk to the right'}><span style={{left:Math.max(0,Math.min(100,a?a.riskScore:assessment.riskScore))+'%'}}/></div>
-   <div className="g11-scale-label"><span>0</span><span>Higher risk →</span><span>100</span></div></>}
-   <div className="g11-status">{!display.assessed?display.label:(a?a.coveragePct<100:!assessment.complete)?'Partial assessment · observed risk floor':'Defined criteria assessed'}</div>
+   <div className="ti-assessment"><RiskGauge display={display} title={a?names[selected].toUpperCase()+' RISK':'OVERALL OBSERVED RISK'} partial={a?a.coveragePct<100:!assessment.complete}/><div className="ti-coverage-stack"><CoverageGauge value={a?a.coveragePct:assessment.coveragePct}/>{!a&&<div className="ti-quick"><div><span>Exit cost · 100 {liq.quotes?.[2]?.quoteSymbol||'SOL'}</span><strong>{liq.quotes?.[2]?.executable===false?'Unavailable':fmt(liq.quotes?.[2]?.impactIncludingFeesPct,'%')}</strong><small>Fee-inclusive estimate</small></div><div><span>Liquidity / FDV</span><strong>{fmt(liq.liquidityToFullyDilutedValuePct,'%')}</strong></div><div><span>Largest eligible holder</span><strong>{fmt(holders.largestPct,'%')}</strong></div></div>}</div></div>
+   {flags.filter(f=>f.severity==='critical').map(f=><div className="g11-flag g11-flag--critical" role="alert" key={f.id}><strong>⚠ Critical risk observed</strong><p>{f.detail}</p></div>)}
   </article>
-  {!a&&<div className="g11-attribute-cards" aria-label="Attribute score summary">{Object.entries(assessment.scores).map(([key,r])=><button type="button" className="g11-attribute-card" key={key} onClick={()=>onSelect?.(key)} aria-label={'Open '+names[key]+' assessment'}><span className="g11-card-name">{names[key]}</span><strong>{r.coveragePct===0?'Not assessed':<>{fmt(r.riskScore)}<small>/100</small></>}</strong><span className="g11-card-meta">Coverage {fmt(r.coveragePct,'%')}{r.coveragePct>0&&r.coveragePct<100&&<span className="g11-partial"> · Partial</span>}</span></button>)}</div>}
-  {!a&&<article className="g11-panel"><h3>Three important insights</h3><div className="g11-insights">{insights.map((x,i)=><article key={i}><strong>{x.name}</strong>{x.detail}</article>)}</div></article>}
-  {a&&flags.some(f=>f.severity==='critical')&&<article className="g11-panel" aria-label="Critical risk flags"><h3>Critical risk flags</h3>{flags.filter(f=>f.severity==='critical').map(f=><div className="g11-flag g11-flag--critical" key={f.id}><strong>{flagNames[f.id]||f.detail}</strong><p>{f.detail}</p></div>)}</article>}
+  {!a&&<RiskOverview assessment={assessment} onSelect={onSelect}/>}
   {a&&<EvidenceHUD assessment={assessment} selected={selected} decimals={decimals} result={result} extensions={extensions} historicalObservedAt={historicalObservedAt} marketObservedAt={marketObservedAt}/>}
+  <details className="g11-panel ti-evidence"><summary>Risk flags &amp; blockchain evidence</summary>
+
+
+
   {flags.some(f=>!a||f.severity!=='critical')&&<article className="g11-panel" aria-label="Prioritized risk flags"><h3>Risk flags</h3>{flags.filter(f=>!a||f.severity!=='critical').map((f,i)=><details key={f.id+':'+i} className={'g11-flag g11-flag--'+f.severity} open={f.severity==='critical'}><summary><span className="g11-flag-category">{flagCategory(f)}</span><strong>{flagNames[f.id]||f.detail}</strong></summary><p>{f.detail}</p></details>)}</article>}
   {a&&<CriterionContributions components={a.components}/>}
   {a&&<><details className="g11-panel hud-technical" key={selected}><summary>Evidence Intelligence · Blockchain Details</summary><LocalObservation value={a.metrics.snapshotObservedAt||a.metrics.currentWalletObservedAt||a.metrics.observedAt}/>
@@ -44,6 +37,7 @@ export default function PracticalAssessmentPanel({assessment,selected,providerUs
   <details className="g11-panel"><summary>How We Calculate Risk</summary><p>Scores run from 0 to 100. Methodology {RISK_METHODOLOGY_VERSION}. {Object.entries(RISK_WEIGHTS).map(([id,w])=>names[id]+' '+Math.round(w*100)+'%').join(' · ')}. The same weights apply to evidence coverage. Evidence coverage is measured separately; missing evidence does not change the denominator. Partial results are observed risk floors.</p>{a?.components?.map(c=><p key={c.id}>{criterionNames[c.id]||c.id.replaceAll('_',' ')}: {fmt(c.riskPoints??(c.points===null?0:c.max-c.points))} of {c.max} risk points. Technical criterion: {c.id}.</p>)}</details>
   {providerUsage&&<details className="g11-foot"><summary>Response time and provider usage</summary>{inspectionTiming&&<p>First mint evidence: {fmt(inspectionTiming.firstEvidenceMs/1000,"s")}; independent initial sources: {fmt(inspectionTiming.initialSourcesMs/1000,"s")}; current liquidity: {fmt(inspectionTiming.liquidityMs/1000,"s")}; current creator wallet: {fmt(inspectionTiming.creatorMs/1000,"s")}.</p>}<p>{providerUsage.rpcRequests} RPC HTTP attempts / {providerUsage.rpcCalls} logical calls; {providerUsage.marketRequests} market-data requests; {providerUsage.quoteRequests||0} executable-quote HTTP requests; {providerUsage.providerHttpRequests||0} other provider HTTP requests. Cached and database reads do not consume RPC. Shared requests are charged to the initiating request. Counts are response-reported; cancelled responses may be missing. Server usage logs retain completed attempts.</p></details>}
   <details className="g11-panel"><summary>Evidence Gaps · Consolidated Limitations ({(a?a.missing:assessment.unresolved).length})</summary>{(a?a.missing:assessment.unresolved.map(x=>names[x.attribute]+': '+x.detail)).map((x,i)=><p key={i}>{typeof x==='string'?x.replaceAll('_',' '):'Unresolved evidence'}</p>)}</details>
+ </details>
  </div>;
 }
 

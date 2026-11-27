@@ -42,8 +42,8 @@ test('critical warnings stay in the scoreboard and top insights without a numeri
  base.coveragePct=100;base.riskScore=15;
  const html=renderToStaticMarkup(createElement(Panel,{assessment:base,selected:'overall'}));
  assert.ok(html.indexOf('Critical risk observed')<html.indexOf('Attribute score summary'));
- assert.ok(html.indexOf('Verified restricted sale')<html.indexOf('Three important insights'));
- assert.equal(base.riskScore,15);assert.match(html,/Maturity not established/);
+ assert.ok(html.indexOf('Verified restricted sale')<html.indexOf('KEY TOKEN INSIGHTS'));
+ assert.equal(base.riskScore,15);assert.doesNotMatch(html,/Maturity not established|Token Maturity/);
 });
 
 test('material acquisition triggers bounded token-account history and cached-event reuse',async()=>{

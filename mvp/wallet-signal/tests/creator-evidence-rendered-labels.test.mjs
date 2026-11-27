@@ -14,10 +14,10 @@ const {transformSync}=require('next/dist/build/swc');
 const dir=await mkdtemp(new URL('./.creator-evidence-render-',import.meta.url));
 let Dashboard;
 try {
- for(const name of ['EvidenceHUD','HolderBubbleMap','PracticalAssessmentPanel','GlitchV11Dashboard']) {
+ for(const name of ['TokenIntelligenceHUD','EvidenceHUD','HolderBubbleMap','PracticalAssessmentPanel','GlitchV11Dashboard']) {
   let source=await readFile(new URL(`../app/${name}.jsx`,import.meta.url),'utf8');
-  source=source.replaceAll("'../lib/","'../../lib/").replace('"./EvidenceHUD"','"./EvidenceHUD.mjs"');
-  source=source.replaceAll('"../lib/','"../../lib/').replace('"./HolderBubbleMap"','"./HolderBubbleMap.mjs"').replace('"./PracticalAssessmentPanel"','"./PracticalAssessmentPanel.mjs"');
+  source=source.replaceAll("'../lib/","'../../lib/").replace('"./EvidenceHUD"','"./EvidenceHUD.mjs"').replace('"./TokenIntelligenceHUD"','"./TokenIntelligenceHUD.mjs"');
+  source=source.replaceAll('"../lib/','"../../lib/').replace('"./TokenIntelligenceHUD"','"./TokenIntelligenceHUD.mjs"').replace('"./HolderBubbleMap"','"./HolderBubbleMap.mjs"').replace('"./PracticalAssessmentPanel"','"./PracticalAssessmentPanel.mjs"');
   // Static label fixtures select Creator Intelligence; real default/navigation is browser-tested.
   if(name==='GlitchV11Dashboard'){
    assert.ok(source.includes('useState("overall")'));
