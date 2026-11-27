@@ -92,3 +92,5 @@ body .doom-token-inspect { padding:12px !important; margin-top:8px !important; }
 @media(prefers-reduced-motion:reduce) { .g11 *, .doom-token-mode .doom-mascot * { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
 
 .g11>.g11-head { position:sticky; top:0; z-index:3; background:#08090cf5; padding:6px 0; }
+
+@media(max-width:480px) { .g11 .g11-verdict .g11-big { font-size:32px; margin:0; } }
