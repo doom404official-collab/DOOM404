@@ -88,7 +88,7 @@ export function makeScannerAdmission({env=process.env,store,identify=trustedScan
   }catch(error){
    if(ctx){ctx.closed=true;ctx.controller.abort();}clearTimeout(timer);
    if(admission?.lease){try{await db.finish({p_id:admission.lease,p_body:null,p_status:503});}catch{}}
-   return identityHeaders(deny(isScannerDenied(error)?error:new ScannerDenied('SCANNER_UNAVAILABLE')),env);
+   const response=deny(isScannerDenied(error)?error:new ScannerDenied('SCANNER_UNAVAILABLE'));if(ctx?.attempts){for(const [name,value] of Object.entries({'Rpc-Requests':ctx.attempts.rpcHttp,'Rpc-Calls':ctx.attempts.rpcCalls,'Market-Requests':ctx.attempts.market,'Quote-Requests':ctx.attempts.quotes,'Provider-Http-Requests':ctx.attempts.other}))response.headers.set('X-Glitch-'+name,String(value));}return identityHeaders(response,env);
   }
  };
 }

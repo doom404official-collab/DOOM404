@@ -22,6 +22,7 @@ export async function guardedProviderFetch(original,input,init){
    if(result.status!=='ADMITTED')throw new ScannerDenied(result.status||'PROVIDER_BUDGET',result.status==='LEASE_EXPIRED'?503:429,result.retryAfter||5);
   }
   if(ctx.closed||ctx.controller.signal.aborted)throw new ScannerDenied('REQUEST_DEADLINE');
+  if(charge){const usage=ctx.attempts||(ctx.attempts={rpcHttp:0,rpcCalls:0,market:0,quotes:0,other:0});if(charge.kind==='rpc'){usage.rpcHttp++;usage.rpcCalls+=charge.calls;}else if(charge.kind==='market')usage.market++;else if(new URL(typeof input==='string'||input instanceof URL?input:input.url).pathname.endsWith('/swap/v2/order'))usage.quotes++;else usage.other++;}
   return await original(input,{...init,signal:AbortSignal.any([ctx.controller.signal,init?.signal,input?.signal].filter(Boolean))});
  }catch(error){
   if(isScannerDenied(error)){ctx.denial=error;ctx.controller.abort(error);}
