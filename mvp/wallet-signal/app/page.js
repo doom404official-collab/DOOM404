@@ -566,7 +566,7 @@ function CreatorLookup() {
 function CompletedReport({id}) {
   const [report,setReport]=useState(null),[error,setError]=useState('');
   useEffect(()=>{let active=true;loadReport(id).then(data=>{if(active){if(data)setReport(data);else setError('This report is unavailable in this browser. Return to the scanner to create a report.');}}).catch(()=>{if(active)setError('Unable to read this saved report.');});return()=>{active=false;};},[id]);
-  return <main className="scanner-home"><a href="/">← GLITCH Scanner</a>{error?<p role="alert">{error}</p>:report?<GlitchV11Dashboard key={id} {...report} />:<p role="status">Loading saved intelligence report…</p>}</main>;
+  return <main className="scanner-home">{error?<p role="alert">{error}</p>:report?<GlitchV11Dashboard key={id} {...report} />:<p role="status">Loading saved intelligence report…</p>}</main>;
 }
 export default function Home() {
   const [reportId,setReportId]=useState(undefined);

@@ -25,7 +25,13 @@ async function handle(request) {
     const sum = reported.reduce((total, row) => total + row.liquidityUsd, 0);
     const coherent=rows.every(x=>x.evidenceConflict!==true)&&Number.isFinite(sum);
     const largestShare = coherent&&sum > 0 ? reported[0].liquidityUsd / sum * 100 : null;
+    // Reuse the already-fetched matching market record; no additional provider call.
+    const tokenRecord=payload.find(p=>p?.chainId==='solana'&&p?.baseToken?.address===mint)?.baseToken
+      ||payload.find(p=>p?.chainId==='solana'&&p?.quoteToken?.address===mint)?.quoteToken;
+    const clean=value=>typeof value==='string'?value.trim().slice(0,100):null;
+    const tokenMetadata=tokenRecord?{name:clean(tokenRecord.name),symbol:clean(tokenRecord.symbol),source:'DexScreener',mint}:null;
     return NextResponse.json({
+      tokenMetadata,
       status: rows.length ? "pools_reported" : "no_pools_reported",
       mint, observedAt: new Date().toISOString(), provider: "DexScreener",
       poolCountReturned: rows.length, pools: rows.slice(0, 30),
