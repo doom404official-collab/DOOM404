@@ -46,8 +46,8 @@ test('critical warnings open by default while no new score severity thresholds a
 test('sparse evidence stays visibly incomplete and generic disclaimers do not repeat in panels',()=>{
  const a=practicalAssessmentV2({result:{mint:replay().result.mint}});
  for(const selected of ['overall',...Object.keys(a.scores)]){
-  const html=render(a,selected);assert.match(html,/Partial assessment/);
+  const html=render(a,selected);assert.match(html,/Not assessed/);assert.doesNotMatch(html,/class="g11-risk-scale"/);
   assert.doesNotMatch(html,/does not guarantee safety|Unobserved risk may be higher|not a safety rating|not financial advice/);
  }
- assert.match(render(a),/Insufficient evidence/);
+ assert.match(render(a),/Not assessed/);
 });

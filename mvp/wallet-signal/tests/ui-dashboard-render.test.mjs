@@ -28,7 +28,7 @@ test('each dashboard tab renders exactly one consolidated disclaimer after optio
 });
 test('persistent token identity and original mascot remain available with absent mint evidence',()=>{
  const html=renderToStaticMarkup(createElement(Dashboard,{}));
- assert.match(html,/Insufficient evidence/);assert.match(html,/Not established/);
+ assert.match(html,/Not assessed/);assert.match(html,/Not established/);
  assert.match(html,/DOOM404 official red-hooded robot mascot/);
  assert.match(html,/aria-label="Copy full mint address"/);
  assert.equal((html.match(/not financial advice/g)||[]).length,1);

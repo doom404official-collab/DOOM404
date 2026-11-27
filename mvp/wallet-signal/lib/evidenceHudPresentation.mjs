@@ -1,4 +1,11 @@
 import {validSecurityConfiguration} from './securityConfigurationV2.mjs';
+export function assessmentDisplay(assessment,selected){
+ const attribute=assessment.scores[selected];
+ const coverage=attribute?attribute.coveragePct:assessment.coveragePct;
+ const assessed=coverage>0&&(!!attribute||coverage>=60&&assessment.scores.token_security.coveragePct>=65);
+ return {assessed,coverage,score:assessed?(attribute?attribute.riskScore:assessment.riskScore):null,label:coverage===0?'Not assessed':assessed?null:'Insufficient evidence'};
+}
+export const holderSampleLabel=n=>Number.isSafeInteger(n)&&n<20?'Sampled '+n+' wallets':'Top-20 wallets';
 /** Display-only formatting. No score calculation, evidence promotion or network access. */
 export function formatMetric(value,suffix=''){
  return typeof value==='number'&&Number.isFinite(value)?value.toLocaleString('en-US',{maximumFractionDigits:value>0&&value<0.01?6:2})+suffix:'Not assessed';

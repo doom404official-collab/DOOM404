@@ -32,7 +32,7 @@ test('no admitted context can make an outbound provider call',async()=>{let n=0;
 test('unauthorized workers reject before admission',async()=>{const h=fixture();const r=await h.run(new Request('https://fixture.invalid/api/holder-scan-worker',{method:'POST',body:'{}'}),()=>{throw Error('executed');},'holder-scan-worker');assert.equal(r.status,401);assert.equal(h.calls.length,0);});
 test('finish RPC boolean is accepted and HTTP store failure remains closed',async()=>{const store=createScannerQuotaStore({env,fetchImpl:async()=>Response.json(true)});assert.equal(await store.finish({}),true);const bad=createScannerQuotaStore({env,fetchImpl:async()=>new Response('denied',{status:403})});await assert.rejects(bad.admit({}),/QUOTA_STORE_UNAVAILABLE/);});
 test('all API routes have admission wrappers and independent policy entries',()=>{
- const routes=fs.readdirSync(new URL('../app/api',import.meta.url),{recursive:true}).filter(x=>x.endsWith('route.js'));const sql=fs.readFileSync(new URL('../db/migrations/20261127074008_scanner_durable_security_v1.sql',import.meta.url),'utf8');
+ const routes=fs.readdirSync(new URL('../app/api',import.meta.url),{recursive:true}).filter(x=>x.endsWith('route.js'));const sql=fs.readdirSync(new URL('../db/migrations/',import.meta.url)).filter(x=>x.endsWith('.sql')).map(x=>fs.readFileSync(new URL('../db/migrations/'+x,import.meta.url),'utf8')).join('\n');
  for(const route of routes){const code=fs.readFileSync(new URL('../app/api/'+route,import.meta.url),'utf8');assert.match(code,/return withScannerAdmission\(request,async/);assert.ok(sql.includes("('"+route.replace('/route.js','')+"',"),route);}
 });
 

@@ -414,7 +414,7 @@ function CreatorLookup() {
         const data=await response.json();
         if(stopped)return;
         if(data.scan?.mint===address)setHolderConnections({...data.scan,jobId:data.jobId,observedAt:data.scan.updatedAt});
-        if(["not_started","queued","running","partial"].includes(data.status))timer=setTimeout(refresh,12000);
+        if(["queued","running"].includes(data.status))timer=setTimeout(refresh,12000);
       }catch{if(!stopped)setHolderConnectionsError("Saved holder intelligence unavailable");}
       finally{if(!stopped)setHolderConnectionsBusy(false);}
     }
@@ -480,17 +480,18 @@ function CreatorLookup() {
     const interval=setInterval(refresh,30000);
     return ()=>{stopped=true;controller?.abort();clearInterval(interval);};
   },[result?.mint]);
-  const currentPool=result?.mint==='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump'?'6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA':result?.mint&&liquidity?.mint===result.mint?(liquidity.pools?.find(p=>p.baseMint===result.mint&&['So11111111111111111111111111111111111111112','EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'].includes(p.quoteMint))||liquidity.pools?.[0])?.pairAddress:null;
+  const poolCandidates=result?.mint&&liquidity?.mint===result.mint?(liquidity.pools||[]).slice(0,2).map(p=>p.pairAddress).filter(Boolean):[];
+  const currentPool=poolCandidates[0]||null,alternatePools=poolCandidates.slice(1).join(',');
   useEffect(()=>{
     setCurrentLiquidity(null);if(!result?.mint||!currentPool)return;
     const address=result.mint,controller=new AbortController();let stopped=false;
     const timer=setTimeout(()=>controller.abort(),12000);
     (async()=>{try{
-      const response=await fetch('/api/current-liquidity?mint='+encodeURIComponent(address)+'&pool='+encodeURIComponent(currentPool),{cache:'no-store',signal:controller.signal});recordUsage(response,address);
+      const response=await fetch('/api/current-liquidity?mint='+encodeURIComponent(address)+'&pool='+encodeURIComponent(currentPool)+'&alternates='+encodeURIComponent(alternatePools),{cache:'no-store',signal:controller.signal});recordUsage(response,address);
       const data=await response.json();if(!stopped&&response.ok&&data.mint===address){setCurrentLiquidity(data.observation||null);if(data.observation&&inspectionStartedAt.current!==null)setInspectionTiming(p=>({...p,liquidityMs:Math.round(performance.now()-inspectionStartedAt.current)}));}
     }catch{}finally{clearTimeout(timer);}})();
     return ()=>{stopped=true;controller.abort();clearTimeout(timer);};
-  },[result?.mint,currentPool]);
+  },[result?.mint,currentPool,alternatePools]);
   useEffect(()=>{
     setCurrentCreator(null);if(!result?.mint)return;
     const address=result.mint,controller=new AbortController();let stopped=false;
@@ -498,6 +499,32 @@ function CreatorLookup() {
     (async()=>{try{const response=await fetch('/api/current-creator?mint='+encodeURIComponent(address),{cache:'no-store',signal:controller.signal});recordUsage(response,address);const data=await response.json();if(!stopped&&response.ok&&data.version===2&&data.mint===address){setCurrentCreator(data);if(inspectionStartedAt.current!==null)setInspectionTiming(p=>({...p,creatorMs:Math.round(performance.now()-inspectionStartedAt.current)}));}}catch{}finally{clearTimeout(timer);}})();
     return ()=>{stopped=true;controller.abort();clearTimeout(timer);};
   },[result?.mint]);
+  const [investigationState,setInvestigationState]=useState(null);
+  useEffect(()=>{
+    const address=result?.mint;setInvestigationState(null);if(!address||busy)return;
+    let stopped=false;const controller=new AbortController();let timer;
+    async function run(attempt=0){
+      try{
+        setInvestigationState({status:'assessment_in_progress'});
+        const response=await fetch('/api/token-investigation?mint='+encodeURIComponent(address)+'&run=1',{cache:'no-store',signal:controller.signal});recordUsage(response,address);
+        const data=await response.json();if(stopped)return;
+        if((response.status===429||data.status==='assessment_in_progress')&&attempt<2){
+          const wait=Math.min(20,Math.max(2,Number(response.headers.get('Retry-After'))||5));
+          timer=setTimeout(()=>run(attempt+1),wait*1000);return;
+        }
+        setInvestigationState(response.ok?data:{status:response.status===429?'provider_temporarily_unavailable':'evidence_unavailable'});
+        if(response.ok&&data.status==='investigation_completed'){
+          await Promise.allSettled([
+            (async()=>{const evidence=await readDashboardEvidenceResponse(address,{signal:controller.signal});if(!stopped)setWorkerEvidence(evidence);})(),
+            (async()=>{const r=await fetch('/api/current-creator?mint='+encodeURIComponent(address),{cache:'no-store',signal:controller.signal});recordUsage(r,address);const c=await r.json();if(!stopped&&r.ok&&c.mint===address&&c.version===2)setCurrentCreator(c);})()
+          ]);
+        }
+      }catch{if(!stopped)setInvestigationState({status:'evidence_unavailable'});}
+    }
+    const deadline=setTimeout(()=>{controller.abort();if(!stopped)setInvestigationState({status:'evidence_unavailable',reason:'bounded_execution_deadline'});},90000);
+    timer=setTimeout(()=>run(),1500);
+    return ()=>{stopped=true;controller.abort();clearTimeout(timer);clearTimeout(deadline);};
+  },[result?.mint,busy]);
   const MAX_HISTORY_BATCHES = 5;
   async function refreshLiquidity(address = mint.trim(), signal) {
     setPoolEvidence(null);setPoolEvidenceError('');
@@ -588,6 +615,7 @@ function CreatorLookup() {
     {busy && <p role="status" style={{ color: "#ddd" }}>Reading token evidence…</p>}
 
     {result && <div className="doom-results" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
+      {investigationState&&<p role="status">{({assessment_in_progress:'Assessment in progress · bounded evidence investigation',investigation_completed:'Investigation completed · available evidence refreshed',evidence_unavailable:'Evidence unavailable · bounded investigation stopped',provider_temporarily_unavailable:'Provider temporarily unavailable · current assessment retained',unsupported_protocol:'Unsupported protocol'})[investigationState.status]||'Evidence available'}</p>}
       <GlitchV11Dashboard key={result.mint} result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} liquidityError={liquidityError} liquidityRefreshing={liquidityRefreshing} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} frozenHolderObservation={frozenHolderObservation} workerEvidence={workerEvidence} currentLiquidity={currentLiquidity} currentCreator={currentCreator} providerUsage={providerUsage} inspectionTiming={inspectionTiming} onRequestLegacyEvidence={()=>setLegacyEvidenceRequested(true)}><details className="doom-token-tools"><summary>Optional creator history investigation</summary><button type="button" disabled={busy||historyBatches>=MAX_HISTORY_BATCHES||historyBatches>0&&!historyCursor} onClick={event=>inspect(event,historyCursor,true)} style={{padding:10,background:"#281a20",color:"white",border:"1px solid #76424a",borderRadius:8}}> {historyBatches===0?"Investigate creator history":historyCursor?"Continue creator history":"Historical investigation stopped"} </button></details></GlitchV11Dashboard>
 
       {/* Previous token evidence panels retired from the layout; raw data and scan workers remain unchanged. */}

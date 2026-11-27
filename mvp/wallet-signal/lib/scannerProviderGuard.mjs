@@ -1,3 +1,4 @@
+import {setTimeout as delay} from 'node:timers/promises';
 import {scannerContext,ScannerDenied,isScannerDenied} from './scannerRequestContext.mjs';
 function classify(input,init){
  const url=new URL(typeof input==='string'||input instanceof URL?input:input.url);
@@ -18,7 +19,15 @@ export async function guardedProviderFetch(original,input,init){
  try{
   charge=classify(input,init);
   if(charge){
-   const result=await ctx.store.debit({p_id:ctx.lease,p_kind:charge.kind,p_provider:charge.provider,p_calls:charge.calls});
+   let result;
+   for(let attempt=0;attempt<3;attempt++){
+    if(ctx.closed||ctx.controller.signal.aborted)throw new ScannerDenied('REQUEST_DEADLINE');
+    result=await ctx.store.debit({p_id:ctx.lease,p_kind:charge.kind,p_provider:charge.provider,p_calls:charge.calls});
+    // Wait only for a one-second aggregate burst. Minute/day/request caps still
+    // fail closed. Every eventual transport still needs a successful debit.
+    if(result.status!=='PROVIDER_BUDGET'||result.retryAfter!==1||attempt===2)break;
+    await delay(1000,undefined,{signal:ctx.controller.signal});
+   }
    if(result.status!=='ADMITTED')throw new ScannerDenied(result.status||'PROVIDER_BUDGET',result.status==='LEASE_EXPIRED'?503:429,result.retryAfter||5);
   }
   if(ctx.closed||ctx.controller.signal.aborted)throw new ScannerDenied('REQUEST_DEADLINE');

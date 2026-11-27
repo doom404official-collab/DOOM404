@@ -74,7 +74,7 @@ test('read bridge is GET-only, independently handles missing tables and redacts'
  const calls=[];const out=await readDashboardEvidence({mint,url:'https://example.supabase.co',key:'secret',fetchImpl:async(url,options)=>{
   calls.push({url,options});return url.includes('creator_intelligence_jobs')?{ok:true,json:async()=>[row]}:{ok:false,status:404};
  }});
- assert.equal(calls.length,2);assert.ok(calls.every(x=>x.options.method==='GET'&&x.options.cache==='no-store'));
+ assert.equal(calls.length,3);assert.ok(calls.every(x=>x.options.method==='GET'&&x.options.cache==='no-store'));
  assert.equal(out.creator.holdings.supplySharePct,5);assert.equal(out.liquidity.status,'unavailable');assert.ok(!JSON.stringify(out).includes('secret'));
 });
 
@@ -89,7 +89,7 @@ test('read bridge bounds noncooperative bodies while preserving healthy sibling 
    const creatorRead=url.includes('creator_intelligence_jobs'),rows=creatorRead?[row]:[liquidityRow];
    return {ok:true,json:()=>((stalled==='creator')===creatorRead)?new Promise(resolve=>{release=()=>resolve(rows);}):Promise.resolve(rows)};
   }}).then(value=>{settled=true;return value;});
-  await flush();assert.equal(typeof release,'function');assert.equal(calls.length,2);
+  await flush();assert.equal(typeof release,'function');assert.equal(calls.length,3);
   t.mock.timers.tick(8999);await flush();assert.equal(settled,false);
   t.mock.timers.tick(1);await flush();assert.equal(settled,true,'whole read must settle at 9000ms, before the 12000ms client deadline');
   const out=await pending;assert.equal(out[stalled].status,'unavailable');
@@ -98,7 +98,7 @@ test('read bridge bounds noncooperative bodies while preserving healthy sibling 
   assert.ok(calls.every(x=>x.options.method==='GET'&&x.options.cache==='no-store'&&x.options.signal.aborted));
   const saved=JSON.stringify(out);t.mock.timers.tick(1000);release();await flush();
   assert.equal(JSON.stringify(out),saved,'a body completing at 10 seconds cannot mutate the returned partial result');
-  t.mock.timers.tick(2000);await flush();assert.equal(calls.length,2,'no retries or extra reads');
+  t.mock.timers.tick(2000);await flush();assert.equal(calls.length,3,'no retries or extra reads');
   assert.equal(consolidate(adaptDashboardEvidence({...base,workerEvidence:out}).scores).score,null);
  }
 });

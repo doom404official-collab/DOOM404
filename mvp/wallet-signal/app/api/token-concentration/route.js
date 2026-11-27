@@ -56,7 +56,7 @@ async function handle(request) {
     const values=[...sampledGroups.values()].sort((a,b)=>a>b?-1:a<b?1:0),sampleTotal=values.reduce((n,x)=>n+x,0n);
     const sampledWalletObservation=sampledSupply!==null&&sampledSupply>0n&&sampleTotal<=sampledSupply&&Number.isSafeInteger(parsedBatch?.context?.slot)?{
       version:2,observedAt:new Date().toISOString(),observedSharePct:Number(sampleTotal*1000000n/sampledSupply)/10000,largestSharePct:values.length?Number(values[0]*1000000n/sampledSupply)/10000:0,
-      eligibleWallets:sampledGroups.size,returnedAccounts:accounts.length,resolvedSampleAccounts,excludedSampleAccounts,rankingComplete:false,supplyRaw:sampledSupply.toString(),
+      wallets:[...sampledGroups].map(([wallet,amount])=>({wallet,amountRaw:amount.toString()})),eligibleWallets:sampledGroups.size,returnedAccounts:accounts.length,resolvedSampleAccounts,excludedSampleAccounts,rankingComplete:false,supplyRaw:sampledSupply.toString(),
       contextSlots:{discovery:largest.context?.slot,mint:parsedBatch.context.slot,sampledAccounts:parsedBatch.context.slot,classifications:ownerBatch?.context?.slot??null},atomicSubset:true,atomic:false,
       scope:'Same-slot balances and mint supply within a discovered largest-account sample; on-curve authorities grouped, PDA, observed program-owned and incinerator authorities excluded; classifications use a separate slot. Not a complete eligible-wallet ranking, beneficial ownership proof or custodian classification.'}:null;
     const sum = (n) => accounts.slice(0, n).reduce((a, x) => a + BigInt(x.amount), 0n);
