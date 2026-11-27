@@ -579,18 +579,17 @@ function CreatorLookup() {
     finally { clearTimeout(timer);controller.signal.removeEventListener('abort',cancel);if(current()){inspection.current=null;setBusy(false);if(!historyOnly&&inspectionStartedAt.current!==null)setInspectionTiming(p=>({...p,initialSourcesMs:Math.round(performance.now()-inspectionStartedAt.current)}));} }
   }
   return <section aria-label="GLITCH Scanner Token Analysis" className="doom-token-inspect" style={{ ...cardStyle, border: "none", boxShadow: "none" }}>
-    <p style={{ color: "#ff7777", fontSize: 12, fontWeight: 700, letterSpacing: 2 }}>DOOM404 // GLITCH SCANNER · TOKEN ANALYSIS</p>
-    <h2 style={{ marginTop: 8 }}>Inspect a Solana token</h2>
-    <p style={{ color: "#bbb", lineHeight: 1.6 }}>Enter a Solana token address to explore security, holder connections, creator activity, and liquidity intelligence in one assessment.</p>
+    <p className="doom-token-intro">GLITCH Scanner · Inspect a Solana token</p>
     <form onSubmit={inspect} style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-      <input aria-label="Solana token mint address" value={mint} onChange={e => {cancelInspection();setBusy(false);setError("");setResult(null);liquidityReader.current.reset(e.target.value.trim());setMint(e.target.value);}} placeholder="Paste Solana token mint address" required style={{ flex: "1 1 260px", minWidth: 0, padding: 12, background: "#101010", border: "1px solid #555", borderRadius: 8, color: "white" }} />
+      <input aria-label="Solana token mint address" value={mint} onChange={e => {cancelInspection();setBusy(false);setError("");setResult(null);liquidityReader.current.reset(e.target.value.trim());setMint(e.target.value);}} placeholder="Paste Solana token mint address" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="go" required style={{ flex: "1 1 260px", minWidth: 0, padding: 12, background: "#101010", border: "1px solid #555", borderRadius: 8, color: "white" }} />
       <button type="submit" disabled={busy} style={{ padding: "12px 18px", border: 0, borderRadius: 8, background: "#a52222", color: "white", cursor: "pointer" }}>{busy ? "INSPECTING..." : "INSPECT TOKEN"}</button>
     </form>
     {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
-    {busy && <p role="status" style={{ color: "#ddd" }}>Reading evidence. Unresolved attributes remain Unknown; initial evidence reads are bounded to 12 seconds.</p>}
-    {result && <button type="button" disabled={busy||historyBatches>=MAX_HISTORY_BATCHES||historyBatches>0&&!historyCursor} onClick={event=>inspect(event,historyCursor,true)} style={{padding:10,background:"#281a20",color:"white",border:"1px solid #76424a",borderRadius:8}}> {historyBatches===0?"Investigate creator history":historyCursor?"Continue creator history":"Historical investigation stopped"} </button>}
-    {result && <div aria-live="polite" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
-      <GlitchV11Dashboard result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} liquidityError={liquidityError} liquidityRefreshing={liquidityRefreshing} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} frozenHolderObservation={frozenHolderObservation} workerEvidence={workerEvidence} currentLiquidity={currentLiquidity} currentCreator={currentCreator} providerUsage={providerUsage} inspectionTiming={inspectionTiming} onRequestLegacyEvidence={()=>setLegacyEvidenceRequested(true)} />
+    {busy && <p role="status" style={{ color: "#ddd" }}>Reading token evidence…</p>}
+
+    {result && <div className="doom-results" style={{ marginTop: 16, overflowWrap: "anywhere", lineHeight: 1.8 }}>
+      <GlitchV11Dashboard key={result.mint} result={result} extensions={extensions} concentration={concentration} creatorEvidence={creatorEvidence} liquidity={liquidity} liquidityError={liquidityError} liquidityRefreshing={liquidityRefreshing} historicalHolders={holderConnections} holderSnapshotCompatible={holderReconciliation?.compatible===true} verifiedHolderEnvelope={verifiedHolderAssessment} holderEvidenceState={holderEvidenceState} frozenHolderObservation={frozenHolderObservation} workerEvidence={workerEvidence} currentLiquidity={currentLiquidity} currentCreator={currentCreator} providerUsage={providerUsage} inspectionTiming={inspectionTiming} onRequestLegacyEvidence={()=>setLegacyEvidenceRequested(true)}><details className="doom-token-tools"><summary>Optional creator history investigation</summary><button type="button" disabled={busy||historyBatches>=MAX_HISTORY_BATCHES||historyBatches>0&&!historyCursor} onClick={event=>inspect(event,historyCursor,true)} style={{padding:10,background:"#281a20",color:"white",border:"1px solid #76424a",borderRadius:8}}> {historyBatches===0?"Investigate creator history":historyCursor?"Continue creator history":"Historical investigation stopped"} </button></details></GlitchV11Dashboard>
+
       {/* Previous token evidence panels retired from the layout; raw data and scan workers remain unchanged. */}
     </div>}
   </section>;
@@ -829,7 +828,7 @@ export default function Home() {
         .doom-result-section[open] .doom-result-chevron { transform: rotate(180deg); }
         .doom-result-content { padding: 0 18px 20px; }
       `}</style>
-      <div
+      <div className={analysisMode === "token" ? "doom-token-mode" : undefined}
         style={{
           maxWidth: "1050px",
           margin: "0 auto"
@@ -855,7 +854,7 @@ export default function Home() {
                 marginBottom: "12px"
               }}
             >
-              Wallet Signal
+              {analysisMode === "token" ? "GLITCH Scanner" : "Wallet Signal"}
             </h1>
     
             <p
@@ -864,9 +863,7 @@ export default function Home() {
                 lineHeight: 1.7
               }}
             >
-              Explore observable Solana wallet activity,
-              transaction behaviour, SOL transfer flows
-              and transparent intelligence signals.
+              {analysisMode === "token" ? "On-chain risk intelligence." : "Explore observable Solana wallet activity, transaction behaviour, SOL transfer flows and transparent intelligence signals."}
             </p>
     
     
@@ -1861,3 +1858,4 @@ export default function Home() {
     </main>
   );
 }
+
