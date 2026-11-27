@@ -1,3 +1,4 @@
+import {validSecurityConfiguration} from './securityConfigurationV2.mjs';
 /** Display-only formatting. No score calculation, evidence promotion or network access. */
 export function formatMetric(value,suffix=''){
  return typeof value==='number'&&Number.isFinite(value)?value.toLocaleString('en-US',{maximumFractionDigits:value>0&&value<0.01?6:2})+suffix:'Not assessed';
@@ -13,4 +14,25 @@ export function exitQuoteValue(q){
  if(q?.executable===false)return null;
  const n=q?.impactIncludingFeesPct??q?.quoteRecoveryShortfallPct??q?.providerPriceImpactPct;
  return typeof n==='number'&&Number.isFinite(n)&&n>=0?n:null;
+}
+
+export function protocolName(id){return ({pump_amm:'PumpSwap',pump_swap:'PumpSwap',alchemy_executable_routes:'Executable routes (Alchemy)','spl-token-2022':'Solana Token-2022','token-2022':'Solana Token-2022','spl-token':'Solana Token Program',raydium_amm:'Raydium AMM',raydium_cpmm:'Raydium CPMM',raydium_clmm:'Raydium CLMM',orca_whirlpool:'Orca Whirlpools'})[id]||(['PumpSwap','Raydium','Orca','Raydium AMM','Raydium CPMM','Raydium CLMM','Orca Whirlpools'].includes(id)?id:'Unidentified program');}
+export function chartMaximum(values){const max=Math.max(0,...values.filter(v=>typeof v==='number'&&Number.isFinite(v)&&v>=0));if(max===0)return 1;const unit=10**Math.floor(Math.log10(max));return Math.ceil(max/unit/0.25)*unit*0.25;}
+export function securityControls(a,result,extensions){
+ const flags=new Set((a.flags||[]).map(f=>f.id)),known=id=>a.components?.find(c=>c.id===id)?.complete===true;
+ const parsed=result?.authorityDetailsStatus==='available'&&['spl-token','spl-token-2022','token-2022'].includes(result?.tokenProgram);
+ const same=extensions?.mint&&extensions.mint===result?.mint;
+ const at=Date.parse(extensions?.observedAt),fresh=Number.isFinite(at)&&at<=Date.now()&&Date.now()-at<=3600000;
+ const c=same&&extensions.verified===true&&fresh&&validSecurityConfiguration(extensions.configuration)?extensions.configuration:null;
+ const authority=(v,active,absent)=>v===null?absent:typeof v==='string'&&v.length?active:'Unresolved';
+ const freeze=c?c.freezeAuthority:result?.freezeAuthority;
+ const other=c?.permissions;
+ return [
+ {label:'Mint authority',status:known('supply_dilution')?(flags.has('mint_authority_active')?'Active':'Revoked'):'Unresolved',active:flags.has('mint_authority_active')},
+ {label:'Delegate / seizure controls',status:flags.has('permanent_delegate')?'Permanent delegate active':known('holder_asset_seizure')?'No seizure control observed':'Unresolved',active:flags.has('permanent_delegate')},
+ {label:'Freeze authority',status:parsed?authority(freeze,'Active','Revoked'):'Unresolved',active:flags.has('freeze_authority_active')},
+ {label:'Transfer restrictions',status:flags.has('transfer_restrictions')?'Restriction / control observed':known('transfer_and_fee_friction')&&known('holder_asset_seizure')?'No scored restriction observed':'Unresolved',active:flags.has('transfer_restrictions')},
+ {label:'Transfer fees',status:flags.has('mutable_transfer_fee')?'Mutable fee authority active':c&&typeof a.metrics.configuredFeePct==='number'?formatMetric(a.metrics.configuredFeePct,'% configured'):result?.tokenProgram==='spl-token'&&parsed||c&&extensions?.transferFee?.status==='not_observed'&&known('holder_asset_seizure')?'No additional fee observed':'Unresolved',active:flags.has('mutable_transfer_fee')||flags.has('transfer_fee')},
+ {label:'Other privileged controls',status:other?[other.closeAuthority&&'Mint close authority',other.confidentialAuthority&&'Confidential transfer authority',other.confidentialFeeAuthority&&'Confidential fee authority',c.unknownExtensions?.length&&'Unsupported extensions'].filter(Boolean).join(' · ')||'None in supported configuration':result?.tokenProgram==='spl-token'&&parsed?'No extension controls supported':'Unresolved',active:!!(other?.closeAuthority||other?.confidentialAuthority||other?.confidentialFeeAuthority||flags.has('unsupported_extensions'))}
+ ];
 }

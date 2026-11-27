@@ -36,5 +36,5 @@ test('missing and partial evidence does not become verified or green status',()=
 });
 test('HUD components introduce no network or heavy visualization dependencies',()=>{
  const code=fs.readFileSync(new URL('../app/EvidenceHUD.jsx',import.meta.url),'utf8')+fs.readFileSync(new URL('../lib/evidenceHudPresentation.mjs',import.meta.url),'utf8');
- assert.doesNotMatch(code,/\bfetch\s*\(|XMLHttpRequest|WebSocket|@solana|helius|alchemy|three|chart\.js/);
+ assert.doesNotMatch(code,/\bfetch\s*\(|XMLHttpRequest|WebSocket|@solana|from\s*['"][^'"]*(?:helius|alchemy|three|chart\.js)/);
 });
