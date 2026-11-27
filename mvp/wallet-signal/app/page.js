@@ -546,16 +546,18 @@ function CreatorLookup() {
   },[busy,result,scanStatus]);
   return <section aria-label="GLITCH Scanner Token Analysis" className="doom-token-inspect" style={{ ...cardStyle, border: "none", boxShadow: "none" }}>
     <div className="scanner-console">
-    <p className="doom-token-intro"><b aria-hidden="true">//</b> GLITCH Scanner <span>· Inspect a Solana token</span></p>
+    <h2 className="doom-token-intro">Inspect a Solana token</h2>
     <form onSubmit={inspect} className="scanner-form">
       <div className="scanner-input"><svg aria-hidden="true" viewBox="0 0 40 36" width="40" height="36"><defs><linearGradient id="solana" x2="1" y2="1"><stop stopColor="#00ffbd"/><stop offset=".5" stopColor="#37baff"/><stop offset="1" stopColor="#df2dff"/></linearGradient></defs><path fill="url(#solana)" d="M8 2h30l-8 8H0zm-8 13h30l8 8H8zm8 13h30l-8 8H0z"/></svg>
       <input aria-label="Solana token mint address" value={mint} onChange={e => {cancelInspection();setBusy(false);setError("");setResult(null);liquidityReader.current.reset(e.target.value.trim());setMint(e.target.value);}} placeholder="Paste token mint address" disabled={busy||savingReport} autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="go" required />
       <button type="button" className="scanner-paste" disabled={busy||savingReport} aria-label="Paste token mint address" onClick={async()=>{try{const text=await navigator.clipboard.readText();cancelInspection();setBusy(false);setResult(null);liquidityReader.current.reset(text.trim());setMint(text.trim());setError("");}catch{setError("Clipboard unavailable. Touch and hold the address field to paste.");}}}>Paste</button></div>
       <button className="scanner-submit" type="submit" disabled={busy||savingReport}>{busy ? "INSPECTING..." : "INSPECT TOKEN"}</button>
+      <div className="scanner-status-slot">
       {(busy||savingReport)&&<div className="scanner-progress" role="status" aria-live="polite"><strong>ANALYSING TOKEN...</strong><div className="scanner-track"><i /></div><span>{savingReport?"Saving intelligence report.":scanStatus}</span></div>}
-      {reportUrl&&<a className="scanner-report-link" href={reportUrl} target="_blank" rel="noopener noreferrer">VIEW INTELLIGENCE REPORT</a>}
+      {reportUrl&&!busy&&!savingReport&&<a className="scanner-report-link" href={reportUrl} target="_blank" rel="noopener noreferrer">VIEW INTELLIGENCE REPORT</a>}
+      {error && <p className="scanner-error" role="alert">{error}</p>}
+      </div>
     </form></div>
-    {error && <p role="alert" style={{ color: "#ff9999" }}>{error}</p>}
 
 
   </section>;
@@ -571,10 +573,10 @@ export default function Home() {
   useEffect(()=>setReportId(new URLSearchParams(window.location.search).get('report')),[]);
   if(reportId===undefined)return null;
   if(reportId)return <CompletedReport id={reportId}/>;
-  return <main className="scanner-home">
+  return <main className="scanner-home scanner-landing">
     <header className="scanner-brand"><strong><i aria-hidden="true">//</i> DOOM404</strong><span>— INTELLIGENCE SYSTEM —</span></header>
     <div className="scanner-heading"><h1><span>GLITCH</span> Scanner</h1><p>On-chain risk intelligence for Solana tokens.</p></div>
-    <picture className="scanner-scene"><source media="(max-width: 640px)" srcSet="/scanner-scene-750.webp"/><img src="/scanner-scene-1254.webp" alt="DOOM404 red-hood mascot scanning a holographic Solana symbol, surrounded by trading and security panels" width="1254" height="371" fetchPriority="high"/></picture>
+    <div className="scanner-scene"><picture><source media="(max-width: 640px)" srcSet="/scanner-scene-750.webp"/><img src="/scanner-scene-1254.webp" alt="DOOM404 red-hood mascot scanning a holographic Solana symbol, surrounded by trading and security panels" width="1254" height="371" fetchPriority="high"/></picture><div className="scanner-hologram" aria-hidden="true"><i className="hologram-ring"/><i className="hologram-energy"/></div></div>
     <CreatorLookup />
   </main>;
 }
