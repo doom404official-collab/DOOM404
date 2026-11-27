@@ -1,3 +1,4 @@
+import {RISK_WEIGHTS,RISK_METHODOLOGY_VERSION} from './riskMethodology.mjs';
 import {publicInvestigation} from './tokenInvestigationStore.mjs';
 import {projectHolderRelationshipsV2} from './holderRelationshipsV2.mjs';
 import {projectCreatorBehaviourV2} from './creatorBehaviourV2.mjs';
@@ -121,6 +122,6 @@ export async function readDashboardEvidence({mint,url,key,fetchImpl=fetch}={}){
  const freshCreator=investigation?.mint===mint&&investigation.creator?.attribution?.verified===true&&(!creator.creator||creator.creator===investigation.creator.creator)?investigation.creator:null;
  const mergedBehaviour=freshCreator?projectCreatorBehaviourV2({...retainedCreatorRow?.state,creatorVerifiedAcquisitionEvents:[...(retainedCreatorRow?.state?.creatorVerifiedAcquisitionEvents||[]),...(freshCreator.events||[])],creatorProcessedSignatures:[...new Set([...(retainedCreatorRow?.state?.creatorProcessedSignatures||[]),...(freshCreator.behaviourV2?.signatures||[])])]},mint,freshCreator.creator):null;
  if(mergedBehaviour)mergedBehaviour.processedHistoricalSignatures=Math.max(mergedBehaviour.processedHistoricalSignatures,freshCreator.behaviourV2.processedHistoricalSignatures);
- return {version:'1.1',mint,creator:freshCreator?{...creator,mint,attribution:freshCreator.attribution,behaviourV2:mergedBehaviour}:creator,
+ return {version:'1.1',methodologyVersion:RISK_METHODOLOGY_VERSION,weights:RISK_WEIGHTS,mint,creator:freshCreator?{...creator,mint,attribution:freshCreator.attribution,behaviourV2:mergedBehaviour}:creator,
   liquidity,canonicalHolder,holderRelationships:holderRelationships||investigation?.holderRelationships||null,investigation};
 }

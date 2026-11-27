@@ -1,3 +1,4 @@
+import {aggregateRisk} from '../lib/riskMethodology.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {assessmentDisplay,holderSampleLabel} from '../lib/evidenceHudPresentation.mjs';
@@ -32,8 +33,8 @@ test('store never reports success for a rejected CAS finish',async()=>{
 test('new evidence does not reweight categories or turn missing criteria into safety',()=>{
  const r=practicalAssessmentV2({result:{mint,tokenProgram:'spl-token',authorityDetailsStatus:'available',mintAuthority:null,freezeAuthority:null}});
  assert.equal(r.scores.liquidity_quality_safety.coveragePct,0);
- assert.equal(r.coveragePct,Object.values(r.scores).reduce((n,a)=>n+a.coveragePct,0)/4);
- assert.equal(r.riskScore,Object.values(r.scores).reduce((n,a)=>n+a.riskScore,0)/4);
+ assert.equal(r.coveragePct,aggregateRisk(r.scores).coveragePct);
+ assert.equal(r.riskScore,aggregateRisk(r.scores).riskScore);
 });
 
 test('an empty fresh-token pass preserves accepted historical creator events',async()=>{

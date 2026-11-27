@@ -9,13 +9,14 @@ export async function GET(request){
   const u=new URL(request.url),mint=u.searchParams.get('mint');
   const store=createTokenInvestigationStore();
   if(u.searchParams.get('run')!=='1')return Response.json({mint,...publicInvestigation(await store.read(mint))});
+  const previous=await store.read(mint);
   const claim=await store.claim(mint);
   if(claim.status==='cached')return Response.json({...claim.observation,cached:true});
   if(claim.status!=='claimed')return Response.json({mint,status:claim.status},{status:202});
   const endpoint=process.env.ALCHEMY_RPC_URL||process.env.ALCHEMY_SOLANA_ARCHIVE_RPC_URL||process.env.SOLANA_RPC_URL||process.env.HELIUS_RPC_URL;
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),34000);let requests=0;
   try{
-   const observation=await investigateToken({mint,rpc:async(method,params)=>{
+   const observation=await investigateToken({mint,previousObservation:previous?.observation,rpc:async(method,params)=>{
     controller.signal.throwIfAborted();
     // Deliberately serialize background work. The durable guard additionally
     // reserves every logical request before transport across all instances.

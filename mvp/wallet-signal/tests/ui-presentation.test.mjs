@@ -12,12 +12,12 @@ const Panel=loadJSX(new URL('../app/PracticalAssessmentPanel.jsx',import.meta.ur
 const render=(assessment,selected='overall')=>renderToStaticMarkup(createElement(Panel,{assessment,selected,onSelect:()=>{}}));
 test('scoreboard precedes selectable attributes, insights and flags without mutating evidence',()=>{
  const args=replay(),before=structuredClone(args),assessment=practicalAssessmentV2(args),scores=structuredClone(assessment),html=render(assessment);
- assert.equal(assessment.coveragePct,82.5);assert.equal(assessment.riskScore,12.15);
+ assert.equal(assessment.coveragePct,83);assert.equal(assessment.riskScore,15.15);
  assert.ok(html.indexOf('Overall assessment')<html.indexOf('Attribute score summary'));
  assert.ok(html.indexOf('Attribute score summary')<html.indexOf('Three important insights'));
  assert.ok(html.indexOf('Three important insights')<html.indexOf('Prioritized risk flags'));
  assert.equal((html.match(/class="g11-attribute-card"/g)||[]).length,4);
- assert.match(html,/Partial assessment/);assert.match(html,/82.5%/);
+ assert.match(html,/Partial assessment/);assert.match(html,/83%/);
  assert.deepEqual(args,before);assert.deepEqual(assessment,scores);
 });
 test('all four material flags survive compact presentation and retain unresolved classification',()=>{
