@@ -1,3 +1,4 @@
+import {loadJSX} from './helpers/render-jsx.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -7,9 +8,7 @@ import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {practicalAssessmentV2} from '../lib/practicalScoringV2.mjs';
 import {replay} from './fixtures/ui-assessment-replay.mjs';
-const require=createRequire(import.meta.url),{transformSync}=require('next/dist/build/swc');
-const {code}=transformSync(fs.readFileSync(new URL('../app/PracticalAssessmentPanel.jsx',import.meta.url),'utf8'),{filename:'panel.jsx',jsc:{parser:{syntax:'ecmascript',jsx:true},transform:{react:{runtime:'automatic'}}},module:{type:'commonjs'}});
-const ctx={exports:{},require};vm.runInNewContext(code,ctx);const Panel=ctx.exports.default;
+const Panel=loadJSX(new URL('../app/PracticalAssessmentPanel.jsx',import.meta.url)).default;
 const render=(assessment,selected='overall')=>renderToStaticMarkup(createElement(Panel,{assessment,selected,onSelect:()=>{}}));
 test('scoreboard precedes selectable attributes, insights and flags without mutating evidence',()=>{
  const args=replay(),before=structuredClone(args),assessment=practicalAssessmentV2(args),scores=structuredClone(assessment),html=render(assessment);
