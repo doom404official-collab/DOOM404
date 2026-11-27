@@ -52,7 +52,7 @@ export function practicalAssessmentV2({result,extensions,workerEvidence,creatorE
  const identity=!!attributedCreator&&(!b||same(b)&&b.version===2&&b.creator===attributedCreator);
  const wallet=identity&&same(currentCreator)&&currentCreator.version===2&&currentCreator.creator===attributedCreator&&currentCreator.status==='verified_current_wallet'&&fresh(currentCreator.observedAt,now)?currentCreator:identity&&b?.currentWallet&&fresh(b.currentWallet.observedAt,now)?b.currentWallet:null;
  const resultSupply=result?.supplyRaw||result?.rawSupply;
- const useMintResult=raw(resultSupply)&&(!l||Number.isSafeInteger(result.contextSlot)&&result.contextSlot>=l.slot);
+ const useMintResult=raw(resultSupply)&&(!raw(l?.mintSupplyRaw)||Number.isSafeInteger(result.contextSlot)&&result.contextSlot>=l.slot);
  const supply=useMintResult?resultSupply:l?.mintSupplyRaw,supplySlot=useMintResult?result.contextSlot:l?.slot;
  const currentPct=wallet&&raw(wallet.rawBalance)&&raw(supply)&&BigInt(wallet.rawBalance)<=BigInt(supply)?pct(wallet.rawBalance,supply):null;
  const ledger=identity?b?.ledger:null,acquired=ledger?.purchasedRaw;

@@ -30,7 +30,7 @@ async function handle(request){
      const addresses=[poolAddress,cp.vaultA.toBase58(),cp.vaultB.toBase58(),cp.mintA.toBase58(),cp.mintB.toBase58(),cp.mintLp.toBase58(),cp.configId.toBase58()];
      const batch=await connection.getMultipleAccountsInfoAndContext(addresses.map(x=>new PublicKey(x)),{commitment:'finalized'});
      const raw={schemaVersion:1,provider:batchProvider,commitment:'finalized',observedAt:new Date().toISOString(),addresses,response:{context:batch.context,value:batch.value.map(a=>a?{owner:a.owner.toBase58(),executable:a.executable,space:a.data.length,data:[a.data.toString('base64'),'base64']}:null)}};
-     const observation=projectRaydiumCpmmV2(raw,mint);return observation?{mint,status:'verified_protocol_calculation',observation}:{mint,status:'unsupported_or_incompatible_configuration'};
+     let reason;const observation=projectRaydiumCpmmV2(raw,mint,{onReject:r=>{reason=r;}});return observation?{mint,status:'verified_protocol_calculation',observation}:{mint,status:'unsupported_or_incompatible_configuration',reason:reason||'pool_account_binding_or_vault_controls_unverified'};
     }
     if(!first||first.owner.toBase58()!==PUMP_AMM_PROGRAM_ID.toBase58()||first.executable!==false)return {mint,status:'unsupported_protocol',observedOwnerProgram:first?.owner.toBase58()??null};
     const p=PUMP_AMM_SDK.decodePool(first);
@@ -47,7 +47,7 @@ async function handle(request){
    };
    for(let i=0;i<candidates.length;i++){
     let r;try{r=await calculate(candidates[i],poolHeaders[i]);}catch{r={mint,status:'protocol_calculation_unavailable'};}
-    attempts.push({pool:candidates[i],...identifyCurrentPool(poolHeaders[i],mint,candidates[i]),calculationStatus:r.status});
+    attempts.push({pool:candidates[i],...identifyCurrentPool(poolHeaders[i],mint,candidates[i]),calculationStatus:r.status,calculationReason:r.reason||null});
     if(r.observation)return {...r,observation:{...r.observation,poolIdentities:attempts},poolAttempts:attempts};
    }
    // A rejected direct-pool calculation must not suppress supported executable routes.

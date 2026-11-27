@@ -508,8 +508,8 @@ function CreatorLookup() {
         setInvestigationState({status:'assessment_in_progress'});
         const response=await fetch('/api/token-investigation?mint='+encodeURIComponent(address)+'&run=1',{cache:'no-store',signal:controller.signal});recordUsage(response,address);
         const data=await response.json();if(stopped)return;
-        if((response.status===429||data.status==='assessment_in_progress')&&attempt<2){
-          const wait=Math.min(20,Math.max(2,Number(response.headers.get('Retry-After'))||5));
+        if((response.status===429||data.status==='assessment_in_progress')&&attempt<3){
+          const wait=Math.min(20,Math.max(15,Number(response.headers.get('Retry-After'))||15));
           timer=setTimeout(()=>run(attempt+1),wait*1000);return;
         }
         clearTimeout(deadline);setInvestigationState(response.ok?data:{status:response.status===429?'provider_temporarily_unavailable':'evidence_unavailable'});

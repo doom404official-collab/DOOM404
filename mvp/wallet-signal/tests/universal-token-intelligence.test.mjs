@@ -47,3 +47,9 @@ test('an empty fresh-token pass preserves accepted historical creator events',as
  assert.deepEqual(out.creator.behaviourV2.ledger,prior.ledger);
  assert.ok(prior.ledger.acceptedCount>0);
 });
+
+test('quote-only liquidity does not erase an independently observed creator balance denominator',()=>{
+ const now=Date.now(),creator='6qUtYLyyoYCNj1Snd6FkGfTAzXHgSWCS4nyg871VwD13';
+ const args={now,result:{mint,tokenProgram:'spl-token',authorityDetailsStatus:'available',mintAuthority:null,freezeAuthority:null,supplyRaw:'1000000000',contextSlot:100},currentCreator:{version:2,mint,creator,status:'verified_current_wallet',rawBalance:'0',slot:101,observedAt:new Date(now).toISOString(),attribution:{verified:true,verification:'transaction_local_protocol_creator'}},currentLiquidity:{version:2,mint,protocol:'alchemy_executable_routes',observedAt:new Date(now).toISOString(),executableDepth:{verified:true},referenceQuotes:[1,10,100].map(n=>({referenceNotional:n,quoteRecoveryShortfallPct:2})),flags:[],limitations:[]}};
+ const a=practicalAssessmentV2(args);assert.equal(a.scores.creator_intelligence.coveragePct,60);assert.equal(a.scores.creator_intelligence.metrics.currentWalletSharePct,0);
+});

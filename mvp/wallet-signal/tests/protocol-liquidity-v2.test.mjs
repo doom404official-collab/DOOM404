@@ -25,3 +25,10 @@ test('disabled swaps and external vault delegates cannot inherit benign exit or 
  const d=projectPumpLiquidityV2(disabled,pump.addresses[3]);assert.ok(d);assert.ok(d.referenceQuotes.every(q=>q.executable===false&&q.impactIncludingFeesPct===null));assert.ok(d.flags.some(f=>f.id==='selling_disabled'));
  for(const [fixture,project,mintIndex] of [[pump,projectPumpLiquidityV2,3],[cp,projectRaydiumCpmmV2,4]]){const raw=structuredClone(fixture),bytes=Buffer.from(raw.response.value[1].data[0],'base64');bytes.writeUInt32LE(1,72);bytes.fill(1,76,108);bytes.writeBigUInt64LE(1n,121);raw.response.value[1].data[0]=bytes.toString('base64');const a=project(raw,raw.addresses[mintIndex]);assert.ok(a);assert.equal(a.withdrawal.maxCurrentWithdrawalPct,null);assert.ok(a.flags.some(f=>f.id==='external_vault_delegate'));}
 });
+
+test('standard SPL None authority options ignore inactive bytes as the official mint decoder specifies',()=>{
+ const raw=structuredClone(cp),account=raw.response.value[5],b=Buffer.from(account.data[0],'base64');
+ assert.equal(b.readUInt32LE(46),0);b.fill(23,50,82);account.data[0]=b.toString('base64');
+ const a=projectRaydiumCpmmV2(raw,raw.addresses[4]);assert.ok(a);assert.equal(a.protocol,'raydium_cpmm');
+ b.writeUInt32LE(2,46);account.data[0]=b.toString('base64');assert.equal(projectRaydiumCpmmV2(raw,raw.addresses[4]),null);
+});
