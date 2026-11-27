@@ -1,5 +1,5 @@
 "use client";
-import {RiskGauge,CoverageGauge,RiskOverview} from "./TokenIntelligenceHUD";
+import {RiskGauge,CoverageGauge,RiskOverview,IntelligenceIcon} from "./TokenIntelligenceHUD";
 import EvidenceHUD,{CriterionContributions} from "./EvidenceHUD";
 import {formatTokenQuantity,assessmentDisplay,holderSampleLabel} from "../lib/evidenceHudPresentation.mjs";
 import {RISK_WEIGHTS,RISK_METHODOLOGY_VERSION} from "../lib/riskMethodology.mjs";
@@ -16,7 +16,7 @@ export default function PracticalAssessmentPanel({assessment,selected,providerUs
  return <div data-testid="practical-assessment-v2">
   <article className="g11-panel g11-verdict" aria-label={a?names[selected]+' assessment':'Overall assessment'}>
    <div className="g11-kicker">{a?names[selected]:'Overall assessment'}</div>
-   <div className="ti-assessment"><RiskGauge display={display} title={a?names[selected].toUpperCase()+' RISK':'OVERALL OBSERVED RISK'} partial={a?a.coveragePct<100:!assessment.complete}/><div className="ti-coverage-stack"><CoverageGauge value={a?a.coveragePct:assessment.coveragePct}/>{!a&&<div className="ti-quick"><div><span>Exit cost · 100 {liq.quotes?.[2]?.quoteSymbol||'SOL'}</span><strong>{liq.quotes?.[2]?.executable===false?'Unavailable':fmt(liq.quotes?.[2]?.impactIncludingFeesPct,'%')}</strong><small>Fee-inclusive estimate</small></div><div><span>Liquidity / FDV</span><strong>{fmt(liq.liquidityToFullyDilutedValuePct,'%')}</strong></div><div><span>Largest eligible holder</span><strong>{fmt(holders.largestPct,'%')}</strong></div></div>}</div></div>
+   <div className="ti-assessment"><RiskGauge display={display} title={a?names[selected].toUpperCase()+' RISK':'OVERALL OBSERVED RISK'} partial={a?a.coveragePct<100:!assessment.complete}/><div className="ti-coverage-stack"><CoverageGauge value={a?a.coveragePct:assessment.coveragePct}/>{!a&&<div className="ti-quick"><div><IntelligenceIcon kind="liquidity_quality_safety"/><span>Exit cost · 100 {liq.quotes?.[2]?.quoteSymbol||'SOL'}</span><strong>{liq.quotes?.[2]?.executable===false?'Unavailable':fmt(liq.quotes?.[2]?.impactIncludingFeesPct,'%')}</strong><small>Fee-inclusive estimate</small></div><div><IntelligenceIcon kind="liquidity_quality_safety"/><span>Liquidity / FDV</span><strong>{fmt(liq.liquidityToFullyDilutedValuePct,'%')}</strong></div><div><IntelligenceIcon kind="holder_intelligence"/><span>Largest eligible holder</span><strong>{fmt(holders.largestPct,'%')}</strong></div></div>}</div></div>
    {flags.filter(f=>f.severity==='critical').map(f=><div className="g11-flag g11-flag--critical" role="alert" key={f.id}><strong>⚠ Critical risk observed</strong><p>{f.detail}</p></div>)}
   </article>
   {!a&&<RiskOverview assessment={assessment} onSelect={onSelect}/>}
