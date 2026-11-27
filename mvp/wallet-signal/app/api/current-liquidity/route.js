@@ -1,3 +1,4 @@
+import {identifyCurrentPool} from '../../../lib/currentPoolIdentity.mjs';
 import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {collectAlchemyQuotesV2} from '../../../lib/alchemyExecutableQuotesV2.mjs';
 import {RAYDIUM_CPMM_PROGRAM,decodeCpmmPool,projectRaydiumCpmmV2} from '../../../lib/raydiumCpmmAssessmentV2.mjs';
@@ -46,12 +47,12 @@ async function handle(request){
    };
    for(let i=0;i<candidates.length;i++){
     let r;try{r=await calculate(candidates[i],poolHeaders[i]);}catch{r={mint,status:'protocol_calculation_unavailable'};}
-    attempts.push({pool:candidates[i],status:r.status,ownerProgram:poolHeaders[i]?.owner?.toBase58()??null});
-    if(r.observation)return {...r,poolAttempts:attempts};
+    attempts.push({pool:candidates[i],...identifyCurrentPool(poolHeaders[i],mint,candidates[i]),calculationStatus:r.status});
+    if(r.observation)return {...r,observation:{...r.observation,poolIdentities:attempts},poolAttempts:attempts};
    }
    // A rejected direct-pool calculation must not suppress supported executable routes.
    const observation=await collectAlchemyQuotesV2({mint,rpcUrl:process.env.ALCHEMY_RPC_URL||process.env.ALCHEMY_SOLANA_ARCHIVE_RPC_URL||process.env.SOLANA_RPC_URL,signal:controller.signal});
-   return observation?{mint,status:'verified_executable_routes',observation,poolAttempts:attempts}:{mint,status:attempts.some(a=>a.status==='protocol_calculation_unavailable')?'provider_temporarily_unavailable':'unsupported_protocol',poolAttempts:attempts,missing:['Pool-specific reserves or withdrawal controls unavailable for returned configurations; executable route provider returned no validated quotes.']};
+   return observation?{mint,status:'verified_executable_routes',observation:{...observation,poolIdentities:attempts},poolAttempts:attempts}:{mint,status:attempts.some(a=>a.calculationStatus==='protocol_calculation_unavailable')?'provider_temporarily_unavailable':'unsupported_protocol',poolAttempts:attempts,missing:['Pool-specific reserves or withdrawal controls unavailable for returned configurations; executable route provider returned no validated quotes.']};
    })();
    const data=await Promise.race([work,deadline]);cache.set(id,{at:Date.now(),data});if(cache.size>100)cache.delete(cache.keys().next().value);return data;
   }finally{clearTimeout(timer);controller.abort();}

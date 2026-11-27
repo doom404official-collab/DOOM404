@@ -17,7 +17,7 @@ async function handle(request) {
   catch { return NextResponse.json({ error: "Invalid token mint address" }, { status: 400 }); }
   const deadlineController=new AbortController(),deadlineTimer=setTimeout(()=>deadlineController.abort(),9000);
   try {
-    const connection = createReliableConnection({timeoutMs:2500,retries:0,maxResponseBytes:2000000,fetchImpl:(url,init)=>{
+    const connection = createReliableConnection({primary:process.env.ALCHEMY_RPC_URL||process.env.ALCHEMY_SOLANA_ARCHIVE_RPC_URL||process.env.SOLANA_RPC_URL||process.env.HELIUS_RPC_URL,timeoutMs:2500,retries:0,maxResponseBytes:2000000,fetchImpl:(url,init)=>{
       if(deadlineController.signal.aborted)throw Error('READ_DEADLINE');
       return fetch(url,{...init,signal:AbortSignal.any([init.signal,deadlineController.signal,request.signal].filter(Boolean))});
     }});
@@ -75,8 +75,9 @@ async function handle(request) {
         warning: "Token accounts are not unique wallets or beneficial owners. Pools, exchanges, escrow and multiple accounts per owner can distort concentration. These are observed account balances, not a scam score." },
       interpretation: "Descriptive account-balance evidence only. No holder ownership or risk verdict inferred."
     }, { headers: { "Cache-Control": "no-store" } });
-  } catch {
-    return NextResponse.json({ status: "unavailable", error: "Largest token-account balances unavailable from RPC; do not infer concentration." }, { status: 503, headers: { "Cache-Control": "no-store" } });
+  } catch (failure) {
+    const reason=deadlineController.signal.aborted?"provider_deadline":Number.isSafeInteger(failure?.code)?"provider_rpc_rejected":"provider_temporarily_unavailable";
+    return NextResponse.json({ status: "unavailable", reason, error: "Largest token-account balances unavailable from RPC; do not infer concentration." }, { status: 503, headers: { "Cache-Control": "no-store" } });
   } finally {clearTimeout(deadlineTimer);deadlineController.abort();}
 }
 export async function GET(request){

@@ -111,13 +111,16 @@ export async function readDashboardEvidence({mint,url,key,fetchImpl=fetch}={}){
   }catch{return {mint,status:'unavailable',missing:['Persisted evidence unavailable or incompatible']};}
   finally{clearTimeout(timer);controller.abort();}
  }
+ let retainedCreatorRow=null;
  const [creator,liquidity,canonicalHolder,holderRelationships,investigation]=await Promise.all([
-  read('creator_intelligence_jobs','mint,status,stage,state,updated_at',projectCreatorCheckpoint),
+  read('creator_intelligence_jobs','mint,status,stage,state,updated_at',(row,mint)=>{retainedCreatorRow=row;return projectCreatorCheckpoint(row,mint);}),
   read('liquidity_evidence_checkpoints','mint,evidence,updated_at',projectLiquidityCheckpoint),
   mint===CANONICAL_HOLDER_BASELINE.mint?read('glitch_top20_snapshots','id,mint,status,snapshot_slot,supply_raw,holder_ranking,observation',projectCanonicalHolderObservation,'&id=eq.'+CANONICAL_HOLDER_BASELINE.snapshotId):Promise.resolve({mint,status:'not_started'}),
   mint===CANONICAL_HOLDER_BASELINE.mint?read('glitch_holder_scan_jobs','mint,holder_set_hash,version,checkpoint,updated_at',projectHolderRelationshipsV2,'&id=eq.49feee9f-7c79-4d6f-9767-151db38e1fca'):Promise.resolve(null),
   read('scanner_token_investigations','mint,status,observation,updated_at,lease_until,expires_at',row=>publicInvestigation(row))]);
- const freshCreator=investigation?.mint===mint&&investigation.creator?.attribution?.verified===true?investigation.creator:null;
- return {version:'1.1',mint,creator:freshCreator?{...creator,mint,attribution:freshCreator.attribution,behaviourV2:freshCreator.behaviourV2}:creator,
+ const freshCreator=investigation?.mint===mint&&investigation.creator?.attribution?.verified===true&&(!creator.creator||creator.creator===investigation.creator.creator)?investigation.creator:null;
+ const mergedBehaviour=freshCreator?projectCreatorBehaviourV2({...retainedCreatorRow?.state,creatorVerifiedAcquisitionEvents:[...(retainedCreatorRow?.state?.creatorVerifiedAcquisitionEvents||[]),...(freshCreator.events||[])],creatorProcessedSignatures:[...new Set([...(retainedCreatorRow?.state?.creatorProcessedSignatures||[]),...(freshCreator.behaviourV2?.signatures||[])])]},mint,freshCreator.creator):null;
+ if(mergedBehaviour)mergedBehaviour.processedHistoricalSignatures=Math.max(mergedBehaviour.processedHistoricalSignatures,freshCreator.behaviourV2.processedHistoricalSignatures);
+ return {version:'1.1',mint,creator:freshCreator?{...creator,mint,attribution:freshCreator.attribution,behaviourV2:mergedBehaviour}:creator,
   liquidity,canonicalHolder,holderRelationships:holderRelationships||investigation?.holderRelationships||null,investigation};
 }

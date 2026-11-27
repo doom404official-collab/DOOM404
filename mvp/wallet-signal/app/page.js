@@ -512,14 +512,14 @@ function CreatorLookup() {
           const wait=Math.min(20,Math.max(2,Number(response.headers.get('Retry-After'))||5));
           timer=setTimeout(()=>run(attempt+1),wait*1000);return;
         }
-        setInvestigationState(response.ok?data:{status:response.status===429?'provider_temporarily_unavailable':'evidence_unavailable'});
+        clearTimeout(deadline);setInvestigationState(response.ok?data:{status:response.status===429?'provider_temporarily_unavailable':'evidence_unavailable'});
         if(response.ok&&data.status==='investigation_completed'){
           await Promise.allSettled([
             (async()=>{const evidence=await readDashboardEvidenceResponse(address,{signal:controller.signal});if(!stopped)setWorkerEvidence(evidence);})(),
             (async()=>{const r=await fetch('/api/current-creator?mint='+encodeURIComponent(address),{cache:'no-store',signal:controller.signal});recordUsage(r,address);const c=await r.json();if(!stopped&&r.ok&&c.mint===address&&c.version===2)setCurrentCreator(c);})()
           ]);
         }
-      }catch{if(!stopped)setInvestigationState({status:'evidence_unavailable'});}
+      }catch{clearTimeout(deadline);if(!stopped)setInvestigationState({status:'evidence_unavailable'});}
     }
     const deadline=setTimeout(()=>{controller.abort();if(!stopped)setInvestigationState({status:'evidence_unavailable',reason:'bounded_execution_deadline'});},90000);
     timer=setTimeout(()=>run(),1500);

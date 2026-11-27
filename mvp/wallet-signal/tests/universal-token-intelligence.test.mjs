@@ -35,3 +35,15 @@ test('new evidence does not reweight categories or turn missing criteria into sa
  assert.equal(r.coveragePct,Object.values(r.scores).reduce((n,a)=>n+a.coveragePct,0)/4);
  assert.equal(r.riskScore,Object.values(r.scores).reduce((n,a)=>n+a.riskScore,0)/4);
 });
+
+test('an empty fresh-token pass preserves accepted historical creator events',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const {readDashboardEvidence,projectCreatorCheckpoint}=await import('../lib/dashboardEvidenceBridge.mjs');
+ const fixture=JSON.parse(readFileSync(new URL('./fixtures/creator-observed-behaviour-v2.json',import.meta.url)));
+ const row={mint:fixture.mint,status:'partial',stage:'selling',state:{originEvidence:[{creator:fixture.creator}],practicalScoringEvidenceV2:fixture}};
+ const prior=projectCreatorCheckpoint(row,fixture.mint).behaviourV2;
+ const observation={mint:fixture.mint,status:'investigation_completed',creator:{creator:fixture.creator,attribution:{mint:fixture.mint,creator:fixture.creator,verified:true,verification:'transaction_local_protocol_creator'},events:[],behaviourV2:{processedHistoricalSignatures:0}}};
+ const out=await readDashboardEvidence({mint:fixture.mint,url:'https://fixture.supabase.co',key:'test',fetchImpl:async url=>({ok:true,json:async()=>url.includes('creator_intelligence_jobs')?[row]:url.includes('scanner_token_investigations')?[{status:'complete',expires_at:'2099-01-01',observation}]:[]})});
+ assert.deepEqual(out.creator.behaviourV2.ledger,prior.ledger);
+ assert.ok(prior.ledger.acceptedCount>0);
+});
