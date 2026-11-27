@@ -1,0 +1,24 @@
+import {createRequire} from 'node:module';
+import assert from 'node:assert/strict';
+const {chromium}=createRequire(import.meta.url)('playwright');
+const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
+const context=await browser.newContext({viewport:{width:393,height:852},isMobile:true,hasTouch:true});
+let calls=[];let release;
+await context.route('**/api/**',async route=>{
+ const u=new URL(route.request().url()),mint=u.searchParams.get('mint');calls.push(u.pathname);
+ if(u.pathname==='/api/token-current')await new Promise(r=>release=r);
+ const data=u.pathname==='/api/token-current'?{mint,tokenProgram:'spl-token',mintAuthority:null,freezeAuthority:null,authorityDetailsStatus:'parsed'}:u.pathname==='/api/token-liquidity'?{mint,status:'no_pools_reported',pools:[]}:u.pathname==='/api/token-investigation'?{mint,status:'investigation_completed'}:{mint,status:'unavailable'};
+ await route.fulfill({json:data});
+});
+const page=await context.newPage();await page.goto('http://127.0.0.1:3127');
+const field=page.getByPlaceholder('Paste token mint address');await field.fill('7'.repeat(32));
+const input=await page.locator('.scanner-input').boundingBox(),form=await page.locator('.scanner-form').boundingBox();assert.ok(Math.abs(input.width/form.width-.85)<.02);assert.ok(input.height>=44&&input.height<=52);
+await page.getByRole('button',{name:'INSPECT TOKEN',exact:true}).click();await page.getByText('ANALYSING TOKEN...').waitFor();assert.equal(await field.isDisabled(),true);assert.equal(calls.filter(x=>x==='/api/token-current').length,1);
+await page.screenshot({path:'/tmp/report-mobile-scanning.png',fullPage:true});release();
+const link=page.getByRole('link',{name:'VIEW INTELLIGENCE REPORT'});await link.waitFor({timeout:20000});assert.equal(await page.locator('.doom-results').count(),0);
+const href=await link.getAttribute('href');const before=calls.length;
+const report=await context.newPage();await report.goto('http://127.0.0.1:3127'+href);await report.getByRole('tab',{name:/Overall/i}).waitFor();await report.reload();await report.getByRole('tab',{name:/Overall/i}).waitFor();assert.equal(calls.length,before);
+await report.screenshot({path:'/tmp/report-mobile-overall.png',fullPage:true});
+await field.fill('8'.repeat(32));await page.getByRole('button',{name:'INSPECT TOKEN',exact:true}).click();await page.getByText('ANALYSING TOKEN...').waitFor();release();await link.waitFor();assert.notEqual(await link.getAttribute('href'),href);
+console.log('PASS: 85% width, 48px input, full mint, scan panel, duplicate prevention, separate report, refresh zero API calls, sequential isolated report IDs');
+await browser.close();
