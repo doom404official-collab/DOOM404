@@ -1,5 +1,5 @@
 "use client";
-import {IntelligenceIcon} from "./TokenIntelligenceHUD";
+import {IntelligenceIcon,AngularFrame} from "./TokenIntelligenceHUD";
 import PracticalAssessmentPanel from "./PracticalAssessmentPanel";
 import {practicalAssessmentV2} from "../lib/practicalScoringV2.mjs";
 import {mintAuthorityEvidence,normalizeMintAuthority} from "../lib/mintAuthorityEvidence.mjs";
@@ -55,34 +55,8 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
  const [copyStatus,setCopyStatus]=useState('');
  async function copyMint(){try{await navigator.clipboard.writeText(result?.mint||'');setCopyStatus('Copied');}catch{setCopyStatus('Copy unavailable');}}
  const selectAttribute=id=>{setSelected(id);dashboardRef.current?.scrollIntoView?.({block:'start',behavior:'instant'});};
- const [fullScreen,setFullScreen]=useState(false);
- const dashboardRef=useRef(null),fullScreenToggleRef=useRef(null);
+ const dashboardRef=useRef(null);
  useEffect(()=>{dashboardRef.current?.scrollIntoView?.({block:"start",behavior:"instant"});},[result?.mint]);
- useEffect(()=>{
-  if(!fullScreen)return;
-  const panel=dashboardRef.current,toggle=fullScreenToggleRef.current;
-  if(!panel)return;
-  const focusable=()=>Array.from(panel.querySelectorAll('button,a[href],input,select,textarea,summary,[tabindex]'))
-   .filter(node=>node.tabIndex>=0&&!node.matches(':disabled')&&!node.closest('[inert]')&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=='hidden');
-  const focusInside=()=>{if(!panel.contains(document.activeElement))(focusable()[0]||panel).focus();};
-  const keydown=event=>{
-   if(event.key==='Escape'){event.preventDefault();event.stopPropagation();setFullScreen(false);return;}
-   if(event.key!=='Tab')return;
-   const nodes=focusable(),first=nodes[0],last=nodes[nodes.length-1],active=document.activeElement;
-   if(!first){event.preventDefault();panel.focus();return;}
-   if(!nodes.includes(active)){event.preventDefault();(event.shiftKey?last:first).focus();}
-   else if(event.shiftKey&&active===first){event.preventDefault();last.focus();}
-   else if(!event.shiftKey&&active===last){event.preventDefault();first.focus();}
-  };
-  document.addEventListener('keydown',keydown,true);
-  document.addEventListener('focusin',focusInside);
-  toggle?.focus();
-  return ()=>{
-   document.removeEventListener('keydown',keydown,true);
-   document.removeEventListener('focusin',focusInside);
-   if(toggle?.isConnected)toggle.focus();
-  };
- },[fullScreen]);
  const [holderView,setHolderView]=useState("overview");
  const authorities=mintAuthorityEvidence(result,{parsed:!!result?.mint&&result.authorityDetailsStatus!=="not_parsed"});
  const parsed=authorities.authorityDetailsStatus==="available";
@@ -147,10 +121,10 @@ export default function GlitchV11Dashboard({result,extensions,concentration,crea
   {name:"Historical connections",detail:historical.available?fmt(historical.directPairs)+" wallet pairs have recorded transaction links involving "+fmt(historical.connectedWallets)+" wallets; "+(historical.compatible?"snapshot matches current holders.":"based on an earlier holder snapshot."):"Verified historical connections not yet available for this view."},
   {name:"Evidence coverage",detail:"Historical coverage is incomplete or unverified. Creator behavior and liquidity security require further verification."}
  ];
- return <section ref={dashboardRef} tabIndex={-1} role={fullScreen?"dialog":undefined} aria-modal={fullScreen?true:undefined} className={"g11 ti-report"+(fullScreen?" g11-full":"")} aria-label="GLITCH Intelligence v1.1"><style>{css}</style>
+ return <section ref={dashboardRef} tabIndex={-1} className="g11 ti-report" aria-label="GLITCH Intelligence v1.1"><style>{css}</style>
   <div className="ti-header ti-premium-header"><img className="ti-premium-brand" src="/premium-hud/artwork/header-banner.png" alt="DOOM404 official red-hooded robot mascot with metallic DOOM404 wordmark and Token Intelligence branding" width="809" height="112"/><a href="/" aria-label="Back to scanner">←</a><h2 className="ti-accessible-title">DOOM404 Token Intelligence · Solana Token Assessment</h2></div>
-  <header className="g11-head"><div className="g11-token">{tokenName&&<h3>{tokenName}</h3>}<div className="g11-mint">{tokenSymbol&&<strong className="ti-symbol">{tokenSymbol}</strong>}<code title={result?.mint}>{addr(result?.mint)}</code><button type="button" className="g11-copy" onClick={copyMint} aria-label="Copy full mint address">{copyStatus==='Copied'?'Copied':'⧉'}</button><span className="ti-solana"><svg viewBox="0 0 32 28" width="24" height="22" aria-hidden="true"><defs><linearGradient id="ti-solana-gradient" x2="1" y2="1"><stop stopColor="#00ffa3"/><stop offset="1" stopColor="#dc1fff"/></linearGradient></defs><path fill="url(#ti-solana-gradient)" d="M6 2h25l-6 6H0z M0 11h25l6 6H6z M6 20h25l-6 6H0z"/></svg> SOLANA</span></div><span className="g11-observed">Observed {result?.observedAt&&Number.isFinite(Date.parse(result.observedAt))?new Date(result.observedAt).toLocaleString('en-GB',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+' IST':'time unavailable'}</span>{copyStatus&&<span role="status">{copyStatus}</span>}</div><div className="g11-actions"><span className="g11-preview">PROTECTED PREVIEW</span><button ref={fullScreenToggleRef} type="button" className="g11-action" onClick={()=>setFullScreen(x=>!x)}>{fullScreen?'Exit full screen':'Full screen'}</button></div></header>
-  <nav className="g11-attribute-tabs" aria-label="Attribute navigation">{[{id:"overall",name:"Overall"},... ["token_security","holder_intelligence","liquidity_quality_safety","creator_intelligence"].map(id=>attributes.find(a=>a.id===id))].map(a=><button type="button" key={a.id} aria-label={a.id==="liquidity_quality_safety"?"Liquidity & Safety":a.name} aria-current={selected===a.id?"page":undefined} className="g11-action" onClick={()=>selectAttribute(a.id)}><IntelligenceIcon kind={a.id}/><span className="g11-nav-full">{a.id==="liquidity_quality_safety"?"Liquidity & Safety":a.name}</span><span className="g11-nav-short" aria-hidden="true">{{overall:'Overall',token_security:'Security',holder_intelligence:'Holders',liquidity_quality_safety:'Liquidity',creator_intelligence:'Creator'}[a.id]}</span></button>)}</nav>
+  <header className="g11-head"><div className="g11-token"><div className="g11-mint">{tokenName&&tokenSymbol&&tokenName.toLowerCase()!==tokenSymbol.toLowerCase()&&<span className="ti-token-name">{tokenName}</span>}{tokenSymbol&&<strong className="ti-symbol">{tokenSymbol}</strong>}<code title={result?.mint}>{addr(result?.mint)}</code><button type="button" className="g11-copy" onClick={copyMint} aria-label="Copy full mint address">{copyStatus==='Copied'?'Copied':'⧉'}</button><span className="ti-solana"><svg viewBox="0 0 32 28" width="24" height="22" aria-hidden="true"><defs><linearGradient id="ti-solana-gradient" x2="1" y2="1"><stop stopColor="#00ffa3"/><stop offset="1" stopColor="#dc1fff"/></linearGradient></defs><path fill="url(#ti-solana-gradient)" d="M6 2h25l-6 6H0z M0 11h25l6 6H6z M6 20h25l-6 6H0z"/></svg> SOLANA</span></div><span className="g11-observed">Observed {result?.observedAt&&Number.isFinite(Date.parse(result.observedAt))?new Date(result.observedAt).toLocaleString('en-GB',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+' IST':'time unavailable'}</span>{copyStatus&&<span role="status">{copyStatus}</span>}</div></header>
+  <nav className="g11-attribute-tabs" aria-label="Attribute navigation">{[{id:"overall",name:"Overall"},... ["token_security","holder_intelligence","liquidity_quality_safety","creator_intelligence"].map(id=>attributes.find(a=>a.id===id))].map(a=><button type="button" key={a.id} aria-label={a.id==="liquidity_quality_safety"?"Liquidity & Safety":a.name} aria-current={selected===a.id?"page":undefined} className="g11-action" onClick={()=>selectAttribute(a.id)}><AngularFrame/><IntelligenceIcon kind={a.id}/><span className="g11-nav-full">{a.id==="liquidity_quality_safety"?"Liquidity & Safety":a.name}</span><span className="g11-nav-short" aria-hidden="true">{{overall:'Overall',token_security:'Security',holder_intelligence:'Holders',liquidity_quality_safety:'Liquidity',creator_intelligence:'Creator'}[a.id]}</span></button>)}</nav>
   <PracticalAssessmentPanel assessment={practical} selected={selected} providerUsage={providerUsage} inspectionTiming={inspectionTiming} onSelect={selectAttribute} decimals={result?.decimals} result={result} extensions={extensions} historicalObservedAt={workerEvidence?.creator?.updatedAt} marketObservedAt={liquidity?.observedAt}/>
   <details className="g11-foot"><summary>Token address and mint observation</summary><p><code>{result?.mint??'Not established'}</code></p><p>Observed {result?.observedAt??'time unavailable'} · slot {result?.contextSlot??'not established'}. Each supporting evidence section retains its own observation time.</p></details>
   <details className="g11-foot"><summary>Historical methodology and retained observations</summary>

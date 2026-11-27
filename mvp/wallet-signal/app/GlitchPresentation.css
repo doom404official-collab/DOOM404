@@ -262,3 +262,65 @@ body .g11.ti-report{background-color:#030406}
 
 .ti-report .evidence-hud:has(.hud-radar-layout){border-image-source:url('/premium-hud/svg/panel-amber.svg')}
 .ti-report .evidence-hud:has(.hud-exit){border-image-source:url('/premium-hud/svg/panel-red.svg')}
+
+/* V1 final integration: continuous vector edges and one gauge coordinate system. */
+@font-face{font-family:Rajdhani;src:url('/premium-hud/fonts/Rajdhani-SemiBold.woff') format('woff');font-weight:600 700;font-display:swap}
+@font-face{font-family:Orbitron;src:url('/premium-hud/fonts/Orbitron.woff') format('woff');font-weight:400 900;font-display:swap}
+@font-face{font-family:Inter;src:url('/premium-hud/fonts/Inter.woff') format('woff');font-weight:100 900;font-display:swap}
+body .g11.ti-report{font-family:Inter,system-ui,sans-serif;padding:clamp(7px,1.1vw,14px)}
+.ti-report :is(h3,.g11-card-name,.g11-attribute-tabs button,.hud-kicker,.hud-metric>span){font-family:Rajdhani,system-ui,sans-serif;font-weight:600;letter-spacing:.02em}
+.ti-report :is(.ti-risk-number,.ti-coverage svg text,.g11-attribute-card strong,.hud-radar text:first-of-type){font-family:Orbitron,system-ui,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:0}
+.ti-report :is(strong,code,.g11-card-meta){font-variant-numeric:tabular-nums}
+.ti-report .ti-risk-labels{font-family:Rajdhani,system-ui,sans-serif}
+.ti-report .ti-risk-number{filter:drop-shadow(0 0 8px #ff345766)}
+.ti-report .ti-platform{animation:ti-platform-pulse 5s ease-in-out infinite}
+@keyframes ti-platform-pulse{50%{opacity:.65}}
+.ti-report .hud-radar-beam{transform-origin:130px 130px;animation:ti-spin 18s linear infinite}
+.ti-report .hud-radar{background:radial-gradient(ellipse at 35% 35%,#14dcea18,transparent 60%),radial-gradient(ellipse at 70% 80%,#f02b4520,transparent 65%)}
+.ti-report .hud-radar-grid{filter:drop-shadow(0 0 2px #22ddea)}
+.ti-report .hud-radar circle[stroke-dasharray]{filter:drop-shadow(0 0 2px currentColor)}
+.ti-report .g11-head{margin-bottom:5px;gap:0}
+.ti-report .g11-token{width:100%;min-width:0}
+.ti-report .g11-mint{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-width:0}
+.ti-report .g11-mint code{font-size:12px;white-space:nowrap}
+.ti-report .ti-token-name{font:600 14px Rajdhani,system-ui;max-width:100%;overflow-wrap:anywhere}
+.ti-report .ti-symbol{font:700 17px Rajdhani,system-ui;letter-spacing:.03em}
+.ti-report .ti-solana{font-size:0;display:flex;align-items:center}
+.ti-report .g11-observed{display:block;font-size:10px;margin-top:0;color:#aca8b4}
+.ti-report .g11-attribute-tabs{gap:6px;margin:6px 0;overflow:visible;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:0}
+.ti-report .g11-attribute-tabs .g11-action,.ti-report .g11-attribute-card{position:relative;isolation:isolate;border:0;border-image:none;clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 7px,100% calc(100% - 7px),calc(100% - 7px) 100%,7px 100%,0 calc(100% - 7px),0 7px);background:linear-gradient(135deg,#1d161e,#07090d 65%);box-shadow:none;opacity:1}
+.ti-report .g11-attribute-tabs .g11-action{color:#dfa4b1;transition:background .2s,color .2s;min-height:48px;font-size:14px;padding:5px 2px;white-space:normal}
+.ti-report .g11-attribute-tabs [aria-current=page]{color:white;background:linear-gradient(130deg,#9c1732,#390814);filter:drop-shadow(0 0 4px #ff244466)}
+.ti-report .g11-attribute-tabs [aria-current=page] .ti-angular-frame{color:#ff6682;filter:drop-shadow(0 0 3px #ff2444)}
+.ti-report .ti-angular-frame{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;color:var(--accent,#d93858);z-index:-1}
+.ti-report .g11-attribute-cards{gap:7px;margin-top:6px;grid-auto-rows:1fr}
+.ti-report .g11-attribute-card{padding:10px;min-height:96px;gap:8px;background:linear-gradient(130deg,color-mix(in srgb,var(--accent) 10%,#08090c),#030507 70%)}
+.ti-report .g11-attribute-card:has(em){padding-top:20px}
+.ti-report .g11-attribute-card strong{font-size:26px;line-height:1.3}
+.ti-report .g11-card-name{font-size:14px;line-height:1.1;display:block}
+.ti-report .g11-card-meta{font-size:11px;line-height:1.5}
+.ti-report .g11-attribute-card em{position:absolute;top:1px;right:7px;margin:0;padding:2px 5px;background:color-mix(in srgb,var(--accent) 16%,#07090d);font:600 10px Rajdhani,system-ui;letter-spacing:.02em;clip-path:polygon(5px 0,100% 0,100% 100%,0 100%)}
+.ti-report .ti-meter{height:5px;margin-top:5px;border-radius:0}
+.ti-report .ti-assessment{gap:7px}
+.ti-report .g11-overview{margin-bottom:7px;gap:7px}
+.ti-report .g11-panel{padding:7px;border-width:6px}
+.ti-report .g11-verdict{border:0;padding:0}
+.ti-report .ti-breakdown>h3{margin:0;font-size:17px}
+.ti-report .ti-quick{margin-top:5px;padding:4px 2px}
+.ti-report .hud-metric{padding:7px}
+.ti-report .hud-heading{margin-bottom:7px}
+.ti-report .ti-lower{gap:7px}
+@media(max-width:600px){
+ .ti-report .g11-attribute-tabs .g11-action{font-size:12px;gap:2px;padding:5px 0;min-height:48px}
+ .ti-report .g11-attribute-card{padding:8px 6px;min-height:94px;gap:5px;align-items:center}
+ .ti-report .g11-attribute-card:has(em){padding-top:20px}
+ .ti-report .g11-card-name{font-size:12px;min-height:26px}
+ .ti-report .g11-attribute-card strong{font-size:21px}
+ .ti-report .g11-attribute-card small{font-family:Rajdhani,system-ui;font-size:11px;margin-left:2px}
+ .ti-report .g11-card-meta{font-size:10px}
+ .ti-report .ti-attribute-icon .ti-icon{width:19px;height:19px}
+ .ti-report .ti-coverage h3{font-size:12px}
+ .ti-report .g11-mint{gap:5px}.ti-report .g11-mint code{font-size:11px}
+ .ti-report .ti-breakdown>h3{font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){.ti-report *,.ti-report *::before,.ti-report *::after{animation:none!important;transition:none!important}}

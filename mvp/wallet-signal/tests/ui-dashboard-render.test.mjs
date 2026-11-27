@@ -37,8 +37,11 @@ test('persistent token identity and original mascot remain available with absent
 test('report identity uses matching retained metadata and avoids repeated mint fallback',()=>{
  const props=replay();const liquidity={...props.reportedLiquidity,tokenMetadata:{mint:props.result.mint,name:'Example Token',symbol:'EXAMPLE'}};
  const html=renderToStaticMarkup(createElement(Dashboard,{...props,liquidity}));
- assert.match(html,/<h3>Example Token<\/h3>/);assert.match(html,/ti-symbol\">EXAMPLE/);
+ assert.match(html,/<span class="ti-token-name">Example Token<\/span>/);assert.doesNotMatch(html,/<h3>Example Token/);assert.match(html,/ti-symbol\">EXAMPLE/);
  assert.doesNotMatch(html,/<span role=\"status\"><\/span>/);
+ const duplicate=renderToStaticMarkup(createElement(Dashboard,{...props,liquidity:{...liquidity,tokenMetadata:{mint:props.result.mint,name:'Paid',symbol:'PAID'}}}));
+ assert.doesNotMatch(duplicate,/ti-token-name/);assert.match(duplicate,/ti-symbol">PAID/);
+ assert.doesNotMatch(duplicate,/PROTECTED PREVIEW|>Full screen</);
  const wrong=renderToStaticMarkup(createElement(Dashboard,{...props,liquidity:{...liquidity,tokenMetadata:{...liquidity.tokenMetadata,mint:'wrong'}}}));
  assert.doesNotMatch(wrong,/Example Token/);
 });

@@ -13,17 +13,31 @@ try{
    for(let i=0;i<tabs.length;i++){
     await p.getByRole('button',{name:tabs[i],exact:true}).click();await p.waitForTimeout(30);
     const row=await p.evaluate(()=>({scroll:document.documentElement.scrollWidth,viewport:innerWidth,tab:document.querySelector('[aria-current=page]')?.getAttribute('aria-label'),gauges:document.querySelectorAll('[data-gauge]').length,disclaimers:document.querySelectorAll('.g11-disclaimer').length,badImages:[...document.images].filter(i=>!i.complete||i.naturalWidth===0).map(i=>i.src),navTargets:[...document.querySelectorAll('.g11-attribute-tabs button')].every(e=>e.getBoundingClientRect().height>=44),reducedMotion:[...document.querySelectorAll('.ti-report *')].every(e=>getComputedStyle(e).animationName==='none')}));
+    if(mode==='after'){
+     assert.equal(await p.locator('.g11-token h3').count(),0);
+     assert.equal(await p.locator('.ti-symbol').textContent(),'PAID');
+     assert.equal(await p.getByRole('button',{name:/full screen/i}).count(),0);
+     assert.equal(await p.getByText('PROTECTED PREVIEW',{exact:true}).count(),0);
+     assert.equal(await p.locator('[data-platform="transparent-vector"]').count(),1);
+     assert.equal(await p.locator('image[href*="hologram-platform.png"]').count(),0);
+     const alignment=await p.locator('.ti-risk-labels').evaluate(g=>{const texts=[...g.querySelectorAll(':scope>text')].slice(0,5).map(e=>{const r=e.getBBox();return {x:r.x,y:r.y,w:r.width,h:r.height}});return texts.every((r,i)=>i===0||r.y>=texts[i-1].y+texts[i-1].h-1)});
+     assert.ok(alignment,`Gauge labels overlap: ${width} ${tabs[i]}`);
+    }
     rows.push({mode,width,...row});assert.ok(row.scroll<=width+1,JSON.stringify(row));assert.equal(row.disclaimers,1);assert.ok(row.navTargets);assert.ok(row.reducedMotion);assert.equal(row.badImages.length,0);
     if([390,1440].includes(width))await p.screenshot({path:`${out}/${mode}-${width}-${i}-${['overall','security','holders','liquidity','creator'][i]}.png`,fullPage:true});
    }
   }
  }
+ await p.emulateMedia({reducedMotion:'no-preference'});
+ await p.getByRole('button',{name:'Holder Intelligence',exact:true}).click();
+ assert.notEqual(await p.locator('.hud-radar-beam').evaluate(e=>getComputedStyle(e).animationName),'none');
+ await p.emulateMedia({reducedMotion:'reduce'});
  await p.setViewportSize({width:390,height:844});
  await p.goto(base+'/after.html?missing=1');await ready();for(const tab of tabs){await p.getByRole('button',{name:tab,exact:true}).click();assert.equal(await p.locator('[data-gauge="risk"]').count(),0);assert.ok(await p.getByText('Not assessed',{exact:true}).count());}
  await p.screenshot({path:out+'/missing-evidence.png',fullPage:true});
  await p.goto(base+'/after.html?critical=1');await ready();await p.getByRole('button',{name:'Liquidity & Safety',exact:true}).click();assert.ok(await p.locator('[role=alert]').count());await p.screenshot({path:out+'/critical-liquidity.png',fullPage:true});
  await p.locator('.ti-evidence>summary').click();assert.ok(await p.locator('.ti-evidence').getAttribute('open')!==null);await p.getByText('Evidence Intelligence · Blockchain Details',{exact:true}).click();
- await p.goto(base+'/after.html?save=1');await p.waitForURL('**/after.html?report=*');await ready();const savedUrl=p.url(),score=await p.locator('.ti-gauge-text strong').textContent();await p.reload();await ready();assert.equal(p.url(),savedUrl);assert.equal(await p.locator('.ti-gauge-text strong').textContent(),score);
+ await p.goto(base+'/after.html?save=1');await p.waitForURL('**/after.html?report=*');await ready();const savedUrl=p.url(),score=await p.locator('.ti-risk-number').textContent();await p.reload();await ready();assert.equal(p.url(),savedUrl);assert.equal(await p.locator('.ti-risk-number').textContent(),score);
  await ctx.grantPermissions(['clipboard-read','clipboard-write']);await p.getByRole('button',{name:'Copy full mint address'}).click();const copy=await p.evaluate(async()=>({copied:await navigator.clipboard.readText(),mint:document.querySelector('.g11-mint code')?.title}));assert.equal(copy.copied,copy.mint);assert.equal(errors.length,0);assert.equal(external.length,0);
 
 }finally{
