@@ -1,4 +1,5 @@
 import "./GlitchPresentation.css";
+import "./ScannerHome.css";
 export const metadata = {
   title: "DOOM404 GLITCH Scanner",
   description: "Evidence-based Solana token risk intelligence by DOOM404",
