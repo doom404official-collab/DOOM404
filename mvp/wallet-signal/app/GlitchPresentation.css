@@ -201,3 +201,64 @@ body .g11.ti-report{padding:clamp(8px,1.4vw,18px);border-color:#ff3655;box-shado
 @media(max-width:600px){.ti-report>.g11-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px;align-items:center}.ti-report .g11-actions{width:auto;flex-direction:column;gap:0}.ti-report .g11-preview{font-size:7px}.ti-report .g11-actions .g11-action{font-size:9px;padding:5px}.ti-report .g11-mint{gap:4px}.ti-report .g11-copy{padding:4px;min-width:34px}.ti-report .ti-solana{font-size:8px}}
 .ti-report .hud-control[data-control-state=revoked] .hud-neutral{color:#30dce9}.ti-report .hud-control[data-control-state=unresolved]{border-left-color:#be90e2}.ti-report .hud-control[data-control-state=unsupported]{border-left-color:#8c8b9f}.ti-report .hud-neutral svg,.ti-report .hud-active svg{filter:drop-shadow(0 0 4px currentColor)}.ti-report .hud-shield svg{filter:drop-shadow(0 0 4px #ff345566)}.ti-report .ti-quick .ti-icon{display:block;width:22px;height:22px;color:#ff5073;margin:0 auto 3px;filter:drop-shadow(0 0 4px #ff3455)}
 @media(max-width:600px){.ti-report .ti-quick .ti-icon{display:none}}
+
+/* Premium asset layer. Nine-slice SVG frames preserve corner geometry at every size. */
+body .g11.ti-report{background-image:linear-gradient(#030406dd,#030406ee),url('/premium-hud/artwork/circuit-texture.png');background-size:auto,640px auto;border-image:url('/premium-hud/svg/panel-red.svg') 22 / 16px / 0 stretch;box-shadow:0 0 18px #ef23432a}
+.ti-report .ti-premium-header{display:block;min-height:0;aspect-ratio:809/112;background:none;border:0;box-shadow:none;margin:0 0 10px}
+.ti-report .ti-premium-header .ti-premium-brand{display:block;width:100%;height:100%;object-fit:contain;filter:none}
+.ti-report .ti-premium-header a{position:absolute;left:2%;top:50%;transform:translateY(-50%);display:grid;place-items:center;min-width:44px;min-height:44px;font-size:28px;text-shadow:0 0 8px #111}
+.ti-report .ti-accessible-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.ti-report .g11-panel,.ti-report .ti-coverage,.ti-report .ti-quick,.ti-report .ti-key-finding{border:9px solid transparent;border-image:url('/premium-hud/svg/panel-red.svg') 22 / 13px / 0 stretch;background:transparent;border-radius:0;box-shadow:none;clip-path:none;filter:none}
+.ti-report .g11-panel:before,.ti-report .ti-coverage:before,.ti-report .ti-quick:before{display:none}
+.ti-report .g11-verdict{border:0;border-image:none;background:none;box-shadow:none;padding:0}
+.ti-report .g11-attribute-card{border:8px solid transparent;border-image:var(--hud-card) 22 / 12px / 0 stretch;background:transparent;box-shadow:none;border-radius:0;clip-path:none;padding:9px 6px;min-height:116px;align-items:center}
+.ti-report .g11-attribute-card em{top:-3px;right:0;padding:4px 8px;clip-path:polygon(0 0,100% 0,100% 100%,10px 100%)}
+.ti-report .g11-attribute-tabs .g11-action{border:7px solid transparent;border-image:url('/premium-hud/svg/tab-red.svg') 20 / 10px / 0 stretch;clip-path:none;background:none;box-shadow:none;border-radius:0;opacity:.78;display:flex;align-items:center;justify-content:center;gap:4px}
+.ti-report .g11-attribute-tabs [aria-current=page]{opacity:1;filter:drop-shadow(0 0 6px #ff2444);background:radial-gradient(ellipse,#b61038aa,transparent 75%);color:#fff}
+.ti-report .g11-attribute-tabs .ti-icon{margin:0}
+.ti-report .ti-premium-risk{max-width:400px;filter:none;background:radial-gradient(ellipse at 50% 45%,#a008222b,transparent 68%)}
+.ti-report .ti-premium-risk .ti-gauge-text{inset:24% 17% 26%}
+.ti-report .ti-premium-risk .ti-gauge-text strong{font-size:clamp(32px,6.3vw,72px);letter-spacing:-.04em;line-height:1.1;text-shadow:0 0 20px #ff1235aa}
+.ti-report .ti-premium-risk .ti-gauge-text>span{font-size:clamp(8px,1.25vw,14px);line-height:1.2}
+.ti-report .ti-premium-risk .ti-gauge-text em{font-size:clamp(8px,1vw,12px);line-height:1.2}
+.ti-report .ti-premium-risk .ti-gauge-scale{bottom:24%;left:22%;right:22%;color:#c7a8b1;font-size:9px}
+.ti-live-arc{transition:stroke-dasharray .65s ease;stroke-linecap:butt}.ti-risk-bloom,.ti-coverage-bloom{filter:blur(7px);opacity:.7}
+.ti-report .ti-coverage{padding:5px 3px 0}.ti-report .ti-coverage svg{max-height:210px;filter:none}.ti-report .ti-coverage h3{margin:0;font-size:clamp(10px,1.8vw,19px)}
+.ti-report .ti-quick{padding:6px 2px}.ti-report .ti-lower>.g11-panel{padding:8px}.ti-report .ti-insights article{border:6px solid transparent;border-image:url('/premium-hud/svg/panel-red.svg') 22 / 8px / 0 stretch;background:none;border-radius:0;padding:6px}
+.ti-report .ti-key-finding{padding:9px;filter:drop-shadow(0 0 5px #ff254477)}
+.ti-report .evidence-hud{border-image:url('/premium-hud/svg/panel-cyan.svg') 22 / 13px / 0 stretch}
+.ti-report .evidence-hud:has(.hud-branches){border-image-source:url('/premium-hud/svg/panel-purple.svg')}
+.ti-report .hud-control,.ti-report .hud-metric,.ti-report .hud-branches article,.ti-report .hud-creator-core,.ti-report .hud-exit{border:7px solid transparent;border-image:url('/premium-hud/svg/card-cyan.svg') 22 / 9px / 0 stretch;background:none;box-shadow:none;border-radius:0}
+.ti-report .hud-branches article,.ti-report .hud-creator-core{border-image-source:url('/premium-hud/svg/card-purple.svg')}
+.ti-report .hud-control:has(.hud-active),.ti-report .hud-exit{border-image-source:url('/premium-hud/svg/card-red.svg')}
+.ti-report button:focus-visible,.ti-report a:focus-visible,.ti-report summary:focus-visible{outline:2px solid #6ff5ff;outline-offset:3px}
+.ti-report .g11-copy{min-width:44px;min-height:44px}
+@media(max-width:600px){
+ .ti-report .ti-premium-header{min-height:0;aspect-ratio:809/112;grid-template-columns:none;margin-bottom:6px}
+ .ti-report .ti-premium-header a{font-size:22px;left:0}
+ .ti-report .g11-attribute-tabs .g11-action{flex-direction:column;font-size:9px;padding:3px 0;gap:3px;min-height:52px;border-width:5px}
+ .ti-report .g11-attribute-tabs .ti-icon{margin:0;width:17px;height:17px}
+ .ti-report .g11-attribute-card{padding:7px 1px;gap:4px;min-height:107px;border-width:6px;align-items:center}
+ .ti-report .g11-attribute-card:has(em){padding-top:22px}
+ .ti-report .g11-card-name{font-size:9px;line-height:1.25;display:block}
+ .ti-report .g11-attribute-card strong{font-size:24px}.ti-report .g11-attribute-card small{font-size:9px}
+ .ti-report .ti-premium-risk .ti-gauge-text strong{font-size:clamp(26px,8.5vw,48px)}
+ .ti-report .ti-coverage{border-width:6px;padding:3px 0 0}.ti-report .ti-coverage h3{font-size:9px}
+ .ti-report .ti-quick{border-width:6px;padding:4px 0}.ti-report .ti-quick strong{font-size:11px}
+ .ti-report .g11-copy{min-width:44px}.ti-report .g11-panel{padding:6px;border-width:7px}.ti-report .g11-verdict{padding:0;border:0}
+ .ti-report .ti-breakdown>h3{font-size:13px;margin:3px 0}.ti-report .ti-attribute-icon .ti-icon{width:22px;height:22px}
+}
+
+/* Transparent frame centers preserve the black console surface. */
+body .g11.ti-report{background-color:#030406}
+.ti-report .g11-panel,.ti-report .ti-coverage,.ti-report .ti-quick,.ti-report .ti-key-finding{background:linear-gradient(135deg,#10070c,#030507 65%)}
+.ti-report .g11-verdict{background:transparent}
+.ti-report .g11-attribute-card{background:linear-gradient(125deg,color-mix(in srgb,var(--accent) 8%,#030507),#030507 70%)}
+.ti-report .g11-attribute-tabs .g11-action{background:#08070b}
+.ti-report .g11-attribute-tabs [aria-current=page]{background:radial-gradient(ellipse,#b61038aa,#180710 80%)}
+.ti-report .ti-insights article{background:#08070b}
+.ti-report .ti-premium-risk image:last-child{mix-blend-mode:screen}
+.ti-report .ti-key-finding{background:linear-gradient(110deg,#2b0715,#080408)}
+
+.ti-report .evidence-hud:has(.hud-radar-layout){border-image-source:url('/premium-hud/svg/panel-amber.svg')}
+.ti-report .evidence-hud:has(.hud-exit){border-image-source:url('/premium-hud/svg/panel-red.svg')}
