@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {inspectHistoricalTransactionProof} from "../../../lib/liquidityHistoricalDecoder.mjs";
 import {NextResponse} from "next/server";
 import {PublicKey} from "@solana/web3.js";
@@ -23,6 +24,7 @@ import {reviewCreatorFeeRouting} from "../../../lib/liquidityCreatorFeeRoutingRe
 import {inspectSharingConfigReferences} from "../../../lib/liquiditySharingConfigEvidence.mjs";
 export const dynamic="force-dynamic";
 export async function POST(request){
+ return withScannerAdmission(request,async (request)=>{
  let payload;
  try{payload=await request.json();}catch{return NextResponse.json({error:"Invalid JSON"},{status:400});}
  let pool;
@@ -68,4 +70,6 @@ export async function POST(request){
   }
   return NextResponse.json({poolAddress:pool.toBase58(),observedAt:new Date().toISOString(),source:"Solana RPC getSignaturesForAddress + getTransaction",...summary,decodedTransactions:decoded,decodedCount:decoded.length,excludedSignatures:selection.excludedCount,focusedSignature:requestedSignature??null,classificationComplete:false},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({status:"unavailable",reason:"Transaction signature evidence unavailable"},{status:503});}
+
+ },"liquidity-transaction-evidence");
 }

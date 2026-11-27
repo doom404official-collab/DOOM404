@@ -1,8 +1,10 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import { NextResponse } from 'next/server';
 import { createIntelligenceVault } from '../../../lib/intelligenceVault.mjs';
 import { resolveCachedCreator } from '../../../lib/resolveCachedCreator.mjs';
 export const dynamic = 'force-dynamic';
 export async function GET(request) {
+ return withScannerAdmission(request,async (request)=>{
  const mint = new URL(request.url).searchParams.get('mint') || '';
  if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(mint)) return NextResponse.json({error:'INVALID_MINT'}, {status:400});
  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return NextResponse.json({status:'UNAVAILABLE'}, {status:503});
@@ -13,4 +15,6 @@ export async function GET(request) {
  } catch {
   return NextResponse.json({status:'UNAVAILABLE'}, {status:503});
  }
+
+ },"creator-evidence");
 }

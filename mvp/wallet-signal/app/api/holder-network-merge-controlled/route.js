@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {createHolderWorkerBudget,boundedHolderStore} from "../../../lib/holderWorkerExecution.mjs";
 import {NextResponse} from "next/server";
 import {timingSafeEqual} from "node:crypto";
@@ -14,6 +15,7 @@ const allowedSignatures=[
  "3HnBUrUjjG3yxMubsrrnN5dMPJtSrhM5WajYopUbCgKBFo5rtvZdf5LChJRJ4wR4Ua8XsnkKMG9d48AQYDDUPLhf"
 ];
 export async function POST(request){
+ return withScannerAdmission(request,async (request)=>{
  const budget=createHolderWorkerBudget(),execution={stage:"CONFIGURATION"};
  const expected=process.env.GLITCH_HOLDER_SCAN_INTERNAL_TOKEN;
  const supplied=request.headers.get("x-glitch-internal-token");
@@ -31,4 +33,6 @@ export async function POST(request){
   return NextResponse.json({status:"outcome_unknown",checkpointModified:null,scorePromoted:false,
    reconciliationRequired:true,retryAllowed:false},{status:503,headers:{"Cache-Control":"no-store"}});
  }
+
+ },"holder-network-merge-controlled");
 }

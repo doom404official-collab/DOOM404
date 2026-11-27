@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
@@ -7,6 +8,7 @@ import { summarizeCreatorHoldings } from "../../../lib/creatorHoldings.js";
 
 export const dynamic="force-dynamic";
 export async function GET(request){
+ return withScannerAdmission(request,async (request)=>{
  let mint;
  try{mint=new PublicKey(new URL(request.url).searchParams.get("mint")||"");}
  catch{return NextResponse.json({error:"INVALID_MINT"},{status:400});}
@@ -30,4 +32,6 @@ export async function GET(request){
  }catch{
   return NextResponse.json({status:"HOLDINGS_UNAVAILABLE",holdings:null},{status:503});
  }
+
+ },"creator-holdings");
 }

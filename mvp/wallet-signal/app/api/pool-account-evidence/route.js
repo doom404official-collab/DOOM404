@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
@@ -18,6 +19,7 @@ const valid = value => {
 
 // Existence and program ownership only. No protocol-specific reserve/LP claims.
 export async function POST(request) {
+ return withScannerAdmission(request,async (request)=>{
   let payload;
   try { payload = await request.json(); } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
@@ -72,4 +74,6 @@ export async function POST(request) {
   } catch {
     return NextResponse.json({ status: "unavailable", reason: "RPC pool-account verification failed; no pool verification claims issued." }, { status: 503 });
   }
+
+ },"pool-account-evidence");
 }

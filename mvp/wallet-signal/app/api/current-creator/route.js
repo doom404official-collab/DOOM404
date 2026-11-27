@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {verifyBoundedCreatorOrigin} from '../../../lib/boundedCreatorOriginV2.mjs';
 import {NextResponse} from 'next/server';
 import {PublicKey} from '@solana/web3.js';
@@ -39,4 +40,7 @@ async function handle(request){
   const pending=Promise.race([work,deadline]);active.set(mint,pending);const data=await pending;cache.set(mint,{at:Date.now(),data});if(cache.size>100)cache.delete(cache.keys().next().value);return NextResponse.json(data,{headers:{'Cache-Control':'no-store'}});
  }catch{return NextResponse.json({mint,status:'current_wallet_unavailable'},{status:503});}finally{active.delete(mint);clearTimeout(timer);controller.abort();}
 }
-export async function GET(request){return withProviderUsage(handle,request);}
+export async function GET(request){
+ return withScannerAdmission(request,async (request)=>{return withProviderUsage(handle,request);
+ },"current-creator");
+}

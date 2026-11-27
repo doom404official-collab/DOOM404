@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {normalizeTransferFee} from '../../../lib/tokenTransferFeeEvidence.mjs';
 import {normalizeMintAuthority} from '../../../lib/mintAuthorityEvidence.mjs';
 import {mintAuthorityEvidence} from '../../../lib/mintAuthorityEvidence.mjs';
@@ -28,4 +29,7 @@ async function handle(request){
   return NextResponse.json({...base,currentExtensions:token2022&&configuration?{mint,verified:true,observedAt,configuration,extensionCount:i.extensions.length,extensions:i.extensions.map(x=>({type:x.extension||x.type,label:x.extension||x.type,observed:true})),transferFee}:null},{headers:{'Cache-Control':'no-store'}});
  }catch{return NextResponse.json({mint,error:'CURRENT_MINT_UNAVAILABLE'},{status:503});}
 }
-export async function GET(request){return withProviderUsage(handle,request);}
+export async function GET(request){
+ return withScannerAdmission(request,async (request)=>{return withProviderUsage(handle,request);
+ },"token-current");
+}

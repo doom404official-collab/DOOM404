@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {createHolderWorkerBudget} from "../../../lib/holderWorkerExecution.mjs";
 import {NextResponse} from "next/server";
 import {timingSafeEqual} from "node:crypto";
@@ -11,6 +12,7 @@ function authorized(request){
  return a.length===b.length&&timingSafeEqual(a,b);
 }
 export async function POST(request){
+ return withScannerAdmission(request,async (request)=>{
  if(process.env.GLITCH_HOLDER_WORKER_ENABLED!=="true")return NextResponse.json({error:"Worker disabled"},{status:503});
  if(!authorized(request))return NextResponse.json({error:"Unauthorized"},{status:401});
  try{
@@ -20,4 +22,6 @@ export async function POST(request){
   if(!row)return NextResponse.json({status:"idle"},{headers:{"Cache-Control":"no-store"}});
   return NextResponse.json({status:"candidate",jobId:row.id},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({error:"Scheduler lookup unavailable"},{status:503});}
+
+ },"holder-scan-scheduler");
 }

@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {NextResponse} from "next/server";
 import {timingSafeEqual} from "node:crypto";
 import {createHolderJobStore} from "../../../lib/holderJobStore.mjs";
@@ -14,6 +15,7 @@ function authorized(request){
 }
 /** Authenticated bounded scheduler tick; never accepts a caller-supplied RPC URL or checkpoint. */
 export async function POST(request){
+ return withScannerAdmission(request,async (request)=>{
  const budget=createHolderWorkerBudget();
  if(process.env.GLITCH_HOLDER_WORKER_ENABLED!=="true")return NextResponse.json({error:"Worker disabled"},{status:503});
  if(!authorized(request))return NextResponse.json({error:"Unauthorized"},{status:401});
@@ -40,4 +42,6 @@ export async function POST(request){
   const result=await runBoundedHolderWorker({budget,store,jobId:candidate.id,rpc,maxRequests:20,leaseSeconds:90});
   return NextResponse.json({...result,view:undefined},{status:result.reconciliationRequired?503:200,headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json(holderExecutionFailure({stage:"SELECTION_OR_SETUP"}),{status:503});}
+
+ },"holder-scan-tick");
 }

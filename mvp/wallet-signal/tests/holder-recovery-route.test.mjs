@@ -1,10 +1,11 @@
+import {withScannerAdmissionFixture} from './helpers/scanner-admission-fixture.mjs';
 import {readHolderRecoveryWindow,recoveryWindowOpen} from '../lib/holderRecoveryWindow.mjs';
 import {createHolderRecoveryBudget,assertHolderBudgetSignal} from '../lib/holderRecoveryBudget.mjs';
 import {setTimeout as delay} from 'node:timers/promises';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-const source=await readFile(new URL('../app/api/holder-scan-recovery/route.js',import.meta.url),'utf8');
+const source=withScannerAdmissionFixture(await readFile(new URL('../app/api/holder-scan-recovery/route.js',import.meta.url),'utf8'));
 const keys=['VERCEL_ENV','VERCEL_GIT_COMMIT_REF','GLITCH_HOLDER_RECOVERY_ENABLED','GLITCH_HOLDER_WORKER_ENABLED','GLITCH_HOLDER_WORKER_TOKEN','HELIUS_RPC_URL','GLITCH_HOLDER_RECOVERY_START_AT','GLITCH_HOLDER_RECOVERY_EXPIRES_AT','GLITCH_HOLDER_RECOVERY_JOB_C670_VERSION','GLITCH_HOLDER_RECOVERY_JOB_D07_VERSION'];
 const configured=['preview','fix/glitch-recovery-preflight-20261027','true','false','fixture-token','https://offline.invalid',new Date(Date.now()-60000).toISOString(),new Date(Date.now()+600000).toISOString(),'2134','1812'];
 function load(run,create=()=>({}),wait=delay){return new Function('readHolderRecoveryWindow','recoveryWindowOpen','createHolderRecoveryBudget','assertHolderBudgetSignal','delay','NextResponse','timingSafeEqual','createHolderJobStore','runPinnedHolderRecovery',source.replace(/^import .*;\n/gm,'').replace(/export const /g,'const ').replace('export async function POST','async function POST')+'\nreturn POST;' )(readHolderRecoveryWindow,recoveryWindowOpen,createHolderRecoveryBudget,assertHolderBudgetSignal,wait,{json:(body,options={})=>({body,...options})},(a,b)=>a.equals(b),create,run);}

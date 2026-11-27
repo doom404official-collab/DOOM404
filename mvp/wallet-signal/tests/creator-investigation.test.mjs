@@ -1,7 +1,8 @@
+import {withScannerAdmissionFixture} from './helpers/scanner-admission-fixture.mjs';
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-const route=readFileSync(new URL("../app/api/creator/route.js",import.meta.url),"utf8");
+const route=withScannerAdmissionFixture(readFileSync(new URL("../app/api/creator/route.js",import.meta.url),"utf8"));
 test("creator investigation checks independent launch transaction candidates",()=>{
  assert.match(route,/solscan\.creationSignature/);
  assert.match(route,/solscan\.firstMintSignature/);

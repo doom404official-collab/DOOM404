@@ -1,7 +1,8 @@
+import {withScannerAdmissionFixture} from './helpers/scanner-admission-fixture.mjs';
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-const source=readFileSync(new URL("../app/api/pool-account-evidence/route.js",import.meta.url),"utf8");
+const source=withScannerAdmissionFixture(readFileSync(new URL("../app/api/pool-account-evidence/route.js",import.meta.url),"utf8"));
 test("pool account verification is bounded and requires distinct valid addresses",()=>{
  assert.match(source,/MAX_POOLS = 5/);
  assert.match(source,/new Set\(addresses\)\.size !== addresses\.length/);

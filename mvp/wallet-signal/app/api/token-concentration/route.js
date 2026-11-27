@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {withProviderUsage} from '../../../lib/providerUsage.mjs';
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
@@ -78,4 +79,7 @@ async function handle(request) {
     return NextResponse.json({ status: "unavailable", error: "Largest token-account balances unavailable from RPC; do not infer concentration." }, { status: 503, headers: { "Cache-Control": "no-store" } });
   } finally {clearTimeout(deadlineTimer);deadlineController.abort();}
 }
-export async function GET(request){return withProviderUsage(handle,request);}
+export async function GET(request){
+ return withScannerAdmission(request,async (request)=>{return withProviderUsage(handle,request);
+ },"token-concentration");
+}

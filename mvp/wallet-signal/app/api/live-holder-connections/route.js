@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {NextResponse} from "next/server";
 import {PublicKey} from "@solana/web3.js";
 import {createReliableConnection} from "../../../lib/reliableConnection.js";
@@ -5,6 +6,7 @@ import {extractDirectHolderTransfers} from "../../../lib/directHolderTransfers.m
 import {buildHolderConnectionGraph} from "../../../lib/holderConnectionGraph.mjs";
 export const dynamic="force-dynamic";
 export async function GET(request){
+ return withScannerAdmission(request,async (request)=>{
  let mint;
  try{mint=new PublicKey(new URL(request.url).searchParams.get("mint")||"");}
  catch{return NextResponse.json({error:"Invalid token address"},{status:400});}
@@ -42,4 +44,6 @@ export async function GET(request){
    historyScope:"Two recent signatures per owner wallet; older history not examined",
    commonOwnershipEstablished:false,completeHistory:false},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({error:"Live holder analysis unavailable; retry later"},{status:503,headers:{"Cache-Control":"no-store"}});}
+
+ },"live-holder-connections");
 }

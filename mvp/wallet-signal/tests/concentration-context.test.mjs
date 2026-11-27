@@ -1,3 +1,4 @@
+import {withScannerAdmissionFixture} from './helpers/scanner-admission-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {reconcileHolderSnapshot} from '../lib/reconcileHolderSnapshot.mjs';
@@ -9,7 +10,7 @@ import {buildDecisionSummary} from '../lib/decisionSummary.js';
 import {selectTokenInsights} from '../lib/tokenInsights.js';
 import {assessTokenEvidence} from '../lib/tokenAssessmentV11.js';
 const mint='7'.repeat(32),now=Date.parse('2026-11-23T10:00:00Z'),updatedAt=new Date(now).toISOString();
-const source=readFileSync(new URL('../app/api/token-concentration/route.js',import.meta.url),'utf8');
+const source=withScannerAdmissionFixture(readFileSync(new URL('../app/api/token-concentration/route.js',import.meta.url),'utf8'));
 // Execute the actual route body; substitute imports only, never invoke real RPC.
 const buildRoute=new Function('NextResponse','PublicKey','createReliableConnection','summarizeResolvedTokenAccounts','hasAlignedConcentrationContext','withProviderUsage',source.replace(/^import .*;\n/gm,'').replace('export const dynamic','const dynamic').replace('export async function GET','async function GET')+'\nreturn GET;');
 async function observe(supply=100,largestSlot,supplySlot){

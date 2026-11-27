@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {withProviderUsage} from '../../../lib/providerUsage.mjs';
 import {projectSecurityConfiguration} from '../../../lib/securityConfigurationV2.mjs';
 import { projectTokenMintControls } from '../../../lib/tokenMintControls.mjs';
@@ -103,4 +104,7 @@ async function handle(request) {
     return NextResponse.json({ status: "unavailable", error: "Token-2022 extension inspection unavailable; no absence or safety conclusion can be made." }, { status: 503 });
   } finally {clearTimeout(deadlineTimer);deadlineController.abort();}
 }
-export async function GET(request){return withProviderUsage(handle,request);}
+export async function GET(request){
+ return withScannerAdmission(request,async (request)=>{return withProviderUsage(handle,request);
+ },"token-extensions");
+}

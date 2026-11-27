@@ -1,8 +1,10 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {NextResponse} from "next/server";
 import {PublicKey} from "@solana/web3.js";
 import {createHolderJobStore} from "../../../lib/holderJobStore.mjs";
 export const dynamic="force-dynamic";
 export async function GET(request){
+ return withScannerAdmission(request,async (request)=>{
  let mint;
  try{mint=new PublicKey(new URL(request.url).searchParams.get("mint")||"").toBase58();}
  catch{return NextResponse.json({error:"Invalid token mint"},{status:400});}
@@ -13,4 +15,6 @@ export async function GET(request){
   const view=store.publicView(row);
   return NextResponse.json({mint,status:row.status,jobId:row.id,scan:view},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({error:"Holder scan status unavailable"},{status:503,headers:{"Cache-Control":"no-store"}});}
+
+ },"holder-scan-status");
 }

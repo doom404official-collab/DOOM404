@@ -1,3 +1,4 @@
+import {withScannerAdmissionFixture} from './helpers/scanner-admission-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -45,7 +46,7 @@ test('unparsed producer cannot claim authority evidence even with explicit nulls
  for(const consume of consumers)assert.equal(consume(result(produced)).complete,false);
 });
 test('creator response uses shared producer without null-coalescing missing authority fields',()=>{
- const route=readFileSync(new URL('../app/api/creator/route.js',import.meta.url),'utf8');
+ const route=withScannerAdmissionFixture(readFileSync(new URL('../app/api/creator/route.js',import.meta.url),'utf8'));
  assert.match(route,/\.\.\.mintAuthorityEvidence\(info,\{parsed:parsedMintDetailsAvailable\}\)/);
  assert.doesNotMatch(route,/mintAuthority: info\.mintAuthority \?\? null|freezeAuthority: info\.freezeAuthority \?\? null/);
 });

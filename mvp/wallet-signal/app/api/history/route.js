@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import { NextResponse } from 'next/server';
 import { PublicKey } from '@solana/web3.js';
 import { createReliableConnection } from '../../../lib/reliableConnection.js';
@@ -5,6 +6,7 @@ import { createReliableConnection } from '../../../lib/reliableConnection.js';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request) {
+ return withScannerAdmission(request,async (request)=>{
   const params = new URL(request.url).searchParams;
   let wallet;
   try { wallet = new PublicKey(params.get('address') || ''); }
@@ -19,4 +21,6 @@ export async function GET(request) {
     const hasMore = rows.length > limit;
     return NextResponse.json({ address: wallet.toBase58(), items: page.map(row => ({ signature: row.signature, slot: row.slot, timestamp: row.blockTime ? new Date(row.blockTime * 1000).toISOString() : null, status: row.err ? 'failed' : 'success' })), pagination: { hasMore, nextCursor: hasMore ? page.at(-1)?.signature : null, totalKnown: null }, coverage: { completeHistoryVerified: false, note: 'RPC-visible signatures only; provider may lack older history.' } });
   } catch { return NextResponse.json({ error: 'History temporarily unavailable', incomplete: true }, { status: 503 }); }
+
+ },"history");
 }

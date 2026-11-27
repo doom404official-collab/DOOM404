@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {readHolderRecoveryWindow,recoveryWindowOpen} from '../../../lib/holderRecoveryWindow.mjs';
 import {createHolderRecoveryBudget,assertHolderBudgetSignal} from '../../../lib/holderRecoveryBudget.mjs';
 import {setTimeout as delay} from 'node:timers/promises';
@@ -15,6 +16,7 @@ function authorized(request){
  return a.length===b.length&&timingSafeEqual(a,b);
 }
 export async function POST(request){
+ return withScannerAdmission(request,async (request)=>{
  if(process.env.VERCEL_ENV!=="preview"||process.env.VERCEL_GIT_COMMIT_REF!=="fix/glitch-recovery-preflight-20261027"||process.env.GLITCH_HOLDER_RECOVERY_ENABLED!=="true")return NextResponse.json({error:"Recovery disabled"},{status:503});
  let window;
  try{window=readHolderRecoveryWindow();}catch{return NextResponse.json({error:"Recovery disabled"},{status:503});}
@@ -53,4 +55,6 @@ export async function POST(request){
   const result=await runPinnedHolderRecovery({store,jobId,mint,expectedVersion,rpc,budget,maxRequests:20,leaseSeconds:90});
   return NextResponse.json(result,{status:result.reconciliationRequired===true?503:200,headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({error:"Worker execution unavailable"},{status:503});}
+
+ },"holder-scan-recovery");
 }

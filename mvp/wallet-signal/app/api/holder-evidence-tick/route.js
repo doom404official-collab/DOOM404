@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {createHolderWorkerBudget,boundedHolderStore,holderExecutionFailure} from "../../../lib/holderWorkerExecution.mjs";
 import {NextResponse} from "next/server";
 import {timingSafeEqual} from "node:crypto";
@@ -15,6 +16,7 @@ function isAuthorized(request){
  return a.length===b.length&&timingSafeEqual(a,b);
 }
 export async function POST(request){
+ return withScannerAdmission(request,async (request)=>{
  const budget=createHolderWorkerBudget(),execution={stage:"CONFIGURATION"};let selectedJobId,count=0;
  if(process.env.GLITCH_EVIDENCE_WORKER_ENABLED!=="true")return NextResponse.json({error:"Disabled"},{status:503});
  if(!isAuthorized(request))return NextResponse.json({error:"Unauthorized"},{status:401});
@@ -62,4 +64,6 @@ export async function POST(request){
   console.error("GLITCH_EVIDENCE_FAILURE",{stage,code});
   return NextResponse.json({error:"Validation temporarily unavailable",stage,code,...(selectedJobId?{jobId:selectedJobId}:{}),requestCount:count,reconciliationRequired:true,retryAllowed:false},{status:503,headers:{"Cache-Control":"no-store"}});
  }
+
+ },"holder-evidence-tick");
 }

@@ -1,3 +1,4 @@
+import {withScannerAdmissionFixture} from './helpers/scanner-admission-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
@@ -6,7 +7,7 @@ import vm from 'node:vm';
 import {adaptDashboardEvidence} from '../lib/glitchDashboardEvidenceV11.mjs';
 const req=createRequire(import.meta.url);
 const {transformSync}=req('next/dist/build/swc'),{PublicKey}=req('@solana/web3.js');
-const source=fs.readFileSync(new URL('../app/api/creator/route.js',import.meta.url),'utf8');
+const source=withScannerAdmissionFixture(fs.readFileSync(new URL('../app/api/creator/route.js',import.meta.url),'utf8'));
 const {code}=transformSync(source,{filename:'route.js',jsc:{parser:{syntax:'ecmascript'}},module:{type:'commonjs'}});
 function harness(){
 let release,historyStartedResolve,fetches=0;const calls=[];

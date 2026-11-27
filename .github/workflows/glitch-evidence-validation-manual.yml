@@ -1,85 +1,71 @@
-name: GLITCH evidence validation manual
+# Reuses an already registered manual workflow path. No historical workers run here.
+name: Scanner reviewed release authorization
 on:
   workflow_dispatch:
+    inputs:
+      reviewed_sha:
+        description: Exact reviewed 40-character Scanner commit SHA
+        type: string
+        required: true
+      candidate_deployment_id:
+        description: Exact protected Vercel deployment ID
+        type: string
+        required: true
+      candidate_url:
+        description: Exact protected Scanner preview URL ending with /
+        type: string
+        required: true
+      authorize_production:
+        description: Request owner approval of the exact candidate; does not promote
+        type: boolean
+        default: false
+        required: true
 permissions:
   contents: read
+  checks: read
+  statuses: write
 concurrency:
-  group: glitch-evidence-validation
+  group: scanner-production-release-authorization
   cancel-in-progress: false
 jobs:
-  validate:
-    # Historical unpinned runner quarantined on integration; use reviewed reconciliation jobs.
-    if: ${{ false }}
+  reviewed-release:
+    name: scanner-reviewed-sha
+    if: github.repository == 'doom404official-collab/DOOM404' && github.ref == 'refs/heads/integration/glitch-app-main-20261118'
+    environment:
+      name: ${{ inputs.authorize_production && 'Production – doom404-wallet-signal' || 'Preview – doom404-wallet-signal' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 6
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
     steps:
-      - name: Run bounded preview evidence validation
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Mark release authorization pending
         env:
-          GLITCH_PREVIEW_URL: ${{ vars.GLITCH_PREVIEW_URL }}
-          GLITCH_HOLDER_WORKER_TOKEN: ${{ secrets.GLITCH_HOLDER_WORKER_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          SCANNER_CHECK_NAME: scanner-reviewed-sha
+          SCANNER_CHECK_STATE: pending
+        run: node scripts/security/publish-release-status.mjs
+      - name: Verify exact SHA, protected candidate and successful security checks
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-        run: |
-          python3 - <<'PY'
-          import json,os,urllib.parse,urllib.request,urllib.error
-          url=os.environ.get("GLITCH_PREVIEW_URL","").rstrip("/")
-          token=os.environ.get("GLITCH_HOLDER_WORKER_TOKEN","")
-          bypass=os.environ.get("VERCEL_AUTOMATION_BYPASS_SECRET","")
-          host=urllib.parse.urlparse(url).hostname
-          if not host or not host.endswith(".vercel.app") or not url.startswith("https://"):
-              raise SystemExit("Invalid preview URL")
-          if not token or not bypass:
-              raise SystemExit("Missing worker credentials")
-          class NoRedirect(urllib.request.HTTPRedirectHandler):
-              def redirect_request(self,*args):
-                  raise RuntimeError("Redirect refused")
-          opener=urllib.request.build_opener(NoRedirect)
-          req=urllib.request.Request(url+"/api/holder-evidence-tick",data=b"{}",method="POST",
-              headers={"Content-Type":"application/json","x-glitch-worker-token":token,
-                       "x-vercel-protection-bypass":bypass})
-          try:
-              with opener.open(req,timeout=75) as response:
-                  result=json.load(response)
-          except urllib.error.HTTPError as exc:
-              try:
-                  body=json.loads(exc.read().decode("utf-8"))
-                  print(json.dumps({"httpStatus":exc.code,"stage":body.get("stage","unknown"),"code":body.get("code","unknown")}))
-              except (ValueError,UnicodeError):
-                  print(json.dumps({"httpStatus":exc.code,"stage":"unknown","code":"NON_JSON_RESPONSE"}))
-              raise SystemExit("Evidence endpoint failed")
-          def reject_response(reason):
-              print("::error title=GLITCH Evidence Response::"+reason)
-              raise SystemExit("Evidence response requires attention")
-          def nonnegative_int(value):
-              return type(value) is int and value >= 0
-          if not isinstance(result,dict):
-              reject_response("invalid_response")
-          status=result.get("status")
-          if status not in ("processed","idle","no_claims"):
-              reject_response("unexpected_status")
-          processed=result.get("processed")
-          request_count=result.get("requestCount")
-          if not nonnegative_int(processed) or not nonnegative_int(request_count) or processed>request_count or request_count>6:
-              reject_response("invalid_progress_counts")
-          claimed=result.get("claimed")
-          lease_lost=result.get("leaseLost")
-          if not nonnegative_int(claimed) or not nonnegative_int(lease_lost) or claimed!=request_count or processed+lease_lost!=claimed:
-              reject_response("invalid_claim_counts")
-          if lease_lost:
-              reject_response("lease_lost")
-          if status in ("idle","no_claims"):
-              if processed!=0 or request_count!=0:
-                  reject_response("invalid_idle_response")
-          elif processed==0:
-              reject_response("no_progress")
-          if status!="idle" and not nonnegative_int(result.get("queuedSignatures")):
-              reject_response("missing_queue_count")
-          health=result.get("health")
-          health_fields=("total","pending","verified","rejected","unavailable","active_leases","expired_leases","retry_exhausted")
-          if not isinstance(health,dict) or any(not nonnegative_int(health.get(key)) for key in health_fields):
-              reject_response("invalid_or_missing_health")
-          print(json.dumps({"status":status,"processed":processed,"queuedSignatures":result.get("queuedSignatures"),"requestCount":request_count,"claimed":claimed,"leaseLost":lease_lost,"health":{key:health[key] for key in health_fields}}))
-          issues=[key for key in ("retry_exhausted","expired_leases") if health[key]>0]
-          if issues:
-              print("::error title=GLITCH Evidence Health::"+",".join(issues)+" require attention")
-              raise SystemExit("Evidence health requires attention")
-          PY
+          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+          CANDIDATE_DEPLOYMENT_ID: ${{ inputs.candidate_deployment_id }}
+          CANDIDATE_URL: ${{ inputs.candidate_url }}
+          AUTHORIZE_PRODUCTION: ${{ inputs.authorize_production }}
+          RELEASE_ENVIRONMENT: ${{ inputs.authorize_production && 'Production – doom404-wallet-signal' || 'Preview – doom404-wallet-signal' }}
+        run: node scripts/security/verify-reviewed-release.mjs
+      - name: Publish native Vercel reviewed-SHA result
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SCANNER_CHECK_NAME: scanner-reviewed-sha
+          SCANNER_CHECK_STATE: ${{ job.status == 'success' && inputs.authorize_production && 'success' || 'failure' }}
+        run: node scripts/security/publish-release-status.mjs

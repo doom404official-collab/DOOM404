@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {NextResponse} from "next/server";
 import {timingSafeEqual} from "node:crypto";
 import {createHolderJobStore} from "../../../lib/holderJobStore.mjs";
@@ -13,6 +14,7 @@ function authorized(request){
  return a.length===b.length&&timingSafeEqual(a,b);
 }
 export async function POST(request){
+ return withScannerAdmission(request,async (request)=>{
  const budget=createHolderWorkerBudget();
  if(process.env.GLITCH_HOLDER_WORKER_ENABLED!=="true")return NextResponse.json({error:"Worker not enabled"},{status:503});
  if(!authorized(request))return NextResponse.json({error:"Unauthorized"},{status:401});
@@ -40,4 +42,6 @@ export async function POST(request){
   const result=await runBoundedHolderWorker({budget,store,jobId,rpc,maxRequests:25,leaseSeconds:90});
   return NextResponse.json(result,{status:result.reconciliationRequired?503:200,headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json(holderExecutionFailure({stage:"SETUP"},{jobId}),{status:503});}
+
+ },"holder-scan-worker");
 }

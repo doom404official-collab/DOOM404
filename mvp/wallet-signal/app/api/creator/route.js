@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {withProviderUsage} from '../../../lib/providerUsage.mjs';
 import { mintAuthorityEvidence } from "../../../lib/mintAuthorityEvidence.mjs";
 import { NextResponse } from "next/server";
@@ -348,4 +349,7 @@ async function handle(request) {
   }
 }
 
-export async function GET(request){return withProviderUsage(handle,request);}
+export async function GET(request){
+ return withScannerAdmission(request,async (request)=>{return withProviderUsage(handle,request);
+ },"creator");
+}

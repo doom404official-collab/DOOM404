@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
 import { PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
@@ -59,6 +60,7 @@ function calculateConsistencyScore(activeDays) {
 }
 
 export async function GET(request) {
+ return withScannerAdmission(request,async (request)=>{
   try {
     const { searchParams } = new URL(request.url);
     const address = searchParams.get("address");
@@ -411,4 +413,6 @@ export async function GET(request) {
       { status: 500 }
     );
   }
+
+ },"wallet");
 }

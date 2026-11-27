@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {inspectTokenVault} from "../../../lib/liquidityVaultEvidence.mjs";
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
@@ -6,6 +7,7 @@ import { summarizeLpHolders } from "../../../lib/liquidityLpHolderEvidence.mjs";
 
 export const dynamic = "force-dynamic";
 export async function POST(request) {
+ return withScannerAdmission(request,async (request)=>{
  let payload;
  try { payload=await request.json(); } catch { return NextResponse.json({error:"Invalid JSON"},{status:400}); }
  let mint;
@@ -27,4 +29,6 @@ export async function POST(request) {
   const summary=summarizeLpHolders(entries,supply.value.amount,false);
   return NextResponse.json({status:"partial",lpMint:mint.toBase58(),observedAt:new Date().toISOString(),source:"Solana RPC getTokenLargestAccounts and getMultipleAccountsInfo",tokenAccountsReturned:top.length,tokenAccountsDecoded:entries.length,coverage:"top_20_token_accounts_only",...summary},{headers:{"Cache-Control":"no-store"}});
  } catch {return NextResponse.json({status:"unavailable",reason:"LP holder RPC evidence unavailable"},{status:503});}
+
+ },"lp-holder-evidence");
 }

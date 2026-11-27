@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import { createReliableConnection } from "../../../lib/reliableConnection.js";
 import { PublicKey } from "@solana/web3.js";
 import { NextResponse } from "next/server";
@@ -93,6 +94,7 @@ function extractTransfers(instructions, walletAddress, signature) {
 }
 
 export async function GET(request) {
+ return withScannerAdmission(request,async (request)=>{
   try {
     const { searchParams } = new URL(request.url);
     const address = searchParams.get("address");
@@ -428,4 +430,6 @@ export async function GET(request) {
       { status: rateLimited ? 429 : 500 }
     );
   }
+
+ },"glitch");
 }

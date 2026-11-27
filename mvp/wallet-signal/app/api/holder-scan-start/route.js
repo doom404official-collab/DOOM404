@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {NextResponse} from "next/server";
 import {timingSafeEqual} from "node:crypto";
 import {PublicKey} from "@solana/web3.js";
@@ -13,6 +14,7 @@ function authorized(request){
  return a.length===b.length&&timingSafeEqual(a,b);
 }
 export async function POST(request){
+ return withScannerAdmission(request,async (request)=>{
  // Internal-only until durable public rate limiting, quotas and worker orchestration exist.
  if(process.env.GLITCH_HOLDER_SCAN_START_ENABLED!=="true")return NextResponse.json({error:"Scan creation not enabled"},{status:503});
  if(!authorized(request))return NextResponse.json({error:"Unauthorized"},{status:401});
@@ -47,4 +49,6 @@ export async function POST(request){
   console.error("GLITCH_SCAN_START_FAILURE",{stage,code});
   return NextResponse.json({error:"Unable to initialize holder investigation",stage,code},{status:503,headers:{"Cache-Control":"no-store"}});
  }
+
+ },"holder-scan-start");
 }

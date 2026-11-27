@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../../lib/scannerAdmission.mjs';
 import {NextResponse} from "next/server";
 import {timingSafeEqual} from "node:crypto";
 
@@ -15,6 +16,7 @@ function authorized(request){
 
 /** Authenticated, preview-only configuration smoke check; performs no writes. */
 export async function POST(request){
+ return withScannerAdmission(request,async (request)=>{
  if(process.env.VERCEL_ENV!=="preview"||
     process.env.GLITCH_HOLDER_SCAN_START_ENABLED!=="true"||
     process.env.GLITCH_HOLDER_WORKER_ENABLED!=="true"){
@@ -30,4 +32,6 @@ export async function POST(request){
   workerConfigured:Boolean(process.env.GLITCH_HOLDER_WORKER_TOKEN),
   nextStep:"Run an authenticated start and worker test from a trusted runner"
  },{headers:{"Cache-Control":"no-store"}});
+
+ },"internal/holder-scan-smoke");
 }

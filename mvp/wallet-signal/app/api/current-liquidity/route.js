@@ -1,3 +1,4 @@
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {collectAlchemyQuotesV2} from '../../../lib/alchemyExecutableQuotesV2.mjs';
 import {RAYDIUM_CPMM_PROGRAM,decodeCpmmPool,projectRaydiumCpmmV2} from '../../../lib/raydiumCpmmAssessmentV2.mjs';
 import {NextResponse} from 'next/server';
@@ -51,4 +52,7 @@ async function handle(request){
   const data=await work;return NextResponse.json({...data,sharedRequest:shared},{headers:{'Cache-Control':'no-store'}});
  }catch{return NextResponse.json({mint,status:'unavailable',missing:['Current liquidity read failed or exceeded nine seconds.']},{status:503});}
 }
-export async function GET(request){return withProviderUsage(handle,request);}
+export async function GET(request){
+ return withScannerAdmission(request,async (request)=>{return withProviderUsage(handle,request);
+ },"current-liquidity");
+}

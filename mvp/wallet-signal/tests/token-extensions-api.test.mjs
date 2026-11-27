@@ -1,3 +1,4 @@
+import {withScannerAdmissionFixture} from './helpers/scanner-admission-fixture.mjs';
 import {projectSecurityConfiguration} from '../lib/securityConfigurationV2.mjs';
 import {projectTokenMintControls} from '../lib/tokenMintControls.mjs';
 import {decodeToken2022BinaryMint} from '../lib/token2022BinaryMint.mjs';
@@ -7,7 +8,7 @@ import {PublicKey} from '@solana/web3.js';
 import {readFileSync} from 'node:fs';
 import * as fees from '../lib/tokenTransferFeeEvidence.mjs';
 // Execute the actual GET handler with RPC/Next boundaries replaced, never a live RPC.
-const source=readFileSync(new URL('../app/api/token-extensions/route.js',import.meta.url),'utf8')
+const source=withScannerAdmissionFixture(readFileSync(new URL('../app/api/token-extensions/route.js',import.meta.url),'utf8'))
  .replace(/^import .*;\n/gm,'').replace('export const dynamic','const dynamic').replace('export async function GET','async function GET');
 function handler(connection){
  return new Function('NextResponse','PublicKey','createReliableConnection','normalizeTransferFee','resolveEpochFee','consistentEpochContext','decodeToken2022BinaryMint','projectTokenMintControls','projectSecurityConfiguration','withProviderUsage',`${source}; return GET;`)({json:(body,options)=>({body,...options})},PublicKey,()=>connection,fees.normalizeTransferFee,fees.resolveEpochFee,fees.consistentEpochContext,decodeToken2022BinaryMint,projectTokenMintControls,projectSecurityConfiguration,(fn,req)=>fn(req));
