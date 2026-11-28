@@ -1,4 +1,3 @@
-import {setTimeout as delay} from 'node:timers/promises';
 import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {createTokenInvestigationStore,publicInvestigation,publicTokenObservation} from '../../../lib/tokenInvestigationStore.mjs';
 import {investigateToken} from '../../../lib/boundedTokenInvestigation.mjs';
@@ -19,9 +18,8 @@ export async function GET(request){
   try{
    const observation=await investigateToken({mint,previousObservation:previous?.observation,rpc:async(method,params)=>{
     controller.signal.throwIfAborted();
-    // Deliberately serialize background work. The durable guard additionally
-    // reserves every logical request before transport across all instances.
-    await delay(350,undefined,{signal:controller.signal});
+    // The durable guard reserves every logical request across all instances
+    // and waits only for an actual aggregate burst. No unconditional delay.
     if(++requests>18)throw Error('BOUNDED_REQUEST_LIMIT');
     const r=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:requests,method,params}),signal:AbortSignal.any([controller.signal,AbortSignal.timeout(3500)])});
     if(!r.ok)throw Error('PROVIDER_TEMPORARILY_UNAVAILABLE');const reader=r.body.getReader(),chunks=[];let size=0;try{while(true){const x=await reader.read();if(x.done)break;size+=x.value.byteLength;if(size>2000000){await reader.cancel();throw Error('BOUNDED_RESPONSE_LIMIT');}chunks.push(x.value);}}finally{reader.releaseLock();}const payload=JSON.parse(Buffer.concat(chunks).toString());if(payload.error){const e=Error('RPC_METHOD_ERROR');e.code=payload.error.code;throw e;}return payload.result;

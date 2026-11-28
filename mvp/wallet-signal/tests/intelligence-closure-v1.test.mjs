@@ -35,7 +35,7 @@ test('positive holdings with no recovered acquisitions target the current token 
   if(method==='getTokenAccountsByOwner')return {context:{slot:1},value:[{pubkey:tokenAccount,account:a}]};
   throw Error('unexpected');
  }});
- assert.equal(r.adaptiveCreator.targetAddress,tokenAccount);assert.equal(r.adaptiveCreator.paginationRemaining,true);assert.equal(r.adaptiveCreator.currentWallet.rawBalance,'100');assert.equal(r.creator.behaviourV2.historyComplete,false);assert.ok(calls.length<=18);assert.equal(r.adaptiveCreator.additionalRequests,2);
+ assert.equal(r.adaptiveCreator.targetAddress,tokenAccount);assert.equal(r.adaptiveCreator.paginationRemaining,true);assert.equal(r.adaptiveCreator.currentWallet.rawBalance,'100');assert.equal(r.creator.behaviourV2.historyComplete,false);assert.ok(calls.length<=18);assert.equal(r.adaptiveCreator.additionalRequests,3);assert.equal(r.adaptiveCreator.continuationStatus,'targeted_history_unavailable');
 });
 test('canonical score and chart select the same valid quote metric',async()=>{
  const {canonicalQuote}=await import('../lib/riskCalibrationV1.mjs');const {practicalAssessmentV2}=await import('../lib/practicalScoringV2.mjs');const {replay}=await import('./fixtures/ui-assessment-replay.mjs');const r=replay();for(const q of r.currentLiquidity.referenceQuotes){q.impactIncludingFeesPct=NaN;q.quoteRecoveryShortfallPct=6;}

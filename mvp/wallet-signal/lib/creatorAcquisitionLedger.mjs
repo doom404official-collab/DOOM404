@@ -47,7 +47,7 @@ export function summarizeCreatorAcquisitionLedger({mint,creator,events=[],histor
   // Compare economic/proof semantics, not property insertion order, raw formatting,
   // or unrelated diagnostic metadata. Historical input objects remain untouched.
   const canonical={signature:e.signature,instructionIndex:e.instructionIndex,innerInstructionIndex:e.innerInstructionIndex??null,
-   mint:e.mint,creator:e.creator,type:e.type,timestamp:e.timestamp,amountRaw:BigInt(e.amountRaw).toString()};
+   mint:e.mint,creator:e.creator,type:e.type,timestamp:e.timestamp,amountRaw:BigInt(e.amountRaw).toString(),...(e.type==='EXTERNAL_RECEIPT'&&e.acquisitionMechanism==='protocol_holder_reward_distribution'?{receiptCategory:'protocol_holder_reward_distribution'}:{})};
   if(accepted.has(id)){
    if(JSON.stringify(accepted.get(id))!==JSON.stringify(canonical)){
     reject({id,reason:'CONFLICTING_DUPLICATE'});blocked.add(id);
@@ -61,11 +61,12 @@ export function summarizeCreatorAcquisitionLedger({mint,creator,events=[],histor
  const sum=type=>[...accepted.values()].filter(e=>e.type===type).reduce((a,e)=>a+BigInt(e.amountRaw),0n);
  const launch=sum('LAUNCH_DISTRIBUTION'),purchases=sum('PURCHASE'),receipts=sum('EXTERNAL_RECEIPT'),directMints=sum('DIRECT_MINT_RECEIPT'),
   transfersOut=sum('EXTERNAL_TRANSFER_OUT'),sales=sum('VERIFIED_SALE'),burned=sum('VERIFIED_BURN');
+ const rewards=[...accepted.values()].filter(e=>e.type==='EXTERNAL_RECEIPT'&&e.receiptCategory==='protocol_holder_reward_distribution').reduce((n,e)=>n+BigInt(e.amountRaw),0n);
  const acquired=launch+purchases+receipts+directMints;
  const reconciled=acquired-transfersOut-sales-burned;
  const eligible=historyComplete===true&&attributionComplete===true&&rejected.length===0&&reconciled>=0n&&acquired>0n;
  return {status:eligible?'EVIDENCE_READY':'INCOMPLETE',acceptedCount:accepted.size,rejected,
-  ...(directMints>0n?{directMintReceivedRaw:directMints.toString()}:{}),launchRaw:launch.toString(),purchasedRaw:purchases.toString(),externalReceivedRaw:receipts.toString(),
+  ...(directMints>0n?{directMintReceivedRaw:directMints.toString()}:{}),...(rewards>0n?{rewardReceivedRaw:rewards.toString(),ordinaryIncomingRaw:(receipts-rewards).toString()}:{}),launchRaw:launch.toString(),purchasedRaw:purchases.toString(),externalReceivedRaw:receipts.toString(),
   externalTransferredOutRaw:transfersOut.toString(),verifiedSoldRaw:sales.toString(),burnedRaw:burned.toString(),
   totalAcquiredRaw:acquired.toString(),reconciledRemainingRaw:reconciled.toString(),
   historyComplete:historyComplete===true,attributionComplete:attributionComplete===true,

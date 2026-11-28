@@ -15,17 +15,30 @@ function ownedAccounts(tx,mint,creator){
 }
 const uint=x=>typeof x==='string'&&/^(0|[1-9][0-9]*)$/.test(x)&&BigInt(x)<=18446744073709551615n;
 const address=x=>{try{return typeof x==='string'&&new PublicKey(x).toBase58()===x;}catch{return false;}};
+// Cursor progress certifies retrieval under a particular event decoder set.
+// Replaying after a decoder upgrade preserves facts, but must revisit pages
+// whose previously unsupported instructions may now be understood.
+export const CREATOR_HISTORY_DECODER_EPOCH='creator-history-decoders-v9';
+export function prepareCreatorHistoryCheckpoint(observation,mint,creator,now=Date.now()){
+ const p=observation?.creatorHistoryCheckpoint;
+ if(observation?.mint!==mint||p?.mint!==mint||p.creator!==creator)return null;
+ const lastWindowAssessedAt=p.lastWindowAssessedAt??observation.observedAt;
+ const refresh=p.addressWindowExhausted===true&&Number.isFinite(Date.parse(lastWindowAssessedAt))&&now-Date.parse(lastWindowAssessedAt)>=3600000;
+ if(p.decoderEpoch===CREATOR_HISTORY_DECODER_EPOCH&&!refresh)return p;
+ return {version:1,mint,creator,accountAssociations:p.accountAssociations||[],decoderEpoch:CREATOR_HISTORY_DECODER_EPOCH,completedTargets:[],historyComplete:false,replayReason:refresh&&p.decoderEpoch===CREATOR_HISTORY_DECODER_EPOCH?'exhausted_window_freshness_refresh':'event_decoder_epoch_changed'};
+}
 /** Recover token-account-specific history, including an account visible in the
  * creation transaction that has since closed. The indexed result is evidence
  * only after mint/time/transaction identity validation. Completion of this
  * Alchemy's paginationToken is persisted and resumed; legacy observations using
  * paginationKey are read for compatibility, never sent as an RPC option.
  * Completion of this address window is never completion of a wallet's lifetime history. */
-export async function collectCreatorTokenHistory({mint,creator,origin,read,previous=null,knownTransactions=[],now=Date.now}={}){
+export async function collectCreatorTokenHistory({mint,creator,origin,read,previous=null,knownTransactions=[],now=Date.now,maxPages=1}={}){
+ if(!Number.isInteger(maxPages)||maxPages<1||maxPages>3)throw Error('INVALID_HISTORY_PAGE_LIMIT');
  const result={currentWallet:null,transactions:[],status:'evidence_unavailable',additionalRequests:0,targetAddress:null,checkpoint:null,diagnostics:{candidatesReturned:0,transactionsRetained:0,duplicates:0,rejectedIdentity:0,rejectedTime:0,rejectedMint:0},limitations:[]};
- let accounts=[];
+ let accounts=[],inventoryResponse=null;
  try{
-  const response=await read('getTokenAccountsByOwner',[creator,{mint},{encoding:'jsonParsed',commitment:'finalized'}]);result.additionalRequests++;
+  result.additionalRequests++;const response=await read('getTokenAccountsByOwner',[creator,{mint},{encoding:'jsonParsed',commitment:'finalized'}]);
   if(!Number.isSafeInteger(response?.context?.slot)||!Array.isArray(response.value)||response.value.length>1000)throw Error();
   let balance=0n;const seen=new Set();
   for(const row of response.value){const a=row?.account,i=a?.data?.parsed?.info;
@@ -33,6 +46,7 @@ export async function collectCreatorTokenHistory({mint,creator,origin,read,previ
    balance+=BigInt(i.tokenAmount.amount);seen.add(row.pubkey);accounts.push({address:row.pubkey,amountRaw:i.tokenAmount.amount});
   }
   if(balance>18446744073709551615n)throw Error();
+  inventoryResponse=response;
   result.currentWallet={rawBalance:balance.toString(),slot:response.context.slot,observedAt:new Date(now()).toISOString(),accountCount:accounts.length};
  }catch{result.limitations.push('Current token account inventory unavailable; historical creation-account evidence may still be inspected.');}
  const keys=origin?.tx?.transaction?.message?.accountKeys||[];
@@ -55,12 +69,12 @@ export async function collectCreatorTokenHistory({mint,creator,origin,read,previ
  // stays bound to the verified target rather than to unrelated wallet history.
  const target=compatible?previous.targetAddress:targets.find(a=>!completedTargets.includes(a));
  result.tokenAccountsDiscovered=targets.length;result.tokenAccountsAssessed=completedTargets.length;
- if(!target&&targets.length){result.status='known_token_account_windows_assessed';result.checkpoint={version:1,mint,creator,accountAssociations:[...associations.values()].slice(0,256),targetAddress:previous?.targetAddress||targets[0],paginationToken:null,addressWindowExhausted:true,completedTargets,historyComplete:false};result.limitations.push('Known token-account windows were assessed; unknown closed accounts and archival completeness remain unverified.');return result;}
+ if(!target&&targets.length){result.status='known_token_account_windows_assessed';result.checkpoint={version:1,mint,creator,decoderEpoch:CREATOR_HISTORY_DECODER_EPOCH,lastWindowAssessedAt:previous?.lastWindowAssessedAt??null,accountAssociations:[...associations.values()].slice(0,256),targetAddress:previous?.targetAddress||targets[0],paginationToken:null,addressWindowExhausted:true,completedTargets,historyComplete:false};result.limitations.push('Known token-account windows were assessed; unknown closed accounts and archival completeness remain unverified.');return result;}
  if(!target){result.status='token_account_discovery_unavailable';result.limitations.push('No current or creation token account could be verified. Closed accounts outside the creation transaction remain undiscovered.');return result;}
  result.targetAddress=target;
  const options={transactionDetails:'full',sortOrder:'asc',limit:12,commitment:'finalized',encoding:'jsonParsed',maxSupportedTransactionVersion:1,filters:{status:'succeeded'},...(compatible?{paginationToken:previousToken}:{})};
  try{
-  const page=await read('getTransactionsForAddress',[target,options]);result.additionalRequests++;
+  result.additionalRequests++;const page=await read('getTransactionsForAddress',[target,options]);
   const token=page?.paginationToken??page?.paginationKey??null;
   if(!Array.isArray(page?.data)||page.data.length>12||token!=null&&(typeof token!=='string'||token.length>2048))throw Error();
   result.diagnostics.candidatesReturned=page.data.length;const seen=new Set();
@@ -76,7 +90,20 @@ export async function collectCreatorTokenHistory({mint,creator,origin,read,previ
   if(next&&(compatible&&next===previousToken||cursorHistory.includes(hash(next))))throw Error('PAGINATION_STALLED');
   result.status='bounded_token_history_assessed';result.candidateCount=page.data.length;result.paginationRemaining=!!next;
   for(const tx of result.transactions)for(const account of ownedAccounts(tx,mint,creator))associations.set(account,{address:account,mint,owner:creator,slot:tx.slot,signature:tx.transaction.signatures[0],source:'finalized_token_balance',decoderVersion:'creator-token-account-association-v1'});
-  result.checkpoint={version:1,mint,creator,accountAssociations:[...associations.values()].slice(0,256),decoderVersion:'creator-token-history-v2-balance-mint-binding',completedTargets:[...new Set([...completedTargets,...(hasCursor&&!next?[target]:[])])],targetAddress:target,paginationToken:next,addressWindowExhausted:hasCursor&&!next,cursorStatus:hasCursor?(next?'more_history_available':'explicit_address_window_end'):'pagination_metadata_missing',cursorHistory:[...cursorHistory,...(compatible?[hash(previousToken)]:[])].slice(-16),pagesAssessed:(compatible&&Number.isSafeInteger(previous.pagesAssessed)?previous.pagesAssessed:0)+1,historyComplete:false};
+  result.checkpoint={version:1,mint,creator,decoderEpoch:CREATOR_HISTORY_DECODER_EPOCH,lastWindowAssessedAt:new Date(now()).toISOString(),accountAssociations:[...associations.values()].slice(0,256),decoderVersion:'creator-token-history-v2-balance-mint-binding',completedTargets:[...new Set([...completedTargets,...(hasCursor&&!next?[target]:[])])],targetAddress:target,paginationToken:next,addressWindowExhausted:hasCursor&&!next,cursorStatus:hasCursor?(next?'more_history_available':'explicit_address_window_end'):'pagination_metadata_missing',cursorHistory:[...cursorHistory,...(compatible?[hash(previousToken)]:[])].slice(-16),pagesAssessed:(compatible&&Number.isSafeInteger(previous.pagesAssessed)?previous.pagesAssessed:0)+1,historyComplete:false};
+  if(next&&maxPages>1){
+   // Inventory has just been verified. Reuse that observation only within this
+   // call; recursive continuation still consumes a charged indexed RPC read.
+   const continuation=await collectCreatorTokenHistory({mint,creator,origin,previous:result.checkpoint,knownTransactions:[...knownTransactions,...result.transactions],now,maxPages:maxPages-1,read:async(method,params)=>method==='getTokenAccountsByOwner'&&inventoryResponse?inventoryResponse:read(method,params)});
+   // The inventory adapter above avoids transport but is not a provider call.
+   result.additionalRequests+=continuation.additionalRequests-(result.currentWallet?1:0);
+   result.transactions.push(...continuation.transactions);
+   if(continuation.checkpoint)result.checkpoint=continuation.checkpoint;
+   result.paginationRemaining=continuation.paginationRemaining??!!result.checkpoint.paginationToken;
+   result.continuationStatus=continuation.status;
+   result.limitations.push(...continuation.limitations);
+   for(const k of Object.keys(result.diagnostics))result.diagnostics[k]+=continuation.diagnostics[k]||0;
+  }
   result.limitations.push('Only the verified target token account has been paged. Other current/closed token accounts and unrelated acquisition mechanisms may remain unobserved.');
  }catch{result.status='targeted_history_unavailable';result.limitations.push('Token-specific indexed history unavailable, malformed, or stalled; no historical inactivity conclusion.');}
  return result;
