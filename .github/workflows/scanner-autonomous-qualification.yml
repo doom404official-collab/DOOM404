@@ -33,5 +33,5 @@ jobs:
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          QUALIFICATION_MINTS: '["9hjBLBrc7WZW2H8UQvBAvG5WiTZotXUv2Bdcn4f4pump"]'
+          QUALIFICATION_MINTS: '["9hjBLBrc7WZW2H8UQvBAvG5WiTZotXUv2Bdcn4f4pump","Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump","9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump","3Tg6YnNrfPdFfsY14MaNsDMWLseAyrUDS3myJtbaJN6f"]'
         run: node scripts/qualification/live-core.mjs

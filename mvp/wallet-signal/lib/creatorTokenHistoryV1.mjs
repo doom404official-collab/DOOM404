@@ -15,6 +15,19 @@ function ownedAccounts(tx,mint,creator){
 }
 const uint=x=>typeof x==='string'&&/^(0|[1-9][0-9]*)$/.test(x)&&BigInt(x)<=18446744073709551615n;
 const address=x=>{try{return typeof x==='string'&&new PublicKey(x).toBase58()===x;}catch{return false;}};
+/** A deterministic ATA address is a discovery candidate, never ownership proof.
+ * Its history may survive account closure. Only finalized receipt metadata can
+ * establish that this mint/creator actually used it. */
+export function deriveHistoricalCreatorAccountCandidate({mint,creator,transaction}={}){
+ try{
+  const programs=new Set(['preTokenBalances','postTokenBalances'].flatMap(n=>(transaction?.meta?.[n]||[]).filter(b=>b.mint===mint&&PROGRAMS.has(b.programId)).map(b=>b.programId)));
+  for(const ix of [...(transaction?.transaction?.message?.instructions||[]),...(transaction?.meta?.innerInstructions||[]).flatMap(g=>g.instructions||[])])if(PROGRAMS.has(ix.programId)&&['initializeMint','initializeMint2'].includes(ix.parsed?.type)&&ix.parsed.info?.mint===mint)programs.add(ix.programId);
+  if(programs.size!==1||!address(mint)||!address(creator))return null;
+  const program=[...programs][0],ata=PublicKey.findProgramAddressSync([new PublicKey(creator).toBuffer(),new PublicKey(program).toBuffer(),new PublicKey(mint).toBuffer()],new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'))[0].toBase58();
+  return {address:ata,tokenProgram:program,basis:'derived_associated_account_candidate',ownershipVerified:false};
+ }catch{return null;}
+}
+
 // Cursor progress certifies retrieval under a particular event decoder set.
 // Replaying after a decoder upgrade preserves facts, but must revisit pages
 // whose previously unsupported instructions may now be understood.
@@ -61,6 +74,7 @@ export async function collectCreatorTokenHistory({mint,creator,origin,read,previ
  if(result.currentWallet)for(const a of accounts)associations.set(a.address,{address:a.address,mint,owner:creator,slot:result.currentWallet.slot,signature:'',source:'finalized_owner_inventory',decoderVersion:'creator-token-account-association-v1'});
  const historicalAccounts=[...associations.keys()];
  const targets=[...new Set([...launchAccounts,...historicalAccounts,...accounts.sort((a,b)=>BigInt(a.amountRaw)>BigInt(b.amountRaw)?-1:1).map(a=>a.address)])];
+ if(!targets.length){const candidate=deriveHistoricalCreatorAccountCandidate({mint,creator,transaction:origin?.tx});if(candidate){targets.push(candidate.address);result.accountDiscoveryFallback=candidate;result.limitations.push('Derived historical associated account is a retrieval candidate; its existence and creator use require matching finalized transaction evidence.');}}
  const previousToken=previous?.paginationToken??previous?.paginationKey;
  const completedTargets=bound&&Array.isArray(previous.completedTargets)?previous.completedTargets.filter(address).filter(a=>targets.includes(a)).slice(0,1000):[];
  if(bound&&previous.addressWindowExhausted===true&&targets.includes(previous.targetAddress)&&!completedTargets.includes(previous.targetAddress))completedTargets.push(previous.targetAddress);

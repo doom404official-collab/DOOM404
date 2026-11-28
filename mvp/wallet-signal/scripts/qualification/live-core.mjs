@@ -2,6 +2,7 @@
  * No creator/signature input; reference matching must run AFTER capture.
  * This is NOT a hosted full-dashboard/score/browser qualification claim.
  */
+import {setTimeout as delay} from 'node:timers/promises';
 import {createHash,randomUUID} from 'node:crypto';
 import {investigateToken} from '../../lib/boundedTokenInvestigation.mjs';
 import {scannerContext} from '../../lib/scannerRequestContext.mjs';
@@ -24,7 +25,7 @@ for(const mint of mints){
   const rows=phase==='warm'?await vault(key+'&phase=eq.cold&select=observation'):[];
   if(phase==='warm'&&rows.length!==1)throw Error('AUTOMATIC_COLD_PERSISTENCE_UNCONFIRMED');
   const lease=randomUUID(),admit=await vault('rpc/scanner_admit_v1',{p_client:hash('doom404-autonomous-qualification'),p_key:hash(run+sha+mint+phase),p_route:'token-investigation',p_id:lease});
-  if(admit?.status!=='ADMITTED'){console.log(JSON.stringify({mint,phase,status:admit?.status||'ADMISSION_FAILED',candidateSha:sha}));break;}
+  if(admit?.status!=='ADMITTED'){process.exitCode=1;console.log(JSON.stringify({mint,phase,status:admit?.status||'ADMISSION_FAILED',candidateSha:sha}));break;}
   const controller=new AbortController(),ctx={lease,controller,closed:false,store:{debit:args=>vault('rpc/scanner_debit_v1',args)}};
   const timer=setTimeout(()=>controller.abort(),34000),start=performance.now();let calls=0;
   try{
@@ -40,4 +41,5 @@ for(const mint of mints){
   }catch(error){console.log(JSON.stringify({candidateSha:sha,run,mint,phase,status:'failed',code:/^[A-Z_]+$/.test(error.code||error.message)?error.code||error.message:'EXECUTION_FAILED'}));process.exitCode=1;break;}
   finally{clearTimeout(timer);ctx.closed=true;controller.abort();await vault('rpc/scanner_finish_v1',{p_id:lease,p_body:null,p_status:200});}
  }
+ if(mint!==mints.at(-1))await delay(20000);
 }
