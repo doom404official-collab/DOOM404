@@ -1,0 +1,2159 @@
+{
+  "result": {
+    "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+    "supply": 813759305.402795,
+    "decimals": 6,
+    "rawSupply": "813759305402795",
+    "supplyRaw": "813759305402795",
+    "observedAt": "2026-11-28T05:32:23.327Z",
+    "contextSlot": 474836351,
+    "tokenProgram": "spl-token-2022",
+    "mintAuthority": null,
+    "inspectionMode": "current",
+    "freezeAuthority": null,
+    "currentExtensions": {
+      "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+      "verified": true,
+      "extensions": [
+        {
+          "type": "metadataPointer",
+          "label": "metadataPointer",
+          "observed": true
+        },
+        {
+          "type": "tokenMetadata",
+          "label": "tokenMetadata",
+          "observed": true
+        }
+      ],
+      "observedAt": "2026-11-28T05:32:23.327Z",
+      "transferFee": {
+        "status": "not_observed"
+      },
+      "configuration": {
+        "slot": 474836351,
+        "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence.",
+        "version": 2,
+        "commitment": "confirmed",
+        "permissions": {},
+        "mintAuthority": null,
+        "extensionTypes": [
+          "metadataPointer",
+          "tokenMetadata"
+        ],
+        "freezeAuthority": null,
+        "unknownExtensions": []
+      },
+      "extensionCount": 2
+    },
+    "verificationMethod": "current_onchain_mint",
+    "authorityDetailsStatus": "available"
+  },
+  "currentCreator": {
+    "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+    "slot": 474836399,
+    "scope": "verified_creator_wallet_only",
+    "status": "verified_current_wallet",
+    "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+    "version": 2,
+    "observedAt": "2026-11-28T05:32:33.564Z",
+    "rawBalance": "599036011328",
+    "attribution": {
+      "verified": true,
+      "verification": "reviewed_persisted_attribution"
+    },
+    "accountCount": 1,
+    "linkedWalletsAssessed": false
+  },
+  "currentLiquidity": {
+    "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+    "pool": "6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA",
+    "slot": 474836420,
+    "flags": [
+      {
+        "id": "protocol_admin_controls",
+        "detail": "Protocol global operation controls remain separate from LP redemption exposure; a retained protocol administrator can change operation flags. Program upgrade authority is not certified by this calculation.",
+        "severity": "high"
+      }
+    ],
+    "atomic": true,
+    "lpMint": "CWQgvR86mZPz5bmFGx8HF137yoqzMfGQWdFM1X7xhZ1G",
+    "decoder": "@pump-fun/pump-swap-sdk@2.1.0",
+    "feesBps": {
+      "lpFeeBps": 20,
+      "creatorFeeBps": 70,
+      "protocolFeeBps": 5
+    },
+    "version": 2,
+    "protocol": "pump_amm",
+    "provider": "helius",
+    "commitment": "finalized",
+    "evidenceId": "fb88d84ababfc7989ef9d86d067ada045471f296122965b027e7e8ed98b9cc86",
+    "observedAt": "2026-11-28T05:32:37.800Z",
+    "withdrawal": {
+      "lpHolders": [
+        {
+          "owner": "9nmjFUaE87hrJBycGyry7ZB3XXD4zUUhHyYEuYa5jVbM",
+          "frozen": false,
+          "amountRaw": "148929078",
+          "delegated": false,
+          "tokenAccount": "D2G1bS9UNZSdr8ES8ZDaNMRce9moVFtDfnHBByBF4EGB"
+        },
+        {
+          "owner": "DfpXG5oPTed85EDwpRE16h1jBnFsdQD4kfdgRBxmqFbn",
+          "frozen": false,
+          "amountRaw": "3934590",
+          "delegated": false,
+          "tokenAccount": "GASEYC6kS6TR9uo93V23W3PrHhPqWQL84iikx92gSULU"
+        },
+        {
+          "owner": "9LegqDHXURgbJWHHqLvTwnPyugfh8AEvsfoB8TJ9UshE",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "HcppQXKYyDuVNZyDgHwMzMrraaNCpHRubdZ49AKGKDJH"
+        },
+        {
+          "owner": "ENNwHxhnbh7UXs1xCz2RVRmp1mJoZKXdh96cC3gyK3Gy",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "GKxfyrsB4Hkf6KCDsswB8pfYTQf9Qy98cvtDcZzxYK2u"
+        },
+        {
+          "owner": "Feoto9sRd9k2323CzdYYDhYTtHMxrDzCGJvuvt9z8wY8",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "GCSbEm8SEGL5G5K6t3Bc9ztWgBpCPeQRDNUoCdbjvw7K"
+        },
+        {
+          "owner": "EsXcVy9fbuHEiX825s9m8FdghNMAW5uFKfkREGCt2bCq",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "FJoPWq5Esi63n7k6PpHh6DKZENnKBu1ktHJJsU5p2uTM"
+        },
+        {
+          "owner": "E1NUEAHXajiYLZHzYSvi5yTTjiNf6YQgBFhZM7goy45E",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "EGpDgAzKhZZHjkAjrkvWnH92JXVrc8KAG7JBonzzbR7c"
+        },
+        {
+          "owner": "6YAjeiPjT4ZoZ4pwjHQvq2Soyn51uQEMyF875E4AN8Cp",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "9CWZNFBMnHutFFGdZseXy6NKELch9AXk28FZB2m8ENnB"
+        },
+        {
+          "owner": "FdYTyDwWJZBuetm4uPoGzCuQAeTzwqYwNhuLoYJWu1Ug",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "8kKVH4kQchsk8jC92q54PFShz4W8svbgL1dgCVPiY9Ah"
+        },
+        {
+          "owner": "2Ckq6uEbe2ipgdA4iQZHoAVdV5LWBhphs9dhz7VPwhbk",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "6NYziMjuFUNyhmPmZZT15UVFNw5y2FrTkerrYJDKTzey"
+        },
+        {
+          "owner": "rFnkqbd3Hp9L5j9Rg4zXyngxNFyDj2P4sn7bJHGXUZU",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "4trsCZdCcqu82UBd9B4KaSg6DkVyojKXioAE4sWpLKoz"
+        },
+        {
+          "owner": "CWEew3TcN6bnyarN9wMgNEewZdRcBwJgFR6EjedB9SKK",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "3VxJjnLAZAbbFMFhLtZ78FEDNNUNR3YcNgKPVkaoCwgS"
+        },
+        {
+          "owner": "JAVAaEeTno2LzkTHL8wdJJoWmypvaDGfZ9hMpT5iXggz",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "2AjVUsuwz9JgZgaehLhPPn6tcz14bQhCZ1EuG9n5VEkn"
+        },
+        {
+          "owner": "5QdL5EWwfWtP9dGwPUeE59gQFmy6bSPRMc39c573NcRE",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "25FneNXVXzCitjjW9scYKQdqn9CKnmkwkFciBs6gpc6k"
+        },
+        {
+          "owner": "28aQVz9gxvxnXqF4smYYZaFcbHCdQtg8E8W26cqUjrvV",
+          "frozen": false,
+          "amountRaw": "0",
+          "delegated": false,
+          "tokenAccount": "jFtQW34n93GJvXp9mMeVFJsvb1FVntcJiytvShYmmmT"
+        }
+      ],
+      "maxBaseClaimRaw": "3237115372",
+      "maxQuoteClaimRaw": "50008596",
+      "outstandingLpRaw": "152863668",
+      "lpClaimOnlyMaxPct": 0.003645,
+      "holderBalancesReconcile": true,
+      "maxCurrentWithdrawalPct": 0.003645,
+      "protocolLpDenominatorRaw": "4193541153155",
+      "currentInstructionRulesOnly": true,
+      "adminOrProgramUpgradeRiskAssessed": false
+    },
+    "limitations": [
+      "Protocol quote at the observed slot, not a guaranteed transaction fill.",
+      "Pool concentration covers returned pools only; other architectures require their own decoder.",
+      "Historical fee-recipient authorization is a separate unresolved observation."
+    ],
+    "lpSupplyRaw": "152863668",
+    "baseDecimals": 6,
+    "feeBucketsRaw": "0",
+    "mintSupplyRaw": "813759305402795",
+    "quoteDecimals": 9,
+    "schemaVersion": 1,
+    "baseReserveRaw": "88804466821066",
+    "poolIdentities": [
+      {
+        "pool": "6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA",
+        "status": "known_program_layout_unverified",
+        "protocol": "pump_amm",
+        "ownerProgram": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+        "reservesVerified": false,
+        "calculationReason": null,
+        "calculationStatus": "verified_protocol_calculation",
+        "mintBindingVerified": false,
+        "withdrawalControlsVerified": false
+      }
+    ],
+    "executableDepth": {
+      "method": "protocol_state_calculation",
+      "verified": true,
+      "networkFeesIncluded": false,
+      "maxReferenceQuoteSol": 100,
+      "transactionSimulation": false
+    },
+    "quoteReserveRaw": "1371896353087",
+    "referenceQuotes": [
+      {
+        "quoteSymbol": "SOL",
+        "baseInputRaw": "63911946189",
+        "curveImpactPct": 0.071917,
+        "quoteOutputRaw": "989787655",
+        "referenceNotional": 1,
+        "referenceNotionalSol": 1,
+        "impactIncludingFeesPct": 1.021234
+      },
+      {
+        "quoteSymbol": "SOL",
+        "baseInputRaw": "639119461898",
+        "curveImpactPct": 0.71455,
+        "quoteOutputRaw": "9834223786",
+        "referenceNotional": 10,
+        "referenceNotionalSol": 10,
+        "impactIncludingFeesPct": 1.657762
+      },
+      {
+        "quoteSymbol": "SOL",
+        "baseInputRaw": "6391194618989",
+        "curveImpactPct": 6.713745,
+        "quoteOutputRaw": "92400034889",
+        "referenceNotional": 100,
+        "referenceNotionalSol": 100,
+        "impactIncludingFeesPct": 7.599965
+      }
+    ],
+    "reservesVerified": true,
+    "lpSecurityVerified": false,
+    "realQuoteReserveRaw": "1371896353087",
+    "valuationDefinition": "Two-sided pool liquidity divided by spot fully diluted valuation, both denominated in SOL; not circulating market capitalization.",
+    "poolInventoryComplete": false,
+    "poolIssuedLpCounterRaw": "4193541153155",
+    "executableDepthVerified": false,
+    "liquidityToMarketCapPct": 21.549508,
+    "virtualQuoteReservesRaw": "17585146306",
+    "effectiveQuoteReserveRaw": "1389481499393"
+  },
+  "creatorEvidence": {
+    "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+    "source": "INTELLIGENCE_VAULT",
+    "status": "VERIFIED",
+    "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+    "evidence": [
+      {
+        "programId": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+        "signature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+        "decoderVersion": "pump-fun-create_v2-prefix-v1"
+      }
+    ],
+    "independentlyReviewed": true
+  },
+  "reportedLiquidity": {
+    "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+    "pools": [
+      {
+        "url": "https://dexscreener.com/solana/6e3jzltf4tqbwzm3f7a66jf8tfzn6mrqvrbdfgcnwara",
+        "dexId": "pumpswap",
+        "baseMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "quoteMint": "So11111111111111111111111111111111111111112",
+        "baseSymbol": "PAID",
+        "pairAddress": "6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA",
+        "quoteSymbol": "SOL",
+        "liquidityUsd": 195891.11,
+        "volume24hUsd": 59457.19,
+        "pairCreatedAt": 1789500144000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/gc5hvcbydc6k3z7oc2cqew4gthfqi2fqk5hfkabqa2q8",
+        "dexId": "meteora",
+        "baseMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "quoteMint": "So11111111111111111111111111111111111111112",
+        "baseSymbol": "PAID",
+        "pairAddress": "Gc5hVCBydc6k3Z7oc2cQEW4GThFQi2Fqk5HfKABqa2q8",
+        "quoteSymbol": "SOL",
+        "liquidityUsd": 16409.2,
+        "volume24hUsd": 1946.24,
+        "pairCreatedAt": 1789508239000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/5xbgxzowpeh8mum1vtjxvnrsnbun4v8qkfwbfimk17wy",
+        "dexId": "raydium",
+        "baseMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "quoteMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "baseSymbol": "PAID",
+        "pairAddress": "5XbGXzowPEH8mUm1VtjXVnrsnBun4v8qKFWbfiMK17wy",
+        "quoteSymbol": "USDC",
+        "liquidityUsd": 10749.21,
+        "volume24hUsd": 3827.73,
+        "pairCreatedAt": 1791880520000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/c6zw98dykwk6crpysfdvhejkyz1ey4xgrl5lbqnipk5w",
+        "dexId": "raydium",
+        "baseMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "quoteMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "baseSymbol": "PAID",
+        "pairAddress": "C6ZW98DYKwk6CrpysfDVheJkyz1EY4XGRL5LbQniPK5w",
+        "quoteSymbol": "USDC",
+        "liquidityUsd": 5221.25,
+        "volume24hUsd": 13876.18,
+        "pairCreatedAt": 1790405159000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/e3kkuksfynowrvqntuu42wlnkjswq446vidhrnc18fae",
+        "dexId": "meteora",
+        "baseMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "quoteMint": "So11111111111111111111111111111111111111112",
+        "baseSymbol": "PAID",
+        "pairAddress": "E3KKUkSFyNowRvqnTUu42wLnkjSwq446vidHrnC18fAE",
+        "quoteSymbol": "SOL",
+        "liquidityUsd": 1872.66,
+        "volume24hUsd": 451.29,
+        "pairCreatedAt": 1789507010000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/5ftxtykz2u4zn6t1jbkbqc1x9g9f4wtwrbnxnifqddhx",
+        "dexId": "raydium",
+        "baseMint": "72ghv9CEhahxx2eZU2wQnquQPJETquSiEG6S4fwZpump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "CASH",
+        "pairAddress": "5FtXtykz2U4zN6t1JBkBQc1x9g9F4WTWrBNXNiFQDDHx",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": 394.3,
+        "volume24hUsd": 8.29,
+        "pairCreatedAt": 1789618930000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/f2tajwefsgjq1xsdfplscuoseni84kspctpq5owpvcdf",
+        "dexId": "pumpswap",
+        "baseMint": "FzEh8uAxjUWRgGhzb4TGGBBsKUzsZn8zoSoZGmEppump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "DEX",
+        "pairAddress": "F2TAJwEFSGjq1XSdfpLsCuoSeni84kSPCtpQ5oWpVcdf",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": 366.97,
+        "volume24hUsd": 4.03,
+        "pairCreatedAt": 1789704123000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/4bke1wsi1o682bdbxgfyvneagldvf7szuydcgktjpikk",
+        "dexId": "pumpswap",
+        "baseMint": "4YHbtGNfwdr1H11rJbVeizeEVVJzFYYiX7qFWJ1WPoaS",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "PLEASEINU",
+        "pairAddress": "4bKe1wsi1o682BdBxgFYvneagLdvF7SzUyDcGktjpiKK",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": 331.05,
+        "volume24hUsd": 1096,
+        "pairCreatedAt": 1790457402000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/3bkogrqa4hpeycdmxffgbgsqh8hymbkhtsdtvxpaqfg4",
+        "dexId": "pumpswap",
+        "baseMint": "FyJhergwKuofZBnJ7bKWmywueUronhCimhRG7rPVxWd6",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "KAI",
+        "pairAddress": "3bkoGrqA4HpeycDMxFFGbGSqH8hymbKHTsdTVXpAQFG4",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": 317.04,
+        "volume24hUsd": 14.47,
+        "pairCreatedAt": 1790622203000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/gneftpeyzq24t9sn7aaugdnxp2hnghyj9dhscn6suqqv",
+        "dexId": "pumpswap",
+        "baseMint": "4hzqQibYqDMJQqHmwwc5AG7w6SAj7AnwrPK93Wfwpump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "RENT",
+        "pairAddress": "GnEftPEYzq24t9sn7aAUgDNXp2HnGHyj9dHscN6sUqQV",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": 270.96,
+        "volume24hUsd": 915.05,
+        "pairCreatedAt": 1791644589000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/4ezmkq2mp8demayevtwphmbg1oqfziwkw5mkj2eilhtg",
+        "dexId": "pumpswap",
+        "baseMint": "BwwBNwZuWrWVAuqrFrgznUde8k7j2kWTPUkJEESdpump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "DEX",
+        "pairAddress": "4eZMKQ2MP8DEMayEvTWPHMBG1oqfziwkw5MKj2eiLhTG",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": 257.52,
+        "volume24hUsd": 986.82,
+        "pairCreatedAt": 1789704575000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/2whz6w5rsenekbvbxvik9konxfrqslceytids1motb2l",
+        "dexId": "pancakeswap",
+        "baseMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "quoteMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "baseSymbol": "PAID",
+        "pairAddress": "2whz6W5RSeNekBvBXViK9KonXfRQSLcEytiDS1moTb2L",
+        "quoteSymbol": "USDC",
+        "liquidityUsd": 213.55,
+        "volume24hUsd": 35.68,
+        "pairCreatedAt": null,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/2d2v4dzq6yiykvb7dz5bzcrsssivczdq4bnpj8c7yzyh",
+        "dexId": "raydium",
+        "baseMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "quoteMint": "6GmAFSYs4gk3FDao5FzzySQpPZaWsa4rUJHacpMpUNgx",
+        "baseSymbol": "PAID",
+        "pairAddress": "2d2V4dZq6Yiykvb7DZ5BzCRssSiVCZdq4bnPJ8C7YzyH",
+        "quoteSymbol": "STONK",
+        "liquidityUsd": 159.97,
+        "volume24hUsd": 115.97,
+        "pairCreatedAt": 1790415748000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/3ic9hare7dtpsqjfzzu3jr69pk34qtqm82oxxkskztrn",
+        "dexId": "meteora",
+        "baseMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "quoteMint": "7FhjCSMwtQNuHCwwSs5Q9yf43NnsaeMi5YrtQCpXfREV",
+        "baseSymbol": "PAID",
+        "pairAddress": "3iC9HarE7dTpsqjFzzu3jr69PK34Qtqm82oXxksKztrn",
+        "quoteSymbol": "SLR",
+        "liquidityUsd": 9.9,
+        "volume24hUsd": 0.46,
+        "pairCreatedAt": 1791768558000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/abmbahxwn8qfz4sspcg71siy7jqcvbeynu28r2zmvznn",
+        "dexId": "meteora",
+        "baseMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "quoteMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "baseSymbol": "PAID",
+        "pairAddress": "ABMbahXWN8QFZ4SSpCg71siY7jqcVbeynU28R2ZMVZnN",
+        "quoteSymbol": "USDC",
+        "liquidityUsd": 5,
+        "volume24hUsd": 0.46,
+        "pairCreatedAt": 1789621455000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/2t7nxzqylof7kv19kesnh5khva5smbug3fhhkdfglepc",
+        "dexId": "raydium",
+        "baseMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "quoteMint": "So11111111111111111111111111111111111111112",
+        "baseSymbol": "PAID",
+        "pairAddress": "2t7nXZqyLoF7KV19KesNH5KhvA5sMBUG3FhhKDfGLEPC",
+        "quoteSymbol": "SOL",
+        "liquidityUsd": 4.2,
+        "volume24hUsd": 4.33,
+        "pairCreatedAt": 1789733889000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/gf7iffakauwcygh4dydsevroqzgnqgcxj4k418hk7wds",
+        "dexId": "raydium",
+        "baseMint": "4ZSVuD5afMdgwPYFfuQ5GgvumLM6A14nW5MnaMuNu2qp",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "YELLASTONE",
+        "pairAddress": "GF7iffAKAUWCYGH4DydsEVroqzGnQGCXj4K418HK7wDs",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": 3.64,
+        "volume24hUsd": 0.39,
+        "pairCreatedAt": 1789570200000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/25zs2zbjoecmk4xxfoqatjd2u4kdqthjq2trbkdzgsph",
+        "dexId": "pumpfun",
+        "baseMint": "8EUtjeDR48SHN1Mxwg4tpomq7h6RWN7FgJQBnnFRpump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "BasketPaid",
+        "pairAddress": "25zs2zbJoEcmK4XXfoqaTJD2U4KdqTHJQ2trbkDzGsPH",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": 1.08,
+        "pairCreatedAt": 1795675297000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/3dlkj5bdkvn3vdw7zgaqrq8tbpn7ahawqc56jdhkipen",
+        "dexId": "pumpfun",
+        "baseMint": "34fkU5z25667f4i1bmQvNNgXkREC1DF2Jq1PRrDapump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "ete",
+        "pairAddress": "3DLkJ5BDkvn3vdW7ZGAqRQ8TBpn7AHAWQc56jDhKipEN",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": 19.04,
+        "pairCreatedAt": 1790454356000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/3hjpqvwvwb7g64ysmvzdhblxantniexxr5d27tj4bgql",
+        "dexId": "pumpfun",
+        "baseMint": "CnrCTuj3iHcBHebgAcXpKmS4oM2FpcSeaHqJQVH2pump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "RoboPaid",
+        "pairAddress": "3HjPQVwvWB7G64YSmvzDhBLxAntNiexxR5d27tj4BgqL",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": 0.48,
+        "pairCreatedAt": 1794946590000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/5xxbnmutpyfphh1rqkzm2zkwreibqhn21vvt3hkj4em5",
+        "dexId": "pumpfun",
+        "baseMint": "FEi7uivJohsmvBHKiXBd862t7pYeaKWrF4EU8w2spump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "Paidgent",
+        "pairAddress": "5XXbNmUtpyfPHh1Rqkzm2ZkWreiBQHn21vvt3Hkj4em5",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": 10980,
+        "pairCreatedAt": 1795779309000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/6p7raachr89paepcabk45mzjvr7fmjaygcxnrntygqty",
+        "dexId": "pumpfun",
+        "baseMint": "GRo4r1Mxb7D1aHYYPxm9ohVdkMmf6csjRL11c3sppump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "Snowpaid",
+        "pairAddress": "6p7RaAChR89PaEpCABK45mzJVr7FmjAyGCXnrNTygqty",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": 40135.16,
+        "pairCreatedAt": 1795786462000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/ae5bspj2d6zgqgxjtpaggztsn1lqcwqzkbukv3r5rld1",
+        "dexId": "pumpfun",
+        "baseMint": "9A5GFm4zPU3KbcTWXGkJB4vJCHFxM2dbDWaKVUS4pump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "RAID",
+        "pairAddress": "AE5BsPj2D6ZGqGxJtPaGgztsn1LQcWQZkbuKV3r5rLD1",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": 673.54,
+        "pairCreatedAt": 1795785705000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/b6irtyptnvz56hucmosfwvzvhx8xymqhue85uhshcqlq",
+        "dexId": "pumpfun",
+        "baseMint": "5QA8wCotJixRi8VAnCE6KELRnrJsbK1uLBamsPDMtHsx",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "paygent",
+        "pairAddress": "B6irTYpTnvZ56HucmosFWvzvHX8xYMQHue85UhshCQLQ",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": null,
+        "pairCreatedAt": 1795784391000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/b8eul6zbrg2z9qbtur9qzf3btkyxhtujgblnj2dx1jre",
+        "dexId": "pumpfun",
+        "baseMint": "2FPhpD6AR3D282Qm6vZPJ7dKKrxVk95ksnsCdMvspump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "Paygent",
+        "pairAddress": "B8euL6zBrg2z9QBTur9Qzf3BtKYxhtUJGbLNj2DX1JrE",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": 6984.29,
+        "pairCreatedAt": 1795783867000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/bt3drjv8nozd6ssyzca7enazkjxxsudgyfp6xukgvl7o",
+        "dexId": "pumpfun",
+        "baseMint": "B8Zufo3phMwsMYxfitk52Uxo6XnnunS8nrTimCLxpump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "Mined",
+        "pairAddress": "BT3drjv8Nozd6sSyzCA7enaZkJxXSudgyFP6xuKgvL7o",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": 27208.87,
+        "pairCreatedAt": 1795762580000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/fzyrxpmpmsdub45tsdqp5cazx9wydrby5bze4rthby9v",
+        "dexId": "pumpfun",
+        "baseMint": "Hyk8HtqrJJ2odKNbWkizC5tpJFK5sxSNKQmxUMbT3KQs",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "paygent",
+        "pairAddress": "FZyrxpmpmSDuB45tSDqp5cAzx9WyDRbY5BZe4RthBY9v",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": null,
+        "pairCreatedAt": 1795784309000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/gpsy52n3q3gjzcaycdgu85ryeitarjdrcuerkmlksrvw",
+        "dexId": "pumpfun",
+        "baseMint": "92BvUJyLKv1D3esMzM5bRhBjW7TsYSLXwKXFgNo5dMhW",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "niggesh",
+        "pairAddress": "GPsy52n3q3gJzcAYcdGu85RyEitArjDrcuErkMLKsRvW",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": null,
+        "pairCreatedAt": 1795784548000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/gxmknrj86zkk8xyqtzrczkvehs8ukvexhfsbx5rupc7a",
+        "dexId": "pumpfun",
+        "baseMint": "Dbhy7eij3H3WuD392xzJMPAcRaMuWV83crtBLMPhpump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "Paidroll",
+        "pairAddress": "GxmkNrJ86ZKK8xYQtzrcZKVehS8UKvexHfsbX5RUpc7a",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": 0.5,
+        "pairCreatedAt": 1795191400000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      },
+      {
+        "url": "https://dexscreener.com/solana/hdrbc6cprwxsghrqrjafzt3usbfhr9m95ffwxbtqjbzb",
+        "dexId": "pumpfun",
+        "baseMint": "CsA7Jw1XLzKRArQVuwch5LK4quYkXzW8cRNgEQwFpump",
+        "quoteMint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "baseSymbol": "Snowpaid",
+        "pairAddress": "HDRbc6cPRWXsGhRQRjafZT3USBFHr9M95FfWXBTqJbzB",
+        "quoteSymbol": "PAID",
+        "liquidityUsd": null,
+        "volume24hUsd": 0.63,
+        "pairCreatedAt": 1795787163000,
+        "lpBurnsVerified": false,
+        "lpLocksVerified": false,
+        "reservesVerified": false,
+        "poolAddressFormat": "valid_solana_pubkey",
+        "poolAccountExistence": "not_checked",
+        "poolProgramOwnership": "not_checked",
+        "withdrawalRightsVerified": false
+      }
+    ],
+    "status": "pools_reported",
+    "coverage": {
+      "scope": "Deduplicated, syntactically valid Solana pool addresses returned by DexScreener; not an exhaustive on-chain pool inventory",
+      "warning": "Missing pools or missing liquidity do not establish zero liquidity. LP locks, burns, reserve control and rug risk have not been verified.",
+      "liquidity": "Provider-reported USD estimates, not independently verified reserve balances",
+      "concentration": "Share among returned pools with numeric liquidity, not all pools",
+      "lpBurnsVerified": false,
+      "lpLocksVerified": false,
+      "reservesVerified": false,
+      "poolAccountExistence": "not_checked",
+      "poolProgramOwnership": "not_checked",
+      "withdrawalRightsVerified": false
+    },
+    "provider": "DexScreener",
+    "observedAt": "2026-11-28T05:32:25.655Z",
+    "tokenMetadata": {
+      "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+      "name": "Paid",
+      "source": "DexScreener",
+      "symbol": "PAID"
+    },
+    "poolCountReturned": 30,
+    "reportedLiquidityUsd": 232477.52999999997,
+    "largestReportedPoolSharePct": 84.26238441194725
+  },
+  "workerEvidence": {
+    "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+    "creator": {
+      "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+      "stage": "selling",
+      "status": "partial",
+      "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+      "missing": [
+        "Verified creator/team holdings attribution",
+        "Comparable previous-launch scoring evidence",
+        "Complete archival selling windows and acquisition attribution"
+      ],
+      "selling": null,
+      "holdings": {
+        "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+        "observedAt": "2026-10-18T11:44:33.168Z",
+        "scoreEligible": false,
+        "supplySharePct": 0.0686
+      },
+      "updatedAt": "2026-11-26T06:17:11.568892+00:00",
+      "attribution": {
+        "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "role": "protocol_assigned_creator",
+        "scope": "Assigned on-chain creator role; does not establish off-chain identity or ownership of other wallets.",
+        "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+        "version": 2,
+        "verified": true,
+        "programId": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+        "creationSlot": 447328096,
+        "creationTime": 1789500020,
+        "creationUser": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+        "verification": "transaction_local_protocol_creator",
+        "decoderVersion": "pump-fun-create_v2-prefix-v1",
+        "creationSignature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+        "independentlyReviewed": false
+      },
+      "behaviourV2": {
+        "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "ledger": {
+          "burnedRaw": "9939092130424",
+          "purchasedRaw": "15664233491746",
+          "acceptedCount": 34,
+          "rejectedCount": 0,
+          "verifiedSoldRaw": "0",
+          "externalTransferredOutRaw": "5200000000000"
+        },
+        "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+        "version": 2,
+        "signatures": [
+          "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+          "2tqJx2jEhP8Rx5SMB9qqw7RYrekqmgH78dRdeVmv6oSor4Rgb4m4tLjZLT9DCPLd4VwVsFUJhxYzwZUvTxwQShCN",
+          "3i8UBbXPmQUBaX9sReQ9bR1LZC1C14DzjfRorXydy2FDzWAVmWpPyxHarmoVpwNQuoA2RQiXyBPTTVmW5VwcucTj",
+          "4FP1JbrUgBRuHvMkYGVY9kawZY4fnqwDFddFYAGCkQNemthtLasGyP1J9xtFAiN3TDfPgYgfntkguyNTVHHscSgV",
+          "4vj9cbKxKPSrFnz5kaWkx1je1zdr3VaSs73Q4gC9Uc9qCDijTwBdbCxEgp9iWqvHZz9D9fT8NukTyHyef2tkZDGa",
+          "XTy3bcMPX6AJdYcCCi5gfYhFXXMfZ3qthrvCp314XdQEHjKPvXdp5vQSNSyKLwYMZCZNbU6rcBadogHDAVY3LZQ",
+          "3pBGcQyMuC6a2uj3N1oBEg3rTS1sxA4Dmka3BKdEVq2BXxEU4WwqA7Txt7jYkUp8kyxua5JGX9RcRv3k4JqqB37R",
+          "3RAq6n9NRs8Gqig3jerLxUJkyqKYx9r57qY4QaF8uE7YTehLoUoox8y9dpCE7RkL9skdRVhx4xFRFuoDAMNhnJa7",
+          "5kJSrioMvSVs7wRgSEK1MqriqxtWS8EHyxFFgtryAb6pSp7MKKvLMr8BVK4WHBZTBHexuCitm9L1MUMkdB2SstsE",
+          "48ZJbQK91XR1GBN51sxvWjynvSvrNM61ZpeeGUJ2No6W1hdGY6Jsnu87BfHgVQvmEpFU1tVT8XTEiP7B88dUxaZX",
+          "5tM5LHkuE3uaeBRF21pBtezwzvn2U87ehNxwD2SDL6DZSCfCJ1wmfd1zQ5eZRaiGV3cyXddJ5aq48nsdGsoZ8J8y",
+          "4B34YnBHznAzEzkPDEJocU7MG7CnwcehyKpYgYZkpLnCe9QdfKJateN2qitJTXjieqmayiMqcQ2WGCuuiqsKbzye",
+          "pguGascXz7YknnPrWoiBd98RUuN93vwVtMjNx2p7MC8uszv9XXsxKgaNAif2VTrNvo3pmBwdhhvwKNcHmUU7RPp",
+          "3GmUejB9HqNNQShDxqdC9ZKDAF1ttkyaNUNDN5fTUMoDybTgbXCthzmiZNftb683YVRGBukuD9YRBST4k37CtxSv",
+          "2NbEc6jzYt2TyZWQaa8pi12XdfZG96RN74zcYG9wWzQEot61TxFkaMzHKVWXRbs9i7H9cHB7fwf5TsneNAJc3ADe",
+          "4uDgXtEP75rpwygU5A3KkmzS9PAfaZMRjbpiErV5Q2r4NZrQsNf3m5eeXgQEh9JNLGYs4tAPRtRMwmV3KYMH3q4J",
+          "41tX9aWeEgvTvvgQdzMmv1nbua2NWMtr7WiY929cirWDM4VrbFQKqdb7LqLe6geNpXteRGey7y6XRKVigvMKz4Fd",
+          "5PSNhW4nch1evzScwKhFT9k2jdNGuvJwuMNT3qpZknDHWL9MSkUMgmdcj3Wxz7qecocDjZsg1eSt3nrrSrBwKWWq",
+          "vSbjEuidVkQmFXEMH1TbVgk3P8TboJYx6ZqZ6HKr3Ftk8EdsVCKs4uo8iLmmjoQfkA4Lq5AZGuAd65yqhDGJCFx",
+          "2717moCXLXKYsj9J6UTT5GN3vRka5PmY8Fi28dNVNgCdhKeWDfsqXfZHNXjEmxUmREwHFTkdVDDAV1tqqNKppGEn",
+          "2qoUgK5TTtRJAuZGhwsvNwH72wYmNV54GVVJyEfz9ojsg64mZJCBVcDPx7CTjWemsus4kL2pqwF8U4kgFQkvztR",
+          "29ErH6cBJRxvMbEro6pWLBoqYArZtNSAQD5vFsnDKJjwNJdhqSeWjbXNxge1Q8MSUgF8DCJFbutRWfgA5ndD7oPV",
+          "2wgJ7UuyxSzcfiyuyVJuQkurjPjxpWYT4hA96NfZjzDxMYbSorqGk3tAN2ySRrkXXZeLb1s9KeZMDmZRY2dt3drS",
+          "5nYHDMGWxqKa9Zz5xJkXRRVyZH2WLy4w8M3mtzmhggjAeERncHsw6aaNEZV1jbjYsjMgAWDR9BFuaBzSY4GCDARe",
+          "4tjHaTZsEmwEUHHxpiiaXeQ2yLrGUnUSnqJcUjDLPrU9uuNC6MepHmTu9a8NsbND1Yo8uJmBce34NzQiQeV92x2n",
+          "4HshfEisrtPGR4cQjA9uDqGvsDW5kmjNw7CFjVfeG3few8wLNVRPyYHqtqqfe5cKUpvo6zjqdRbPSFgeVmYDkR4e",
+          "67GjoYiKENdGCk151KZoXruZMdamJUm8KdPGsktJRhAtW4rQwWYnkzyGCwXqmbKPgxJMind4fSypsy8pUqVSiKoY",
+          "3MgyW5BghMwCDCcBM7msQ9dGuTdGqY2eQohbcn6sR8aXz8tu1sPtR8Y6YLkdmTGGLys5CaecjD5uvuszaVszkVPF",
+          "397TtCR72yS6DbEkAJNCQHXrCpktzenzwbo8Kiy7LVWJHA2WUoaLKNQweTdNq1KXbDbPCEKyERhrkgzmfShDHoPP",
+          "5WKRTC5A2vmR7iRBHmm6gFZg6fXdF9Yqw27HRot7oz3XZXbPNz69PUpkqRDcoHkwprntDudUJpsQbqNGvoKpYgLo",
+          "5VVCnYEKrtqJ6M954GQMooXMdSGDuB3YJUW1ETr9sKQVe9osqdmhaJn9RRgTWqVV3wrFKfJaKoNajL6aUVBKLrwE",
+          "2ovZrBHZS5KhfP6TLRQbTLC9rZCYps97g95j8oBJ21FPzbbFK61Kc7BzLDVUuczQjYd1ca3DDGkDp1xZqR6GTPu2",
+          "36YBcsxCHEQYzrStSnWrGwnKHQFESAXGdvYxsQ6ryzgncthgWxXD4sTrdApisegbKF1TYU6naiARDsoWmqkFYssE",
+          "5bD5WmRn7qbkU8KJTxreVUssLHs3S3yfTmXSQ3z5Ccqtja2AtCqiHW2DCfpgNZpnrEpRqPnYsB5KKPsYJ6PFjchM"
+        ],
+        "limitations": [
+          "Verified sales, burns and external transfers are separate event classes.",
+          "Acquisition and selling histories are incomplete; no lifetime selling percentage or absence-of-sales claim.",
+          "Creator funding and previous launches remain unassessed unless individually attributed."
+        ],
+        "currentWallet": {
+          "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+          "slot": 474084637,
+          "scope": "verified_creator_wallet_only",
+          "source": "alchemy",
+          "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+          "commitment": "finalized",
+          "observedAt": "2026-11-26T08:40:48.508Z",
+          "rawBalance": "599036011328",
+          "accountCount": 1,
+          "schemaVersion": 1,
+          "scoreEligible": false,
+          "linkedWalletsAssessed": false
+        },
+        "historyComplete": false,
+        "recentDiscovery": {
+          "budgetLimited": true,
+          "walletSignatures": 10,
+          "oldestReturnedTime": 1795648746,
+          "tokenAccountSignatures": 10
+        },
+        "signedBurnProofs": [
+          {
+            "slot": 473944704,
+            "amountRaw": "2144637484",
+            "signature": "5bD5WmRn7qbkU8KJTxreVUssLHs3S3yfTmXSQ3z5Ccqtja2AtCqiHW2DCfpgNZpnrEpRqPnYsB5KKPsYJ6PFjchM",
+            "executionEvidence": "finalized_rpc_balances",
+            "instructionSignatureVerified": true
+          }
+        ],
+        "lifetimeSellingPct": null,
+        "archiveCoverageVerified": false,
+        "processedHistoricalSignatures": 4656
+      },
+      "launchObservation": {
+        "slot": 447328096,
+        "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+        "decimals": 6,
+        "signature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+        "timestamp": 1789500020,
+        "purchasedRaw": "15664233491746",
+        "schemaVersion": 1,
+        "scoreEligible": false,
+        "historyComplete": false,
+        "zeroDirectLaunchAllocationVerified": true
+      },
+      "previousLaunchCount": null,
+      "currentWalletObservation": {
+        "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "slot": 474052934,
+        "scope": "verified_creator_wallet_only",
+        "source": "alchemy",
+        "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+        "commitment": "finalized",
+        "observedAt": "2026-11-26T06:49:54.573Z",
+        "rawBalance": "599036011328",
+        "accountCount": 1,
+        "schemaVersion": 1,
+        "scoreEligible": false,
+        "linkedWalletsAssessed": false
+      }
+    },
+    "version": "1.1",
+    "weights": {
+      "token_security": 0.15,
+      "holder_intelligence": 0.3,
+      "creator_intelligence": 0.2,
+      "liquidity_quality_safety": 0.35
+    },
+    "liquidity": {
+      "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+      "status": "account_checks_completed",
+      "missing": [
+        "Verified executable depth and market cap",
+        "Verified LP withdrawal control",
+        "Independent pool concentration",
+        "Verified reference sell impact",
+        "30-day reserve history"
+      ],
+      "updatedAt": "2026-11-26T06:05:34.554971+00:00",
+      "observedAt": "2026-10-19T11:35:13.965Z",
+      "lpObservation": {
+        "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "pool": "6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA",
+        "atomic": false,
+        "lpMint": "CWQgvR86mZPz5bmFGx8HF137yoqzMfGQWdFM1X7xhZ1G",
+        "source": "alchemy",
+        "holders": [
+          {
+            "owner": "9nmjFUaE87hrJBycGyry7ZB3XXD4zUUhHyYEuYa5jVbM",
+            "amountRaw": "148929078",
+            "tokenAccount": "D2G1bS9UNZSdr8ES8ZDaNMRce9moVFtDfnHBByBF4EGB"
+          },
+          {
+            "owner": "DfpXG5oPTed85EDwpRE16h1jBnFsdQD4kfdgRBxmqFbn",
+            "amountRaw": "3934590",
+            "tokenAccount": "GASEYC6kS6TR9uo93V23W3PrHhPqWQL84iikx92gSULU"
+          }
+        ],
+        "commitment": "finalized",
+        "observedAt": "2026-11-26T04:44:18.373Z",
+        "observedRaw": "152863668",
+        "discoverySlot": 474018335,
+        "mintSupplyRaw": "152863668",
+        "schemaVersion": 1,
+        "scoreEligible": false,
+        "observationSlot": 474018385,
+        "inventoryComplete": false,
+        "lpSecurityVerified": false,
+        "withdrawalRightsVerified": false,
+        "historicalOwnershipVerified": false,
+        "observedBalanceSumEqualsSupply": true
+      },
+      "schemaVersion": 1,
+      "lq09Observation": {
+        "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "observedAt": "2026-11-26T05:58:08.712Z",
+        "schemaVersion": 1,
+        "scoreEligible": false,
+        "transactionSlot": 458811200,
+        "amountReconciled": true,
+        "totalTransferRaw": "2603773",
+        "withdrawalConfirmed": false,
+        "authorizationVerified": false,
+        "historicalAccountReads": 2,
+        "creatorRecipientMatchesHistoricalState": false,
+        "protocolRecipientMatchesHistoricalState": true
+      },
+      "checkedPoolCount": 30,
+      "currentScoringV2": {
+        "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "pool": "6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA",
+        "slot": 474083510,
+        "flags": [
+          {
+            "id": "protocol_admin_controls",
+            "detail": "Protocol global operation controls remain separate from LP redemption exposure; a retained protocol administrator can change operation flags. Program upgrade authority is not certified by this calculation.",
+            "severity": "high"
+          }
+        ],
+        "atomic": true,
+        "lpMint": "CWQgvR86mZPz5bmFGx8HF137yoqzMfGQWdFM1X7xhZ1G",
+        "decoder": "@pump-fun/pump-swap-sdk@2.1.0",
+        "feesBps": {
+          "lpFeeBps": 20,
+          "creatorFeeBps": 70,
+          "protocolFeeBps": 5
+        },
+        "version": 2,
+        "protocol": "pump_amm",
+        "provider": "alchemy",
+        "commitment": "finalized",
+        "evidenceId": "063202bce380879e081e4607da483d0a71b67a337597bfa67a70e4a684c6d872",
+        "observedAt": "2026-11-26T08:36:46.406Z",
+        "withdrawal": {
+          "lpHolders": [
+            {
+              "owner": "9nmjFUaE87hrJBycGyry7ZB3XXD4zUUhHyYEuYa5jVbM",
+              "frozen": false,
+              "amountRaw": "148929078",
+              "delegated": false,
+              "tokenAccount": "D2G1bS9UNZSdr8ES8ZDaNMRce9moVFtDfnHBByBF4EGB"
+            },
+            {
+              "owner": "DfpXG5oPTed85EDwpRE16h1jBnFsdQD4kfdgRBxmqFbn",
+              "frozen": false,
+              "amountRaw": "3934590",
+              "delegated": false,
+              "tokenAccount": "GASEYC6kS6TR9uo93V23W3PrHhPqWQL84iikx92gSULU"
+            }
+          ],
+          "maxBaseClaimRaw": "3347908006",
+          "maxQuoteClaimRaw": "48257732",
+          "outstandingLpRaw": "152863668",
+          "lpClaimOnlyMaxPct": 0.003645,
+          "holderBalancesReconcile": true,
+          "maxCurrentWithdrawalPct": 0.003645,
+          "protocolLpDenominatorRaw": "4193541153155",
+          "currentInstructionRulesOnly": true,
+          "adminOrProgramUpgradeRiskAssessed": false
+        },
+        "limitations": [
+          "Protocol quote at the observed slot, not a guaranteed transaction fill.",
+          "Pool concentration covers returned pools only; other architectures require their own decoder.",
+          "Historical fee-recipient authorization is a separate unresolved observation."
+        ],
+        "lpSupplyRaw": "152863668",
+        "baseDecimals": 6,
+        "feeBucketsRaw": "2484463",
+        "mintSupplyRaw": "815001507814003",
+        "quoteDecimals": 9,
+        "schemaVersion": 1,
+        "baseReserveRaw": "91843864438801",
+        "executableDepth": {
+          "method": "protocol_state_calculation",
+          "verified": true,
+          "networkFeesIncluded": false,
+          "maxReferenceQuoteSol": 100,
+          "transactionSimulation": false
+        },
+        "quoteReserveRaw": "1323867009123",
+        "referenceQuotes": [
+          {
+            "quoteSymbol": "SOL",
+            "baseInputRaw": "68466127672",
+            "curveImpactPct": 0.07449,
+            "quoteOutputRaw": "989762168",
+            "referenceNotional": 1,
+            "referenceNotionalSol": 1,
+            "impactIncludingFeesPct": 1.023783
+          },
+          {
+            "quoteSymbol": "SOL",
+            "baseInputRaw": "684661276726",
+            "curveImpactPct": 0.739946,
+            "quoteOutputRaw": "9831708331",
+            "referenceNotional": 10,
+            "referenceNotionalSol": 10,
+            "impactIncludingFeesPct": 1.682916
+          },
+          {
+            "quoteSymbol": "SOL",
+            "baseInputRaw": "6846612767265",
+            "curveImpactPct": 6.93746,
+            "quoteOutputRaw": "92178445479",
+            "referenceNotional": 100,
+            "referenceNotionalSol": 100,
+            "impactIncludingFeesPct": 7.821554
+          }
+        ],
+        "reservesVerified": true,
+        "lpSecurityVerified": false,
+        "realQuoteReserveRaw": "1323864524660",
+        "valuationDefinition": "Two-sided pool liquidity divided by spot fully diluted valuation, both denominated in SOL; not circulating market capitalization.",
+        "poolInventoryComplete": false,
+        "poolIssuedLpCounterRaw": "4193541153155",
+        "executableDepthVerified": false,
+        "liquidityToMarketCapPct": 22.242873,
+        "virtualQuoteReservesRaw": "17582661843",
+        "effectiveQuoteReserveRaw": "1341449670966"
+      },
+      "failedBatchCount": 0,
+      "reportedPoolCount": 30,
+      "reserveObservation": {
+        "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "pool": "6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA",
+        "slot": 474050889,
+        "flags": [
+          "pool_issued_lp_counter_differs_from_current_mint_supply"
+        ],
+        "atomic": true,
+        "lpMint": "CWQgvR86mZPz5bmFGx8HF137yoqzMfGQWdFM1X7xhZ1G",
+        "provider": "alchemy",
+        "commitment": "finalized",
+        "evidenceId": "c0dd4f15c0fb684535f1f05f98c3e0216140c4b120eb6197405969b4e379acdc",
+        "observedAt": "2026-11-26T06:40:00.331Z",
+        "limitations": [
+          "Raw vault balances are not executable depth. Fees, trade execution and USD value are unverified.",
+          "LP mint supply does not establish LP ownership, locking or withdrawal control.",
+          "Only this pool is covered; independent pool concentration is unverified."
+        ],
+        "lpSupplyRaw": "152863668",
+        "baseDecimals": 6,
+        "mintSupplyRaw": "815041860837604",
+        "quoteDecimals": 9,
+        "schemaVersion": 1,
+        "baseReserveRaw": "93047913154088",
+        "quoteReserveRaw": "1306227668815",
+        "reservesVerified": true,
+        "lpSecurityVerified": false,
+        "poolIssuedLpCounterRaw": "4193541153155",
+        "executableDepthVerified": false
+      }
+    },
+    "investigation": {
+      "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+      "scope": "One bounded recent window plus verified creation; histories remain incomplete",
+      "status": "investigation_completed",
+      "creator": {
+        "events": [
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "PURCHASE",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "15664233491746",
+            "signature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+            "timestamp": 1789500020,
+            "instructionIndex": 5,
+            "settlementVerified": true,
+            "instructionVerified": true,
+            "bothWalletsAttributed": false,
+            "independentlyVerified": true,
+            "innerInstructionIndex": 2
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1424894232",
+            "signature": "XTy3bcMPX6AJdYcCCi5gfYhFXXMfZ3qthrvCp314XdQEHjKPvXdp5vQSNSyKLwYMZCZNbU6rcBadogHDAVY3LZQ",
+            "timestamp": 1795771342,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3571525604",
+            "signature": "3pBGcQyMuC6a2uj3N1oBEg3rTS1sxA4Dmka3BKdEVq2BXxEU4WwqA7Txt7jYkUp8kyxua5JGX9RcRv3k4JqqB37R",
+            "timestamp": 1795771310,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1384783448",
+            "signature": "3RAq6n9NRs8Gqig3jerLxUJkyqKYx9r57qY4QaF8uE7YTehLoUoox8y9dpCE7RkL9skdRVhx4xFRFuoDAMNhnJa7",
+            "timestamp": 1795770439,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3469364797",
+            "signature": "5kJSrioMvSVs7wRgSEK1MqriqxtWS8EHyxFFgtryAb6pSp7MKKvLMr8BVK4WHBZTBHexuCitm9L1MUMkdB2SstsE",
+            "timestamp": 1795770407,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "PURCHASE",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "15664233491746",
+            "signature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+            "timestamp": 1789500020,
+            "instructionIndex": 5,
+            "settlementVerified": true,
+            "instructionVerified": true,
+            "bothWalletsAttributed": false,
+            "independentlyVerified": true,
+            "innerInstructionIndex": 2
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1424911145",
+            "signature": "48ZJbQK91XR1GBN51sxvWjynvSvrNM61ZpeeGUJ2No6W1hdGY6Jsnu87BfHgVQvmEpFU1tVT8XTEiP7B88dUxaZX",
+            "timestamp": 1795774939,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3570978694",
+            "signature": "5tM5LHkuE3uaeBRF21pBtezwzvn2U87ehNxwD2SDL6DZSCfCJ1wmfd1zQ5eZRaiGV3cyXddJ5aq48nsdGsoZ8J8y",
+            "timestamp": 1795774907,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1424582799",
+            "signature": "4B34YnBHznAzEzkPDEJocU7MG7CnwcehyKpYgYZkpLnCe9QdfKJateN2qitJTXjieqmayiMqcQ2WGCuuiqsKbzye",
+            "timestamp": 1795774036,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3570070127",
+            "signature": "pguGascXz7YknnPrWoiBd98RUuN93vwVtMjNx2p7MC8uszv9XXsxKgaNAif2VTrNvo3pmBwdhhvwKNcHmUU7RPp",
+            "timestamp": 1795774004,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "PURCHASE",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "15664233491746",
+            "signature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+            "timestamp": 1789500020,
+            "instructionIndex": 5,
+            "settlementVerified": true,
+            "instructionVerified": true,
+            "bothWalletsAttributed": false,
+            "independentlyVerified": true,
+            "innerInstructionIndex": 2
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1414086306",
+            "signature": "3GmUejB9HqNNQShDxqdC9ZKDAF1ttkyaNUNDN5fTUMoDybTgbXCthzmiZNftb683YVRGBukuD9YRBST4k37CtxSv",
+            "timestamp": 1795782146,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3551218976",
+            "signature": "2NbEc6jzYt2TyZWQaa8pi12XdfZG96RN74zcYG9wWzQEot61TxFkaMzHKVWXRbs9i7H9cHB7fwf5TsneNAJc3ADe",
+            "timestamp": 1795782114,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1422615381",
+            "signature": "4uDgXtEP75rpwygU5A3KkmzS9PAfaZMRjbpiErV5Q2r4NZrQsNf3m5eeXgQEh9JNLGYs4tAPRtRMwmV3KYMH3q4J",
+            "timestamp": 1795781243,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3567786364",
+            "signature": "41tX9aWeEgvTvvgQdzMmv1nbua2NWMtr7WiY929cirWDM4VrbFQKqdb7LqLe6geNpXteRGey7y6XRKVigvMKz4Fd",
+            "timestamp": 1795781211,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "PURCHASE",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "15664233491746",
+            "signature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+            "timestamp": 1789500020,
+            "instructionIndex": 5,
+            "settlementVerified": true,
+            "instructionVerified": true,
+            "bothWalletsAttributed": false,
+            "independentlyVerified": true,
+            "innerInstructionIndex": 2
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1353357484",
+            "signature": "5PSNhW4nch1evzScwKhFT9k2jdNGuvJwuMNT3qpZknDHWL9MSkUMgmdcj3Wxz7qecocDjZsg1eSt3nrrSrBwKWWq",
+            "timestamp": 1795792942,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3401144886",
+            "signature": "vSbjEuidVkQmFXEMH1TbVgk3P8TboJYx6ZqZ6HKr3Ftk8EdsVCKs4uo8iLmmjoQfkA4Lq5AZGuAd65yqhDGJCFx",
+            "timestamp": 1795792910,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1373465652",
+            "signature": "2717moCXLXKYsj9J6UTT5GN3vRka5PmY8Fi28dNVNgCdhKeWDfsqXfZHNXjEmxUmREwHFTkdVDDAV1tqqNKppGEn",
+            "timestamp": 1795792037,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3443219186",
+            "signature": "2qoUgK5TTtRJAuZGhwsvNwH72wYmNV54GVVJyEfz9ojsg64mZJCBVcDPx7CTjWemsus4kL2pqwF8U4kgFQkvztR",
+            "timestamp": 1795792005,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "PURCHASE",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "15664233491746",
+            "signature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+            "timestamp": 1789500020,
+            "instructionIndex": 5,
+            "settlementVerified": true,
+            "instructionVerified": true,
+            "bothWalletsAttributed": false,
+            "independentlyVerified": true,
+            "innerInstructionIndex": 2
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1411573814",
+            "signature": "29ErH6cBJRxvMbEro6pWLBoqYArZtNSAQD5vFsnDKJjwNJdhqSeWjbXNxge1Q8MSUgF8DCJFbutRWfgA5ndD7oPV",
+            "timestamp": 1795799243,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3551863917",
+            "signature": "2wgJ7UuyxSzcfiyuyVJuQkurjPjxpWYT4hA96NfZjzDxMYbSorqGk3tAN2ySRrkXXZeLb1s9KeZMDmZRY2dt3drS",
+            "timestamp": 1795799211,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1450505299",
+            "signature": "5nYHDMGWxqKa9Zz5xJkXRRVyZH2WLy4w8M3mtzmhggjAeERncHsw6aaNEZV1jbjYsjMgAWDR9BFuaBzSY4GCDARe",
+            "timestamp": 1795798339,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3649493286",
+            "signature": "4tjHaTZsEmwEUHHxpiiaXeQ2yLrGUnUSnqJcUjDLPrU9uuNC6MepHmTu9a8NsbND1Yo8uJmBce34NzQiQeV92x2n",
+            "timestamp": 1795798307,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "PURCHASE",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "15664233491746",
+            "signature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+            "timestamp": 1789500020,
+            "instructionIndex": 5,
+            "settlementVerified": true,
+            "instructionVerified": true,
+            "bothWalletsAttributed": false,
+            "independentlyVerified": true,
+            "innerInstructionIndex": 2
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1407628115",
+            "signature": "4HshfEisrtPGR4cQjA9uDqGvsDW5kmjNw7CFjVfeG3few8wLNVRPyYHqtqqfe5cKUpvo6zjqdRbPSFgeVmYDkR4e",
+            "timestamp": 1795803740,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3539530459",
+            "signature": "67GjoYiKENdGCk151KZoXruZMdamJUm8KdPGsktJRhAtW4rQwWYnkzyGCwXqmbKPgxJMind4fSypsy8pUqVSiKoY",
+            "timestamp": 1795803707,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1402729896",
+            "signature": "3MgyW5BghMwCDCcBM7msQ9dGuTdGqY2eQohbcn6sR8aXz8tu1sPtR8Y6YLkdmTGGLys5CaecjD5uvuszaVszkVPF",
+            "timestamp": 1795802848,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3526318179",
+            "signature": "397TtCR72yS6DbEkAJNCQHXrCpktzenzwbo8Kiy7LVWJHA2WUoaLKNQweTdNq1KXbDbPCEKyERhrkgzmfShDHoPP",
+            "timestamp": 1795802816,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "PURCHASE",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "15664233491746",
+            "signature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+            "timestamp": 1789500020,
+            "instructionIndex": 5,
+            "settlementVerified": true,
+            "instructionVerified": true,
+            "bothWalletsAttributed": false,
+            "independentlyVerified": true,
+            "innerInstructionIndex": 2
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1461505993",
+            "signature": "5WKRTC5A2vmR7iRBHmm6gFZg6fXdF9Yqw27HRot7oz3XZXbPNz69PUpkqRDcoHkwprntDudUJpsQbqNGvoKpYgLo",
+            "timestamp": 1795841537,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3369666694",
+            "signature": "5VVCnYEKrtqJ6M954GQMooXMdSGDuB3YJUW1ETr9sKQVe9osqdmhaJn9RRgTWqVV3wrFKfJaKoNajL6aUVBKLrwE",
+            "timestamp": 1795841505,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "1462564633",
+            "signature": "2ovZrBHZS5KhfP6TLRQbTLC9rZCYps97g95j8oBJ21FPzbbFK61Kc7BzLDVUuczQjYd1ca3DDGkDp1xZqR6GTPu2",
+            "timestamp": 1795840637,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          },
+          {
+            "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+            "type": "VERIFIED_BURN",
+            "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+            "amountRaw": "3368062493",
+            "signature": "36YBcsxCHEQYzrStSnWrGwnKHQFESAXGdvYxsQ6ryzgncthgWxXD4sTrdApisegbKF1TYU6naiARDsoWmqkFYssE",
+            "timestamp": 1795840605,
+            "instructionIndex": 2,
+            "instructionVerified": true,
+            "independentlyVerified": true,
+            "innerInstructionIndex": null,
+            "burnInstructionVerified": true
+          }
+        ],
+        "status": "evidence_available",
+        "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+        "attribution": {
+          "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+          "role": "protocol_assigned_creator",
+          "scope": "Assigned on-chain creator role; does not establish off-chain identity or ownership of other wallets.",
+          "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+          "version": 2,
+          "verified": true,
+          "programId": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+          "creationSlot": 447328096,
+          "creationTime": 1789500020,
+          "creationUser": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+          "verification": "transaction_local_protocol_creator",
+          "decoderVersion": "pump-fun-create_v2-prefix-v1",
+          "creationSignature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+          "independentlyReviewed": false
+        },
+        "behaviourV2": {
+          "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+          "ledger": {
+            "burnedRaw": "68969447859",
+            "purchasedRaw": "15664233491746",
+            "acceptedCount": 29,
+            "verifiedSoldRaw": "0",
+            "externalTransferredOutRaw": "0"
+          },
+          "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+          "version": 2,
+          "limitations": [
+            "Creation plus a bounded recent window; acquisitions and disposals remain incomplete.",
+            "Unsupported swap instructions never become verified sales; burns and external transfers remain distinct."
+          ],
+          "historyComplete": false,
+          "lifetimeSellingPct": null,
+          "processedHistoricalSignatures": 9
+        }
+      },
+      "version": 1,
+      "execution": {
+        "failures": [],
+        "requests": 17,
+        "attempted": [
+          "getTransactionsForAddress",
+          "getTokenLargestAccounts",
+          "getMultipleAccounts",
+          "getMultipleAccounts",
+          "getSignaturesForAddress",
+          "getSignaturesForAddress",
+          "getSignaturesForAddress",
+          "getSignaturesForAddress",
+          "getTransaction",
+          "getTransaction",
+          "getTransaction",
+          "getTransaction",
+          "getTransaction",
+          "getTransaction",
+          "getTransaction",
+          "getTransaction",
+          "getTokenAccountsByOwner"
+        ],
+        "automatic": true,
+        "stopReason": "bounded_material_evidence_pass_completed",
+        "maxTransactions": 8,
+        "boundedWindowDays": 7,
+        "transactionsChecked": 9,
+        "holderWalletsInvestigated": 3
+      },
+      "observedAt": "2026-11-28T05:04:36.202Z",
+      "eventReceipts": [
+        {
+          "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+          "slot": 447328096,
+          "source": "admitted_rpc",
+          "signature": "KMoj9pQq8XncaZPHQ5bTNZPDgQwfCBgdihVkxc5Y27fh7iGYwMbti2Mcscprhia1NBJauBbEvs5DE8ooWKWg6bs",
+          "timestamp": 1789500020,
+          "commitment": "finalized",
+          "mintDecimals": 6,
+          "preTokenBalances": [],
+          "postTokenBalances": [
+            {
+              "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+              "owner": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+              "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "accountIndex": 8,
+              "uiTokenAmount": {
+                "amount": "15664233491746",
+                "decimals": 6,
+                "uiAmount": 15664233.491746,
+                "uiAmountString": "15664233.491746"
+              }
+            }
+          ]
+        },
+        {
+          "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+          "slot": 474825119,
+          "source": "admitted_rpc",
+          "signature": "5WKRTC5A2vmR7iRBHmm6gFZg6fXdF9Yqw27HRot7oz3XZXbPNz69PUpkqRDcoHkwprntDudUJpsQbqNGvoKpYgLo",
+          "timestamp": 1795841537,
+          "commitment": "finalized",
+          "mintDecimals": 6,
+          "preTokenBalances": [
+            {
+              "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+              "owner": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+              "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "accountIndex": 1,
+              "uiTokenAmount": {
+                "amount": "600497517321",
+                "decimals": 6,
+                "uiAmount": 600497.517321,
+                "uiAmountString": "600497.517321"
+              }
+            }
+          ],
+          "postTokenBalances": [
+            {
+              "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+              "owner": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+              "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "accountIndex": 1,
+              "uiTokenAmount": {
+                "amount": "599036011328",
+                "decimals": 6,
+                "uiAmount": 599036.011328,
+                "uiAmountString": "599036.011328"
+              }
+            }
+          ]
+        },
+        {
+          "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+          "slot": 474824968,
+          "source": "admitted_rpc",
+          "signature": "5VVCnYEKrtqJ6M954GQMooXMdSGDuB3YJUW1ETr9sKQVe9osqdmhaJn9RRgTWqVV3wrFKfJaKoNajL6aUVBKLrwE",
+          "timestamp": 1795841505,
+          "commitment": "finalized",
+          "mintDecimals": 6,
+          "preTokenBalances": [
+            {
+              "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+              "owner": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+              "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "accountIndex": 1,
+              "uiTokenAmount": {
+                "amount": "602405678022",
+                "decimals": 6,
+                "uiAmount": 602405.678022,
+                "uiAmountString": "602405.678022"
+              }
+            }
+          ],
+          "postTokenBalances": [
+            {
+              "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+              "owner": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+              "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "accountIndex": 1,
+              "uiTokenAmount": {
+                "amount": "599036011328",
+                "decimals": 6,
+                "uiAmount": 599036.011328,
+                "uiAmountString": "599036.011328"
+              }
+            }
+          ]
+        },
+        {
+          "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+          "slot": 474820959,
+          "source": "admitted_rpc",
+          "signature": "2ovZrBHZS5KhfP6TLRQbTLC9rZCYps97g95j8oBJ21FPzbbFK61Kc7BzLDVUuczQjYd1ca3DDGkDp1xZqR6GTPu2",
+          "timestamp": 1795840637,
+          "commitment": "finalized",
+          "mintDecimals": 6,
+          "preTokenBalances": [
+            {
+              "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+              "owner": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+              "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "accountIndex": 1,
+              "uiTokenAmount": {
+                "amount": "600498575961",
+                "decimals": 6,
+                "uiAmount": 600498.575961,
+                "uiAmountString": "600498.575961"
+              }
+            }
+          ],
+          "postTokenBalances": [
+            {
+              "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+              "owner": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+              "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "accountIndex": 1,
+              "uiTokenAmount": {
+                "amount": "599036011328",
+                "decimals": 6,
+                "uiAmount": 599036.011328,
+                "uiAmountString": "599036.011328"
+              }
+            }
+          ]
+        },
+        {
+          "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+          "slot": 474820808,
+          "source": "admitted_rpc",
+          "signature": "36YBcsxCHEQYzrStSnWrGwnKHQFESAXGdvYxsQ6ryzgncthgWxXD4sTrdApisegbKF1TYU6naiARDsoWmqkFYssE",
+          "timestamp": 1795840605,
+          "commitment": "finalized",
+          "mintDecimals": 6,
+          "preTokenBalances": [
+            {
+              "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+              "owner": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+              "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "accountIndex": 1,
+              "uiTokenAmount": {
+                "amount": "602404073821",
+                "decimals": 6,
+                "uiAmount": 602404.073821,
+                "uiAmountString": "602404.073821"
+              }
+            }
+          ],
+          "postTokenBalances": [
+            {
+              "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+              "owner": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+              "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+              "accountIndex": 1,
+              "uiTokenAmount": {
+                "amount": "599036011328",
+                "decimals": 6,
+                "uiAmount": 599036.011328,
+                "uiAmountString": "599036.011328"
+              }
+            }
+          ]
+        }
+      ],
+      "adaptiveCreator": {
+        "status": "current_holdings_do_not_trigger_enrichment",
+        "currentWallet": {
+          "slot": 474828638,
+          "observedAt": "2026-11-28T05:04:50.994Z",
+          "rawBalance": "599036011328",
+          "accountCount": 1
+        },
+        "additionalRequests": 1
+      },
+      "historyComplete": false,
+      "holderRelationships": {
+        "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+        "version": 2,
+        "supplyRaw": "813768879001944",
+        "observedAt": "2026-11-28T05:04:36.202Z",
+        "snapshotSlot": 474828584,
+        "coverageScope": "Recent seven days; up to three eligible wallet histories and eight prioritized transactions, plus matching early creator transactions when triggered. No wallet-independence claim.",
+        "holderSetHash": "4742463d73ff8cb82bc7de165762397d6cc3487e7fd6b04fff848163bdda5487",
+        "relationships": [],
+        "sampleWallets": [
+          {
+            "wallet": "GkEg3cEW2V1RmvuM2CuhJGJmgBRbyyC5dNvBt5KGuxPy",
+            "amountRaw": "17240190968280"
+          },
+          {
+            "wallet": "DYbZngFdHcaEEo4iLpjtAXKgXCECftbAhZeampomtCQc",
+            "amountRaw": "15683261026596"
+          },
+          {
+            "wallet": "J7rChsCMPnNuauGpjd25K3jjmhvsWAgA2JuJDKZcjsMe",
+            "amountRaw": "15044606742366"
+          },
+          {
+            "wallet": "GyVrpxQ2G8KdgcoKMus8bHHTsV9Xeiq7pAPYdgX1SHsC",
+            "amountRaw": "14418330568232"
+          },
+          {
+            "wallet": "JC6RNWAYcgQWmw2eWz7kEVCRHWm17chmWhhqirQ25WaB",
+            "amountRaw": "12904637433653"
+          },
+          {
+            "wallet": "9yxRLkRjByd8Rzsog991mjtLGSYzDhusc3Ssp55MbvfJ",
+            "amountRaw": "12686938943975"
+          },
+          {
+            "wallet": "8s9j5qUtuE9PGA5s7QeAXEh5oc2UGr71pmJXgyiZMHkt",
+            "amountRaw": "12678789889598"
+          },
+          {
+            "wallet": "Fk17MN8KnBWnfJPQyzMqsnZVou7jGsSnTyWkD28oC7LZ",
+            "amountRaw": "11422793967742"
+          },
+          {
+            "wallet": "HA2VrWfkrjBA5vVBRXRML7WDYgdZzFh3MsU55HNGMAyy",
+            "amountRaw": "9771049242616"
+          },
+          {
+            "wallet": "5PFH5mLSUNADTZDGYuK7Fqy1aDbs842NRMMtbQz3s7qL",
+            "amountRaw": "9693803058611"
+          },
+          {
+            "wallet": "2GpJeLLs6onFUbA5APNKpQEfMnnxExPv7wUZMbHv2LjX",
+            "amountRaw": "9493442108497"
+          },
+          {
+            "wallet": "AyosUDBqYQRRSgVABpi7wc9EjBzy3uzGPXMjXGR89yMF",
+            "amountRaw": "8616043624353"
+          },
+          {
+            "wallet": "8kf6fTyk8R6SrKi41G6Gq8PVYVRxEZh9bDsC72HkhpjG",
+            "amountRaw": "7554819816175"
+          },
+          {
+            "wallet": "CHubsXab3kTQCYV8ZULMgnCNbxdrUgi1BvfAWnFHexHA",
+            "amountRaw": "7422333441171"
+          },
+          {
+            "wallet": "5CsJLF3t1Qmhy4NyHiM82QPX1arBNcK42ouU5RAG7q35",
+            "amountRaw": "6955803030196"
+          },
+          {
+            "wallet": "AgnaNYcNXDL5Kzjptxb4tLF4NRs1GunRh2SdVCdLST3T",
+            "amountRaw": "6494951921627"
+          }
+        ],
+        "eligibleWallets": 16,
+        "historyComplete": false,
+        "relationshipCount": 0,
+        "fundingObservations": [],
+        "connectedExposurePct": 0,
+        "commonOwnershipEstablished": false
+      },
+      "investigationRevision": 2
+    },
+    "canonicalHolder": {
+      "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+      "atomic": false,
+      "status": "canonical_observation",
+      "decimals": 6,
+      "supplyRaw": "815072897606370",
+      "commitment": "finalized",
+      "observedAt": "2026-11-26T05:23:54.524Z",
+      "snapshotId": "0596510d6dc07e1dce934fba0dcf96a5594b38807383bd6d829d9d6fe441177b",
+      "contextSlots": {
+        "mint": 474029636,
+        "inventory": 474029636,
+        "classifications": 474029653
+      },
+      "holderSetHash": "77f749040d291e057c546d1f4872f4de9432bdda4be512a0dc94bda14bc20daa",
+      "schemaVersion": 2,
+      "scoreEligible": false,
+      "top20SharePct": 24.5379,
+      "historyComplete": false,
+      "eligibleHolderCount": 20,
+      "largestHolderSharePct": 2.1151,
+      "excludedAuthorityCount": 6,
+      "commonOwnershipEstablished": false,
+      "custodialClassificationComplete": false
+    },
+    "methodologyVersion": "2.1.0",
+    "holderRelationships": {
+      "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+      "version": 2,
+      "excluded": [
+        "dust below 0.05 SOL or 0.01% mint supply",
+        "non-reference token transfers",
+        "program sponsors outside the eligible holder set"
+      ],
+      "snapshotSlot": 474029636,
+      "coverageScope": "Retained individually verified transactions, not an exhaustive historical window.",
+      "holderSetHash": "77f749040d291e057c546d1f4872f4de9432bdda4be512a0dc94bda14bc20daa",
+      "relationships": [
+        {
+          "to": "GyVrpxQ2G8KdgcoKMus8bHHTsV9Xeiq7pAPYdgX1SHsC",
+          "from": "5CsJLF3t1Qmhy4NyHiM82QPX1arBNcK42ouU5RAG7q35",
+          "slot": 453797424,
+          "relation": "observed_material_transfer",
+          "amountRaw": "100000000",
+          "assetType": "SOL",
+          "signature": "34VZbUf1z9VDA6RLpDJx169qXMzGxoPAR8Pwo4EpUV8PjGaaCbgukkvnyNnHHxbiXe3trtJzzDVWY363KVcgCGDo",
+          "commonOwnershipEstablished": false
+        }
+      ],
+      "historyComplete": false,
+      "relationshipCount": 1,
+      "connectedExposurePct": 2.6223,
+      "connectedWalletCount": 2,
+      "commonOwnershipEstablished": false
+    }
+  },
+  "now": 1795843980000,
+  "extensions": {
+    "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+    "verified": true,
+    "extensions": [
+      {
+        "type": "metadataPointer",
+        "label": "metadataPointer",
+        "observed": true
+      },
+      {
+        "type": "tokenMetadata",
+        "label": "tokenMetadata",
+        "observed": true
+      }
+    ],
+    "observedAt": "2026-11-28T05:32:23.327Z",
+    "transferFee": {
+      "status": "not_observed"
+    },
+    "configuration": {
+      "slot": 474836351,
+      "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence.",
+      "version": 2,
+      "commitment": "confirmed",
+      "permissions": {},
+      "mintAuthority": null,
+      "extensionTypes": [
+        "metadataPointer",
+        "tokenMetadata"
+      ],
+      "freezeAuthority": null,
+      "unknownExtensions": []
+    },
+    "extensionCount": 2
+  }
+}

@@ -488,3 +488,16 @@ body .g11.ti-report {
 }
 
 .ti-report .hud-creator-core>.hud-kicker { display:block!important; color:#bbb; font-size:12px; margin-bottom:8px; }
+
+/* RI-10–15: restrained semantic labels within the accepted panels. */
+.simple-exit-quotes{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.simple-exit-quotes>div{flex:1 1 80px;min-width:0;display:flex;flex-direction:column;gap:5px}
+.simple-exit-quotes small{overflow-wrap:anywhere}
+.simple-risks article[data-category="Observed risk factor"]>span{color:#d6a34f}
+.simple-risks article[data-category="Unresolved evidence"]>span,.simple-risks article[data-category="Unscored contextual observation"]>span{color:#aaa}
+.simple-risk-heading{flex-wrap:wrap}
+.simple-risk-heading>span{overflow-wrap:anywhere}
+
+.simple-risks article[data-category="Unresolved evidence"] strong{color:#ccc}
+.ti-report .simple-risks article[data-category="Observed risk factor"]>span svg{color:#d6a34f}
+.ti-report .simple-risk-heading>span{color:#bbb}
