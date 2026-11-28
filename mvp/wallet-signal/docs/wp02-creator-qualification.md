@@ -27,7 +27,7 @@ Attribution supports strict existing Pump.fun and Raydium LaunchLab transaction-
 
 One existing connected-Alchemy PAID genesis `getTransaction` read was attempted. Its tool output was truncated at 8,098 characters, so it is not a complete independently verified transaction artifact. It cannot qualify a decoder. No successful live evidence is claimed from that response.
 
-FLOAT's previously observed roughly 49.89 million acquisition/disposition remains unexplained by this work. The inherited evidence distinguishes an attributed wallet with one raw unit from a large self-authority token account; those identities must not be merged without proof. PAID reconciliation evidence remains preserved. New LaunchLab layouts, creator-history pagination against complete provider responses, and all mandatory token fixture histories require the integrated live matrix. Unknown closed accounts and unsupported settlement protocols remain documented scope limitations.
+FLOAT's previously observed roughly49.89million external movement is now verified by a complete finalized Streamflow funding receipt; its earlier acquisition remains unresolved. The inherited evidence distinguishes an attributed wallet with one raw unit from a large self-authority token account; those identities must not be merged without proof. PAID reconciliation evidence remains preserved. New LaunchLab layouts, creator-history pagination against complete provider responses, and all mandatory token fixture histories require the integrated live matrix. Unknown closed accounts and unsupported settlement protocols remain documented scope limitations.
 
 Physical Android acceptance remains with the owner. WP-02 must not be marked complete solely from the tests below.
 
@@ -41,3 +41,11 @@ Physical Android acceptance remains with the owner. WP-02 must not be marked com
 ## Modified scope
 
 `lib/boundedTokenInvestigation.mjs`, `lib/boundedCreatorOriginV2.mjs`, `lib/launchLabCreatorOrigin.mjs`, `lib/creatorTokenHistoryV1.mjs`, `lib/creatorHistoryAccountingV1.mjs`, `lib/sharedCreatorOriginV1.mjs`, `app/api/current-creator/route.js`, narrow public projection changes in `app/api/token-investigation/route.js` and `lib/tokenInvestigationStore.mjs`, fresh creator/accounting projection in `lib/dashboardEvidenceBridge.mjs`, `tests/wp02-creator-token-history.test.mjs`, and the updated targeted-history status assertion in `tests/risk-calibration-v21.test.mjs`.
+
+## Material allocation recovery and live qualification
+
+Revision6 generically investigates at most one >=5% unknown self-authority classic SPL account. Its earliest complete indexed transaction replaces the third lower-priority holder history read. Strict StreamflowCreate PDA/lifecycle/checked-transfer/balance proof classifies external funding, never a sale. Fresh metadata plus escrow state uses the optional eighteenth logical request; no quota is increased. An escrow sender may be established without assigning an original creator. The original creator event is retained only when the separately verified creator equals that sender.
+
+Complete FLOAT transaction474885651 reconciles49893683978907−49893683978906=1raw in one source-account transaction window. Current grossescrow49893683978906raw, scheduled restricted net49645456695429raw, surplus248227283477raw are separately represented. Singlecliff1798437600; localcancel/transfer/topup/pause/ratechange disabled. Programupgrade/adminbehavior remainsqualified; independent loaderheaders confirm anactiveupgradeauthority, not immutable code. Earlier acquisition is not called reconciled.
+
+Independent full finalized genesis receipts have now verified4/4 creators: PAID+TOMO Pumpcreate_v2, FLOAT LaunchLabinitializeV2, SuperInu LaunchLabToken2022. LegacyLaunchLabinitialize remains SDKfixture-only/unqualified. Rawreceipt hashes and role distinctions are retained in the final qualification handover. Final exact-SHA hosted replay remains a separate gate.

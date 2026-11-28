@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {Keypair,PublicKey} from '@solana/web3.js';
 import BN from 'bn.js';
-import {initializeV2,getPdaLaunchpadAuth,getPdaLaunchpadPoolId,getPdaLaunchpadVaultId,PoolInfoLayout,CLMM_PROGRAM_ID} from '@raydium-io/raydium-sdk-v2';
+import {initializeV2,getPdaLaunchpadAuth,getPdaLaunchpadPoolId,getPdaLaunchpadVaultId,PoolInfoLayout,CLMM_PROGRAM_ID,getPdaPoolId,getPdaPoolVaultId} from '@raydium-io/raydium-sdk-v2';
 import {encodeBase58Bytes} from '../lib/pumpFunCreation.mjs';
 import {verifyBoundedCreatorOrigin} from '../lib/boundedCreatorOriginV2.mjs';
 import {identifyCurrentPool} from '../lib/currentPoolIdentity.mjs';
@@ -29,6 +29,6 @@ test('Orca identity validates discriminator, pool PDA and mint binding without i
  const r=identifyCurrentPool(account,a.toBase58(),pool);assert.equal(r.mintBindingVerified,true);assert.equal(r.reservesVerified,false);assert.equal(r.withdrawalControlsVerified,false);assert.equal(identifyCurrentPool(account,fresh().toBase58(),pool).mintBindingVerified,false);assert.equal(identifyCurrentPool(account,a.toBase58(),fresh().toBase58()).mintBindingVerified,false);
 });
 test('Raydium CLMM layout identity is mint-bound and never uses constant-product reserves',()=>{
- const data=Buffer.alloc(PoolInfoLayout.span),mint=fresh();createHash('sha256').update('account:PoolState').digest().copy(data,0,0,8);mint.toBuffer().copy(data,PoolInfoLayout.offsetOf('mintA'));fresh().toBuffer().copy(data,PoolInfoLayout.offsetOf('mintB'));
- const r=identifyCurrentPool({owner:CLMM_PROGRAM_ID,data,executable:false},mint.toBase58(),fresh().toBase58());assert.equal(r.protocol,'raydium_clmm');assert.equal(r.mintBindingVerified,true);assert.equal(r.reservesVerified,false);
+ const data=Buffer.alloc(PoolInfoLayout.span),[mint,other]=[fresh(),fresh()].sort((a,b)=>Buffer.compare(a.toBuffer(),b.toBuffer())),config=fresh();createHash('sha256').update('account:PoolState').digest().copy(data,0,0,8);const pool=getPdaPoolId(CLMM_PROGRAM_ID,config,mint,other);data[8]=pool.nonce;config.toBuffer().copy(data,9);mint.toBuffer().copy(data,73);other.toBuffer().copy(data,105);getPdaPoolVaultId(CLMM_PROGRAM_ID,pool.publicKey,mint).publicKey.toBuffer().copy(data,137);getPdaPoolVaultId(CLMM_PROGRAM_ID,pool.publicKey,other).publicKey.toBuffer().copy(data,169);
+ const account={owner:CLMM_PROGRAM_ID,data,executable:false};const r=identifyCurrentPool(account,mint.toBase58(),pool.publicKey.toBase58());assert.equal(r.protocol,'raydium_clmm');assert.equal(r.mintBindingVerified,true);assert.equal(r.reservesVerified,false);assert.equal(identifyCurrentPool(account,mint.toBase58(),fresh().toBase58()).mintBindingVerified,false);
 });

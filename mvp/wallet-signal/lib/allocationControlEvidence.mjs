@@ -28,13 +28,9 @@ export function verifyAllocationPoolRole({mint,tokenAccount,authority,authorityA
    if(derived!==authority||!(p.baseMint===mint&&p.poolBaseTokenAccount===tokenAccount||p.quoteMint===mint&&p.poolQuoteTokenAccount===tokenAccount))return null;
    protocol='pump_amm';basis='pinned_pump_pool_pda_mint_and_vault_binding';
   }else if(owner===CLMM){
-   // @raydium-io/raydium-sdk-v2@0.2.87-alpha PoolInfoLayout (1544 bytes)
-   // and libraries/pda.ts canonical pool/vault seeds. Customizable V2 pool
-   // variants are not inferred from this standard-pool decoder.
-   if(data.length!==1544||!data.subarray(0,8).equals(createHash('sha256').update('account:PoolState').digest().subarray(0,8)))return null;
-   const config=data.subarray(9,41),a=pub(data.subarray(73,105)).toBase58(),b=pub(data.subarray(105,137)).toBase58(),va=pub(data.subarray(137,169)).toBase58(),vb=pub(data.subarray(169,201)).toBase58();
-   if(derive([Buffer.from('pool'),config,pub(a).toBuffer(),pub(b).toBuffer()],CLMM)!==authority||!(a===mint&&va===tokenAccount||b===mint&&vb===tokenAccount)||derive([Buffer.from('pool_vault'),pub(authority).toBuffer(),pub(mint).toBuffer()],CLMM)!==tokenAccount)return null;
-   protocol='raydium_clmm';basis='pinned_clmm_standard_pool_pda_mint_and_vault_binding';
+   const p=verifyClmmPoolIdentity({data,owner,address:authority,mint});
+   if(!p||!(p.mintA===mint&&p.vaultA===tokenAccount||p.mintB===mint&&p.vaultB===tokenAccount))return null;
+   protocol='raydium_clmm';basis=p.seedIndex===0?'pinned_clmm_standard_pool_pda_mint_and_vault_binding':'pinned_clmm_indexed_v2_pool_pda_mint_and_vault_binding';
   }else if(owner===ORCA){
    // Pinned Whirlpool LEN and field layout already used by currentPoolIdentity.
    // Config at 8, fee-tier seed at 43, mint/vault A at 101/133, B at181/213.
@@ -61,5 +57,22 @@ export function verifyTokenMultisigControl(account){
 export function verifyProtocolSigningAuthority(authority){
  try{
   return authority===CPMM_AUTHORITY?{kind:'protocol_signing_authority',protocol:'raydium_cpmm',programId:CPMM,authority,controlVerified:true,poolBindingVerified:false,classificationBasis:'pinned_cpmm_global_vault_authority_pda',releaseConditionsVerified:false,scope:'Program-derived signing authority only. A mint-bound pool/vault association and LP redemption controls remain unverified.'}:null;
+ }catch{return null;}
+}
+
+/** Official PoolState seed_index (u16 LE) occupies formerly reserved bytes391..392.
+ * Identity/vault-address proof only; no executable-depth or withdrawal claim. */
+export function verifyClmmPoolIdentity({data,owner,address,mint}={}){
+ try{
+  if(key(owner)!==CLMM||!Buffer.isBuffer(data)||data.length!==1544||!data.subarray(0,8).equals(createHash('sha256').update('account:PoolState').digest().subarray(0,8)))return null;
+  const pub=x=>new PublicKey(x),config=data.subarray(9,41),a=data.subarray(73,105),b=data.subarray(105,137),seedIndex=data.readUInt16LE(391);
+  if(Buffer.compare(a,b)>=0)return null;
+  const seeds=[Buffer.from('pool'),config,a,b];if(seedIndex!==0)seeds.push(data.subarray(391,393));
+  const [pool,bump]=PublicKey.findProgramAddressSync(seeds,pub(CLMM));
+  if(pool.toBase58()!==address||bump!==data[8])return null;
+  const mintA=pub(a).toBase58(),mintB=pub(b).toBase58(),vaultA=pub(data.subarray(137,169)).toBase58(),vaultB=pub(data.subarray(169,201)).toBase58();
+  if(![mintA,mintB].includes(mint))return null;
+  for(const [m,v]of[[a,vaultA],[b,vaultB]])if(PublicKey.findProgramAddressSync([Buffer.from('pool_vault'),pool.toBuffer(),m],pub(CLMM))[0].toBase58()!==v)return null;
+  return {mintA,mintB,vaultA,vaultB,seedIndex,bump,poolPdaVerified:true,vaultPdasVerified:true};
  }catch{return null;}
 }

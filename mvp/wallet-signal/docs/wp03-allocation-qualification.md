@@ -51,3 +51,9 @@ Baseline: 265359e477cc14e4e4aeae0556066f1fcf3818ac. This document covers impleme
 ## Remaining limits
 
 No supported verified exchange beneficial-owner registry is present. General treasury, vesting/escrow schedule, Magna withdrawal/override rules, unlinked CPMM/AMMv4 pool control and customized CLMM variants remain explicit unsupported evidence. Twenty retrieved eligible owners do not imply a global Top20 ranking. This supported-scope implementation must not be presented as100% economic-control verification.
+
+## FLOAT escrow control closure
+
+Strict officialStreamflowContractv4 metadata1104B binds owner,mint,escrowPDA andclassicSPL account authority. Gross49,893,683.978906 tokens remains visible;49,645,456.695429 is scheduled restricted net, with248,227.283477 fee-associatedsurplus whose withdrawal treatment remains unresolved. Cliff2026-12-28T06:00:00Z andobserved localcontrol flags are disclosed. Creator-funded escrow remains separate from directholdings. Fresh exactbalance/mint binding,5minproofage andpostcliff rejection prevent stale lockclaims. No infrastructureexclusion, riskpoints orcoverage credit is added. Program upgrades remain a separate qualifiedrisk; independentloader headerreceipt confirms activeupgradeauthority. Genericworker18logicalcap is unchanged.
+
+The deployedworker contract usesone4accountRPC withbase64slice1104: metadata1104B,escrow165B,program36B,ProgramData1104Bheader; rawlive response3988B. This verifies currentupgradeauthority withoutdownloading1.46MBELF viajsonParsed. Headerdecodingisnot acodeaudit. Theoriginal18logicalrequest and2MBresponse capsremain unchanged.

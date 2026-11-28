@@ -1,6 +1,7 @@
+import {verifyClmmPoolIdentity} from './allocationControlEvidence.mjs';
 import {createHash} from 'node:crypto';
 import {PublicKey} from '@solana/web3.js';
-import {PoolInfoLayout,CLMM_PROGRAM_ID} from '@raydium-io/raydium-sdk-v2';
+import {CLMM_PROGRAM_ID} from '@raydium-io/raydium-sdk-v2';
 import {PUMP_AMM_SDK,poolPda} from '@pump-fun/pump-swap-sdk';
 import {RAYDIUM_CPMM_PROGRAM,decodeCpmmPool} from './raydiumCpmmAssessmentV2.mjs';
 const ORCA='whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc';
@@ -19,7 +20,7 @@ export function identifyCurrentPool(account,mint,poolAddress){
    if(derived===poolAddress&&[p.baseMint.toBase58(),p.quoteMint.toBase58()].includes(mint))return {...out,status:'pool_identity_verified',mintBindingVerified:true,decoder:'@pump-fun/pump-swap-sdk@2.1.0',baseMint:p.baseMint.toBase58(),quoteMint:p.quoteMint.toBase58(),vaults:[p.poolBaseTokenAccount.toBase58(),p.poolQuoteTokenAccount.toBase58()]};
   }
   if(hint==='raydium_cpmm'){const p=decodeCpmmPool(account);if(p&&[p.mintA.toBase58(),p.mintB.toBase58()].includes(mint))return {...out,status:'pool_identity_verified',mintBindingVerified:true};}
-  if(hint==='raydium_clmm'&&account.data.length===PoolInfoLayout.span&&account.data.subarray(0,8).equals(disc('PoolState'))){const p=PoolInfoLayout.decode(account.data);if([p.mintA.toBase58(),p.mintB.toBase58()].includes(mint))return {...out,status:'pool_identity_verified',mintBindingVerified:true};}
+  if(hint==='raydium_clmm'){const p=verifyClmmPoolIdentity({data:account.data,owner,address:poolAddress,mint});if(p)return {...out,status:'pool_identity_verified',mintBindingVerified:true,poolPdaVerified:true,vaultPdasVerified:true,seedIndex:p.seedIndex};}
   // Official Orca Whirlpool state: programs/whirlpool/src/state/whirlpool.rs.
   // LEN=8+261+384. Token mints at 101 and 181; config at 8; fee-tier seed at 43.
   if(hint==='orca_whirlpool'&&account.data.length===653&&account.data.subarray(0,8).equals(disc('Whirlpool'))){

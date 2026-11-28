@@ -9,10 +9,10 @@ export function createTokenInvestigationStore({env=process.env,fetchImpl=fetch}=
  }
  return {
   async read(mint){const rows=await call('scanner_token_investigations?mint=eq.'+mint+'&select=mint,status,observation,updated_at,lease_until,expires_at&limit=1');if(!Array.isArray(rows)||rows.length>1)throw Error('INVALID_INVESTIGATION_ROW');return rows[0]||null;},
-  async expirePriorRevision(mint,previous,revision=5){
+  async expirePriorRevision(mint,previous,revision=6){
    // Expire only this exact completed old-algorithm snapshot. Preserve receipts
    // and the existing advisory-lock claim/lease; never modify a running worker.
-   if(previous?.mint!==mint||previous.status!=='complete'||!Number.isFinite(Date.parse(previous.updated_at))||!Number.isInteger(revision)||revision!==5||Number.isInteger(previous.observation?.investigationRevision)&&previous.observation.investigationRevision>=revision)return false;
+   if(previous?.mint!==mint||previous.status!=='complete'||!Number.isFinite(Date.parse(previous.updated_at))||!Number.isInteger(revision)||revision!==6||Number.isInteger(previous.observation?.investigationRevision)&&previous.observation.investigationRevision>=revision)return false;
    await call('scanner_token_investigations?mint=eq.'+encodeURIComponent(mint)+'&status=eq.complete&updated_at=eq.'+encodeURIComponent(previous.updated_at),{expires_at:new Date(0).toISOString()},'PATCH');return true;
   },
   async claim(mint){const owner=randomUUID();const r=await call('rpc/scanner_claim_investigation_v1',{p_mint:mint,p_owner:owner});return {...r,owner};},

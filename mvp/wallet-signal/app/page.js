@@ -1,7 +1,7 @@
 "use client";
 import {saveReport, loadReport, updateReport} from "../lib/completedReport.mjs";
 import {runStagedTokenScan} from '../lib/stagedTokenScan.mjs';
-import {scanRequestTiming} from '../lib/scanTiming.mjs';
+import {scanRequestTiming,scannerFailureMessage} from '../lib/scanTiming.mjs';
 import {withConcentrationContext,hasAlignedConcentrationContext} from "../lib/concentrationContext.mjs";
 
 import { useEffect, useRef, useState } from "react";
@@ -461,7 +461,7 @@ function CreatorLookup() {
         const data=await response.json();
         if(current())requestTimings.current.push(scanRequestTiming({path,startedAt,headersAt,finishedAt:performance.now(),response}));
         if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
-        if(!response.ok){const failure=Error('Token evidence unavailable');failure.code=data?.error||data?.reason;failure.status=response.status;throw failure;}
+        if(!response.ok){const failure=Error('Token evidence unavailable');failure.code=data?.error||data?.reason;failure.status=response.status;failure.retryAfterSeconds=Number(response.headers.get('Retry-After'));throw failure;}
         if(data?.mint!==address)throw Error('Token evidence identity mismatch');
         return data;
       })(),cancelled]);
@@ -505,7 +505,7 @@ function CreatorLookup() {
       await persistQueue;
       if(current())setScanStatus('');
 
-    } catch (failure) { if(current()){if(activeReportId&&lastSnapshot){await persistQueue.catch(()=>{});try{await updateReport(activeReportId,{...lastSnapshot,providerUsage:{...providerUsageRef.current},inspectionTiming:{...lastSnapshot.inspectionTiming,requests:[...requestTimings.current]},investigationProgress:{...lastSnapshot.investigationProgress,stage:'bounded_stopped',reason:failure.name==='AbortError'?'time_limit':'evidence_unavailable'}});}catch{}}if(!primaryAccepted)setResult(null);if(primaryAccepted)setScanStatus('');setError(primaryAccepted?"Additional evidence unavailable or timed out. Current mint observation retained; unresolved attributes remain Unknown.":failure.name === "AbortError" ? "Token inspection timed out. Evidence remains incomplete; no automatic retry was made." : "Token inspection unavailable or mismatched. Evidence remains Unknown.");} }
+    } catch (failure) { if(current()){if(activeReportId&&lastSnapshot){await persistQueue.catch(()=>{});try{await updateReport(activeReportId,{...lastSnapshot,providerUsage:{...providerUsageRef.current},inspectionTiming:{...lastSnapshot.inspectionTiming,requests:[...requestTimings.current]},investigationProgress:{...lastSnapshot.investigationProgress,stage:'bounded_stopped',reason:failure.name==='AbortError'?'time_limit':'evidence_unavailable'}});}catch{}}if(!primaryAccepted)setResult(null);if(primaryAccepted)setScanStatus('');setError(scannerFailureMessage({code:failure.code,retryAfterSeconds:failure.retryAfterSeconds,primaryAccepted,cancelled:failure.name==="AbortError"}));} }
     finally { clearTimeout(timer);controller.signal.removeEventListener('abort',cancel);controller.abort();if(current()){inspection.current=null;scanLock.current=false;setBusy(false);if(!historyOnly&&inspectionStartedAt.current!==null)setInspectionTiming(p=>({...p,boundedReportMs:Math.round(performance.now()-inspectionStartedAt.current)}));setSavingReport(false);} }
   }
   return <section aria-label="GLITCH Scanner Token Analysis" className="doom-token-inspect" style={{ ...cardStyle, border: "none", boxShadow: "none" }}>

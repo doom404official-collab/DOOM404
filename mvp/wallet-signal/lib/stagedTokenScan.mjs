@@ -11,11 +11,11 @@ export async function runStagedTokenScan({mint,read,signal:parentSignal,onUpdate
  // Every transport, including non-cooperative injected adapters, has a finite race.
  const scheduleRead=createScanReadScheduler({read,signal});
  const boundedRead=path=>Promise.race([scheduleRead(path),deadline]);
- const started=now(),stages={},stageReasons={},snapshot={result:null,extensions:null,concentration:null,creatorEvidence:null,liquidity:null,currentLiquidity:null,currentCreator:null,workerEvidence:null,historicalHolders:null,verifiedHolderEnvelope:null,holderEvidenceState:'unknown'},timing={acknowledgementMs:0,stages:[]};
+ const started=now(),stages={},stageReasons={},snapshot={result:null,extensions:null,concentration:null,creatorEvidence:null,liquidity:null,currentLiquidity:null,currentCreator:null,workerEvidence:null,historicalHolders:null,verifiedHolderEnvelope:null,holderEvidenceState:'unknown'},timing={acknowledgementMs:null,stages:[]};
  const timers=new Set();
  const pause=wait||((ms)=>new Promise((resolve,reject)=>{const abort=()=>{clearTimeout(t);timers.delete(t);signal?.removeEventListener('abort',abort);reject(abortError());};const t=setTimeout(()=>{timers.delete(t);signal?.removeEventListener('abort',abort);resolve();},ms);timers.add(t);if(signal?.aborted)abort();else signal?.addEventListener('abort',abort,{once:true});}));
  const check=()=>{if(signal?.aborted)throw abortError();};
- let published=false,initialResolve,closed=false,revision=0;
+ let published=false,initialResolve,closed=false,revision=0,mintFailure=null;
  const initialReady=new Promise(resolve=>{initialResolve=resolve;});
  // Consumers render these statuses separately from evidence coverage/risk.
  const progress=()=>({stage:closed?'bounded_complete':published?'deep_in_progress':'initial_in_progress',pending:Object.keys(stages).filter(k=>stages[k]==='running'),unavailable:Object.keys(stages).filter(k=>stages[k]==='unavailable'),completed:Object.keys(stages).filter(k=>stages[k]==='completed'),failures:Object.entries(stageReasons).map(([stage,detail])=>({stage,...detail})),historyComplete:false});
@@ -35,7 +35,7 @@ export async function runStagedTokenScan({mint,read,signal:parentSignal,onUpdate
  async function task(name,operation,apply){
   check();const start=now();stages[name]='running';publish();
   try{const value=await operation();check();apply?.(value);stages[name]='completed';return value;}
-  catch(e){stages[name]='unavailable';stageReasons[name]={reason:/^[A-Za-z0-9_ -]{1,100}$/.test(e.code||'')?e.code:e.name==='AbortError'?'bounded_deadline_or_cancelled':'source_unavailable',status:Number.isSafeInteger(e.status)?e.status:null};if(e.name==='AbortError')throw e;return null;}
+  catch(e){if(name==='mint_security')mintFailure=e;stages[name]='unavailable';stageReasons[name]={reason:/^[A-Za-z0-9_ -]{1,100}$/.test(e.code||'')?e.code:e.name==='AbortError'?'bounded_deadline_or_cancelled':'source_unavailable',status:Number.isSafeInteger(e.status)?e.status:null};if(e.name==='AbortError')throw e;return null;}
   finally{timing.stages.push({name,startedMs:Math.round(start-started),durationMs:Math.round(now()-start),status:stages[name]});publish();}
  }
  const get=(path)=>boundedRead(path+(path.includes('?')?'&':'?')+'mint='+encodeURIComponent(mint));
@@ -63,7 +63,7 @@ export async function runStagedTokenScan({mint,read,signal:parentSignal,onUpdate
  // Drain failures immediately; initial publication still requires verified mint.
  void allInitial.catch(()=>{});
  try{
-  await mintTask;check();if(!snapshot.result)throw Error('CURRENT_MINT_UNAVAILABLE');
+  await mintTask;check();if(!snapshot.result)throw mintFailure||Error('CURRENT_MINT_UNAVAILABLE');
   await Promise.race([initialReady,allInitial,pause(Math.max(0,initialBudgetMs-(now()-started)))]);check();
   published=true;timing.initialReportMs=Math.round(now()-started);
   await Promise.race([onInitial({...snapshot,evidenceRevision:++revision,inspectionTiming:{...timing,stages:[...timing.stages]},investigationProgress:{...progress(),decisionReady:readiness().decision}}),deadline]);

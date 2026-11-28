@@ -1,7 +1,7 @@
 {
   "version": 1,
   "observedDate": "2026-11-28",
-  "qualification": "Supported narrow scopes retained-snapshot replayed; fresh live validation and unsupported-scope gates must remain explicit.",
+  "qualification": "Narrow directPumpSwap/CPMM scopes livevalidated; Orca andlegacy/indexedCLMMidentity scopes validated. Unsupported directcalculations remainexplicit.",
   "dependencies": {
     "pumpSwap": "@pump-fun/pump-swap-sdk@2.1.0",
     "raydium": "@raydium-io/raydium-sdk-v2@0.2.87-alpha"
@@ -73,23 +73,23 @@
     {
       "architecture": "Raydium CLMM",
       "support": "Partially supported",
-      "validatedScope": "Owner/discriminator/exact pinned PoolState layout plus token mint binding; synthetic strict identity regression only.",
+      "validatedScope": "Owner/discriminator/exact1544B layout, sortedmints, legacy/indexedv2canonicalpoolPDA,storednonce,bothvaultPDAs. Fresh live indexedv2 fixture verified.",
       "executableDepth": false,
       "withdrawalControls": false,
       "limitations": [
-        "No tick-array traversal, dynamic fee or position withdrawal calculation.",
-        "No fresh live identity fixture in this sprint; live support claim is withheld."
+        "No tick-array traversal, dynamicfee orpositionwithdrawal calculator.",
+        "Identity andreservevaultrole only; routed quotes do not establish directCLMMdepth."
       ]
     },
     {
       "architecture": "Orca Whirlpools",
       "support": "Partially supported",
-      "validatedScope": "Official 653-byte Whirlpool layout, discriminator, PDA and mint binding; synthetic strict identity regression only.",
+      "validatedScope": "Official653BWhirlpool layout, discriminator, config/mint/fee-tier PDA binding; fresh finalized ORCApoolidentity verified.",
       "executableDepth": false,
       "withdrawalControls": false,
       "limitations": [
-        "No tick-array executable sale or position control calculation.",
-        "No fresh live identity fixture in this sprint; live support claim is withheld."
+        "No tick-array executable sale orpositioncontrol calculation.",
+        "Identity andreservevaultrole only."
       ]
     },
     {

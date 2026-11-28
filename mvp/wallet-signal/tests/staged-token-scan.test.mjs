@@ -65,3 +65,5 @@ test('initial and deep source concurrency stays below the existing eight-lease c
  for(let i=0;i<2;i++){for(const done of held.splice(0))done();await new Promise(r=>setImmediate(r));}
  for(const done of held.splice(0))done();await Promise.all(work);assert.equal(max,6);
 });
+
+test('fatal mint admission failure preserves quota code and retry window without publishing an assessment',async()=>{const failure=Object.assign(Error('unavailable'),{code:'RATE_LIMIT',status:429,retryAfterSeconds:120});let published=0;await assert.rejects(runStagedTokenScan({mint:'test',read:async path=>{if(path.startsWith('/api/token-current'))throw failure;return{mint:'test'};},onInitial:()=>published++}),e=>e===failure&&e.code==='RATE_LIMIT'&&e.retryAfterSeconds===120);assert.equal(published,0);});
