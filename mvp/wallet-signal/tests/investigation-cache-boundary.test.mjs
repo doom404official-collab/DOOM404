@@ -9,7 +9,7 @@ test('algorithm upgrade expires only exact completed prior snapshot before exist
 });
 test('current revisions, running workers, mismatched rows and malformed CAS dates never expire',async()=>{
  let calls=0;const store=createTokenInvestigationStore({env,fetchImpl:async()=>{calls++;throw Error('no');}});
- for(const previous of [{mint,status:'complete',updated_at:'2026-11-28',observation:{investigationRevision:12}},{mint,status:'running',updated_at:'2026-11-28',observation:{investigationRevision:4}},{mint:'wrong',status:'complete',updated_at:'2026-11-28'},{mint,status:'complete',updated_at:'invalid'}])assert.equal(await store.expirePriorRevision(mint,previous),false);assert.equal(calls,0);
+ for(const previous of [{mint,status:'complete',updated_at:'2026-11-28',observation:{investigationRevision:13}},{mint,status:'running',updated_at:'2026-11-28',observation:{investigationRevision:4}},{mint:'wrong',status:'complete',updated_at:'2026-11-28'},{mint,status:'complete',updated_at:'invalid'}])assert.equal(await store.expirePriorRevision(mint,previous),false);assert.equal(calls,0);
 });
 test('failed revision invalidation fails closed rather than skipping the durable claim',async()=>{
  const store=createTokenInvestigationStore({env,fetchImpl:async()=>new Response('',{status:403})});await assert.rejects(store.expirePriorRevision(mint,{mint,status:'complete',updated_at:'2026-11-28',observation:{investigationRevision:4}}),/STORE_UNAVAILABLE/);

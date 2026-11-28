@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: scanner-autonomous-live
+  group: ${{ !contains(github.event.head_commit.message, '[reference-only]') && 'scanner-autonomous-live' || format('scanner-core-skipped-{0}', github.sha) }}
   cancel-in-progress: false
 jobs:
   qualification:
@@ -26,39 +26,30 @@ jobs:
           node-version: '24'
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm run test:smoke
-      - name: Known-fixture mint-only core cold and warm capture
+      - name: Required known fixtures and failed mechanisms through mint-only core
         env:
           ALCHEMY_RPC_URL: ${{ secrets.ALCHEMY_RPC_URL }}
           ALCHEMY_SOLANA_ARCHIVE_RPC_URL: ${{ secrets.ALCHEMY_SOLANA_ARCHIVE_RPC_URL }}
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          QUALIFICATION_MINTS: '["98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump","EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y","4kjruqGHDsSqkMdFfCjV7Vb62HPFhtXyWc2t6JpQzDnz","9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump","DEW9dSN6QpWyNthphCpMmAbZP1Q4cEKR9xQXAri98WDP","Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr","6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN","3Tg6YnNrfPdFfsY14MaNsDMWLseAyrUDS3myJtbaJN6f","9hjBLBrc7WZW2H8UQvBAvG5WiTZotXUv2Bdcn4f4pump","Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump"]'
+          QUALIFICATION_MINTS: '["98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump","EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y","4kjruqGHDsSqkMdFfCjV7Vb62HPFhtXyWc2t6JpQzDnz","9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump","DEW9dSN6QpWyNthphCpMmAbZP1Q4cEKR9xQXAri98WDP","Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr","6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN","3Tg6YnNrfPdFfsY14MaNsDMWLseAyrUDS3myJtbaJN6f","9hjBLBrc7WZW2H8UQvBAvG5WiTZotXUv2Bdcn4f4pump","Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump","436BcX8hF6ERozLniyL8d75bVJbRvxJJtdroKWC2pump","CQpb2WSz3GiS3geRyxukRrE1DyxxV8XBFwCaWuNwpump"]'
         run: node scripts/qualification/live-core.mjs
-      - name: Replay the previously captured blind cases after reusable corrections
+      - name: Fresh final ten-token holdout cold and warm without prior forensics
         env:
           ALCHEMY_RPC_URL: ${{ secrets.ALCHEMY_RPC_URL }}
           ALCHEMY_SOLANA_ARCHIVE_RPC_URL: ${{ secrets.ALCHEMY_SOLANA_ARCHIVE_RPC_URL }}
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          QUALIFICATION_MINTS: '["GfCYBjm53ccUbyyDUqWTQc2idTsjM1EQCPPYUiR3pump","436BcX8hF6ERozLniyL8d75bVJbRvxJJtdroKWC2pump","25AjGcSqMxJ9EFN3NN2P7j4rv7odDdnhjSHzaemgpump","6yiZmaeQSW3FUHYjqtzZFNSM6Xy4zJ89XeQRcg6mpump","GS514xunWdMXSMJmV1t3buC7AfWBgupe6EgiB3zNpump","FvNopjpk7upJ4GghufMrJJ7W8aaH2tdoEozDZtUbiYKD","FDubarsoPNtdArUFcoMEhhfcZT2Ahepzs3ggwgnGpump","D93retv2ARUMciip7EA4rUWtu653QhjQKCkni1FPpump","BFJbGUL1rWf22nF9CHAJuGzpQaxQeD79qT25TXXEpump","GiUpEeH93E5J5gQvgjB8v6rKx1guaPR7ZU2eaSppTx9Q","CizWKoDGhVXbFowZr3pMLxY5rnPr7yXtLNN2dQ2AbEDZ","Aovr4TdVH6qtZHcv4og6CLqn7gjNYtmDRQULYZSTz1Qf","BKGp1At3yLDK1NE2gfMuwv1QMAHBwnqgSdULsyzjUagA","4iPKfHxmYX29fr5nnXdNifA52GJKokWeRmQ67hApGySJ","AkAF22MXs5xcwH1BineDvrD81sFV1dCuXX5PQzYdko46","3gr25JueJADKQrmqeS6cRQukvbiNffHdMofj6xf7XBV5","H5iiBHeCGKkzucX5PwEn2cf2uWHyVnAg3aq5RRsWF5P8","9qRarZBguWMeD2QMZVxEyVYDWRFKJqbPbyDuJNCriojb","DYu4rwdqSRmeastBxQVrsRYzM6bZMGUMSB6cDfWNarw9","3npZ7QNBiRLYNrGqEy4Uefm5GXdruPBoxS7FktV2bkE3"]'
+          QUALIFICATION_MINTS: '["PgFtGGquvnv2zEkjG2N2QPvBTBrafuExGYEqahRpump","47P6Y81cVuCQFYguHHrjMyVpHufkmTTTyuKxaPB5EC1E","6C9r2gzu8Pr54hTevHo3x5gSj9JqtpApj7obJnrtpump","7sgu7H7zP2xt1AXqRzjcWMrZYvip3ML1fH7vhixDpump","4KXCDChFWqgKdBWzYTaZa76SJAcip8p1n5ky2Pdopump","2GPWmqQNmaAL8Vj48ETdjeuXd62snKMyZXGyGWjd3Ugw","AASZr8AE3AK6nuSv7vJSdMgAUhKhsbg4iuRb1M81ETMN","FcjViE1oVbXFza5ry9Q7WZ9XNd95zu1LqEiSUdeJMPTP","488DGeMxRHmofoEtfrPE6geMT7EzwP9HMn76cDq5ZKwt","76aYNHbDfHemxSS7vmh6eJGfjodK8m7srCxiYCrKxzY1"]'
         run: node scripts/qualification/live-core.mjs
-      - name: Capture ten fresh holdouts cold and warm without prior token forensics
-        env:
-          ALCHEMY_RPC_URL: ${{ secrets.ALCHEMY_RPC_URL }}
-          ALCHEMY_SOLANA_ARCHIVE_RPC_URL: ${{ secrets.ALCHEMY_SOLANA_ARCHIVE_RPC_URL }}
-          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          QUALIFICATION_MINTS: '["CQpb2WSz3GiS3geRyxukRrE1DyxxV8XBFwCaWuNwpump","9mzd8ozjxXu9ApNoQaSbAXWcRJB7rGpaD9LLMdo5Pn2c","AQdRK8YPLdiKmXQVNbSTQfZrPSkmdXSh7uZWAVnEpump","GMat1LbX2USa4vWSXBMSLPyD5JrY6KJuj4rybLQEpump","GPqw7AfgGhJ7X3ETz4P6mWDKG7eed4pjeQYVb5Nshidd","CqWSJtkMMY16q9QLnQxktM1byzVHGRr8b6LCPuZnEeiL","EKhDvdnC3SPqTuKR5fpkyb4qMNpXJokXvG4SgzaucwNy","79BXbiiN5HcXH1vRHbQgs9T9Qmae9por26ULEMXuaP7L","A1LwvSDH2v6swHXP9JMxYJVx6YDzdQdnBDvy8VeBA3g1","6dmkrp3XjSGyd2kWQCnKtvaufBR4ov7ZDAsrWbGbYTbX"]'
-        run: node scripts/qualification/live-core.mjs
-      - name: Collect independent holdout references only after all holdout captures
+      - name: Independent final holdout reference collection after all captures
         env:
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           REFERENCE_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
           REFERENCE_CANDIDATE_SHA: ${{ github.sha }}
-          REFERENCE_EXPECTED_MINTS: '["CQpb2WSz3GiS3geRyxukRrE1DyxxV8XBFwCaWuNwpump","9mzd8ozjxXu9ApNoQaSbAXWcRJB7rGpaD9LLMdo5Pn2c","AQdRK8YPLdiKmXQVNbSTQfZrPSkmdXSh7uZWAVnEpump","GMat1LbX2USa4vWSXBMSLPyD5JrY6KJuj4rybLQEpump","GPqw7AfgGhJ7X3ETz4P6mWDKG7eed4pjeQYVb5Nshidd","CqWSJtkMMY16q9QLnQxktM1byzVHGRr8b6LCPuZnEeiL","EKhDvdnC3SPqTuKR5fpkyb4qMNpXJokXvG4SgzaucwNy","79BXbiiN5HcXH1vRHbQgs9T9Qmae9por26ULEMXuaP7L","A1LwvSDH2v6swHXP9JMxYJVx6YDzdQdnBDvy8VeBA3g1","6dmkrp3XjSGyd2kWQCnKtvaufBR4ov7ZDAsrWbGbYTbX"]'
+          REFERENCE_EXPECTED_MINTS: '["PgFtGGquvnv2zEkjG2N2QPvBTBrafuExGYEqahRpump","47P6Y81cVuCQFYguHHrjMyVpHufkmTTTyuKxaPB5EC1E","6C9r2gzu8Pr54hTevHo3x5gSj9JqtpApj7obJnrtpump","7sgu7H7zP2xt1AXqRzjcWMrZYvip3ML1fH7vhixDpump","4KXCDChFWqgKdBWzYTaZa76SJAcip8p1n5ky2Pdopump","2GPWmqQNmaAL8Vj48ETdjeuXd62snKMyZXGyGWjd3Ugw","AASZr8AE3AK6nuSv7vJSdMgAUhKhsbg4iuRb1M81ETMN","FcjViE1oVbXFza5ry9Q7WZ9XNd95zu1LqEiSUdeJMPTP","488DGeMxRHmofoEtfrPE6geMT7EzwP9HMn76cDq5ZKwt","76aYNHbDfHemxSS7vmh6eJGfjodK8m7srCxiYCrKxzY1"]'
         run: node ../../tooling/glitch-qualification/independent-reference.mjs

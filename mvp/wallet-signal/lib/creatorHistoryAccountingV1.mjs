@@ -17,7 +17,23 @@ export function reconcileCreatorHistoryWindow({mint,creator,events=[],openingBal
 /** Suppress exact semantic duplicates while retaining conflicting variants so
  * the ledger's instruction-level conflict rejection still fails closed. */
 export function deduplicateCreatorEvents(events=[]){
- const seen=new Set();return events.filter(e=>{const x={signature:e?.signature,instructionIndex:e?.instructionIndex,innerInstructionIndex:e?.innerInstructionIndex??null,mint:e?.mint,creator:e?.creator,type:e?.type,outflowCategory:e?.type==='EXTERNAL_TRANSFER_OUT'&&['vesting_escrow_deposit','protocol_fee'].includes(e?.transferMechanism)?e.transferMechanism:null,receiptCategory:e?.type==='EXTERNAL_RECEIPT'&&e?.acquisitionMechanism==='protocol_holder_reward_distribution'?'protocol_holder_reward_distribution':null,timestamp:e?.timestamp,amountRaw:String(e?.amountRaw),independentlyVerified:e?.independentlyVerified,instructionVerified:e?.instructionVerified,settlementVerified:e?.settlementVerified,mintInstructionVerified:e?.mintInstructionVerified,launchInstructionVerified:e?.launchInstructionVerified,burnInstructionVerified:e?.burnInstructionVerified,bothWalletsAttributed:e?.bothWalletsAttributed};const k=JSON.stringify(x);if(seen.has(k))return false;seen.add(k);return true;});
+ const seen=new Map(),out=[];
+ for(const e of events){
+  const text=String(e?.amountRaw),validAmount=['string','number','bigint'].includes(typeof e?.amountRaw)&&(typeof e.amountRaw!=='number'||Number.isSafeInteger(e.amountRaw))&&/^[0-9]+$/.test(text)&&BigInt(text)>0n;
+  // Only proof flags applicable to this economic class affect identity.
+  const proof={independentlyVerified:e?.independentlyVerified===true,instructionVerified:e?.instructionVerified===true};
+  for(const [key,types]of [['settlementVerified',['PURCHASE','VERIFIED_SALE']],['mintInstructionVerified',['DIRECT_MINT_RECEIPT']],['launchInstructionVerified',['LAUNCH_DISTRIBUTION']],['burnInstructionVerified',['VERIFIED_BURN']],['bothWalletsAttributed',['INTERNAL_TRANSFER']]])if(types.includes(e?.type))proof[key]=e?.[key]===true;
+  const x={signature:e?.signature,instructionIndex:e?.instructionIndex,innerInstructionIndex:e?.innerInstructionIndex??null,mint:e?.mint,creator:e?.creator,type:e?.type,outflowCategory:e?.type==='EXTERNAL_TRANSFER_OUT'&&['vesting_escrow_deposit','protocol_fee'].includes(e?.transferMechanism)?e.transferMechanism:null,receiptCategory:e?.type==='EXTERNAL_RECEIPT'&&e?.acquisitionMechanism==='protocol_holder_reward_distribution'?'protocol_holder_reward_distribution':null,timestamp:e?.timestamp,amountRaw:validAmount?BigInt(text).toString():text,validAmount,proof};
+  const k=JSON.stringify(x),prior=seen.get(k);
+  if(prior!==undefined){
+   // Richer verified metadata does not add a second movement. Conflicting
+   // amounts, classes and required proof states remain for ledger quarantine.
+   if((!out[prior]?.protocol&&e?.protocol)||(!out[prior]?.decoderVersion&&e?.decoderVersion))out[prior]=e;
+   continue;
+  }
+  seen.set(k,out.length);out.push(e);
+ }
+ return out;
 }
 /** Bounded public diagnostic projection. No raw transactions, arbitrary text or
  * score eligibility escapes the retained worker observation. */

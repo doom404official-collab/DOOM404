@@ -6,11 +6,11 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: scanner-autonomous-live
+  group: ${{ contains(github.event.head_commit.message, '[reference-only]') && 'scanner-autonomous-live' || format('scanner-reference-skipped-{0}', github.sha) }}
   cancel-in-progress: false
 jobs:
   reference:
-    if: github.repository == 'doom404official-collab/DOOM404'
+    if: github.repository == 'doom404official-collab/DOOM404' && contains(github.event.head_commit.message, '[reference-only]')
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     defaults:

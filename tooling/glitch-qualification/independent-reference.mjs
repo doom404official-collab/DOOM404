@@ -12,8 +12,10 @@ const selected=e.REFERENCE_EXPECTED_MINTS?JSON.parse(e.REFERENCE_EXPECTED_MINTS)
 if(selected&&(!Array.isArray(selected)||![10,20].includes(selected.length)||new Set(selected).size!==selected.length||selected.some(m=>!(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/).test(m))))throw Error('INVALID_REFERENCE_MINT_SET');
 const rows=await vault('scanner_qualification_observations?run_id=eq.'+run+'&candidate_sha=eq.'+sha+(selected?'&mint=in.('+selected.join(',')+')':'')+'&select=mint,phase,observation,captured_at');
 const cold=rows.filter(r=>r.phase==='cold');const expected=selected?.length||20;if(cold.length!==expected||rows.filter(r=>r.phase==='warm').length!==expected||new Set(cold.map(r=>r.mint)).size!==expected||selected&&selected.some(m=>!cold.some(r=>r.mint===m)))throw Error('ALL_BLIND_RESULTS_MUST_PRECEDE_REFERENCE_COLLECTION');
+const retained=await vault('scanner_qualification_references?run_id=eq.'+run+'&candidate_sha=eq.'+sha+'&select=mint'),alreadyRetained=new Set(retained.map(r=>r.mint));
 installScannerProviderGuard();const hash=s=>createHash('sha256').update(s).digest('hex');
 for(const row of cold){
+ if(alreadyRetained.has(row.mint)){console.log(JSON.stringify({mint:row.mint,status:'IMMUTABLE_REFERENCE_ALREADY_RETAINED'}));continue;}
  const mint=row.mint,lease=randomUUID(),admit=await vault('rpc/scanner_admit_v1',{p_client:hash('doom404-autonomous-qualification'),p_key:hash('independent:'+run+sha+mint),p_route:'token-investigation',p_id:lease});
  if(admit.status!=='ADMITTED'){console.log(JSON.stringify({mint,status:admit.status,scope:'reference_collection'}));process.exitCode=1;continue;}
  const controller=new AbortController(),ctx={lease,controller,closed:false,store:{debit:args=>vault('rpc/scanner_debit_v1',args)}},timer=setTimeout(()=>controller.abort(),34000),started=performance.now();let calls=0;
