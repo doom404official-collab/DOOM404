@@ -1,0 +1,53 @@
+/** Presentation only: no scores, thresholds, coverage or provider access. */
+import {RISK_WEIGHTS} from './riskMethodology.mjs';
+import {formatMetric as fmt,holderSampleLabel,exitQuoteValue} from './evidenceHudPresentation.mjs';
+const S='token_security',H='holder_intelligence',L='liquidity_quality_safety',C='creator_intelligence';
+export const criterionExplanations={
+ supply_dilution:[S,'Active mint authority','Additional token issuance could dilute existing holders.'],
+ holder_asset_seizure:[S,'Token seizure controls','An authorized delegate could move or burn affected holders’ tokens without approval.'],
+ transfer_and_fee_friction:[S,'Transfer controls and fees','Restrictions could prevent transfers or sales; applicable fees could reduce value received.'],
+ eligible_distribution_risk:[H,'Holder concentration','Large holders selling their tokens could create significant selling pressure.',m=>`${holderSampleLabel(m.eligibleObservedWallets)} hold ${fmt(m.top20Pct,'%')} of supply; the largest observed wallet holds ${fmt(m.largestPct,'%')}.`],
+ material_relationship_exposure:[H,'Connected wallet exposure','Linked holders selling could increase selling pressure. Common ownership or coordination is not established.',m=>`Observed transaction links involve holders of ${fmt(m.connectedExposurePct,'%')} of supply.`],
+ exit_cost_and_depth:[L,'Trading exit costs','Larger sell orders may receive less value than expected because they consume available liquidity and incur applicable fees where assessed.',m=>quoteSummary(m.quotes)],
+ current_lp_withdrawal_exposure:[L,'Liquidity withdrawal exposure','Exercising available withdrawal rights could reduce liquidity and make selling more costly.',m=>`Current assessed LP withdrawal exposure: ${fmt(m.maxCurrentWithdrawalPct,'%')} of reserves.`],
+ reserve_valuation_buffer:[L,'Liquidity backing','Limited liquidity relative to token valuation could make larger exits more sensitive to selling pressure.',m=>`Pool liquidity is ${fmt(m.liquidityToFullyDilutedValuePct,'%')} of fully diluted token value.`],
+ attributed_wallet_exposure:[C,'Creator holdings','If the creator sells these tokens, selling pressure could affect other holders.',m=>`The attributed creator’s direct wallet holds ${fmt(m.currentWalletSharePct,'%')} of observed supply. Linked wallets are not inferred.`],
+ observed_market_and_transfer_disposals:[C,'Creator sales and transfers','Verified sales represent observed selling activity. Transferred tokens could create future selling pressure; transfers alone do not establish sales.',m=>`External transfers equal ${fmt(m.transferToPurchaseBaselinePct,'%')} of the fixed verified purchase baseline. Verified sales equal ${purchasePct(m.verifiedSalesRaw,m.purchaseBaselineRaw)} of that baseline. Transfers alone do not establish sales.`]
+};
+// attribute, title, impact, contributing criterion, unresolved evidence
+export const findingExplanations={
+ mint_authority_active:[S,'Active mint authority',criterionExplanations.supply_dilution[2],'supply_dilution'],
+ freeze_authority_active:[S,'Active freeze authority','Authorized freezing could prevent affected holders from transferring or selling tokens.','transfer_and_fee_friction'],
+ permanent_delegate:[S,'Token seizure control',criterionExplanations.holder_asset_seizure[2],'holder_asset_seizure'],
+ transfer_restrictions:[S,'Transfer restrictions','Observed controls could restrict affected holders’ ability to transfer or sell.','transfer_and_fee_friction'],
+ mutable_transfer_fee:[S,'Transfer fees can change','An authorized fee increase could reduce value received on future transfers or sales.','transfer_and_fee_friction'],
+ transfer_fee:[S,'Configured transfer fee','Applicable fees could reduce value received; amount-dependent caps may apply.','transfer_and_fee_friction'],
+ unsupported_extensions:[S,'Unsupported token extensions','Unassessed controls could affect holders; their practical effect remains unresolved.',null,true],
+ unverified_extensions:[S,'Token controls unresolved','The scanner cannot establish whether unassessed controls could affect transfers or sales.',null,true],
+ unsupported_program:[S,'Token program unassessed','The scanner cannot establish how unsupported program controls could affect holders.',null,true],
+ high_holder_concentration:[H,'Holder concentration',criterionExplanations.eligible_distribution_risk[2],'eligible_distribution_risk'],
+ connected_holder_exposure:[H,'Connected wallet exposure',criterionExplanations.material_relationship_exposure[2],'material_relationship_exposure'],
+ reported_pool_concentration:[L,'Liquidity concentrated in one reported pool','Dependence on one pool could make trading more difficult if its liquidity decreases.'],
+ outstanding_lp_withdrawal_upper_bound:[L,'LP withdrawal claim upper bound','If outstanding claims are exercisable, withdrawals could reduce liquidity; locks and actual rights remain unresolved.',null,true],
+ material_lp_withdrawal_exposure:[L,'Liquidity withdrawal exposure',criterionExplanations.current_lp_withdrawal_exposure[2],'current_lp_withdrawal_exposure'],
+ external_vault_delegate:[L,'External reserve spending control','An authorized delegate could spend affected reserves, potentially reducing liquidity.'],
+ protocol_admin_controls:[L,'Protocol operating controls','Use of these controls could affect trading or access to liquidity.'],
+ selling_disabled:[L,'Protocol selling unavailable','Affected traders may be unable to sell through this protocol under the observed state.','exit_cost_and_depth'],
+ withdrawals_disabled:[L,'Protocol withdrawals disabled','Liquidity providers may be unable to withdraw through this protocol under the observed state.'],
+ reference_exit_unavailable:[L,'Reference sale unavailable','The stated sale cannot be quoted as executable under the assessed state; this does not establish that all trading routes are unavailable.','exit_cost_and_depth',true],
+ severe_reference_exit_cost:[L,'Severe reference exit cost',criterionExplanations.exit_cost_and_depth[2],'exit_cost_and_depth'],
+ route_lp_controls_unassessed:[L,'Route liquidity controls unresolved','Quoted routes do not establish whether liquidity could be withdrawn.',null,true],
+ historical_fee_recipient_mismatch:[C,'Creator fee-recipient authorization unresolved','No direct effect on selling, pool reserves or executable liquidity has been established.',null,true],
+ creator_material_external_transfers:[C,'Creator external transfers','Transferred tokens could create future selling pressure. Transfers alone do not establish sales.','observed_market_and_transfer_disposals'],
+ creator_verified_disposals:[C,'Verified creator sales','Observed creator selling may contribute to selling pressure; further selling is not established.','observed_market_and_transfer_disposals'],
+ creator_disposition_unresolved:[C,'Creator token disposition unresolved','The scanner cannot establish where a material quantity of acquired tokens went, leaving potential selling exposure unresolved.',null,true]
+};
+function purchasePct(raw,baseline){try{return typeof raw==='string'&&/^\d+$/.test(raw)&&typeof baseline==='string'&&/^\d+$/.test(baseline)&&BigInt(baseline)>0n?fmt(Number(BigInt(raw)*1000000n/BigInt(baseline))/10000,'%'):'not assessed';}catch{return 'not assessed';}}
+export function quoteSummary(quotes=[]){return [1,10,100].map(size=>{const q=quotes.find(q=>Number(q.referenceNotional)===size),label=`${size} ${q?.quoteSymbol||'SOL'}-equivalent sale`;if(!q)return `${label}: quote unavailable.`;if(q.executable===false)return `${label}: unavailable under the assessed state.`;const value=exitQuoteValue(q);if(value===null)return `${label}: estimate unavailable.`;if(typeof q.impactIncludingFeesPct==='number')return `${label}: estimated exit cost ${fmt(value,'%')}, including applicable protocol fees.`;return `${label}: ${fmt(value,'%')} ${q.measurement==='reference_quote_recovery'?'quoted recovery shortfall':'provider-reported price impact'}; fee coverage unverified.`;}).join(' ');}
+const points=c=>typeof c?.riskPoints==='number'&&Number.isFinite(c.riskPoints)?c.riskPoints:0;
+export function traderFindings(assessment,selected){const scores=assessment.scores,all=[],seen=new Map();
+ for(const [attribute,a] of [...Object.entries(scores),[null,{flags:assessment.flags||[]}]])for(const f of a.flags||[]){if(f.severity==='information')continue;const def=findingExplanations[f.id],mapped=def?.[0]||f.attribute||attribute||'liquidity_quality_safety',old=seen.get(f.id);if(old&&(old.severity==='critical'||f.severity!=='critical'))continue;const m=scores[mapped]?.metrics||{},criterion=def?.[3],c=scores[mapped]?.components?.find(c=>c.id===criterion);
+ const evidence=['high_holder_concentration','connected_holder_exposure'].includes(f.id)?criterionExplanations[criterion][3](m):f.id==='reported_pool_concentration'?`${fmt(m.reportedLargestPoolSharePct,'%')} of provider-reported liquidity is in the largest returned pool; the inventory may be incomplete.`:f.id==='severe_reference_exit_cost'?f.detail+' '+quoteSummary(m.quotes):['creator_material_external_transfers','creator_verified_disposals'].includes(f.id)?criterionExplanations.observed_market_and_transfer_disposals[3](m):f.detail;
+ seen.set(f.id,{...f,attribute:mapped,title:def?.[1]||f.id.replaceAll('_',' '),evidence,impact:def?.[2]||'The practical consequence is not established by this observation.',criterion,contribution:points(c),unresolved:!!def?.[4],category:f.severity==='critical'?'Critical risk':def?.[4]?'Unresolved material evidence':'Observed risk factor'});}
+ for(const [attribute,a] of Object.entries(scores))for(const c of a.components||[]){if(points(c)<=0)continue;const def=criterionExplanations[c.id];if([...seen.values()].some(f=>f.attribute===attribute&&f.criterion===c.id))continue;all.push({id:'criterion_'+c.id,attribute,criterion:c.id,title:def?.[1]||c.id.replaceAll('_',' '),evidence:(def?.[3]?def[3](a.metrics||{}):'Observed privileged token controls contribute to this criterion.'),impact:def?.[2]||'The practical consequence requires supporting evidence review.',contribution:points(c),severity:'observed',category:'Observed risk factor'});}
+ all.push(...seen.values());for(const f of all)f.sharedCriterion=!!f.criterion&&all.filter(x=>x.attribute===f.attribute&&x.criterion===f.criterion).length>1;return all.filter(f=>!selected||selected==='overall'||f.attribute===selected).sort((a,b)=>(a.severity==='critical'?0:a.unresolved?2:1)-(b.severity==='critical'?0:b.unresolved?2:1)||(b.contribution*(selected==='overall'||!selected?RISK_WEIGHTS[b.attribute]||0:1))-(a.contribution*(selected==='overall'||!selected?RISK_WEIGHTS[a.attribute]||0:1))||a.id.localeCompare(b.id));}

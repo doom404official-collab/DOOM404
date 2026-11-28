@@ -22,7 +22,7 @@ test('scoreboard precedes selectable attributes, insights and flags without muta
 });
 test('all four material flags survive compact presentation and retain unresolved classification',()=>{
  const html=render(practicalAssessmentV2(replay()));
- for(const text of ['Protocol administrator retains operation controls','Liquidity concentrated in one reported pool','Creator fee-recipient mismatch; authorization unresolved','Material creator transfers; recipient ownership unresolved'])assert.ok(html.includes(text),text);
+ for(const text of ['Protocol administrator retains operation controls','Liquidity concentrated in one reported pool','Creator fee-recipient authorization unresolved','Creator external transfers'])assert.ok(html.includes(text),text);
  assert.doesNotMatch(html,/EVIDENCE \/ CONTROL|confirmed malicious|BUY|SELL|SAFE/);
 });
 test('all ten criterion names are readable and their risk points match each engine result',()=>{
