@@ -1,0 +1,26 @@
+{
+  "source": "https://api.mainnet-beta.solana.com",
+  "observedAt": 1795871711.9942694,
+  "method": "getTokenAccountsByOwner",
+  "params": [
+    "yHCxHBEaJW5tbndqC8JciSThr7U1cqLpdcsvHcx6PRe",
+    {
+      "mint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump"
+    },
+    {
+      "encoding": "jsonParsed",
+      "commitment": "finalized"
+    }
+  ],
+  "response": {
+    "jsonrpc": "2.0",
+    "result": {
+      "context": {
+        "slot": 474966276,
+        "apiVersion": "4.3.0-beta.2"
+      },
+      "value": []
+    },
+    "id": 1
+  }
+}

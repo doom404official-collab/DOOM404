@@ -9,7 +9,7 @@ export function assessmentDisplay(assessment,selected){
 export const holderSampleLabel=(n,rankingComplete=false)=>!Number.isSafeInteger(n)?'Wallet sample not established':n===20&&rankingComplete?'Top-20 wallets':'Sampled '+n+' wallets';
 /** Display-only formatting. No score calculation, evidence promotion or network access. */
 export function formatMetric(value,suffix=''){
- return typeof value==='number'&&Number.isFinite(value)?value.toLocaleString('en-US',{maximumFractionDigits:value>0&&value<0.01?6:2})+suffix:'Not assessed';
+ return typeof value==='number'&&Number.isFinite(value)?suffix==='%'&&value>0&&value<0.01?'less than 0.01%':value.toLocaleString('en-US',{maximumFractionDigits:2})+suffix:'Not assessed';
 }
 export function formatTokenQuantity(raw,decimals,compact=true){
  if(typeof raw!=='string'||!/^\d+$/.test(raw)||!Number.isInteger(decimals)||decimals<0||decimals>255)return 'Not assessed';

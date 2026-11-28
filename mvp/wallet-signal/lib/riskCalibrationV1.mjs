@@ -26,7 +26,7 @@ export function scorePresentation({score,coverage=0,unresolved=false,critical=fa
  return {...band,numericBand:band.severity};
 }
 export function findingPresentation(f={}){
- if(f.unresolved)return {severity:'unresolved',label:'Unresolved evidence',color:'#808080',icon:'?',rank:f.materialAllocation?0.5:6};
+ if(f.unresolved)return {severity:'unresolved',label:'Unresolved evidence',color:'#808080',icon:'?',rank:f.materialAllocation?1.5:6};
  if(f.category==='Unscored contextual observation')return {severity:'contextual',label:'Contextual observation',color:'#808080',icon:'ⓘ',rank:5};
  const map={critical:['Critical risk','#EF4444',0],high:['High risk','#FB633B',1],elevated:['Elevated risk','#F97316',2],moderate:['Moderate risk','#EAB308',3],low:['Low observed risk','#9CA3AF',4],limited:['Low observed risk','#9CA3AF',4]};
  const item=map[f.severity];return item?{severity:f.severity==='limited'?'low':f.severity,label:item[0],color:item[1],icon:f.severity==='low'||f.severity==='limited'?'•':'warning',rank:item[2]}:{severity:'observed',label:'Observed risk factor',color:'#9CA3AF',icon:'•',rank:4};

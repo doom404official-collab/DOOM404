@@ -4,6 +4,7 @@ import {creatorOriginPage} from './sharedCreatorOriginV1.mjs';
 import {traceSpan,traceEvent} from './scannerTrace.mjs';
 import {reconcileCreatorHistoryWindow,deduplicateCreatorEvents} from './creatorHistoryAccountingV1.mjs';
 import {collectCreatorTokenHistory,reusableCreatorTransactions,cacheCreatorTransactions} from './creatorTokenHistoryV1.mjs';
+import {verifyPumpHolderRewardReceipt} from './pumpHolderRewardReceipt.mjs';
 import {verifyCreatorDirectMovement} from './creatorDirectMovement.mjs';
 import {reconcileCreatorReceipt} from './creatorReceiptReconciliation.mjs';
 import {extractIndependentPumpFunBuySettlement} from './pumpFunIndependentBuySettlement.mjs';
@@ -30,7 +31,7 @@ export async function investigateToken({mint,rpc,now=Date.now,maxTransactions=8,
  new PublicKey(mint);if(typeof rpc!=='function'||!Number.isInteger(maxTransactions)||maxTransactions<1||maxTransactions>8)throw Error('INVALID_INVESTIGATION');
  let requests=0;const attempted=[],failures=[];
  const read=async(method,params)=>{if(requests>=18)throw Error('BOUNDED_REQUEST_LIMIT');requests++;attempted.push(method);return rpc(method,params);};
- const observation={version:1,investigationRevision:7,mint,status:'investigation_completed',observedAt:new Date(now()).toISOString(),scope:'One bounded recent window plus verified creation; histories remain incomplete',historyComplete:false,historicalEvidenceProvenance:{decoderVersion:'creator-token-history-v2-balance-mint-binding',source:'admitted_finalized_rpc',immutableReceiptsRevalidated:true}};
+ const observation={version:1,investigationRevision:8,mint,status:'investigation_completed',observedAt:new Date(now()).toISOString(),scope:'One bounded recent window plus verified creation; histories remain incomplete',historyComplete:false,historicalEvidenceProvenance:{decoderVersion:'creator-token-history-v2-balance-mint-binding',source:'admitted_finalized_rpc',immutableReceiptsRevalidated:true}};
  let origin=null,originFailure=null,originCandidateCount=0;const originDiagnostics=[];
  try{const retainedOrigin=previousObservation?.mint===mint&&Array.isArray(previousObservation.transactionCache)?previousObservation.transactionCache.find(tx=>verifyBoundedCreatorOrigin(tx,mint)?.creator===previousObservation.creator?.creator):null;
  const r=retainedOrigin?(traceEvent('creator_origin_durable_cache_hit'),{data:[retainedOrigin]}):await traceSpan('creator_origin',()=>creatorOriginPage(mint,()=>read('getTransactionsForAddress',[mint,{transactionDetails:'full',sortOrder:'asc',limit:12,commitment:'finalized',encoding:'jsonParsed',maxSupportedTransactionVersion:1,filters:{status:'succeeded'}}])));if(!Array.isArray(r?.data)||r.data.length>12)throw Error('INVALID_ORIGIN_PAGE');const txs=r.data;originCandidateCount=txs.length;for(const tx of txs){originDiagnostics.push(diagnoseBoundedCreatorOrigin(tx,mint));const proof=verifyBoundedCreatorOrigin(tx,mint);if(proof){if(origin&&origin.proof.creator!==proof.creator)throw Error('CONFLICTING_CREATOR_EVIDENCE');origin={proof,tx};}}}
@@ -87,7 +88,7 @@ export async function investigateToken({mint,rpc,now=Date.now,maxTransactions=8,
   const escrow=typeof fundingSigner==='string'?verifyStreamflowCreatorEscrowTransfer({mint,creator:fundingSigner,transaction:tx}):null;
   if(escrow?.verified)materialProofs.push({...escrow,fundingSigner,signature,slot:tx.slot});
   if(creator){await traceSpan('creator_transaction_decoding',async()=>{
-   const receipt=verifyCreatorDirectMovement({mint,creator,signature,transaction:tx})||reconcileCreatorReceipt({mint,creator,signature,transaction:tx});if(receipt)events.push(receipt);
+   const receipt=verifyCreatorDirectMovement({mint,creator,signature,transaction:tx})||reconcileCreatorReceipt({mint,creator,signature,transaction:tx})||verifyPumpHolderRewardReceipt({mint,creator,signature,transaction:tx});if(receipt)events.push(receipt);
    const independentSettlement=extractIndependentPumpFunBuySettlement({mint,creator,signature,transaction:tx});
    if(independentSettlement){const buy=promotePumpFunCreatorBuy({mint,creator,signature,transaction:tx,independentSettlement});if(buy.status==='VERIFIED')events.push(buy.event);}
    const settlement=extractPumpFunSettlementEvidence({mint,creator,signature,transaction:tx});

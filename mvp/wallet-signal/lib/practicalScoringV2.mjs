@@ -74,7 +74,7 @@ export function practicalAssessmentV2({result,extensions,workerEvidence,creatorE
  const resultSupply=result?.supplyRaw||result?.rawSupply;
  const useMintResult=raw(resultSupply)&&(!raw(l?.mintSupplyRaw)||Number.isSafeInteger(result.contextSlot)&&result.contextSlot>=l.slot);
  const supply=useMintResult?resultSupply:l?.mintSupplyRaw,supplySlot=useMintResult?result.contextSlot:l?.slot;
- const currentPct=wallet&&raw(wallet.rawBalance)&&raw(supply)&&BigInt(wallet.rawBalance)<=BigInt(supply)?pct(wallet.rawBalance,supply):null;
+ const currentPct=wallet&&raw(wallet.rawBalance)&&raw(supply)&&BigInt(wallet.rawBalance)<=BigInt(supply)?BigInt(supply)>0n?Number(BigInt(wallet.rawBalance))/Number(BigInt(supply))*100:null:null;
  const ledger=identity?b?.ledger:null,acquired=ledger?.purchasedRaw;
  const transferBaseline=ledger?pct(ledger.externalTransferredOutRaw,acquired):null,saleBaseline=ledger?pct(ledger.verifiedSoldRaw,acquired):null;
  // Reported against a fixed verified purchase baseline, not total lifetime acquisitions.

@@ -532,3 +532,6 @@ body .g11.ti-report {
 
 /* RI-52: investigation progress is neutral, separate from risk alerts. */
 .ti-report .g11-foot[data-scan-state]{color:#d0c5ad!important;background:#171919!important;border:1px solid #414343!important;border-left:3px solid #a99b7d!important;box-shadow:none!important;padding:10px 12px!important}
+
+/* RI-81: full-width alerts below compact scorecards. */
+.simple-score-warnings{width:100%;display:grid;gap:8px;margin-top:10px}.simple-score-warnings:empty{display:none}.simple-score-warnings p{margin:0}.ti-assessment{align-items:start}

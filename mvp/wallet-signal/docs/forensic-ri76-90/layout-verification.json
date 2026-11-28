@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "checks": 112,
+  "widths": [
+    320,
+    360,
+    375,
+    393,
+    412,
+    768,
+    1024,
+    1440
+  ],
+  "tabs": 5,
+  "networkRequests": 0,
+  "scope": "SSR production components and CSS with labelled synthetic geometry inputs; not live intelligence or physical Android acceptance"
+}

@@ -17,6 +17,6 @@ export function summarizeCreatorHoldings({mint,creator,tokenAccounts,supply}){
  const format=(n)=>{const base=10n**BigInt(decimals);return (n/base).toString()+(n%base?"."+(n%base).toString().padStart(decimals,"0").replace(/0+$/,""):"");};
  return {status:"ONCHAIN_BALANCE_OBSERVED",creator,mint,rawBalance:raw.toString(),
   uiBalance:format(raw),accountCount:accounts.length,accounts,
-  supplySharePct:total>0n?Number(raw*1000000n/total)/10000:null,
+  supplySharePct:total>0n?Number(raw)/Number(total)*100:null,
   balanceObservedAt:"request_time",historicalSalesAssessed:false,linkedWalletsAssessed:false};
 }

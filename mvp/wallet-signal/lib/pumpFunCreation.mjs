@@ -27,8 +27,17 @@ export function decodePumpFunCreate({ instruction, transaction, mint, programId 
   if (programId !== PUMP_PROGRAM_ID || !instruction || typeof instruction.data !== "string") return null;
   const keys = transaction?.transaction?.message?.accountKeys?.map(keyString) || [];
   if (!Array.isArray(instruction.accounts)) return null;
-  const accounts = instruction.accounts.map((entry) => Number.isInteger(entry) ? keys[entry] : keyString(entry));
+  let accounts = instruction.accounts.map((entry) => Number.isInteger(entry) ? keys[entry] : keyString(entry));
   if (accounts[0] !== mint || !accounts.every(Boolean)) return null;
+  // Jito's documented read-only DontFront sentinel is a remaining account,
+  // not quote_control. Strip only the exact observed sentinel with verified
+  // readonly/non-signer metadata; all positional protocol checks still apply.
+  const sentinel = "jitodontfront111111111111111111111111111111";
+  if (accounts.at(-1) === sentinel) {
+    const meta = transaction?.transaction?.message?.accountKeys?.find(k => k?.pubkey === sentinel);
+    if (!meta || meta.signer !== false || meta.writable !== false) return null;
+    accounts = accounts.slice(0, -1);
+  }
   let bytes;
   try { bytes = decode58(instruction.data); } catch { return null; }
   const kind = ["create", "create_v2"].find((name) => bytes.length >= 8 && bytes.subarray(0, 8).equals(createHash("sha256").update("global:" + name).digest().subarray(0, 8)));
@@ -69,8 +78,17 @@ export function decodePumpFunCreate({ instruction, transaction, mint, programId 
       if (offset >= bytes.length || ![0, 1].includes(bytes[offset])) return null;
       offset++;
       if (offset < bytes.length) {
-        // Deprecated cashback must be false for successful new creations.
-        if (bytes[offset] !== 0) return null;
+        // Historical successful creations may have cashback enabled. New-launch
+        // policy is not a historical decoding rule; validate the boolean.
+        if (![0, 1].includes(bytes[offset])) return null;
+        if (bytes[offset] === 1) {
+          const mintIndex = keys.indexOf(mint), receipt = transaction;
+          if (receipt?.meta?.err !== null || !Number.isSafeInteger(receipt.slot) ||
+              !Number.isSafeInteger(receipt.blockTime) || receipt.blockTime <= 0 ||
+              !receipt.transaction?.signatures?.[0] || mintIndex < 0 ||
+              receipt.meta.preBalances?.[mintIndex] !== 0 || !(receipt.meta.postBalances?.[mintIndex] > 0) ||
+              !receipt.transaction.message.accountKeys.some(k => k.pubkey === mint && k.signer === true)) return null;
+        }
         offset++;
       }
       if (offset < bytes.length) {

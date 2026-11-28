@@ -1,3 +1,4 @@
+import {verifyBoundedCreatorOrigin} from './boundedCreatorOriginV2.mjs';
 import {createHash} from 'node:crypto';
 import {PublicKey} from '@solana/web3.js';
 const PROGRAMS=new Set(['TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA','TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb']);
@@ -87,6 +88,8 @@ export function reusableCreatorTransactions(observation,mint,creator){
  return observation.transactionCache.slice(0,4).filter(tx=>{try{return ['legacy',0,1].includes(tx.version)&&tx.meta?.err===null&&Number.isSafeInteger(tx.slot)&&Number.isSafeInteger(tx.blockTime)&&typeof tx.transaction?.signatures?.[0]==='string'&&creatorTransactionMentionsMint(tx,mint)&&Buffer.byteLength(JSON.stringify(tx))<=24000;}catch{return false;}});
 }
 export function cacheCreatorTransactions(transactions,mint,creationSignature=null){
- const values=[...transactions.values()];if(creationSignature){const origin=values.find(tx=>tx.transaction?.signatures?.[0]===creationSignature);if(origin)values.splice(values.indexOf(origin),1),values.unshift(origin);}
+ // Verified creation decoders do not use execution logs. Omit verbose logs
+ // only on a reverified origin receipt, preserving the existing 24KB/96KB caps.
+ const values=[...transactions.values()].map(tx=>tx.transaction?.signatures?.[0]===creationSignature&&verifyBoundedCreatorOrigin(tx,mint)?{...tx,meta:{...tx.meta,logMessages:[]}}:tx);if(creationSignature){const origin=values.find(tx=>tx.transaction?.signatures?.[0]===creationSignature);if(origin)values.splice(values.indexOf(origin),1),values.unshift(origin);}
  let bytes=0;const eligible=values.filter(tx=>{const n=Buffer.byteLength(JSON.stringify(tx));if(n>24000||bytes+n>96000||!creatorTransactionMentionsMint(tx,mint))return false;bytes+=n;return true;});return creationSignature&&eligible[0]?.transaction?.signatures?.[0]===creationSignature?[eligible[0],...eligible.slice(1).slice(-3)]:eligible.slice(-4);
 }
