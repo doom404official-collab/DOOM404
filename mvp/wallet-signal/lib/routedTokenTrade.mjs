@@ -1,3 +1,4 @@
+import {verifyDirectNativeSale} from './nativeTradeLamports.mjs';
 import {normalizeLegacyPumpTrade} from './pumpLegacyTradeLayout.mjs';
 import {readPumpTradeEvent} from './pumpTradeEvent.mjs';
 import {PUMP_AMM_SDK,GLOBAL_CONFIG_PDA,PUMP_AMM_FEE_CONFIG_PDA,PUMP_AMM_EVENT_AUTHORITY_PDA,userVolumeAccumulatorPda,PUMP_GLOBAL_PDA,PUMP_EVENT_AUTHORITY_PDA,PUMP_FEE_CONFIG_PDA,bondingCurvePda} from '@pump-fun/pump-swap-sdk';
@@ -39,6 +40,7 @@ export function inspectRoutedTokenTrade({mint,creator,signature,transaction:tx}=
    const init=flat.filter(t=>TOKENS.has(t.ix.programId)&&['initializeAccount','initializeAccount2','initializeAccount3'].includes(t.ix.parsed?.type)&&t.ix.parsed.info?.account===address);
    if(init.length!==1||flat.some(t=>t.ix.parsed?.type==='setAuthority'&&t.ix.parsed.info?.account===address))return null;
    const i=init[0].ix,p=i.parsed.info,decimals=new Set([...tx.meta.preTokenBalances,...tx.meta.postTokenBalances].filter(b=>b.mint===p.mint&&b.programId===i.programId).map(b=>b.uiTokenAmount?.decimals));
+   if(decimals.size===0&&p.mint==='So11111111111111111111111111111111111111112'&&i.programId==='TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')decimals.add(9);
    if(decimals.size!==1)return null;const n=[...decimals][0];if(!Number.isInteger(n)||n<0||n>255)return null;
    return {mint:p.mint,owner:p.owner,programId:i.programId,uiTokenAmount:{amount:'0',decimals:n},identityBasis:'explicit_token_account_initialization'};
   };
@@ -61,9 +63,12 @@ export function inspectRoutedTokenTrade({mint,creator,signature,transaction:tx}=
   const quote=transfers.filter(t=>t.ix.programId===a[10]&&t.ix.stackHeight===depth+1&&t.ix.parsed.info?.mint===a[4]&&t.ix.parsed.info.source===(isSale?a[8]:a[6])&&t.ix.parsed.info.destination===(isSale?a[6]:a[8]));
   const nativeFlows=group.slice(start,end).filter(ix=>ix.programId==='11111111111111111111111111111111'&&ix.stackHeight===depth+1&&ix.parsed?.type==='transfer').map(ix=>ix.parsed.info);
   const nativeSettlement=nativeFlows.filter(i=>i.source===(isSale?a[0]:creator)&&i.destination===(isSale?creator:a[0]));
-  if(base.length!==1||(nativeQuote?nativeSettlement.length!==1:quote.length!==1))return {...result,reason:'settlement_transfers_missing_or_ambiguous'};
+  if(base.length!==1)return {...result,reason:'settlement_transfers_missing_or_ambiguous'};
+  const typedSaleEvent=nativeQuote&&isSale&&p.spec.name==='sellV3'?readPumpTradeEvent({instructions:group.slice(start,end),program:CURVE,eventAuthority:a[15],depth,mint,user:creator,amountRaw:base[0].ix.parsed.info.tokenAmount?.amount,isSale,timestamp:tx.blockTime}):null;
+  const directNative=nativeQuote&&nativeSettlement.length===0&&typedSaleEvent?verifyDirectNativeSale({tx,flat,keys,creator,event:typedSaleEvent,identity:owners}):null;
+  if(nativeQuote?nativeSettlement.length!==1&&!directNative:quote.length!==1)return {...result,reason:'settlement_transfers_missing_or_ambiguous'};
   if(nativeQuote&&nativeFlows.some(i=>!Number.isSafeInteger(i.lamports)||i.lamports<0))return {...result,reason:'invalid_native_quote_amount'};
-  const amount=base[0].ix.parsed.info.tokenAmount,paid=nativeQuote?{amount:String(nativeSettlement[0].lamports),decimals:9}:quote[0].ix.parsed.info.tokenAmount;
+  const amount=base[0].ix.parsed.info.tokenAmount,paid=nativeQuote?{amount:directNative?.paidRaw??String(nativeSettlement[0].lamports),decimals:9}:quote[0].ix.parsed.info.tokenAmount;
   const quoteDebit=nativeQuote&&!isSale?nativeFlows.filter(i=>i.source===creator).reduce((n,i)=>n+BigInt(i.lamports),0n):BigInt(paid?.amount||'0');
   if(!uint(amount?.amount)||!uint(paid?.amount)||BigInt(amount.amount)===0n||BigInt(paid.amount)===0n||amount.decimals!==userBase.uiTokenAmount.decimals||!nativeQuote&&paid.decimals!==userQuote.uiTokenAmount.decimals||base[0].ix.parsed.info.authority!==(isSale?creator:a[0])||!nativeQuote&&quote[0].ix.parsed.info.authority!==(isSale?a[0]:creator))return {...result,reason:'invalid_settlement_amount_or_authority'};
   const raw=BigInt(amount.amount);
@@ -97,7 +102,7 @@ export function inspectRoutedTokenTrade({mint,creator,signature,transaction:tx}=
      if(BigInt(post)-BigInt(pre)-explicit!==directBuyback)return {...result,reason:'native_buyback_delta_does_not_reconcile'};
     }
    }
-   if(BigInt(after)-BigInt(before)!==flow-directBuyback)return {...result,reason:'native_curve_delta_does_not_reconcile'};
+   if(BigInt(after)-BigInt(before)!==flow-directBuyback-(directNative?BigInt(directNative.paidRaw):0n))return {...result,reason:'native_curve_delta_does_not_reconcile'};
   }else{
    const quotePre=row('preTokenBalances',a[8]),quotePost=row('postTokenBalances',a[8]);
    const vaultQuoteFlows=flat.filter(t=>t.ix.programId===a[10]&&t.ix.parsed?.type==='transferChecked').map(t=>t.ix.parsed.info).filter(i=>i.source===a[8]||i.destination===a[8]);
@@ -109,6 +114,6 @@ export function inspectRoutedTokenTrade({mint,creator,signature,transaction:tx}=
   // trade projection incomplete. Fees/refunds cannot be silently double counted.
   const boundary=flat.filter(t=>TOKENS.has(t.ix.programId)&&['transfer','transferChecked','mintTo','mintToChecked','burn','burnChecked'].includes(t.ix.parsed?.type)).filter(t=>{const i=t.ix.parsed.info,s=owners(i.source||i.account),d=owners(i.destination);return (s?.mint===mint&&s.owner===creator)||(d?.mint===mint&&d.owner===creator);});
   if(boundary.length!==1||boundary[0].outer!==p.outer||boundary[0].inner!==base[0].index)return {...result,reason:'additional_target_custody_movements_unresolved'};
-  return {...result,status:'verified_target_trade',reason:null,event:{mint,creator,signature,slot:tx.slot,instructionIndex:p.outer,innerInstructionIndex:base[0].index,timestamp:tx.blockTime,type:isSale?'VERIFIED_SALE':'PURCHASE',amountRaw:raw.toString(),independentlyVerified:true,instructionVerified:true,settlementVerified:true,decoderVersion:'pump-trade-cpi-boundary-v2',protocol:isCurve?'pump_fun':'pump_amm',protocolInstruction:p.spec.name,quoteMint:a[4],quoteAmountRaw:paid.amount,quoteDebitIncludingObservedFeesRaw:quoteDebit.toString(),quoteSettlement:nativeQuote?'native_sol_system_transfers':'verified_quote_token_transfers',sourceTokenAccount:isSale?a[5]:a[7],destinationTokenAccount:isSale?a[7]:a[5],routerProgram:outer[p.outer].programId,targetBoundaryNetRaw:net.toString(),historyComplete:false}};
+  return {...result,status:'verified_target_trade',reason:null,event:{mint,creator,signature,slot:tx.slot,instructionIndex:p.outer,innerInstructionIndex:base[0].index,timestamp:tx.blockTime,type:isSale?'VERIFIED_SALE':'PURCHASE',amountRaw:raw.toString(),independentlyVerified:true,instructionVerified:true,settlementVerified:true,decoderVersion:'pump-trade-cpi-boundary-v3',protocol:isCurve?'pump_fun':'pump_amm',protocolInstruction:p.spec.name,quoteMint:a[4],quoteAmountRaw:paid.amount,quoteDebitIncludingObservedFeesRaw:quoteDebit.toString(),quoteSettlement:nativeQuote?(directNative?'native_sol_direct_program_payout_reconciled':'native_sol_system_transfers'):'verified_quote_token_transfers',sourceTokenAccount:isSale?a[5]:a[7],destinationTokenAccount:isSale?a[7]:a[5],routerProgram:outer[p.outer].programId,targetBoundaryNetRaw:net.toString(),historyComplete:false}};
  }catch(e){return {...result,reason:/^[a-z_]{1,80}$/.test(e.message||'')?e.message:'malformed_or_unsupported_route'};}
 }
