@@ -1,3 +1,4 @@
+import {isFreshEvidence} from './evidenceFreshnessV1.mjs';
 import {validSecurityConfiguration} from './securityConfigurationV2.mjs';
 import {normalizeMintAuthority} from './mintAuthorityEvidence.mjs';
 const finite=x=>typeof x==='number'&&Number.isFinite(x)&&x>=0&&x<=100;
@@ -6,7 +7,7 @@ const round=x=>Math.round(x*100)/100;
  * hooks, pausing and fees share one maximum-risk component to avoid double counting. */
 export function assessSecurityV2({tokenProgram,authoritiesParsed,mintAuthority,freezeAuthority,extensions,now=Date.now()}={}){
  const supported=['spl-token','spl-token-2022','token-2022'].includes(tokenProgram),spl=tokenProgram==='spl-token';
- const at=Date.parse(extensions?.observedAt),fresh=Number.isFinite(at)&&at<=now&&now-at<=3600000;
+ const fresh=isFreshEvidence(extensions?.observedAt,'mint_authorities',now);
  const c=!spl&&extensions?.verified===true&&fresh&&validSecurityConfiguration(extensions.configuration)?extensions.configuration:null;
  const p=c?.permissions||{},flags=[],missing=[],parts=[];
  const flag=(id,detail,severity='critical')=>flags.push({id,severity,detail});

@@ -517,3 +517,18 @@ body .g11.ti-report {
 .ti-report .simple-finding-status {color:var(--finding-color)}
 
 .ti-report .simple-risk-summary {min-width:0}
+
+/* RI-57: address/evidence content must shrink inside flex and grid columns. */
+.ti-report :is(.g11-panel,.simple-risks article,.simple-risks article>div,.hud-address,.hud-address code,.hud-control>div){min-width:0;max-width:100%;overflow-wrap:anywhere}
+.ti-report .hud-address{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ti-report .hud-address code{white-space:normal;word-break:break-word}
+.ti-report .simple-high-status,.ti-report .simple-unresolved-status{padding:8px;border-left:3px solid #FB633B;font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+.ti-report .simple-high-status{color:#FB633B}
+.ti-report .simple-unresolved-status{color:#aaa;border-color:#808080}
+.simple-exit-quotes [data-exit-severity=high]>strong{color:#FB633B}
+.simple-exit-quotes [data-exit-severity=critical]>strong{color:#EF4444}
+.simple-exit-quotes [data-exit-severity=elevated]>strong{color:#F97316}
+.simple-exit-quotes [data-exit-severity=moderate]>strong{color:#EAB308}
+
+/* RI-52: investigation progress is neutral, separate from risk alerts. */
+.ti-report .g11-foot[data-scan-state]{color:#d0c5ad!important;background:#171919!important;border:1px solid #414343!important;border-left:3px solid #a99b7d!important;box-shadow:none!important;padding:10px 12px!important}

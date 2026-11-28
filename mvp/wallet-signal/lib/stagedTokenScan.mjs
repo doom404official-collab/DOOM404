@@ -1,3 +1,5 @@
+import {scanPresentationState} from './scanPresentationState.mjs';
+import {assessmentDisplay} from './evidenceHudPresentation.mjs';
 import {createScanReadScheduler} from './scanReadScheduler.mjs';
 import {practicalAssessmentV2} from './practicalScoringV2.mjs';
 import {traderFindings,findingCounts} from './traderRiskExplanations.mjs';
@@ -18,7 +20,13 @@ export async function runStagedTokenScan({mint,read,signal:parentSignal,onUpdate
  let published=false,initialResolve,closed=false,revision=0,mintFailure=null;
  const initialReady=new Promise(resolve=>{initialResolve=resolve;});
  // Consumers render these statuses separately from evidence coverage/risk.
- const progress=()=>({stage:closed?'bounded_complete':published?'deep_in_progress':'initial_in_progress',pending:Object.keys(stages).filter(k=>stages[k]==='running'),unavailable:Object.keys(stages).filter(k=>stages[k]==='unavailable'),completed:Object.keys(stages).filter(k=>stages[k]==='completed'),failures:Object.entries(stageReasons).map(([stage,detail])=>({stage,...detail})),historyComplete:false});
+ const progress=()=>{
+  const interrupted=closed&&(Object.values(stages).includes('unavailable')||snapshot.investigationState?.status==='assessment_in_progress'||snapshot.investigationState?.status==='evidence_unavailable');
+  const p={stage:interrupted?'bounded_stopped':closed?'bounded_complete':published?'deep_in_progress':'initial_in_progress',pending:Object.keys(stages).filter(k=>stages[k]==='running'),unavailable:Object.keys(stages).filter(k=>stages[k]==='unavailable'),completed:Object.keys(stages).filter(k=>stages[k]==='completed'),failures:Object.entries(stageReasons).map(([stage,detail])=>({stage,...detail})),historyComplete:false};
+  let assessment=null;try{if(snapshot.result)assessment=practicalAssessmentV2({...snapshot,reportedLiquidity:snapshot.liquidity});}catch{}
+  const presentation=scanPresentationState({progress:p,assessed:assessment?assessmentDisplay(assessment,'overall').assessed:false,complete:assessment?.complete===true,hasEvidence:(assessment?.coveragePct||0)>0});
+  return {...p,state:presentation.state,provisional:presentation.provisional};
+ };
  const readiness=()=>{
   if(!snapshot.result)return {initial:false,decision:false};
   let critical=false,depth=false,holders=false;

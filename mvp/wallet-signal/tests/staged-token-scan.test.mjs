@@ -67,3 +67,16 @@ test('initial and deep source concurrency stays below the existing eight-lease c
 });
 
 test('fatal mint admission failure preserves quota code and retry window without publishing an assessment',async()=>{const failure=Object.assign(Error('unavailable'),{code:'RATE_LIMIT',status:429,retryAfterSeconds:120});let published=0;await assert.rejects(runStagedTokenScan({mint:'test',read:async path=>{if(path.startsWith('/api/token-current'))throw failure;return{mint:'test'};},onInitial:()=>published++}),e=>e===failure&&e.code==='RATE_LIMIT'&&e.retryAfterSeconds===120);assert.equal(published,0);});
+
+test('failed historical investigation cannot be marked complete merely because its request settled',async()=>{
+ for(const failure of [{mint,status:'evidence_unavailable',reason:'provider_unavailable'},()=>{throw Object.assign(Error('provider unavailable'),{code:'PROVIDER_UNAVAILABLE'});}]){
+  const a=adapter({'/api/token-investigation':failure});const final=await runStagedTokenScan({mint,read:a.read});
+  assert.equal(final.investigationProgress.stage,'bounded_stopped');assert.equal(final.investigationProgress.state,'interrupted');assert.equal(final.investigationProgress.provisional,false);
+ }
+});
+test('a failed current evidence provider is retained as interruption after historical work settles',async()=>{
+ const a=adapter({'/api/token-concentration':()=>{throw Object.assign(Error('RPC unavailable'),{code:'PROVIDER_UNAVAILABLE'});}});
+ const final=await runStagedTokenScan({mint,read:a.read});
+ assert.equal(final.investigationProgress.state,'interrupted');
+ assert.ok(final.investigationProgress.failures.some(f=>f.stage==='holder_classification'&&f.reason==='PROVIDER_UNAVAILABLE'));
+});

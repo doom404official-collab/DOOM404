@@ -1,3 +1,4 @@
+import {isFreshEvidence} from './evidenceFreshnessV1.mjs';
 import {withVerifiedAllocationControls,verifiedEscrowFundingWindows} from './materialAllocationPresentation.mjs';
 import {canonicalQuote,calibratedFlags} from './riskCalibrationV1.mjs';
 import {RISK_METHODOLOGY_VERSION,RISK_WEIGHTS,aggregateRisk,tokenMaturity} from './riskMethodology.mjs';
@@ -7,7 +8,7 @@ const number=x=>typeof x==='number'&&Number.isFinite(x)&&x>=0;
 const raw=x=>typeof x==='string'&&/^(0|[1-9][0-9]*)$/.test(x)&&BigInt(x)<=18446744073709551615n;
 const pct=(n,d)=>raw(n)&&raw(d)&&BigInt(d)>0n?Number(BigInt(n)*1000000n/BigInt(d))/10000:null;
 const ramp=(x,low,high)=>Math.max(0,Math.min(1,(x-low)/(high-low)));
-const fresh=(x,now,max=3600000)=>Number.isFinite(Date.parse(x))&&Date.parse(x)<=now&&now-Date.parse(x)<=max;
+const fresh=(x,now,kind='holder_distribution')=>isFreshEvidence(x,kind,now);
 const part=(id,max,risk,complete)=>({id,max,riskPoints:number(risk)?round(Math.min(max,risk)):0,complete:complete===true});
 const assessment=(id,components,flags=[],missing=[],metrics={})=>({version:'2.0',attribute:id,riskScore:round(components.reduce((n,c)=>n+c.riskPoints,0)),coveragePct:round(components.reduce((n,c)=>n+(number(c.observedWeight)?Math.min(c.max,c.observedWeight):c.complete?c.max:0),0)),components,flags:flags.map(f=>({...f})),missing:[...missing],metrics});
 /** Risk points are observed adverse evidence, higher = more observed risk.
@@ -17,7 +18,7 @@ export function practicalAssessmentV2({result,extensions,workerEvidence,creatorE
  const mint=result?.mint,same=x=>!!mint&&x?.mint===mint;
  const bridge=workerEvidence?.version==='1.1'&&same(workerEvidence)?workerEvidence:null;
  const ext=same(extensions)?extensions:null;
- const security=assessSecurityV2({tokenProgram:result?.tokenProgram,authoritiesParsed:result?.authorityDetailsStatus==='available',mintAuthority:result?.mintAuthority,freezeAuthority:result?.freezeAuthority,extensions:ext,now});
+ const security=assessSecurityV2({tokenProgram:result?.tokenProgram,authoritiesParsed:result?.authorityDetailsStatus==='available'&&(!result?.observedAt||fresh(result.observedAt,now,'mint_authorities')),mintAuthority:result?.mintAuthority,freezeAuthority:result?.freezeAuthority,extensions:ext,now});
  security.metrics={transferFee:ext?.transferFee,program:result?.tokenProgram,observedAt:ext?.observedAt||result?.observedAt,scope:security.scope,configuredFeePct:ext?.transferFee?.effectiveFee?.percentage};
  const s=bridge?.canonicalHolder;
  const canonical=same(s)&&fresh(s.observedAt,now)&&s.schemaVersion===2&&s.status==='canonical_observation'&&s.snapshotId==='0596510d6dc07e1dce934fba0dcf96a5594b38807383bd6d829d9d6fe441177b'&&s.holderSetHash==='77f749040d291e057c546d1f4872f4de9432bdda4be512a0dc94bda14bc20daa'&&number(s.top20SharePct)&&s.top20SharePct<=100&&number(s.largestHolderSharePct)&&s.largestHolderSharePct<=s.top20SharePct?s:null;
@@ -48,7 +49,7 @@ export function practicalAssessmentV2({result,extensions,workerEvidence,creatorE
  }
  if(connected!==null&&connected>=10)holder.flags.push({id:'connected_holder_exposure',severity:'high',detail:'Material observed transfer links involve holders of at least 10% of mint supply; common ownership is not established.'});
  const liq=same(currentLiquidity)?currentLiquidity:bridge?.liquidity?.currentScoringV2;
- const l=same(liq)&&liq.version===2&&liq.executableDepth?.verified===true&&fresh(liq.observedAt,now)&&liq.referenceQuotes?.length===3?liq:null;
+ const l=same(liq)&&liq.version===2&&liq.executableDepth?.verified===true&&fresh(liq.observedAt,now,'executable_quotes')&&liq.referenceQuotes?.length===3?liq:null;
  const ref=l?.referenceQuotes?.[2],small=l?.referenceQuotes?.[1];
  const impactLarge=canonicalQuote(ref).value,impactSmall=canonicalQuote(small).value;
  const depth=l?.referenceQuotes.some(q=>q.executable===false)?50:number(impactLarge)&&number(impactSmall)?50*Math.max(ramp(impactLarge,1,15),ramp(impactSmall,1,5)):null;
@@ -59,7 +60,7 @@ export function practicalAssessmentV2({result,extensions,workerEvidence,creatorE
  if(l&&!withdrawalVerified)liquidity.missing.push('LP custody and actual withdrawal rights are unverified; a small outstanding claim is not proof of locking or control safety.');
  liquidity.flags.push(...calibratedFlags({quotes:l?.referenceQuotes||[]}).filter(f=>f.id.startsWith('reference_exit_')));
  holder.flags.push(...calibratedFlags({share:severityShare,quotes:l?.referenceQuotes||[]}).filter(f=>f.id==='concentration_liquidity_interaction'));
- const reported=same(reportedLiquidity)&&fresh(reportedLiquidity.observedAt,now)&&reportedLiquidity.status==='pools_reported'?reportedLiquidity:null;
+ const reported=same(reportedLiquidity)&&fresh(reportedLiquidity.observedAt,now,'pool_inventory')&&reportedLiquidity.status==='pools_reported'?reportedLiquidity:null;
  liquidity.metrics.reportedPoolCount=Number.isSafeInteger(reported?.poolCountReturned)?reported.poolCountReturned:null;
  liquidity.metrics.reportedLargestPoolSharePct=number(reported?.largestReportedPoolSharePct)&&reported.largestReportedPoolSharePct<=100?reported.largestReportedPoolSharePct:null;
  if(liquidity.metrics.reportedLargestPoolSharePct>80)liquidity.flags.push({id:'reported_pool_concentration',severity:'high',detail:'Provider-returned liquidity is concentrated in one reported pool. This is not an exhaustive on-chain pool inventory or proof of independent control.'});
@@ -69,7 +70,7 @@ export function practicalAssessmentV2({result,extensions,workerEvidence,creatorE
  const currentAttribution=same(currentCreator)&&currentCreator.version===2&&currentCreator.attribution?.verified===true&&['transaction_local_protocol_creator','reviewed_persisted_attribution'].includes(currentCreator.attribution.verification)?currentCreator:null;
  const attributedCreator=same(creatorEvidence)&&creatorEvidence.status==='VERIFIED'&&creatorEvidence.independentlyReviewed===true?creatorEvidence.creator:currentAttribution?.creator||(same(c)&&c.attribution?.verified===true&&c.attribution.verification==='transaction_local_protocol_creator'?c.attribution.creator:null);
  const identity=!!attributedCreator&&(!b||same(b)&&b.version===2&&b.creator===attributedCreator);
- const wallet=identity&&same(currentCreator)&&currentCreator.version===2&&currentCreator.creator===attributedCreator&&currentCreator.status==='verified_current_wallet'&&fresh(currentCreator.observedAt,now)?currentCreator:identity&&b?.currentWallet&&fresh(b.currentWallet.observedAt,now)?b.currentWallet:null;
+ const wallet=identity&&same(currentCreator)&&currentCreator.version===2&&currentCreator.creator===attributedCreator&&currentCreator.status==='verified_current_wallet'&&fresh(currentCreator.observedAt,now,'current_balances')?currentCreator:identity&&b?.currentWallet&&fresh(b.currentWallet.observedAt,now,'current_balances')?b.currentWallet:null;
  const resultSupply=result?.supplyRaw||result?.rawSupply;
  const useMintResult=raw(resultSupply)&&(!raw(l?.mintSupplyRaw)||Number.isSafeInteger(result.contextSlot)&&result.contextSlot>=l.slot);
  const supply=useMintResult?resultSupply:l?.mintSupplyRaw,supplySlot=useMintResult?result.contextSlot:l?.slot;

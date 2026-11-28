@@ -32,7 +32,7 @@ test('all four HUDs consume evidence without mutating assessments or inventing g
 test('missing and partial evidence does not become verified or green status',()=>{
  const a=practicalAssessmentV2({});for(const selected of Object.keys(a.scores)){
  const html=renderToStaticMarkup(createElement(HUD,{assessment:a,selected}));assert.doesNotMatch(html,/Verified absence|Safe|#36D5A0/);
- }assert.match(renderToStaticMarkup(createElement(HUD,{assessment:a,selected:'creator_intelligence'})),/Not assessed/);
+ }assert.match(renderToStaticMarkup(createElement(HUD,{assessment:a,selected:'creator_intelligence'})),/Creator not established · Creator attribution evidence inconclusive/);
 });
 test('HUD components introduce no network or heavy visualization dependencies',()=>{
  const code=fs.readFileSync(new URL('../app/EvidenceHUD.jsx',import.meta.url),'utf8')+fs.readFileSync(new URL('../lib/evidenceHudPresentation.mjs',import.meta.url),'utf8');

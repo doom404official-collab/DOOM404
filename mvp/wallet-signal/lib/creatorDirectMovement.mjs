@@ -3,7 +3,7 @@ const ALLOWED=new Set([TOKEN,TOKEN22,'11111111111111111111111111111111','ATokenG
 const uint=x=>typeof x==='string'&&/^(0|[1-9][0-9]*)$/.test(x)&&BigInt(x)<=18446744073709551615n;
 /** Narrow non-market movement. Exact account deltas and transaction signers are
  * required; unknown CPI, mutable ownership, fee shortfalls and swaps fail closed. */
-export function verifyCreatorDirectMovement({mint,creator,signature,transaction:tx}={}){
+function verifyCreatorDirectReceipt({mint,creator,signature,transaction:tx}={}){
  try{
   if(tx?.meta?.err!==null||tx.transaction?.signatures?.[0]!==signature||!['legacy',0,1].includes(tx.version)||!Number.isSafeInteger(tx.slot)||!Number.isSafeInteger(tx.blockTime)||tx.blockTime<=0)return null;
   const m=tx.transaction.message,keys=m.accountKeys.map(k=>typeof k==='string'?k:k.pubkey),outer=m.instructions,groups=tx.meta.innerInstructions;
@@ -30,3 +30,29 @@ export function verifyCreatorDirectMovement({mint,creator,signature,transaction:
   return {signature,instructionIndex:p.index,innerInstructionIndex:null,mint,creator,type:isMint?'DIRECT_MINT_RECEIPT':'EXTERNAL_RECEIPT',timestamp:tx.blockTime,amountRaw:amount,independentlyVerified:true,instructionVerified:true,...(isMint?{mintInstructionVerified:true}:{}),purchaseVerified:false,acquisitionMechanism:isMint?'direct_mint_receipt':'direct_incoming_transfer'};
  }catch{return null;}
 }
+
+/** Classic SPL Transfer omits the mint. Bind both account owners and mint from
+ * exact before/after balance rows. This narrow path permits no CPI or account
+ * lifecycle change; an unsupported swap cannot be relabelled as a transfer. */
+function verifyPlainCreatorTransfer({mint,creator,signature,transaction:tx}={}){
+ try{
+  if(tx?.meta?.err!==null||tx.transaction?.signatures?.[0]!==signature||!['legacy',0,1].includes(tx.version)||!Number.isSafeInteger(tx.slot)||!Number.isSafeInteger(tx.blockTime)||tx.blockTime<=0)return null;
+  const m=tx.transaction.message,keys=m.accountKeys.map(k=>typeof k==='string'?k:k.pubkey),outer=m.instructions;
+  if(!Array.isArray(outer)||!Array.isArray(tx.meta.innerInstructions)||tx.meta.innerInstructions.some(g=>g.instructions?.length)||outer.some(ix=>![TOKEN,'11111111111111111111111111111111','ComputeBudget111111111111111111111111111111'].includes(ix.programId)))return null;
+  const moves=outer.map((ix,index)=>({ix,index})).filter(x=>x.ix.programId===TOKEN);
+  if(moves.length!==1||!['transfer','transferChecked'].includes(moves[0].ix.parsed?.type))return null;
+  const {ix,index}=moves[0],i=ix.parsed.info,amount=i.amount??i.tokenAmount?.amount;
+  if(!uint(amount)||BigInt(amount)===0n||i.source===i.destination||!m.accountKeys.some(k=>k.pubkey===i.authority&&k.signer===true)||i.mint!==undefined&&i.mint!==mint)return null;
+  const row=(name,account)=>{const rows=tx.meta[name]?.filter(b=>keys[b.accountIndex]===account);if(rows?.length!==1)return null;const b=rows[0];return b.mint===mint&&b.programId===TOKEN&&uint(b.uiTokenAmount?.amount)&&Number.isInteger(b.uiTokenAmount.decimals)&&b.uiTokenAmount.decimals>=0&&b.uiTokenAmount.decimals<=255?b:null;};
+  const a=row('preTokenBalances',i.source),b=row('postTokenBalances',i.source),c=row('preTokenBalances',i.destination),d=row('postTokenBalances',i.destination);
+  if(!a||!b||!c||!d||a.owner!==b.owner||c.owner!==d.owner||a.owner!==i.authority||a.owner===c.owner||[b,c,d].some(x=>x.uiTokenAmount.decimals!==a.uiTokenAmount.decimals)||i.tokenAmount&&i.tokenAmount.decimals!==a.uiTokenAmount.decimals)return null;
+  if(BigInt(a.uiTokenAmount.amount)-BigInt(b.uiTokenAmount.amount)!==BigInt(amount)||BigInt(d.uiTokenAmount.amount)-BigInt(c.uiTokenAmount.amount)!==BigInt(amount))return null;
+  const incoming=c.owner===creator,outgoing=a.owner===creator;if(incoming===outgoing)return null;
+  const own=name=>tx.meta[name].filter(b=>b.mint===mint&&b.owner===creator);
+  if([...own('preTokenBalances'),...own('postTokenBalances')].some(b=>!uint(b.uiTokenAmount?.amount)))return null;
+  const sum=name=>own(name).reduce((n,b)=>n+BigInt(b.uiTokenAmount.amount),0n);
+  if(sum('postTokenBalances')-sum('preTokenBalances')!==(incoming?1n:-1n)*BigInt(amount))return null;
+  return {signature,instructionIndex:index,innerInstructionIndex:null,mint,creator,type:incoming?'EXTERNAL_RECEIPT':'EXTERNAL_TRANSFER_OUT',timestamp:tx.blockTime,amountRaw:amount,independentlyVerified:true,instructionVerified:true,purchaseVerified:false,acquisitionMechanism:incoming?'direct_incoming_transfer':undefined};
+ }catch{return null;}
+}
+export function verifyCreatorDirectMovement(input){return verifyCreatorDirectReceipt(input)||verifyPlainCreatorTransfer(input);}

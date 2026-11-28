@@ -2,7 +2,7 @@ import {creatorOriginPage} from '../../../lib/sharedCreatorOriginV1.mjs';
 import {traceSpan,traceEvent} from '../../../lib/scannerTrace.mjs';
 import {createTokenInvestigationStore,publicInvestigation} from '../../../lib/tokenInvestigationStore.mjs';
 import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
-import {verifyBoundedCreatorOrigin} from '../../../lib/boundedCreatorOriginV2.mjs';
+import {verifyBoundedCreatorOrigin,diagnoseBoundedCreatorOrigin,creatorOriginLimitation} from '../../../lib/boundedCreatorOriginV2.mjs';
 import {NextResponse} from 'next/server';
 import {PublicKey} from '@solana/web3.js';
 import {createReliableConnection} from '../../../lib/reliableConnection.js';
@@ -46,7 +46,7 @@ async function handle(request){
     if(!Array.isArray(indexed.result?.data)||indexed.result.data.length>12)return {mint,status:'bounded_origin_provider_unavailable',reason:'invalid_bounded_origin_page'};
     const proofs=indexed.result.data.map(tx=>verifyBoundedCreatorOrigin(tx,mint)).filter(Boolean);const proof=proofs[0];
     if(new Set(proofs.map(p=>p.creator)).size>1)return {mint,status:'attribution_conflict'};
-    if(!proof)return {mint,status:'unsupported_protocol',reason:'No verified supported creation instruction among twelve earliest indexed transactions; generic SPL authority and fee-payer roles do not establish a creator.'};
+    if(!proof){const candidateDiagnostics=indexed.result.data.map(tx=>diagnoseBoundedCreatorOrigin(tx,mint));return {mint,status:'attribution_inconclusive',reason:creatorOriginLimitation(candidateDiagnostics),candidateDiagnostics};}
     attribution={creator:proof.creator,status:'ONCHAIN_PROTOCOL_CREATOR',proof};
    }
    if(attribution.proof?.verified===true){originCache.set(mint,{at:Date.now(),attribution});if(originCache.size>100)originCache.delete(originCache.keys().next().value);}
