@@ -1,0 +1,1409 @@
+{
+  "baselineRows": [
+    {
+      "name": "TOMO",
+      "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+      "mintControls": {
+        "decimals": 6,
+        "extensions": [
+          {
+            "extension": "metadataPointer",
+            "state": {
+              "authority": null,
+              "metadataAddress": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y"
+            }
+          },
+          {
+            "extension": "tokenMetadata",
+            "state": {
+              "additionalMetadata": [],
+              "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+              "name": "Tomo",
+              "symbol": "TOMO",
+              "updateAuthority": null,
+              "uri": "https://ipfs.io/ipfs/bafkreihmukpl6vx6syitlyb7eva24vy74sxlpeuevgtflvbhlp5fhbvp4y"
+            }
+          }
+        ],
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "953716648068110"
+      },
+      "allocations": [
+        {
+          "tokenAccount": "4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41",
+          "amountRaw": "463390775498859",
+          "supplyPct": 48.587887,
+          "controllingAuthority": "4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+          "tokenState": "initialized",
+          "delegate": null,
+          "closeAuthority": null,
+          "authorityAccountOwner": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+          "authorityAccountSpace": 301,
+          "authorityOnCurve": false,
+          "verifiedMintBoundPumpVault": true,
+          "poolFields": {
+            "protocol": "pump_amm",
+            "poolBump": 255,
+            "index": 0,
+            "creator": "DYSKumnskdeVbjCWiV7awz2eeQJCioZecv3FvVWqk2Kr",
+            "baseMint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+            "quoteMint": "So11111111111111111111111111111111111111112",
+            "lpMint": "5G2JPejL37sqT73eUTid4oosCXM9cu3PwBYZGn3gjwhh",
+            "poolBaseTokenAccount": "4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41",
+            "poolQuoteTokenAccount": "CaX3FZFNR8Ko7Y4q3uRCL33SHXvXwViEURWdhWSNmLT3",
+            "lpSupply": "4193388441773",
+            "coinCreator": "6qUtYLyyoYCNj1Snd6FkGfTAzXHgSWCS4nyg871VwD13",
+            "protocolVerified": false,
+            "reservesVerified": false,
+            "lpSecurityVerified": false,
+            "warning": "Uncorroborated decoded account fields; never score without independent vault and mint verification"
+          },
+          "classification": "Verified mint-bound PumpSwap vault",
+          "observedAt": "2026-11-28T09:51:27.212Z",
+          "slot": 474908909
+        },
+        {
+          "tokenAccount": "AmS7L9wjcJ3aoCsyVSsRFiP2GJP5zfTpUwHyxYZkYGEj",
+          "amountRaw": "80683773045975",
+          "supplyPct": 8.459931,
+          "controllingAuthority": "DiXMHvwxWwb4cgUije7exxhszikbLm6NpcGm3NNgNkCR",
+          "tokenState": "initialized",
+          "delegate": null,
+          "closeAuthority": null,
+          "authorityAccountOwner": "11111111111111111111111111111111",
+          "authorityAccountSpace": 0,
+          "authorityOnCurve": true,
+          "verifiedMintBoundPumpVault": false,
+          "poolFields": null,
+          "classification": "System-owned authority; no token-account freeze/delegate observed; economic role unverified",
+          "observedAt": "2026-11-28T09:51:27.212Z",
+          "slot": 474908909
+        },
+        {
+          "tokenAccount": "26m1f3TsWkXYpLhKkhKKb2z7hFjH8sWphAwNeWP2xWJh",
+          "amountRaw": "57921290873594",
+          "supplyPct": 6.073217,
+          "controllingAuthority": "CxcnWnek13DF53VyfTm9ZQYBUh4M1wqWHc7vNDLVzAhd",
+          "tokenState": "initialized",
+          "delegate": null,
+          "closeAuthority": null,
+          "authorityAccountOwner": "11111111111111111111111111111111",
+          "authorityAccountSpace": 0,
+          "authorityOnCurve": true,
+          "verifiedMintBoundPumpVault": false,
+          "poolFields": null,
+          "classification": "System-owned authority; no token-account freeze/delegate observed; economic role unverified",
+          "observedAt": "2026-11-28T09:51:27.212Z",
+          "slot": 474908909
+        }
+      ],
+      "scope": "Three largest token accounts only; not eligible-holder Top20 or beneficial-owner certification",
+      "remainingLimitations": [
+        "No historical creator attribution established by these current state reads.",
+        "Program-controlled allocations retained; withdrawal, vesting schedule and administrative overrides unresolved unless explicitly verified."
+      ]
+    },
+    {
+      "name": "ANSEM",
+      "mint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump",
+      "mintControls": {
+        "decimals": 6,
+        "extensions": [
+          {
+            "extension": "metadataPointer",
+            "state": {
+              "authority": null,
+              "metadataAddress": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump"
+            }
+          },
+          {
+            "extension": "tokenMetadata",
+            "state": {
+              "additionalMetadata": [],
+              "mint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump",
+              "name": "The Black Bull",
+              "symbol": "ANSEM",
+              "updateAuthority": null,
+              "uri": "https://meta.uxento.io/data/7f4c8448-c38e-4c34-aa37-a28cff9806d0"
+            }
+          }
+        ],
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "997351545534225"
+      },
+      "allocations": [
+        {
+          "tokenAccount": "GdrKtm8einYWAfjWhAtmoi6Em5cqEitsF4u1GxZkL3f",
+          "amountRaw": "491003700487968",
+          "supplyPct": 49.230755,
+          "controllingAuthority": "7oU9nR9VEvFPwvp2PpXo2LQc6A92QRhcUTwhLWT7MsDM",
+          "tokenState": "initialized",
+          "delegate": null,
+          "closeAuthority": null,
+          "authorityAccountOwner": "11111111111111111111111111111111",
+          "authorityAccountSpace": 0,
+          "authorityOnCurve": true,
+          "verifiedMintBoundPumpVault": false,
+          "poolFields": null,
+          "classification": "System-owned authority; no token-account freeze/delegate observed; economic role unverified",
+          "observedAt": "2026-11-28T09:51:27.212Z",
+          "slot": 474908909
+        },
+        {
+          "tokenAccount": "4NS9y9LTuUw927QgG13oojFcwAnkBnNwQVzGXdGfD6bj",
+          "amountRaw": "26010449754830",
+          "supplyPct": 2.607952,
+          "controllingAuthority": "87ZDLDDbMAqmHJwsAgNjpJVCf9gZvwMJJMbFbXNTrkva",
+          "tokenState": "initialized",
+          "delegate": null,
+          "closeAuthority": null,
+          "authorityAccountOwner": "11111111111111111111111111111111",
+          "authorityAccountSpace": 0,
+          "authorityOnCurve": true,
+          "verifiedMintBoundPumpVault": false,
+          "poolFields": null,
+          "classification": "System-owned authority; no token-account freeze/delegate observed; economic role unverified",
+          "observedAt": "2026-11-28T09:51:28.089Z",
+          "slot": 474908912
+        },
+        {
+          "tokenAccount": "BmCXK8QFCHgjiqGm7peAtBbZpFPJNsp5fYP5rSRazMS8",
+          "amountRaw": "20589386771100",
+          "supplyPct": 2.064406,
+          "controllingAuthority": "FnzKY6x7entQ1eR3D225dQyT7ybfka4PskBMQhb8L3CC",
+          "tokenState": "initialized",
+          "delegate": null,
+          "closeAuthority": null,
+          "authorityAccountOwner": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+          "authorityAccountSpace": 301,
+          "authorityOnCurve": false,
+          "verifiedMintBoundPumpVault": true,
+          "poolFields": {
+            "protocol": "pump_amm",
+            "poolBump": 253,
+            "index": 0,
+            "creator": "EGwMvHLvMA6P2B3ti8Yd7MkuMgvAXPLRY2Q9eG5B1LFV",
+            "baseMint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump",
+            "quoteMint": "So11111111111111111111111111111111111111112",
+            "lpMint": "CevNeicTXqL1oAjqZ3FNmexftzKD4ozqev5DgX2sAgFq",
+            "poolBaseTokenAccount": "BmCXK8QFCHgjiqGm7peAtBbZpFPJNsp5fYP5rSRazMS8",
+            "poolQuoteTokenAccount": "DaXhQ3pfN3J5dQnXxVU8YqW9bwA3RUVxXvq2iBjTDVt4",
+            "lpSupply": "4219024499714",
+            "coinCreator": "9ENSWnedBEAvVB7jJKZrLRZ9vuVuJdBE7uJt2oAsG1jr",
+            "protocolVerified": false,
+            "reservesVerified": false,
+            "lpSecurityVerified": false,
+            "warning": "Uncorroborated decoded account fields; never score without independent vault and mint verification"
+          },
+          "classification": "Verified mint-bound PumpSwap vault",
+          "observedAt": "2026-11-28T09:51:28.089Z",
+          "slot": 474908912
+        }
+      ],
+      "scope": "Three largest token accounts only; not eligible-holder Top20 or beneficial-owner certification",
+      "remainingLimitations": [
+        "No historical creator attribution established by these current state reads.",
+        "Program-controlled allocations retained; withdrawal, vesting schedule and administrative overrides unresolved unless explicitly verified."
+      ]
+    },
+    {
+      "name": "FLOAT",
+      "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+      "mintControls": {
+        "decimals": 6,
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "830037197744551"
+      },
+      "allocations": [
+        {
+          "tokenAccount": "H5yeZaYgJax2iATAu8WXJMumR5hTTcaqncwZxSdVNqXF",
+          "amountRaw": "51525754541263",
+          "supplyPct": 6.207644,
+          "controllingAuthority": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+          "tokenState": "initialized",
+          "delegate": null,
+          "closeAuthority": null,
+          "authorityAccountOwner": "11111111111111111111111111111111",
+          "authorityAccountSpace": 0,
+          "authorityOnCurve": false,
+          "verifiedMintBoundPumpVault": false,
+          "poolFields": null,
+          "classification": "System-owned authority; no token-account freeze/delegate observed; economic role unverified",
+          "observedAt": "2026-11-28T09:51:28.089Z",
+          "slot": 474908912
+        },
+        {
+          "tokenAccount": "EHnacy7YmGsBfEwvvZdfxCbKeaWJX7D74Lwg1UkgHeEo",
+          "amountRaw": "49893683978906",
+          "supplyPct": 6.011017,
+          "controllingAuthority": "EHnacy7YmGsBfEwvvZdfxCbKeaWJX7D74Lwg1UkgHeEo",
+          "tokenState": "initialized",
+          "delegate": null,
+          "closeAuthority": null,
+          "authorityAccountOwner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "authorityAccountSpace": 165,
+          "authorityOnCurve": false,
+          "verifiedMintBoundPumpVault": false,
+          "poolFields": null,
+          "classification": "Unclassified authority configuration",
+          "observedAt": "2026-11-28T09:51:28.089Z",
+          "slot": 474908912
+        },
+        {
+          "tokenAccount": "AhQpSUWGUwEpyYueQDBewYWnF45srebu9odaLJQJopKY",
+          "amountRaw": "25357208936719",
+          "supplyPct": 3.054948,
+          "controllingAuthority": "95ddWCEqs7bX1vAPFXgAxNKmYkCvpQFiurCk4KWg2AST",
+          "tokenState": "initialized",
+          "delegate": null,
+          "closeAuthority": null,
+          "authorityAccountOwner": "11111111111111111111111111111111",
+          "authorityAccountSpace": 0,
+          "authorityOnCurve": true,
+          "verifiedMintBoundPumpVault": false,
+          "poolFields": null,
+          "classification": "System-owned authority; no token-account freeze/delegate observed; economic role unverified",
+          "observedAt": "2026-11-28T09:51:28.968Z",
+          "slot": 474908915
+        }
+      ],
+      "scope": "Three largest token accounts only; not eligible-holder Top20 or beneficial-owner certification",
+      "remainingLimitations": [
+        "No historical creator attribution established by these current state reads.",
+        "Program-controlled allocations retained; withdrawal, vesting schedule and administrative overrides unresolved unless explicitly verified."
+      ]
+    },
+    {
+      "name": "TRUMP",
+      "mint": "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN",
+      "mintControls": {
+        "decimals": 6,
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "999998739755971"
+      },
+      "allocations": [
+        {
+          "tokenAccount": "HkykUVWTctptXZmRTWearMsH4SaQNmE4Ku3tMJe5v2mH",
+          "amountRaw": "706131964328498",
+          "supplyPct": 70.613285,
+          "controllingAuthority": "2RH6rUTPBJ9rUDPpuV9b8z1YL56k1tYU6Uk5ZoaEFFSK",
+          "tokenState": "initialized",
+          "delegate": null,
+          "closeAuthority": null,
+          "authorityAccountOwner": "magnaSHyv8zzKJJmr8NSz5JXmtdGDTTFPEADmvNAwbj",
+          "authorityAccountSpace": 6593,
+          "authorityOnCurve": false,
+          "verifiedMintBoundPumpVault": false,
+          "poolFields": null,
+          "classification": "Magna-program-controlled allocation; schedule/admin overrides not decoded",
+          "observedAt": "2026-11-28T09:51:28.968Z",
+          "slot": 474908915
+        },
+        {
+          "tokenAccount": "7DaumTmUaK3xcpd8XJXAjUzDrCqPuj3S1Sc2cbootBUN",
+          "amountRaw": "57000000000000",
+          "supplyPct": 5.700007,
+          "controllingAuthority": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+          "tokenState": "initialized",
+          "delegate": null,
+          "closeAuthority": null,
+          "authorityAccountOwner": "11111111111111111111111111111111",
+          "authorityAccountSpace": 0,
+          "authorityOnCurve": true,
+          "verifiedMintBoundPumpVault": false,
+          "poolFields": null,
+          "classification": "System-owned authority; no token-account freeze/delegate observed; economic role unverified",
+          "observedAt": "2026-11-28T09:51:28.968Z",
+          "slot": 474908915
+        },
+        {
+          "tokenAccount": "3zya4BbfRV8a4nKyAmxqufyGYEH5TF3dZFYZvE5kSj7N",
+          "amountRaw": "36081252192484",
+          "supplyPct": 3.608129,
+          "controllingAuthority": "8N2ssXZGJbvVLszanERuCJpLZd2nuADgpZwLkDDxwNnS",
+          "tokenState": "initialized",
+          "delegate": null,
+          "closeAuthority": null,
+          "authorityAccountOwner": "11111111111111111111111111111111",
+          "authorityAccountSpace": 0,
+          "authorityOnCurve": true,
+          "verifiedMintBoundPumpVault": false,
+          "poolFields": null,
+          "classification": "System-owned authority; no token-account freeze/delegate observed; economic role unverified",
+          "observedAt": "2026-11-28T09:51:28.968Z",
+          "slot": 474908915
+        }
+      ],
+      "scope": "Three largest token accounts only; not eligible-holder Top20 or beneficial-owner certification",
+      "remainingLimitations": [
+        "No historical creator attribution established by these current state reads.",
+        "Program-controlled allocations retained; withdrawal, vesting schedule and administrative overrides unresolved unless explicitly verified."
+      ]
+    }
+  ],
+  "scope": "Independent chain cross-check; scanner timing/UI acceptance measured separately. Not a full release qualification.",
+  "source": "Existing Alchemy Analytics App, Solana mainnet finalized",
+  "logicalProviderReads": 40,
+  "connectorControlCalls": 2,
+  "usableReceipts": 39,
+  "rejectedReceipts": [
+    {
+      "kind": "pump_atomic_controls",
+      "reason": "Connector response truncated; rejected as evidence",
+      "pubkeys": [
+        "5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1",
+        "2tyHQLiT6EsMQTs5qwkbKnJ3ChWZj3RnijdRtTqpaG1Z",
+        "HvkPhPzBVxU3cDMPyhySjcUaa3BP5zDj4mqhwXdcuLBD",
+        "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+        "xBWUpAwrjqFziHcGf5k86rbYbWZMK9JzjJ9LGth7bLc",
+        "So11111111111111111111111111111111111111112",
+        "ADyA8hdefvWN2dbGGWFotbzWxrAvLW83WG6QCVXvJKqw",
+        "5PHirr8joyTMp9JMm6nW7hNDVyEYdkzDqazxPD7RaTjx"
+      ]
+    }
+  ],
+  "selectionFrozenBeforeScanning": true,
+  "rows": [
+    {
+      "mint": "A6BBHdxCNFmpLqCzEzdoZ2wVPLVcr6jcxFn7oEeMpump",
+      "observation": {
+        "mint": "A6BBHdxCNFmpLqCzEzdoZ2wVPLVcr6jcxFn7oEeMpump",
+        "observedAt": "2026-11-28T09:47:29.990Z",
+        "slot": 474907799,
+        "tokenProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "decimals": 6,
+        "extensions": [
+          {
+            "extension": "metadataPointer",
+            "state": {
+              "authority": null,
+              "metadataAddress": "A6BBHdxCNFmpLqCzEzdoZ2wVPLVcr6jcxFn7oEeMpump"
+            }
+          },
+          {
+            "extension": "tokenMetadata",
+            "state": {
+              "additionalMetadata": [],
+              "mint": "A6BBHdxCNFmpLqCzEzdoZ2wVPLVcr6jcxFn7oEeMpump",
+              "name": "LEND Utility",
+              "symbol": "LEND",
+              "updateAuthority": null,
+              "uri": "https://ipfs.io/ipfs/bafkreig5yv6lomzm2nc2cfl5kwspmacqakvwljlgxzsrkh2jpmajrxtoce"
+            }
+          }
+        ],
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "1000000000000000"
+      },
+      "protocol": "Pump.fun bonding curve",
+      "pool": {
+        "address": "9aQWgTXohYvc5YjpTUrt7r4DRmodz83tivH8qxAxyQy6",
+        "owner": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+        "slot": 474907887,
+        "discriminatorHex": "17b7f83760d8ac60"
+      },
+      "launchMechanism": "Derived mint-specific Pump.fun curve account exists; launch transaction not retrieved",
+      "creatorRoles": null,
+      "vaultBinding": null,
+      "remainingLimitations": [
+        "No historical activity or beneficial ownership inferred from current balances.",
+        "No custody, vesting, lock, migration or issuance-history proof in this limited independent pass."
+      ],
+      "largestAccountCrossCheck": {
+        "candidateAccountsReturned": 20,
+        "eligibleHoldersAssessed": null,
+        "tokenAccount": "E9B3FuSDJuWNaAt7JHjcCWmZcz7Qy6MG8WsDGwNjxFCn",
+        "rawAmount": "568013686049562",
+        "decimals": 6,
+        "supplyPct": 56.801368,
+        "tokenAccountProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "controllingAuthority": "9aQWgTXohYvc5YjpTUrt7r4DRmodz83tivH8qxAxyQy6",
+        "mintMatches": true,
+        "state": "initialized",
+        "delegate": null,
+        "closeAuthority": null,
+        "classification": "Mint-bound Pump.fun curve authority; transfer rules not decoded",
+        "observedAt": "2026-11-28T09:50:50.598Z",
+        "limitations": "Largest token account is not a complete holder sample; multiple accounts may share an owner. No treasury, exchange or vesting label inferred."
+      }
+    },
+    {
+      "mint": "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+      "observation": {
+        "mint": "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+        "observedAt": "2026-11-28T09:47:29.990Z",
+        "slot": 474907799,
+        "tokenProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "decimals": 6,
+        "extensions": [
+          {
+            "extension": "metadataPointer",
+            "state": {
+              "authority": null,
+              "metadataAddress": "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump"
+            }
+          },
+          {
+            "extension": "tokenMetadata",
+            "state": {
+              "additionalMetadata": [],
+              "mint": "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+              "name": "The Pumpfun Bull",
+              "symbol": "HPD",
+              "updateAuthority": null,
+              "uri": "https://j7m.io/metadata/55a91a9f50654a71.json"
+            }
+          }
+        ],
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "954082648355569"
+      },
+      "protocol": "pump_amm",
+      "pool": {
+        "address": "5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1",
+        "slot": 474908408
+      },
+      "launchMechanism": "PumpSwap pool verified; migration origin not independently proved",
+      "creatorRoles": {
+        "poolCreator": "HmpKD5h72wwkV4xpcZL4Brfxyv6ygARjeVzz8Jn84NqJ",
+        "protocolCoinCreator": "DE2zn7K27DEuMziGkL2ypWCzFdDkNsZMmWNPzersdFfy",
+        "basis": "Distinct decoded current pool fields; historical token creation not independently proved",
+        "sameEntityAssumed": false
+      },
+      "vaultBinding": {
+        "mintMatches": true,
+        "authoritiesMatchPool": true,
+        "baseVault": {
+          "extensions": [
+            {
+              "extension": "immutableOwner"
+            }
+          ],
+          "isNative": false,
+          "mint": "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+          "owner": "5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1",
+          "state": "initialized",
+          "tokenAmount": {
+            "amount": "253539921438270",
+            "decimals": 6,
+            "uiAmount": 253539921.43827,
+            "uiAmountString": "253539921.43827"
+          }
+        },
+        "quoteVault": {
+          "isNative": true,
+          "mint": "So11111111111111111111111111111111111111112",
+          "owner": "5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1",
+          "rentExemptReserve": {
+            "amount": "1488440",
+            "decimals": 9,
+            "uiAmount": 0.00148844,
+            "uiAmountString": "0.00148844"
+          },
+          "state": "initialized",
+          "tokenAmount": {
+            "amount": "53907749589",
+            "decimals": 9,
+            "uiAmount": 53.907749589,
+            "uiAmountString": "53.907749589"
+          }
+        },
+        "lpMint": {
+          "decimals": 9,
+          "freezeAuthority": null,
+          "isInitialized": true,
+          "mintAuthority": "5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1",
+          "supply": "0"
+        },
+        "atomicWithPool": false
+      },
+      "remainingLimitations": [
+        "No historical activity or beneficial ownership inferred from current balances.",
+        "No custody, vesting, lock, migration or issuance-history proof in this limited independent pass."
+      ],
+      "largestAccountCrossCheck": {
+        "candidateAccountsReturned": 20,
+        "eligibleHoldersAssessed": null,
+        "tokenAccount": "2tyHQLiT6EsMQTs5qwkbKnJ3ChWZj3RnijdRtTqpaG1Z",
+        "rawAmount": "250793167517628",
+        "decimals": 6,
+        "supplyPct": 26.286314,
+        "tokenAccountProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "controllingAuthority": "5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1",
+        "mintMatches": true,
+        "state": "initialized",
+        "delegate": null,
+        "closeAuthority": null,
+        "classification": "Verified mint-bound PumpSwap vault authority",
+        "observedAt": "2026-11-28T09:50:50.598Z",
+        "limitations": "Largest token account is not a complete holder sample; multiple accounts may share an owner. No treasury, exchange or vesting label inferred."
+      },
+      "protocolStateAssessmentVerified": true,
+      "protocolStateAssessmentReference": "protocolEvidence"
+    },
+    {
+      "mint": "FgGYazS7QTmuQYK8M4k2EC1xfsD62aJweKHvcYPBpump",
+      "observation": {
+        "mint": "FgGYazS7QTmuQYK8M4k2EC1xfsD62aJweKHvcYPBpump",
+        "observedAt": "2026-11-28T09:47:29.990Z",
+        "slot": 474907799,
+        "tokenProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "decimals": 6,
+        "extensions": [
+          {
+            "extension": "metadataPointer",
+            "state": {
+              "authority": null,
+              "metadataAddress": "FgGYazS7QTmuQYK8M4k2EC1xfsD62aJweKHvcYPBpump"
+            }
+          },
+          {
+            "extension": "tokenMetadata",
+            "state": {
+              "additionalMetadata": [],
+              "mint": "FgGYazS7QTmuQYK8M4k2EC1xfsD62aJweKHvcYPBpump",
+              "name": "Bot Fight Club",
+              "symbol": "BFC",
+              "updateAuthority": null,
+              "uri": "https://ipfs.io/ipfs/bafkreibfbvis5d67ee2ojw5qiy4dgeaddq3qsbhsoeqzk4we3fzcs6xmai"
+            }
+          }
+        ],
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "999761736673470"
+      },
+      "protocol": "Pump.fun bonding curve",
+      "pool": {
+        "address": "Fr3eWtB9kFcnpwWmL8jPRt9CjboCjDuHfTPuPc26fqZ4",
+        "owner": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+        "slot": 474907891,
+        "discriminatorHex": "17b7f83760d8ac60"
+      },
+      "launchMechanism": "Derived mint-specific Pump.fun curve account exists; launch transaction not retrieved",
+      "creatorRoles": null,
+      "vaultBinding": null,
+      "remainingLimitations": [
+        "No historical activity or beneficial ownership inferred from current balances.",
+        "No custody, vesting, lock, migration or issuance-history proof in this limited independent pass."
+      ],
+      "largestAccountCrossCheck": {
+        "candidateAccountsReturned": 20,
+        "eligibleHoldersAssessed": null,
+        "tokenAccount": "7jQRPvU6tsLaKGcrD9dsv7ddKRR94iPBF6s28KcYMg4A",
+        "rawAmount": "785269421018084",
+        "decimals": 6,
+        "supplyPct": 78.545656,
+        "tokenAccountProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "controllingAuthority": "Fr3eWtB9kFcnpwWmL8jPRt9CjboCjDuHfTPuPc26fqZ4",
+        "mintMatches": true,
+        "state": "initialized",
+        "delegate": null,
+        "closeAuthority": null,
+        "classification": "Mint-bound Pump.fun curve authority; transfer rules not decoded",
+        "observedAt": "2026-11-28T09:50:50.598Z",
+        "limitations": "Largest token account is not a complete holder sample; multiple accounts may share an owner. No treasury, exchange or vesting label inferred."
+      }
+    },
+    {
+      "mint": "GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg",
+      "observation": {
+        "mint": "GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg",
+        "observedAt": "2026-11-28T09:47:31.053Z",
+        "slot": 474907803,
+        "tokenProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "decimals": 6,
+        "extensions": [
+          {
+            "extension": "metadataPointer",
+            "state": {
+              "authority": null,
+              "metadataAddress": "GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg"
+            }
+          },
+          {
+            "extension": "tokenMetadata",
+            "state": {
+              "additionalMetadata": [],
+              "mint": "GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg",
+              "name": "Crime Inu",
+              "symbol": "CI",
+              "updateAuthority": null,
+              "uri": "https://j7m.io/metadata/5bf16d43649240c0.json"
+            }
+          }
+        ],
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "957687716715724"
+      },
+      "protocol": "PumpSwap",
+      "pool": {
+        "address": "CYv5vfuQZBzF2XNAbpsNAAMpEPcZhFTxQNDPrkDbP1iH",
+        "owner": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+        "slot": 474907891,
+        "discriminatorHex": "f19a6d0411b16dbc"
+      },
+      "launchMechanism": "PumpSwap pool verified; migration origin not independently proved",
+      "creatorRoles": {
+        "poolCreator": "FR8p51uaRkmsiuAx7guibdbuL8A3ZbdC2caSLkeSfqRw",
+        "protocolCoinCreator": "A77AJZPwWB5CxkFMfDdfwdNEBuhKu3EtZM4C7DtscP9s",
+        "basis": "Distinct decoded current pool fields; historical token creation not independently proved",
+        "sameEntityAssumed": false
+      },
+      "vaultBinding": {
+        "mintMatches": true,
+        "authoritiesMatchPool": true,
+        "baseVault": {
+          "extensions": [
+            {
+              "extension": "immutableOwner"
+            }
+          ],
+          "isNative": false,
+          "mint": "GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg",
+          "owner": "CYv5vfuQZBzF2XNAbpsNAAMpEPcZhFTxQNDPrkDbP1iH",
+          "state": "initialized",
+          "tokenAmount": {
+            "amount": "549965569390257",
+            "decimals": 6,
+            "uiAmount": 549965569.390257,
+            "uiAmountString": "549965569.390257"
+          }
+        },
+        "quoteVault": {
+          "isNative": true,
+          "mint": "So11111111111111111111111111111111111111112",
+          "owner": "CYv5vfuQZBzF2XNAbpsNAAMpEPcZhFTxQNDPrkDbP1iH",
+          "rentExemptReserve": {
+            "amount": "1488440",
+            "decimals": 9,
+            "uiAmount": 0.00148844,
+            "uiAmountString": "0.00148844"
+          },
+          "state": "initialized",
+          "tokenAmount": {
+            "amount": "14667410316",
+            "decimals": 9,
+            "uiAmount": 14.667410316,
+            "uiAmountString": "14.667410316"
+          }
+        },
+        "lpMint": {
+          "decimals": 9,
+          "freezeAuthority": null,
+          "isInitialized": true,
+          "mintAuthority": "CYv5vfuQZBzF2XNAbpsNAAMpEPcZhFTxQNDPrkDbP1iH",
+          "supply": "0"
+        },
+        "atomicWithPool": false
+      },
+      "remainingLimitations": [
+        "No historical activity or beneficial ownership inferred from current balances.",
+        "No custody, vesting, lock, migration or issuance-history proof in this limited independent pass."
+      ],
+      "largestAccountCrossCheck": {
+        "candidateAccountsReturned": 20,
+        "eligibleHoldersAssessed": null,
+        "tokenAccount": "7Y5pHXoaBuPdMTgk3jjgrSrscvsCJtykgmZBu8tiRiZ9",
+        "rawAmount": "567453470373459",
+        "decimals": 6,
+        "supplyPct": 59.252453,
+        "tokenAccountProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "controllingAuthority": "CYv5vfuQZBzF2XNAbpsNAAMpEPcZhFTxQNDPrkDbP1iH",
+        "mintMatches": true,
+        "state": "initialized",
+        "delegate": null,
+        "closeAuthority": null,
+        "classification": "Verified mint-bound PumpSwap vault authority",
+        "observedAt": "2026-11-28T09:50:50.598Z",
+        "limitations": "Largest token account is not a complete holder sample; multiple accounts may share an owner. No treasury, exchange or vesting label inferred."
+      }
+    },
+    {
+      "mint": "EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump",
+      "observation": {
+        "mint": "EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump",
+        "observedAt": "2026-11-28T09:47:31.053Z",
+        "slot": 474907803,
+        "tokenProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "decimals": 6,
+        "extensions": [
+          {
+            "extension": "metadataPointer",
+            "state": {
+              "authority": null,
+              "metadataAddress": "EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump"
+            }
+          },
+          {
+            "extension": "tokenMetadata",
+            "state": {
+              "additionalMetadata": [],
+              "mint": "EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump",
+              "name": "Replicants",
+              "symbol": "REP",
+              "updateAuthority": null,
+              "uri": "https://ipfs.io/ipfs/bafkreibuxakpcnigw64dlhm7by547dh5ftj2np2ahubm7sgd6n2wx5rwna"
+            }
+          }
+        ],
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "955009391346570"
+      },
+      "protocol": "PumpSwap",
+      "pool": {
+        "address": "C6pjRCBEic7yT5i6KaCaMvPeqCdPJJvXSyfWGn4Xntem",
+        "owner": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+        "slot": 474907896,
+        "discriminatorHex": "f19a6d0411b16dbc"
+      },
+      "launchMechanism": "PumpSwap pool verified; migration origin not independently proved",
+      "creatorRoles": {
+        "poolCreator": "4FT87fbWd2dMiY5ggUQ1JuyDiNuENF4wkiED4vGHzUUL",
+        "protocolCoinCreator": "6idivWgJJ4Naf97BwN8NVcnQgYaueSvAaphnWjmamYi",
+        "basis": "Distinct decoded current pool fields; historical token creation not independently proved",
+        "sameEntityAssumed": false
+      },
+      "vaultBinding": {
+        "mintMatches": true,
+        "authoritiesMatchPool": true,
+        "baseVault": {
+          "extensions": [
+            {
+              "extension": "immutableOwner"
+            }
+          ],
+          "isNative": false,
+          "mint": "EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump",
+          "owner": "C6pjRCBEic7yT5i6KaCaMvPeqCdPJJvXSyfWGn4Xntem",
+          "state": "initialized",
+          "tokenAmount": {
+            "amount": "134475266675705",
+            "decimals": 6,
+            "uiAmount": 134475266.675705,
+            "uiAmountString": "134475266.675705"
+          }
+        },
+        "quoteVault": {
+          "isNative": true,
+          "mint": "So11111111111111111111111111111111111111112",
+          "owner": "C6pjRCBEic7yT5i6KaCaMvPeqCdPJJvXSyfWGn4Xntem",
+          "rentExemptReserve": {
+            "amount": "1488440",
+            "decimals": 9,
+            "uiAmount": 0.00148844,
+            "uiAmountString": "0.00148844"
+          },
+          "state": "initialized",
+          "tokenAmount": {
+            "amount": "114272808517",
+            "decimals": 9,
+            "uiAmount": 114.272808517,
+            "uiAmountString": "114.272808517"
+          }
+        },
+        "lpMint": {
+          "decimals": 9,
+          "freezeAuthority": null,
+          "isInitialized": true,
+          "mintAuthority": "C6pjRCBEic7yT5i6KaCaMvPeqCdPJJvXSyfWGn4Xntem",
+          "supply": "0"
+        },
+        "atomicWithPool": false
+      },
+      "remainingLimitations": [
+        "No historical activity or beneficial ownership inferred from current balances.",
+        "No custody, vesting, lock, migration or issuance-history proof in this limited independent pass."
+      ],
+      "largestAccountCrossCheck": {
+        "candidateAccountsReturned": 20,
+        "eligibleHoldersAssessed": null,
+        "tokenAccount": "FHKUnucmgEoUD9iugmnErZXV7FQwbmw85wnMzdPXbPww",
+        "rawAmount": "150000000000000",
+        "decimals": 6,
+        "supplyPct": 15.706651,
+        "tokenAccountProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "controllingAuthority": "6idivWgJJ4Naf97BwN8NVcnQgYaueSvAaphnWjmamYi",
+        "mintMatches": true,
+        "state": "initialized",
+        "delegate": null,
+        "closeAuthority": null,
+        "classification": "Unclassified material allocation; beneficial owner/control conditions unresolved",
+        "observedAt": "2026-11-28T09:50:51.651Z",
+        "limitations": "Largest token account is not a complete holder sample; multiple accounts may share an owner. No treasury, exchange or vesting label inferred."
+      }
+    },
+    {
+      "mint": "A7xhY12G388pXGsBuweS6NkyZyv53ogH1dNfEkCMpump",
+      "observation": {
+        "mint": "A7xhY12G388pXGsBuweS6NkyZyv53ogH1dNfEkCMpump",
+        "observedAt": "2026-11-28T09:47:31.053Z",
+        "slot": 474907803,
+        "tokenProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "decimals": 6,
+        "extensions": [
+          {
+            "extension": "metadataPointer",
+            "state": {
+              "authority": null,
+              "metadataAddress": "A7xhY12G388pXGsBuweS6NkyZyv53ogH1dNfEkCMpump"
+            }
+          },
+          {
+            "extension": "tokenMetadata",
+            "state": {
+              "additionalMetadata": [],
+              "mint": "A7xhY12G388pXGsBuweS6NkyZyv53ogH1dNfEkCMpump",
+              "name": "ascend",
+              "symbol": "ascend",
+              "updateAuthority": null,
+              "uri": "https://meta.uxento.io/data/c10e6d0d-d524-4655-b79c-a3948e7b24a6"
+            }
+          }
+        ],
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "999992448380154"
+      },
+      "protocol": "Pump.fun bonding curve",
+      "pool": {
+        "address": "6tsimZ6oUt9Rr5Zrbk1rHyhgSY3BchZy6GCYAzEmXi4r",
+        "owner": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+        "slot": 474907896,
+        "discriminatorHex": "17b7f83760d8ac60"
+      },
+      "launchMechanism": "Derived mint-specific Pump.fun curve account exists; launch transaction not retrieved",
+      "creatorRoles": null,
+      "vaultBinding": null,
+      "remainingLimitations": [
+        "No historical activity or beneficial ownership inferred from current balances.",
+        "No custody, vesting, lock, migration or issuance-history proof in this limited independent pass."
+      ],
+      "largestAccountCrossCheck": {
+        "candidateAccountsReturned": 20,
+        "eligibleHoldersAssessed": null,
+        "tokenAccount": "GuZ7H93WoV1z4kZhSu5p34T8ankgvgBg2uTWnXgp6DAC",
+        "rawAmount": "808477396837895",
+        "decimals": 6,
+        "supplyPct": 80.84835,
+        "tokenAccountProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "controllingAuthority": "6tsimZ6oUt9Rr5Zrbk1rHyhgSY3BchZy6GCYAzEmXi4r",
+        "mintMatches": true,
+        "state": "initialized",
+        "delegate": null,
+        "closeAuthority": null,
+        "classification": "Mint-bound Pump.fun curve authority; transfer rules not decoded",
+        "observedAt": "2026-11-28T09:50:51.651Z",
+        "limitations": "Largest token account is not a complete holder sample; multiple accounts may share an owner. No treasury, exchange or vesting label inferred."
+      }
+    },
+    {
+      "mint": "Ab4YRbH4bPwsi4EykXZL2nzo4SiZXtgpPDdDVcPLpump",
+      "observation": {
+        "mint": "Ab4YRbH4bPwsi4EykXZL2nzo4SiZXtgpPDdDVcPLpump",
+        "observedAt": "2026-11-28T09:47:32.077Z",
+        "slot": 474907809,
+        "tokenProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "decimals": 6,
+        "extensions": [
+          {
+            "extension": "metadataPointer",
+            "state": {
+              "authority": null,
+              "metadataAddress": "Ab4YRbH4bPwsi4EykXZL2nzo4SiZXtgpPDdDVcPLpump"
+            }
+          },
+          {
+            "extension": "tokenMetadata",
+            "state": {
+              "additionalMetadata": [],
+              "mint": "Ab4YRbH4bPwsi4EykXZL2nzo4SiZXtgpPDdDVcPLpump",
+              "name": "twin",
+              "symbol": "twin",
+              "updateAuthority": null,
+              "uri": "https://metadata.j7tracker.io/m/D3VsjYbb43"
+            }
+          }
+        ],
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "1000000000000000"
+      },
+      "protocol": "Pump.fun bonding curve",
+      "pool": {
+        "address": "AisvTGbbTRexrHHVeTdvvUrPDQXKZQufn1ZLpmma5aVM",
+        "owner": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+        "slot": 474907900,
+        "discriminatorHex": "17b7f83760d8ac60"
+      },
+      "launchMechanism": "Derived mint-specific Pump.fun curve account exists; launch transaction not retrieved",
+      "creatorRoles": null,
+      "vaultBinding": null,
+      "remainingLimitations": [
+        "No historical activity or beneficial ownership inferred from current balances.",
+        "No custody, vesting, lock, migration or issuance-history proof in this limited independent pass."
+      ],
+      "largestAccountCrossCheck": {
+        "candidateAccountsReturned": 17,
+        "eligibleHoldersAssessed": null,
+        "tokenAccount": "8DkuoAZvLysDUsgzUYbBGhqyFqg4NR5Go5XkC9z2aKvk",
+        "rawAmount": "937190415115220",
+        "decimals": 6,
+        "supplyPct": 93.719041,
+        "tokenAccountProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "controllingAuthority": "AisvTGbbTRexrHHVeTdvvUrPDQXKZQufn1ZLpmma5aVM",
+        "mintMatches": true,
+        "state": "initialized",
+        "delegate": null,
+        "closeAuthority": null,
+        "classification": "Mint-bound Pump.fun curve authority; transfer rules not decoded",
+        "observedAt": "2026-11-28T09:50:51.651Z",
+        "limitations": "Largest token account is not a complete holder sample; multiple accounts may share an owner. No treasury, exchange or vesting label inferred."
+      }
+    },
+    {
+      "mint": "8i2ssMZBaS3HShu5hoDEV4tVLf5RGXeNJnK3LNTHTH9e",
+      "observation": {
+        "mint": "8i2ssMZBaS3HShu5hoDEV4tVLf5RGXeNJnK3LNTHTH9e",
+        "observedAt": "2026-11-28T09:47:32.077Z",
+        "slot": 474907809,
+        "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "decimals": 6,
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "999997756134431"
+      },
+      "protocol": "raydium_cpmm",
+      "pool": {
+        "address": "D68Dez4Zyi5agvSiTfgEX6jsBpkMVScTSp63ULUixJ5y",
+        "slot": 474908114
+      },
+      "launchMechanism": "Origin unverified",
+      "creatorRoles": null,
+      "vaultBinding": null,
+      "remainingLimitations": [
+        "No historical activity or beneficial ownership inferred from current balances.",
+        "No custody, vesting, lock, migration or issuance-history proof in this limited independent pass."
+      ],
+      "largestAccountCrossCheck": {
+        "candidateAccountsReturned": 20,
+        "eligibleHoldersAssessed": null,
+        "tokenAccount": "C2ZZZicfQjbUjMEjBJwBAuMoamMrs6oaBUcx7tAYrZxA",
+        "rawAmount": "212310766317627",
+        "decimals": 6,
+        "supplyPct": 21.231124,
+        "tokenAccountProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "controllingAuthority": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+        "mintMatches": true,
+        "state": "initialized",
+        "delegate": null,
+        "closeAuthority": null,
+        "classification": "Verified mint-bound Raydium CPMM vault (atomic seven-account proof)",
+        "observedAt": "2026-11-28T09:50:51.651Z",
+        "limitations": "Largest token account is not a complete holder sample; multiple accounts may share an owner. No treasury, exchange or vesting label inferred."
+      },
+      "protocolStateAssessmentVerified": true,
+      "protocolStateAssessmentReference": "protocolEvidence"
+    },
+    {
+      "mint": "DXLE6M12GsJW23aTU2VpZeJcgQ8rwTwQbzmDKvMSpump",
+      "observation": {
+        "mint": "DXLE6M12GsJW23aTU2VpZeJcgQ8rwTwQbzmDKvMSpump",
+        "observedAt": "2026-11-28T09:47:32.077Z",
+        "slot": 474907809,
+        "tokenProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "decimals": 6,
+        "extensions": [
+          {
+            "extension": "metadataPointer",
+            "state": {
+              "authority": null,
+              "metadataAddress": "DXLE6M12GsJW23aTU2VpZeJcgQ8rwTwQbzmDKvMSpump"
+            }
+          },
+          {
+            "extension": "tokenMetadata",
+            "state": {
+              "additionalMetadata": [],
+              "mint": "DXLE6M12GsJW23aTU2VpZeJcgQ8rwTwQbzmDKvMSpump",
+              "name": "USD2",
+              "symbol": "USD2",
+              "updateAuthority": null,
+              "uri": "https://j7m.io/metadata/9f97b91c596347a3.json"
+            }
+          }
+        ],
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "999999965798104"
+      },
+      "protocol": "Pump.fun bonding curve",
+      "pool": {
+        "address": "iECtPUj6bmB5zBLDVdVBpSUx23UjkZetCrU9ZKYwfjv",
+        "owner": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+        "slot": 474907905,
+        "discriminatorHex": "17b7f83760d8ac60"
+      },
+      "launchMechanism": "Derived mint-specific Pump.fun curve account exists; launch transaction not retrieved",
+      "creatorRoles": null,
+      "vaultBinding": null,
+      "remainingLimitations": [
+        "No historical activity or beneficial ownership inferred from current balances.",
+        "No custody, vesting, lock, migration or issuance-history proof in this limited independent pass."
+      ],
+      "largestAccountCrossCheck": {
+        "candidateAccountsReturned": 20,
+        "eligibleHoldersAssessed": null,
+        "tokenAccount": "DoNf3AuhJG19AK9ymrNmwhJAFz1X5NfVURwHiAG1VryQ",
+        "rawAmount": "469936934034888",
+        "decimals": 6,
+        "supplyPct": 46.993695,
+        "tokenAccountProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "controllingAuthority": "iECtPUj6bmB5zBLDVdVBpSUx23UjkZetCrU9ZKYwfjv",
+        "mintMatches": true,
+        "state": "initialized",
+        "delegate": null,
+        "closeAuthority": null,
+        "classification": "Mint-bound Pump.fun curve authority; transfer rules not decoded",
+        "observedAt": "2026-11-28T09:50:52.582Z",
+        "limitations": "Largest token account is not a complete holder sample; multiple accounts may share an owner. No treasury, exchange or vesting label inferred."
+      }
+    },
+    {
+      "mint": "8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump",
+      "observation": {
+        "mint": "8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump",
+        "observedAt": "2026-11-28T09:47:33.283Z",
+        "slot": 474907813,
+        "tokenProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "decimals": 6,
+        "extensions": [
+          {
+            "extension": "metadataPointer",
+            "state": {
+              "authority": null,
+              "metadataAddress": "8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump"
+            }
+          },
+          {
+            "extension": "tokenMetadata",
+            "state": {
+              "additionalMetadata": [],
+              "mint": "8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump",
+              "name": "Useless Shitty Dollar 1  ",
+              "symbol": "USD1",
+              "updateAuthority": null,
+              "uri": "https://ipfs.io/ipfs/QmYkX5Q3ydkrpbFEjVnKg8YTZP2NQJHAiHKmjJv2bzPxBk"
+            }
+          }
+        ],
+        "freezeAuthority": null,
+        "isInitialized": true,
+        "mintAuthority": null,
+        "supply": "962530322097992"
+      },
+      "protocol": "PumpSwap",
+      "pool": {
+        "address": "B8EpbHovFiAxp7Gvsyuv4GjMYzj51KqP49sGLAYxnmKQ",
+        "owner": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+        "slot": 474907905,
+        "discriminatorHex": "f19a6d0411b16dbc"
+      },
+      "launchMechanism": "PumpSwap pool verified; migration origin not independently proved",
+      "creatorRoles": {
+        "poolCreator": "6hwNCkvysiUohqxnSc7yuND15YwdJvwnNtQ9CubRgem",
+        "protocolCoinCreator": "GrV4GCBsWcJSvZ26rK6gJu9RxWd5s5T8SQPY18iCJtDT",
+        "basis": "Distinct decoded current pool fields; historical token creation not independently proved",
+        "sameEntityAssumed": false
+      },
+      "vaultBinding": {
+        "mintMatches": true,
+        "authoritiesMatchPool": true,
+        "baseVault": {
+          "extensions": [
+            {
+              "extension": "immutableOwner"
+            }
+          ],
+          "isNative": false,
+          "mint": "8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump",
+          "owner": "B8EpbHovFiAxp7Gvsyuv4GjMYzj51KqP49sGLAYxnmKQ",
+          "state": "initialized",
+          "tokenAmount": {
+            "amount": "958961188066894",
+            "decimals": 6,
+            "uiAmount": 958961188.066894,
+            "uiAmountString": "958961188.066894"
+          }
+        },
+        "quoteVault": {
+          "isNative": true,
+          "mint": "So11111111111111111111111111111111111111112",
+          "owner": "B8EpbHovFiAxp7Gvsyuv4GjMYzj51KqP49sGLAYxnmKQ",
+          "rentExemptReserve": {
+            "amount": "1488440",
+            "decimals": 9,
+            "uiAmount": 0.00148844,
+            "uiAmountString": "0.00148844"
+          },
+          "state": "initialized",
+          "tokenAmount": {
+            "amount": "3367589211",
+            "decimals": 9,
+            "uiAmount": 3.367589211,
+            "uiAmountString": "3.367589211"
+          }
+        },
+        "lpMint": {
+          "decimals": 9,
+          "freezeAuthority": null,
+          "isInitialized": true,
+          "mintAuthority": "B8EpbHovFiAxp7Gvsyuv4GjMYzj51KqP49sGLAYxnmKQ",
+          "supply": "0"
+        },
+        "atomicWithPool": false
+      },
+      "remainingLimitations": [
+        "No historical activity or beneficial ownership inferred from current balances.",
+        "No custody, vesting, lock, migration or issuance-history proof in this limited independent pass."
+      ],
+      "largestAccountCrossCheck": {
+        "candidateAccountsReturned": 20,
+        "eligibleHoldersAssessed": null,
+        "tokenAccount": "13UfHqTLSc6En2dB8iR58tVtfcgvS6tMVunbtRGniTbf",
+        "rawAmount": "958961188066894",
+        "decimals": 6,
+        "supplyPct": 99.629192,
+        "tokenAccountProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "controllingAuthority": "B8EpbHovFiAxp7Gvsyuv4GjMYzj51KqP49sGLAYxnmKQ",
+        "mintMatches": true,
+        "state": "initialized",
+        "delegate": null,
+        "closeAuthority": null,
+        "classification": "Verified mint-bound PumpSwap vault authority",
+        "observedAt": "2026-11-28T09:50:52.582Z",
+        "limitations": "Largest token account is not a complete holder sample; multiple accounts may share an owner. No treasury, exchange or vesting label inferred."
+      }
+    }
+  ],
+  "protocolEvidence": [
+    {
+      "kind": "cpmm_controls",
+      "mint": "8i2ssMZBaS3HShu5hoDEV4tVLf5RGXeNJnK3LNTHTH9e",
+      "slot": 474908114,
+      "completeAtomicAccountGroup": true,
+      "assessment": {
+        "evidenceId": "09c0af9f228a066a6becd427a76bac224c278d27d3e3e2afa9c49bba44b14e12",
+        "version": 2,
+        "mint": "8i2ssMZBaS3HShu5hoDEV4tVLf5RGXeNJnK3LNTHTH9e",
+        "pool": "D68Dez4Zyi5agvSiTfgEX6jsBpkMVScTSp63ULUixJ5y",
+        "protocol": "raydium_cpmm",
+        "decoder": "@raydium-io/raydium-sdk-v2@0.2.87-alpha",
+        "observedAt": "2026-11-28T09:48:37.068Z",
+        "slot": 474908114,
+        "provider": "alchemy",
+        "commitment": "finalized",
+        "atomic": true,
+        "baseReserveRaw": "219175957819898",
+        "quoteReserveRaw": "85088531527",
+        "baseDecimals": 6,
+        "quoteDecimals": 9,
+        "mintSupplyRaw": "999997756134431",
+        "referenceQuotes": [
+          {
+            "referenceNotional": 1,
+            "quoteSymbol": "SOL",
+            "baseInputRaw": "2575857802297",
+            "quoteOutputRaw": "985448751",
+            "impactIncludingFeesPct": 1.455124
+          },
+          {
+            "referenceNotional": 10,
+            "quoteSymbol": "SOL",
+            "baseInputRaw": "25758578022979",
+            "quoteOutputRaw": "8923860803",
+            "impactIncludingFeesPct": 10.761391
+          },
+          {
+            "referenceNotional": 100,
+            "quoteSymbol": "SOL",
+            "baseInputRaw": "257585780229794",
+            "quoteOutputRaw": "45895935003",
+            "impactIncludingFeesPct": 54.104064
+          }
+        ],
+        "liquidityToMarketCapPct": 43.835289,
+        "valuationDefinition": "Two-sided CPMM liquidity / spot fully diluted valuation in the quote asset.",
+        "executableDepth": {
+          "verified": true,
+          "method": "protocol_state_calculation",
+          "transactionSimulation": false
+        },
+        "withdrawal": {
+          "maxCurrentWithdrawalPct": 9.731367,
+          "lpClaimOnlyMaxPct": 9.731367,
+          "maxQuoteClaimRaw": "8280277788",
+          "outstandingLpRaw": "406882708498",
+          "protocolLpDenominatorRaw": "4181146219194",
+          "lpHolders": [],
+          "currentInstructionRulesOnly": true,
+          "currentRedemptionRulesVerified": true,
+          "actualRightsVerified": false,
+          "custodyCoverageComplete": false,
+          "withdrawalsEnabled": true,
+          "withdrawalDisableFlagAssessed": true,
+          "adminOrProgramUpgradeRiskAssessed": false
+        },
+        "flags": [
+          {
+            "id": "protocol_upgrade_scope",
+            "severity": "information",
+            "detail": "Raydium CPMM current LP redemption rules verified; program upgrade authority and LP-lock program custody are separate evidence."
+          }
+        ],
+        "limitations": [
+          "Raydium CPMM calculations are not applied to AMM v4, CLMM, stable pools or unrelated architectures.",
+          "Token-2022 transfer fees and other unsupported transfer controls require separate quote handling.",
+          "LP locks and all-pool inventory are unverified; withdrawal exposure is a conservative upper bound."
+        ]
+      },
+      "rejects": [],
+      "status": "Live state calculations verified",
+      "limitation": "Protocol-state quote calculation does not establish transaction simulation, fill guarantee, program upgrade authority or LP custody."
+    },
+    {
+      "kind": "pump_atomic_controls_zstd",
+      "mint": "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+      "slot": 474908408,
+      "completeAtomicAccountGroup": true,
+      "assessment": {
+        "schemaVersion": 1,
+        "mint": "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+        "pool": "5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1",
+        "observedAt": "2026-11-28T09:49:41.309Z",
+        "slot": 474908408,
+        "commitment": "finalized",
+        "provider": "alchemy",
+        "atomic": true,
+        "evidenceId": "96fb65a5456a48e2dad6cef8c780c59cc59dcf711cbcb65fbeed2df5579af54f",
+        "baseReserveRaw": "253433619704200",
+        "quoteReserveRaw": "53997070903",
+        "baseDecimals": 6,
+        "quoteDecimals": 9,
+        "mintSupplyRaw": "954082648355569",
+        "lpMint": "xBWUpAwrjqFziHcGf5k86rbYbWZMK9JzjJ9LGth7bLc",
+        "lpSupplyRaw": "0",
+        "poolIssuedLpCounterRaw": "4193388350791",
+        "flags": [
+          {
+            "id": "protocol_admin_controls",
+            "severity": "high",
+            "detail": "Protocol global operation controls remain separate from LP redemption exposure; a retained protocol administrator can change operation flags. Program upgrade authority is not certified by this calculation."
+          }
+        ],
+        "reservesVerified": true,
+        "executableDepthVerified": false,
+        "lpSecurityVerified": false,
+        "limitations": [
+          "Protocol quote at the observed slot, not a guaranteed transaction fill.",
+          "Pool concentration covers returned pools only; other architectures require their own decoder.",
+          "LP claim is a mathematical upper bound, not proof that all holders can currently redeem or that LP custody is permanently locked. Current withdrawal-disable state and protocol admin are separate from lock and program-upgrade assessment.",
+          "Historical fee-recipient authorization is a separate unresolved observation."
+        ],
+        "version": 2,
+        "protocol": "pump_amm",
+        "decoder": "@pump-fun/pump-swap-sdk@2.1.0",
+        "effectiveQuoteReserveRaw": "69696402228",
+        "realQuoteReserveRaw": "52111896368",
+        "feeBucketsRaw": "1885174535",
+        "virtualQuoteReservesRaw": "15699331325",
+        "feesBps": {
+          "lpFeeBps": 2,
+          "protocolFeeBps": 93,
+          "creatorFeeBps": 30
+        },
+        "referenceQuotes": [
+          {
+            "referenceNotionalSol": 1,
+            "referenceNotional": 1,
+            "quoteSymbol": "SOL",
+            "baseInputRaw": "3636251106264",
+            "quoteOutputRaw": "973531818",
+            "impactIncludingFeesPct": 2.646818,
+            "curveImpactPct": 1.414499
+          },
+          {
+            "referenceNotionalSol": 10,
+            "referenceNotional": 10,
+            "quoteSymbol": "SOL",
+            "baseInputRaw": "36362511062642",
+            "quoteOutputRaw": "8635922734",
+            "impactIncludingFeesPct": 13.640772,
+            "curveImpactPct": 12.547617
+          },
+          {
+            "referenceNotionalSol": 100,
+            "referenceNotional": 100,
+            "quoteSymbol": "SOL",
+            "baseInputRaw": "363625110626420",
+            "quoteOutputRaw": "40557841116",
+            "impactIncludingFeesPct": 59.442158,
+            "curveImpactPct": 58.928768
+          }
+        ],
+        "liquidityToMarketCapPct": 39.722332,
+        "valuationDefinition": "Two-sided pool liquidity divided by spot fully diluted valuation, both denominated in SOL; not circulating market capitalization.",
+        "executableDepth": {
+          "method": "protocol_state_calculation",
+          "verified": true,
+          "maxReferenceQuoteSol": 100,
+          "networkFeesIncluded": false,
+          "transactionSimulation": false
+        },
+        "withdrawal": {
+          "maxCurrentWithdrawalPct": 0,
+          "lpClaimOnlyMaxPct": 0,
+          "maxQuoteClaimRaw": "0",
+          "maxBaseClaimRaw": "0",
+          "outstandingLpRaw": "0",
+          "protocolLpDenominatorRaw": "4193388350791",
+          "holderBalancesReconcile": true,
+          "lpHolders": [],
+          "currentInstructionRulesOnly": true,
+          "currentRedemptionRulesVerified": true,
+          "actualRightsVerified": false,
+          "custodyCoverageComplete": false,
+          "withdrawalsEnabled": true,
+          "withdrawalDisableFlagAssessed": true,
+          "protocolAdmin": "FFWtrEQ4B4PKQoVuHYzZq8FabGkVatYzDpEVHsK5rrhF",
+          "adminOrProgramUpgradeRiskAssessed": false
+        },
+        "poolInventoryComplete": false
+      },
+      "rejects": [],
+      "status": "Live state calculations verified",
+      "limitation": "Protocol-state quote calculation does not establish transaction simulation, fill guarantee, program upgrade authority or LP custody."
+    }
+  ]
+}

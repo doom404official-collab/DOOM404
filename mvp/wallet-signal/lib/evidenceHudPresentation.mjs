@@ -6,7 +6,7 @@ export function assessmentDisplay(assessment,selected){
  const assessed=coverage>0&&(!!attribute||coverage>=60&&assessment.scores.token_security.coveragePct>=65);
  return {assessed,coverage,score:assessed?(attribute?attribute.riskScore:assessment.riskScore):null,label:coverage===0?'Not assessed':assessed?null:'Insufficient evidence'};
 }
-export const holderSampleLabel=n=>!Number.isSafeInteger(n)?'Wallet sample not established':n<20?'Sampled '+n+' wallets':'Top-20 wallets';
+export const holderSampleLabel=(n,rankingComplete=false)=>!Number.isSafeInteger(n)?'Wallet sample not established':n===20&&rankingComplete?'Top-20 wallets':'Sampled '+n+' wallets';
 /** Display-only formatting. No score calculation, evidence promotion or network access. */
 export function formatMetric(value,suffix=''){
  return typeof value==='number'&&Number.isFinite(value)?value.toLocaleString('en-US',{maximumFractionDigits:value>0&&value<0.01?6:2})+suffix:'Not assessed';

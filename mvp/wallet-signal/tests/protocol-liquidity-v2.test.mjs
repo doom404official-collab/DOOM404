@@ -12,7 +12,7 @@ test('PumpSwap quote matches independent constant-product and fee equations incl
 });
 test('low-liquidity live Raydium pool produces proportionate exit risk, not a token-wide fraud claim',()=>{
  const p=projectRaydiumCpmmV2(cp,cp.addresses[4]);assert.ok(p);assert.ok(p.referenceQuotes[0].impactIncludingFeesPct>50);assert.ok(p.referenceQuotes[2].impactIncludingFeesPct>99);
- assert.ok(BigInt(p.referenceQuotes[2].quoteOutputRaw)<BigInt(p.quoteReserveRaw));assert.ok(p.withdrawal.maxCurrentWithdrawalPct>99);assert.equal(p.withdrawal.actualRightsVerified,undefined);
+ assert.ok(BigInt(p.referenceQuotes[2].quoteOutputRaw)<BigInt(p.quoteReserveRaw));assert.ok(p.withdrawal.maxCurrentWithdrawalPct>99);assert.equal(p.withdrawal.actualRightsVerified,false);
 });
 test('incompatible architecture, account ownership and changed mint cannot inherit protocol proof',()=>{
  const bad=structuredClone(pump);bad.response.value[7].owner=pump.addresses[3];assert.equal(projectPumpLiquidityV2(bad,pump.addresses[3]),null);

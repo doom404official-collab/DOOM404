@@ -1,3 +1,5 @@
+import {traceSpan,traceEvent} from '../../../lib/scannerTrace.mjs';
+import {summarizeQuoteDiagnostics} from '../../../lib/quoteFailureEvidence.mjs';
 import {identifyCurrentPool} from '../../../lib/currentPoolIdentity.mjs';
 import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {collectAlchemyQuotesV2} from '../../../lib/alchemyExecutableQuotesV2.mjs';
@@ -16,7 +18,7 @@ async function handle(request){
  let candidates;try{candidates=[...new Set([poolAddress,...(u.searchParams.get('alternates')||'').split(',').filter(Boolean)])].slice(0,2);for(const p of candidates)if(new PublicKey(p).toBase58()!==p)throw Error();}catch{return NextResponse.json({error:'INVALID_POOL'},{status:400});}
  const id=mint+':'+candidates.join(','),saved=cache.get(id);
  if(active.size>=20&&!active.has(id))return NextResponse.json({mint,status:'capacity_limited'},{status:429});
- if(saved&&Date.now()-saved.at<60000)return NextResponse.json({...saved.data,cached:true},{headers:{'Cache-Control':'no-store'}});
+ if(saved&&Date.now()-saved.at<60000){traceEvent('liquidity_cache_hit');return NextResponse.json({...saved.data,cached:true},{headers:{'Cache-Control':'no-store'}});}
  const collect=async()=>{
   const controller=new AbortController();let timer;let batchProvider="configured_rpc";const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('DEADLINE'));},9000);});
   try{
@@ -26,14 +28,14 @@ async function handle(request){
    const attempts=[];
    const calculate=async(poolAddress,first)=>{
     if(first?.owner.toBase58()===RAYDIUM_CPMM_PROGRAM){
-     const cp=decodeCpmmPool(first);if(!cp)return {mint,status:'unsupported_or_incompatible_configuration'};
+     const cp=await traceSpan('protocol_decode',()=>decodeCpmmPool(first));if(!cp)return {mint,status:'unsupported_or_incompatible_configuration'};
      const addresses=[poolAddress,cp.vaultA.toBase58(),cp.vaultB.toBase58(),cp.mintA.toBase58(),cp.mintB.toBase58(),cp.mintLp.toBase58(),cp.configId.toBase58()];
      const batch=await connection.getMultipleAccountsInfoAndContext(addresses.map(x=>new PublicKey(x)),{commitment:'finalized'});
      const raw={schemaVersion:1,provider:batchProvider,commitment:'finalized',observedAt:new Date().toISOString(),addresses,response:{context:batch.context,value:batch.value.map(a=>a?{owner:a.owner.toBase58(),executable:a.executable,space:a.data.length,data:[a.data.toString('base64'),'base64']}:null)}};
-     let reason;const observation=projectRaydiumCpmmV2(raw,mint,{onReject:r=>{reason=r;}});return observation?{mint,status:'verified_protocol_calculation',observation}:{mint,status:'unsupported_or_incompatible_configuration',reason:reason||'pool_account_binding_or_vault_controls_unverified'};
+     let reason;const observation=await traceSpan('reference_sale_and_control_calculation',()=>projectRaydiumCpmmV2(raw,mint,{onReject:r=>{reason=r;}}));return observation?{mint,status:'verified_protocol_calculation',observation}:{mint,status:'unsupported_or_incompatible_configuration',reason:reason||'pool_account_binding_or_vault_controls_unverified'};
     }
     if(!first||first.owner.toBase58()!==PUMP_AMM_PROGRAM_ID.toBase58()||first.executable!==false)return {mint,status:'unsupported_protocol',observedOwnerProgram:first?.owner.toBase58()??null};
-    const p=PUMP_AMM_SDK.decodePool(first);
+    let p;try{p=await traceSpan('protocol_decode',()=>PUMP_AMM_SDK.decodePool(first));}catch{return {mint,status:'unsupported_or_incompatible_configuration',reason:'supported_program_pool_layout_rejected'};}
     if(p.baseMint.toBase58()!==mint)return {mint,status:'pool_mint_mismatch'};
     const lp=await connection.getTokenLargestAccounts(p.lpMint,'finalized');
     const lpKeys=lp.value.slice(0,20).map(x=>x.address.toBase58());
@@ -42,7 +44,7 @@ async function handle(request){
     const raw={schemaVersion:1,provider:batchProvider,network:'solana-mainnet',commitment:'finalized',observedAt:new Date().toISOString(),addresses,lpTokenAccounts:lpKeys,response:{context:batch.context,value:batch.value.map(a=>a?{owner:a.owner.toBase58(),executable:a.executable,space:a.data.length,data:[a.data.toString('base64'),'base64']}:null)}};
     // Provider label identifies the existing RPC evidence pipeline, not a guarantee
     // that the configured fallback endpoint was Alchemy; no provider URL is public.
-    const observation=projectPumpLiquidityV2(raw,mint);
+    const observation=await traceSpan('reference_sale_and_control_calculation',()=>projectPumpLiquidityV2(raw,mint));
     return observation?{mint,status:'verified_protocol_calculation',observation}:{mint,status:'unsupported_or_incompatible_configuration'};
    };
    for(let i=0;i<candidates.length;i++){
@@ -51,14 +53,15 @@ async function handle(request){
     if(r.observation)return {...r,observation:{...r.observation,poolIdentities:attempts},poolAttempts:attempts};
    }
    // A rejected direct-pool calculation must not suppress supported executable routes.
-   const observation=await collectAlchemyQuotesV2({mint,rpcUrl:process.env.ALCHEMY_RPC_URL||process.env.ALCHEMY_SOLANA_ARCHIVE_RPC_URL||process.env.SOLANA_RPC_URL,signal:controller.signal});
-   return observation?{mint,status:'verified_executable_routes',observation:{...observation,poolIdentities:attempts},poolAttempts:attempts}:{mint,status:attempts.some(a=>a.calculationStatus==='protocol_calculation_unavailable')?'provider_temporarily_unavailable':'unsupported_protocol',poolAttempts:attempts,missing:['Pool-specific reserves or withdrawal controls unavailable for returned configurations; executable route provider returned no validated quotes.']};
+   const quoteDiagnostics=[];
+   const observation=await collectAlchemyQuotesV2({mint,onDiagnostic:d=>quoteDiagnostics.push(d),rpcUrl:process.env.ALCHEMY_RPC_URL||process.env.ALCHEMY_SOLANA_ARCHIVE_RPC_URL||process.env.SOLANA_RPC_URL,signal:controller.signal});
+   return observation?{mint,status:'verified_executable_routes',observation:{...observation,poolIdentities:attempts},poolAttempts:attempts,quoteDiagnostics}:{mint,...summarizeQuoteDiagnostics(quoteDiagnostics),...(attempts.some(a=>a.calculationStatus==='protocol_calculation_unavailable')?{status:'provider_temporarily_unavailable'}:{}),poolAttempts:attempts,quoteDiagnostics,missing:['Pool-specific reserves or withdrawal controls unavailable for returned configurations. Quote evidence: '+summarizeQuoteDiagnostics(quoteDiagnostics).reason+'. A missing quote is not proof that all routes are unsellable.']};
    })();
-   const data=await Promise.race([work,deadline]);cache.set(id,{at:Date.now(),data});if(cache.size>100)cache.delete(cache.keys().next().value);return data;
+   const data=await Promise.race([work,deadline]);if(data.observation)cache.set(id,{at:Date.now(),data});if(cache.size>100)cache.delete(cache.keys().next().value);return data;
   }finally{clearTimeout(timer);controller.abort();}
  };
  try{
-  let work=active.get(id);const shared=!!work;if(!work){work=collect();active.set(id,work);work.finally(()=>active.delete(id)).catch(()=>{});}
+  let work=active.get(id);const shared=!!work;if(shared)traceEvent('liquidity_inflight_shared');if(!work){work=collect();active.set(id,work);work.finally(()=>active.delete(id)).catch(()=>{});}
   const data=await work;return NextResponse.json({...data,sharedRequest:shared},{headers:{'Cache-Control':'no-store'}});
  }catch{return NextResponse.json({mint,status:'unavailable',missing:['Current liquidity read failed or exceeded nine seconds.']},{status:503});}
 }

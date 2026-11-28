@@ -1,0 +1,249 @@
+{
+  "baseline": "265359e477cc14e4e4e4aeae0556066f1fcf3818ac",
+  "requestedBaseline": "400cc3e18a4d5d86f30d2ecc5c68adceb5d453d3",
+  "releaseReady": false,
+  "rows": [
+    {
+      "requirement": "RI-16",
+      "status": "Complete and verified",
+      "baselineFinding": "Aggregate flag used >50/high only. Versioned half-open policy now handles every requested boundary and minimum observed samples.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-17",
+      "status": "Partially complete",
+      "baselineFinding": "Independent largest-wallet alert was absent. Implemented \u226520 critical and exact boundaries. Full custodian/vesting/treasury control classification still not established for all candidates.",
+      "thisSprint": "Current ANSEM system-signing authority verified; beneficial custody remains unknown. Material allocations retained separately.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-18",
+      "status": "Complete and verified",
+      "baselineFinding": "Weighted score could obscure a severe finding. Independent critical banner and always-visible alert list preserve the numerical score.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-19",
+      "status": "Complete and verified",
+      "baselineFinding": "No compound explanation. Added concentration \u226530% plus quote metric \u22655% conditional interaction, with zero additional score points.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-20",
+      "status": "Complete and verified",
+      "baselineFinding": "Old critical classification followed saturated depth points, including 15% large-order impact. Replaced with size-specific \u226520% critical policy; 10\u2013<20 high. Numerical depth formula retained.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-21",
+      "status": "Partially complete",
+      "baselineFinding": "Quote failures discarded all observations. Per-size provider timeout/error/invalid-route evidence retained; no failure becomes executable=false. Complete protocol-specific failure taxonomy is not yet available for every adapter.",
+      "thisSprint": "Per-size provider failure taxonomy implemented; direct route reserve/disabled distinctions retained. Hosted replay pending.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-22",
+      "status": "Complete and verified",
+      "baselineFinding": "Verified negative reference execution can fully assess the depth criterion; missing quote metrics leave it incomplete. Adverse observations do not reduce coverage. No complete live TOMO replay claimed.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-23",
+      "status": "Complete and verified",
+      "baselineFinding": "Compact quote cells accepted only fee-inclusive values. Shared canonical metric selection now powers compact cells and chart; numerical recovery shortfalls remain visible with their actual basis.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-24",
+      "status": "Complete and verified",
+      "baselineFinding": "Shared quote projection preserves fee basis and restricts proceeds examples; focused parity tests cover all three metrics.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-25",
+      "status": "Complete and verified",
+      "baselineFinding": "Alchemy route identifier appeared as a protocol. Provider, quote source, routing and returned pool addresses are separate; underlying protocol remains unresolved when not independently identified.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-26",
+      "status": "Partially complete",
+      "baselineFinding": "Existing direct pool controls cover PumpSwap and Raydium CPMM; up to two candidate pools are inspected. No new Orca/CLMM/Meteora withdrawal decoder was implemented. No quoted route or low LP claims is called permanently locked.",
+      "thisSprint": "PumpSwap/CPMM redemption state verified separately from actual LP custody, which remains unassessed. Other architectures explicitly partial or unsupported.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-27",
+      "status": "Partially complete",
+      "baselineFinding": "Earliest-three candidates and two supported creator decoders limit discovery. Expanded to twelve bounded candidates. FLOAT LaunchLab role retained; metadata authority is explicitly distinct. GTA6/ANSEM/SI/TRUMP complete attribution remains unresolved.",
+      "thisSprint": "Pump.fun and pinned LaunchLab layouts supported; new variants still require complete live genesis receipts.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-28",
+      "status": "Partially complete",
+      "baselineFinding": "Expanded bounded candidate window and explicit terminal metadata; no unsupported generic fee-payer/authority becomes project creator. Additional archival pagination/unsupported launch decoding remains open.",
+      "thisSprint": "Official paginationToken checkpoints, token-specific closed creation account discovery and no unrelated-wallet history fallback implemented. Unsupported creation mechanisms remain explicit.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-29",
+      "status": "Partially complete",
+      "baselineFinding": "Enrichment required a previously verified \u22651% purchase, excluding FLOAT with zero purchases. Positive holdings plus zero acquired events now trigger the existing two spare reads. Added a strict direct SPL receipt verifier; actual FLOAT acquisition mechanism remains unestablished.",
+      "thisSprint": "FLOAT attributed creator, self-authority 6.01% account and CPMM signing authority remain distinct. Historical49.89M acquisition unresolved.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-30",
+      "status": "Partially complete",
+      "baselineFinding": "Nine transactions = one creation plus eight selected recent transactions. Exposed bounded stop reason, retained event classes and progressive early token-account query without raising the 18-request cap. Lifetime pagination remains incomplete.",
+      "thisSprint": "Nine-signature engineering bottleneck corrected via12-full-tx token-account pages and validated private cache reuse. Live accounting qualification pending.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-31",
+      "status": "Partially complete",
+      "baselineFinding": "PAID exact six-to-34 aggregation and 73,894.650006 diagnostic difference preserved. Missing opening balance and continuous history prevent a reconciled balance label. No invented receipt.",
+      "thisSprint": "Exact raw integer partial-window accounting exposed with no false lifetime completeness; PAID retained evidence preserved.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-32",
+      "status": "Complete and verified",
+      "baselineFinding": "Incomplete creator history event zeroes now say \u201cNone recovered in assessed history\u201d; current verified zero balance stays numeric.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-33",
+      "status": "Partially complete",
+      "baselineFinding": "Existing transaction reuse, top-three prioritization, dust and mint filters retained. No common ownership claim. Broader exchange-source exclusion and additional relationship history remain unresolved.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-34",
+      "status": "Partially complete",
+      "baselineFinding": "RPC largest-account endpoint returns at most twenty token accounts; exclusions/grouping produce 17\u201319 wallets. Counts/scope exposed. No approved paginated holder index was added, so twenty eligible wallets cannot always be recovered.",
+      "thisSprint": "One bounded existing-provider candidate expansion page and same-slot reread implemented;20discovered owners are a sample, not an exhaustive rankedTop20.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-35",
+      "status": "Partially complete",
+      "baselineFinding": "Existing same-owner aggregation retained; program/custody/vesting/treasury allocation taxonomy remains incomplete. Program-account exclusions must not be interpreted as verified infrastructure.",
+      "thisSprint": "Verified pool/vault binding required for infrastructure exclusion; multisig controls decoded; Magna schedules and economic custody explicitly unknown.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-36",
+      "status": "Complete and verified",
+      "baselineFinding": "Active fee-config authority can change both rate and cap; current 1% is not a future maximum. Alert now critical with supported 100% protocol rate ceiling, cap and epoch caveats. Existing 35-point shared criterion unchanged.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-37",
+      "status": "Complete and verified",
+      "baselineFinding": "Configured and mutable fee findings shared 35 points. Grouped into one transfer-fee control finding; supporting technical evidence and criterion table retained.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-38",
+      "status": "Complete and verified",
+      "baselineFinding": "Critical status, weighted risk, coverage, drivers and unresolved items shown independently; publication threshold unchanged.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-39",
+      "status": "Partially complete",
+      "baselineFinding": "Creator 60% = assessed direct-wallet-exposure criterion; remaining 40% disposition history remains incomplete. API completion does not earn coverage. Attribution alone does not prove history or independence.",
+      "thisSprint": "Stale frozen holder evidence no longer earns current coverage. Creator history completion alone still earns no coverage.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-40",
+      "status": "Partially complete",
+      "baselineFinding": "59.5/63/66.5/70 = 17/18/19/20 \u00d7 3.5 distribution coverage, separate from relationship criterion. Saturation exception removed. Eligibility-classification limitations remain as RI-35.",
+      "thisSprint": "Raw holder proof required for points and coverage. Unordered20sample label truthful. No denominator changes.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-41",
+      "status": "Complete and verified",
+      "baselineFinding": "Zero-coverage attributes are unassessed; partial zero points include missing-criteria explanation. Critical alerts remain independent.",
+      "thisSprint": "Zero/partial evidence remains unassessed/observed floor. Unresolved material flags suppress reassuring green even with nominal100coverage.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-42",
+      "status": "Implemented but verification pending",
+      "baselineFinding": "Coverage text and bar follow requested completeness bands; text semantics retained. Physical Android review remains required.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-43",
+      "status": "Implemented but verification pending",
+      "baselineFinding": "One numerical-band policy drives arcs, numbers, attribute bars and classification labels across five tabs. Exact HEX bands and neutral low/partial exception are regression-tested. Numerical scores and coverage calculations unchanged.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-44",
+      "status": "Implemented but verification pending",
+      "baselineFinding": "Individual icons, headings, status labels and critical left border use evidence-specific severity. Unresolved uses grey question mark, context grey information, low/unclassified positive points muted neutral. Known quote and fee criterion tiers remain distinct from overall risk.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-45",
+      "status": "Implemented but verification pending",
+      "baselineFinding": "Verified critical finding triggers the red assessment accent and CRITICAL RISK IDENTIFIED banner below its score, overrides reassuring colour/status and sorts before every other finding. Score retained, even when overall score unpublished.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    },
+    {
+      "requirement": "RI-46",
+      "status": "Implemented but verification pending",
+      "baselineFinding": "Frozen panel/tab structure preserved. Numerical boundary, five-tab, mixed-severity, incomplete/zero/critical, mobile/desktop and accessible contrast checks passed in browser emulation. Owner physical Android acceptance remains open.",
+      "thisSprint": "Approved policy retained; integrated2301regression tests and680severity browser checks passed. Hosted live qualification remains separately recorded.",
+      "verification": "Integrated local regression2301/2301; frozen dashboard50+120 and severity680 browser checks. Independent live chain receipts in wp06-independent-chain.json. Hosted consolidated candidate qualification follows."
+    }
+  ],
+  "validation": {
+    "localRegression": {
+      "passed": 2301,
+      "failed": 0
+    },
+    "dashboard": {
+      "tabComparisons": 50,
+      "edgeCases": 120,
+      "errors": 0
+    },
+    "browserSeverityChecks": {
+      "checks": 680,
+      "errors": 0
+    },
+    "hostedEndToEnd": "Pending consolidated candidate",
+    "physicalAndroid": "Awaiting owner",
+    "progressiveBrowser": {
+      "firstVerifiedDisplayMs": 154,
+      "initialRenderedMs": 341,
+      "boundedSavedUpdateMs": 3730,
+      "errors": 0,
+      "scope": "Actual Next UI with mocked transport, not live latency qualification."
+    }
+  },
+  "qualificationSprint": "2026-11-28 final performance and intelligence mandate"
+}

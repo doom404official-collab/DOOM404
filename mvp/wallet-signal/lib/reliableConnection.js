@@ -1,3 +1,4 @@
+import {traceSpan,traceEvent} from './scannerTrace.mjs';
 import { Connection } from "@solana/web3.js";
 
 /**
@@ -40,7 +41,7 @@ export function createReliableConnection({
         init.signal?.addEventListener?.("abort", onAbort, { once: true });
         let retryWait = 700 * (2 ** attempt);
         try {
-          await pace();
+          await traceSpan('provider_pacing',()=>pace());
           let response = await fetchImpl(endpoint, { ...init, signal: controller.signal });
           if(Number.isSafeInteger(maxResponseBytes)&&maxResponseBytes>0&&response.body?.getReader){
             const reader=response.body.getReader(),chunks=[];let size=0;
@@ -51,7 +52,7 @@ export function createReliableConnection({
           }
           if (response.ok) {
             // JSON-RPC errors can arrive with HTTP 200. Retry only transient server errors.
-            const payload = await response.clone().json();
+            const payload = await traceSpan('rpc_response_decode',()=>response.clone().json());
             const code = payload?.error?.code;
             if (code === -32005 || code === -32004) {
               lastError = new Error("Transient Solana RPC error " + code);
@@ -71,7 +72,7 @@ export function createReliableConnection({
           clearTimeout(timeout);
           init.signal?.removeEventListener?.("abort", onAbort);
         }
-        if (attempt < retries) await new Promise((resolve) => setTimeout(resolve, retryWait));
+        if (attempt < retries){traceEvent('provider_retry');await traceSpan('provider_retry_wait',()=>new Promise((resolve) => setTimeout(resolve, retryWait)));}
       }
     }
     throw new Error("Solana RPC unavailable after retry and fallback", { cause: lastError });

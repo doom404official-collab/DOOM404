@@ -13,9 +13,10 @@ export function createTokenInvestigationStore({env=process.env,fetchImpl=fetch}=
   async finish(mint,owner,observation){const r=await call('rpc/scanner_finish_investigation_v1',{p_mint:mint,p_owner:owner,p_observation:observation});if(r!==true)throw Error('INVESTIGATION_SAVE_UNCONFIRMED');}
  };
 }
+export function publicTokenObservation(observation){if(!observation||typeof observation!=='object')return observation;const {transactionCache,...visible}=observation;return visible;}
 export function publicInvestigation(row,now=Date.now()){
  if(!row)return {status:'evidence_unavailable',reason:'bounded_investigation_not_started'};
  if(row.status==='running')return Date.parse(row.lease_until)>now?{status:'assessment_in_progress'}:{status:'evidence_unavailable',reason:'bounded_execution_interrupted'};
  if(Date.parse(row.expires_at)<=now)return {status:'evidence_unavailable',reason:'cached_observation_expired'};
- return row.observation;
+ return publicTokenObservation(row.observation);
 }

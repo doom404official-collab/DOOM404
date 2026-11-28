@@ -60,7 +60,9 @@ test('material acquisition triggers bounded token-account history and cached-eve
   throw Error('unexpected '+method);
  };
  const a=await investigateToken({mint,rpc});
- assert.equal(a.adaptiveCreator.status,'bounded_early_history_assessed');
+ assert.equal(a.adaptiveCreator.status,'bounded_token_history_assessed');
+ assert.equal(a.creatorHistoryCheckpoint.cursorStatus,'pagination_metadata_missing');
+ assert.equal(a.creatorHistoryCheckpoint.historyComplete,false);
  assert.equal(a.adaptiveCreator.additionalRequests,2);assert.ok(a.execution.requests<=18);
  assert.ok(a.eventReceipts.some(r=>r.slot===447328096&&r.mintDecimals===6));
  assert.equal(calls.filter(c=>c.method==='getTransactionsForAddress').length,2);

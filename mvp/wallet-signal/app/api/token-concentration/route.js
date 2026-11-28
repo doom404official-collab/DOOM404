@@ -1,3 +1,4 @@
+import {discoverHolderCandidates} from '../../../lib/holderCandidateExpansion.mjs';
 import {classifyHolderAllocations} from '../../../lib/holderAllocationClassification.mjs';
 import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
 import {withProviderUsage} from '../../../lib/providerUsage.mjs';
@@ -34,7 +35,20 @@ async function handle(request) {
       amount: row.amount, uiAmount: row.uiAmountString,
       sharePct: aligned && total > 0n ? Number(BigInt(row.amount) * 1000000n / total) / 10000 : null
     }));
-    const parsedBatch = await connection.getMultipleParsedAccounts([mint,...accounts.map(row=>new PublicKey(row.tokenAccount))],{commitment:"confirmed",minContextSlot:largest.context?.slot}).catch(()=>null);
+    let candidateAddresses=accounts.map(row=>row.tokenAccount),candidateExpansion={status:'not_requested',newCandidates:0,rankingComplete:false};
+    if(new URL(request.url).searchParams.get('extend')==='1'){
+      if(!process.env.HELIUS_RPC_URL)candidateExpansion={status:'index_unavailable',reason:'existing_helius_endpoint_unconfigured',rankingComplete:false};
+      else try{
+        candidateExpansion=await discoverHolderCandidates({mint:mint.toBase58(),existing:candidateAddresses,lookupPage:async params=>{
+          const response=await fetch(process.env.HELIUS_RPC_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:'holder-candidate-expansion',method:'getTokenAccounts',params}),signal:AbortSignal.any([deadlineController.signal,AbortSignal.timeout(2500),request.signal].filter(Boolean)),cache:'no-store'});
+          if(!response.ok)throw Error('HOLDER_INDEX_PROVIDER_ERROR');
+          const reader=response.body.getReader(),parts=[];let bytes=0;
+          try{while(true){const r=await reader.read();if(r.done)break;bytes+=r.value.byteLength;if(bytes>250000){await reader.cancel();throw Error('HOLDER_INDEX_RESPONSE_LIMIT');}parts.push(r.value);}}finally{reader.releaseLock();}
+          const payload=JSON.parse(Buffer.concat(parts).toString());if(payload.error){const e=Error(payload.error.code===-32601?'HOLDER_INDEX_UNSUPPORTED':'HOLDER_INDEX_REJECTED');throw e;}return payload.result;
+        }});candidateAddresses=candidateExpansion.addresses;
+      }catch(e){candidateExpansion={status:'index_unavailable',reason:['HOLDER_INDEX_UNSUPPORTED','HOLDER_INDEX_REJECTED','HOLDER_INDEX_RESPONSE_LIMIT','INVALID_HOLDER_INDEX_PAGE','INVALID_HOLDER_INDEX_RECORD'].includes(e.message)?e.message.toLowerCase():'holder_index_provider_unavailable',rankingComplete:false};}
+    }
+    const parsedBatch = await connection.getMultipleParsedAccounts([mint,...candidateAddresses.map(x=>new PublicKey(x))],{commitment:"confirmed",minContextSlot:largest.context?.slot}).catch(()=>null);
     const ownership = summarizeResolvedTokenAccounts(accounts,accounts.map((_,i)=>parsedBatch?.value?.[i+1]?{context:parsedBatch.context,value:parsedBatch.value[i+1]}:null));
     const sampledMint=parsedBatch?.value?.[0]?.data?.parsed;
     const mintAccount=parsedBatch?.value?.[0],mintProgram=mintAccount?.owner?.toBase58?.();
@@ -43,13 +57,14 @@ async function handle(request) {
     const ownerBatch=sampledSupply!==null&&ownerAddresses.length?await connection.getMultipleAccountsInfoAndContext(ownerAddresses.map(x=>new PublicKey(x)),{commitment:"confirmed",minContextSlot:parsedBatch.context.slot}).catch(()=>null):null;
     const owners=new Map();
     if(Number.isSafeInteger(ownerBatch?.context?.slot)&&ownerBatch.context.slot>=parsedBatch.context.slot&&ownerBatch.value?.length===ownerAddresses.length)ownerAddresses.forEach((w,i)=>owners.set(w,ownerBatch.value[i]));
-    const allocationClassification=sampledSupply!==null&&sampledSupply>0n?classifyHolderAllocations({mint:mint.toBase58(),supplyRaw:sampledSupply.toString(),accounts:accounts.map((r,i)=>({pubkey:r.tokenAccount,account:parsedBatch?.value?.[i+1]})),ownerAccounts:owners}):null;
-    const sampledGroups=new Map((allocationClassification?.wallets||[]).map(w=>[w.wallet,BigInt(w.amountRaw)]));
+    const allocationClassification=sampledSupply!==null&&sampledSupply>0n?classifyHolderAllocations({mint:mint.toBase58(),supplyRaw:sampledSupply.toString(),accounts:candidateAddresses.map((address,i)=>({pubkey:address,account:parsedBatch?.value?.[i+1]})),ownerAccounts:owners,mintInfo:sampledMint.info}):null;
+    const selectedWallets=(allocationClassification?.wallets||[]).sort((a,b)=>BigInt(a.amountRaw)>BigInt(b.amountRaw)?-1:BigInt(a.amountRaw)<BigInt(b.amountRaw)?1:a.wallet.localeCompare(b.wallet)).slice(0,20);
+    const sampledGroups=new Map(selectedWallets.map(w=>[w.wallet,BigInt(w.amountRaw)]));
     const resolvedSampleAccounts=allocationClassification?.allocations.length||0,excludedSampleAccounts=allocationClassification?.allocations.filter(r=>!r.eligible).length||0;
     const values=[...sampledGroups.values()].sort((a,b)=>a>b?-1:a<b?1:0),sampleTotal=values.reduce((n,x)=>n+x,0n);
     const sampledWalletObservation=sampledSupply!==null&&sampledSupply>0n&&sampleTotal<=sampledSupply&&Number.isSafeInteger(parsedBatch?.context?.slot)?{
       version:2,allocationClassification,observedAt:new Date().toISOString(),observedSharePct:Number(sampleTotal*1000000n/sampledSupply)/10000,largestSharePct:values.length?Number(values[0]*1000000n/sampledSupply)/10000:0,
-      wallets:[...sampledGroups].map(([wallet,amount])=>({wallet,amountRaw:amount.toString()})),eligibleWallets:sampledGroups.size,returnedAccounts:accounts.length,resolvedSampleAccounts,excludedSampleAccounts,rankingComplete:false,supplyRaw:sampledSupply.toString(),
+      wallets:[...sampledGroups].map(([wallet,amount])=>({wallet,amountRaw:amount.toString()})),eligibleWallets:sampledGroups.size,returnedAccounts:candidateAddresses.length,candidateExpansion,resolvedSampleAccounts,excludedSampleAccounts,rankingComplete:false,supplyRaw:sampledSupply.toString(),
       contextSlots:{discovery:largest.context?.slot,mint:parsedBatch.context.slot,sampledAccounts:parsedBatch.context.slot,classifications:ownerBatch?.context?.slot??null},atomicSubset:true,atomic:false,
       scope:'Same-slot balances and mint supply in the discovered account sample. Eligible system-wallet accounts are grouped; all restricted and unclassified allocations remain separately visible. Role classifications use a separate slot; custody, treasury and vesting are not inferred.'}:null;
     const sum = (n) => accounts.slice(0, n).reduce((a, x) => a + BigInt(x.amount), 0n);
@@ -64,7 +79,7 @@ async function handle(request) {
         ownerCoverageComplete: false, beneficialOwnersVerified: false,
         warning: ownership.warning },
       coverage: { source: "Solana getTokenLargestAccounts + getTokenSupply", maxAccounts: 20,
-        isCompleteHolderList: false, uniqueOwnersResolved: false, exchangePoolEscrowExcluded: false,
+        isCompleteHolderList: false, uniqueOwnersResolved: false, exchangePoolEscrowExcluded: false,candidateExpansion,
         warning: "Token accounts are not unique wallets or beneficial owners. Pools, exchanges, escrow and multiple accounts per owner can distort concentration. These are observed account balances, not a scam score." },
       interpretation: "Descriptive account-balance evidence only. No holder ownership or risk verdict inferred."
     }, { headers: { "Cache-Control": "no-store" } });

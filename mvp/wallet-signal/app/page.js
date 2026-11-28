@@ -1,5 +1,7 @@
 "use client";
-import {saveReport, loadReport} from "../lib/completedReport.mjs";
+import {saveReport, loadReport, updateReport} from "../lib/completedReport.mjs";
+import {runStagedTokenScan} from '../lib/stagedTokenScan.mjs';
+import {scanRequestTiming} from '../lib/scanTiming.mjs';
 import {withConcentrationContext,hasAlignedConcentrationContext} from "../lib/concentrationContext.mjs";
 
 import { useEffect, useRef, useState } from "react";
@@ -380,11 +382,12 @@ function CreatorLookup() {
   const [inspectionTiming,setInspectionTiming]=useState(null);
   const inspectionStartedAt=useRef(null),inspectionMint=useRef('');
   const [currentCreator,setCurrentCreator]=useState(null);
+  const providerUsageRef=useRef({rpcRequests:0,rpcCalls:0,quoteRequests:0,providerHttpRequests:0,marketRequests:0}),requestTimings=useRef([]);
   const [providerUsage,setProviderUsage]=useState({rpcRequests:0,rpcCalls:0,quoteRequests:0,providerHttpRequests:0,marketRequests:0});
   function recordUsage(response,requestMint){
     if(requestMint&&inspectionMint.current!==requestMint)return;
     const n=k=>{const x=Number(response.headers.get(k));return Number.isSafeInteger(x)&&x>=0?x:0;};
-    setProviderUsage(p=>({rpcRequests:p.rpcRequests+n('X-Glitch-Rpc-Requests'),rpcCalls:p.rpcCalls+n('X-Glitch-Rpc-Calls'),marketRequests:p.marketRequests+n('X-Glitch-Market-Requests'),quoteRequests:(p.quoteRequests||0)+n('X-Glitch-Quote-Requests'),providerHttpRequests:(p.providerHttpRequests||0)+n('X-Glitch-Provider-Http-Requests')}));
+    const p=providerUsageRef.current;providerUsageRef.current={rpcRequests:p.rpcRequests+n('X-Glitch-Rpc-Requests'),rpcCalls:p.rpcCalls+n('X-Glitch-Rpc-Calls'),marketRequests:p.marketRequests+n('X-Glitch-Market-Requests'),quoteRequests:(p.quoteRequests||0)+n('X-Glitch-Quote-Requests'),providerHttpRequests:(p.providerHttpRequests||0)+n('X-Glitch-Provider-Http-Requests')};setProviderUsage(providerUsageRef.current);
   }
   const [extensions, setExtensions] = useState(null);
   const [extensionsError, setExtensionsError] = useState("");
@@ -448,102 +451,63 @@ function CreatorLookup() {
     if(historyOnly&&!primaryAccepted){inspection.current=null;return;}
     let cancel;
     const cancelled=new Promise((_,reject)=>{cancel=()=>reject(Object.assign(Error('Inspection cancelled'),{name:'AbortError'}));controller.signal.addEventListener('abort',cancel,{once:true});});
+    let lastSnapshot=null,activeReportId=null,persistQueue=Promise.resolve();
     // Bound both headers and body, including a non-cooperative late response.
-    async function read(path){
+    async function read(path,{signal:stageSignal}={}){
       if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
       return Promise.race([(async()=>{
-        const response=await fetch(path,{cache:'no-store',signal:controller.signal});recordUsage(response,address);
+        const startedAt=performance.now(),response=await fetch(path,{cache:'no-store',signal:stageSignal?AbortSignal.any([controller.signal,stageSignal]):controller.signal}),headersAt=performance.now();recordUsage(response,address);
         if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
         const data=await response.json();
+        if(current())requestTimings.current.push(scanRequestTiming({path,startedAt,headersAt,finishedAt:performance.now(),response}));
         if(controller.signal.aborted)throw Object.assign(Error('Inspection cancelled'),{name:'AbortError'});
-        if(!response.ok)throw Error('Token evidence unavailable');
+        if(!response.ok){const failure=Error('Token evidence unavailable');failure.code=data?.error||data?.reason;failure.status=response.status;throw failure;}
         if(data?.mint!==address)throw Error('Token evidence identity mismatch');
         return data;
       })(),cancelled]);
     }
-    const timer=setTimeout(()=>controller.abort(),historyOnly?45000:105000);
+    const timer=setTimeout(()=>controller.abort(),historyOnly?45000:65000);
     setScanStatus("Checking token security.");
-    setBusy(true); setError(""); if (!historyOnly) { inspectionStartedAt.current=performance.now();inspectionMint.current=address;setInspectionTiming(null);setLegacyEvidenceRequested(false);setCurrentLiquidity(null);setCurrentCreator(null);setWorkerEvidence(null);setHolderConnections(null);setVerifiedHolderAssessment(null);setInvestigationState(null);setProviderUsage({rpcRequests:0,rpcCalls:0,quoteRequests:0,providerHttpRequests:0,marketRequests:0}); liquidityReader.current.reset(address); setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
+    setBusy(true); setError(""); if (!historyOnly) { inspectionStartedAt.current=performance.now();inspectionMint.current=address;setInspectionTiming(null);setLegacyEvidenceRequested(false);setCurrentLiquidity(null);setCurrentCreator(null);setWorkerEvidence(null);setHolderConnections(null);setVerifiedHolderAssessment(null);setInvestigationState(null);providerUsageRef.current={rpcRequests:0,rpcCalls:0,quoteRequests:0,providerHttpRequests:0,marketRequests:0};requestTimings.current=[];setProviderUsage(providerUsageRef.current); liquidityReader.current.reset(address); setResult(null); setCreatorEvidence(null); setCreatorEvidenceDiagnostic("not_requested"); setHistoryCursor(null); setHistoryBatches(0); setConcentration(null); setConcentrationError(""); setExtensions(null); setExtensionsError(""); setLiquidity(null); setLiquidityError(""); setPoolEvidence(null); setPoolEvidenceError(""); }
     if(historyOnly){setHistoryBatches(n=>n+1);setHistoryCursor(null);}
     try {
-      const data=await read(historyOnly?'/api/creator?mint='+encodeURIComponent(address)+'&mode=history'+(cursor?'&before='+encodeURIComponent(cursor):''):'/api/token-current?mint='+encodeURIComponent(address));
-      if(!current())return;
       if(historyOnly){
+        const data=await read('/api/creator?mint='+encodeURIComponent(address)+'&mode=history'+(cursor?'&before='+encodeURIComponent(cursor):''));
+        if(!current())return;
         if(data.inspectionMode!=="history")throw Error('Historical evidence contract mismatch');
         const historicalFields=['creatorEvidence','pumpLaunchEvidence','launchpadEvidence','launchInvestigation','stonkFunEvidence','creator','solscanDiagnostic','mintOrigin','indexedHistoryDiagnostic','historicalProvider','creatorHoldingTime'];
         const history=Object.fromEntries(historicalFields.filter(key=>Object.hasOwn(data,key)).map(key=>[key,data[key]]));
         setResult(previous=>previous?.mint===address?{...previous,...history}:previous);
-        setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
-        return;
+        setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);return;
       }
-      setResult(data);primaryAccepted=true;if(inspectionStartedAt.current!==null)setInspectionTiming({firstEvidenceMs:Math.round(performance.now()-inspectionStartedAt.current)});if(data.currentExtensions)setExtensions(data.currentExtensions);
-      setHistoryCursor(data.mintOrigin?.coverage?.nextCursor || null);
-      // Independent sources publish as soon as each returns. A failed market
-      // provider cannot erase current mint controls or persisted evidence.
-      setScanStatus("Analysing holder distribution and evaluating liquidity.");
-      const tasks=[
-       (async()=>{try{const record=await read('/api/creator-evidence?mint='+encodeURIComponent(address));if(current()){setCreatorEvidence(record);setCreatorEvidenceDiagnostic(record.status==='VERIFIED'?'record_available':'record_not_established');}}catch{if(current())setCreatorEvidenceDiagnostic('lookup_failed');}})(),
-       address==='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump'?Promise.resolve():(async()=>{try{const accountData=await read('/api/token-concentration?mint='+encodeURIComponent(address));if(current())setConcentration(withConcentrationContext(accountData));}catch{if(current())setConcentrationError('Token-account balances unavailable');}})(),
-       data.tokenProgram==='spl-token-2022'&&(!data.currentExtensions||data.currentExtensions.transferFee?.status==='observed'&&(!data.currentExtensions.transferFee.configAuthorityReported||data.currentExtensions.transferFee.configAuthority===null&&!data.currentExtensions.transferFee.effectiveFee))?(async()=>{try{const e=await read('/api/token-extensions?mint='+encodeURIComponent(address));if(current())setExtensions(e);}catch{if(current())setExtensionsError('Extension data unavailable');}})():Promise.resolve(),
-       Promise.race([refreshLiquidity(address,controller.signal),cancelled])
-      ];
-      await Promise.allSettled(tasks);
-      if(!current())return;if(controller.signal.aborted)throw Object.assign(Error("Inspection timed out"),{name:"AbortError"});
-      setScanStatus('Investigating creator activity.');
-      // One bounded investigation; provider-unavailable and budget-exhausted responses
-      // are terminal observations. Opening or refreshing a report never calls it.
-      let investigation;
-      try { investigation=await read('/api/token-investigation?mint='+encodeURIComponent(address)+'&run=1'); }
-      catch { investigation={status:'evidence_unavailable'}; }
-      if(!current())return;if(controller.signal.aborted)throw Object.assign(Error("Inspection timed out"),{name:"AbortError"});
-      if(investigation.status==='assessment_in_progress'){
-        // Read-only status checks never start another worker or blockchain scan.
-        const stopAt=Date.now()+65000;
-        while(investigation.status==='assessment_in_progress'&&Date.now()<stopAt&&!controller.signal.aborted){
-          await new Promise(resolve=>{const t=setTimeout(resolve,5000);controller.signal.addEventListener('abort',()=>{clearTimeout(t);resolve();},{once:true});});
-          if(controller.signal.aborted)break;
-          try{investigation=await read('/api/token-investigation?mint='+encodeURIComponent(address));}catch{break;}
-        }
-        if(investigation.status==='assessment_in_progress')setError('Investigation time limit reached. Available evidence is saved as a partial report.');
-      }
-      setInvestigationState(investigation);
-      setScanStatus('Preparing intelligence report.');
-      const get=async path=>{try{return await read(path);}catch{return null;}};
-      const [holders,verified,creator,dashboard]=await Promise.all([
-        get('/api/holder-scan-status?mint='+encodeURIComponent(address)),
-        get('/api/holder-assessment?mint='+encodeURIComponent(address)),
-        get('/api/current-creator?mint='+encodeURIComponent(address)),
-        readDashboardEvidenceResponse(address,{signal:controller.signal}).catch(()=>null)
-      ]);
-      if(!current())return;if(controller.signal.aborted)throw Object.assign(Error("Inspection timed out"),{name:"AbortError"});
-      setHolderConnections(holders?.scan?.mint===address?holders.scan:null);
-      setVerifiedHolderAssessment(verified?.assessment?verified:null);
-      setHolderEvidenceState(verified?.assessment?'ready':'unknown');
-      setCurrentCreator(creator?.version===2?creator:null);setWorkerEvidence(dashboard);
-      const pools=(liquiditySnapshot.current?.pools||[]).slice(0,2).map(p=>p.pairAddress).filter(Boolean);
-      if(pools.length){const lq=await get('/api/current-liquidity?mint='+encodeURIComponent(address)+'&pool='+encodeURIComponent(pools[0])+'&alternates='+encodeURIComponent(pools.slice(1).join(',')));if(current())setCurrentLiquidity(lq?.observation||null);}
-      // Let React publish the final source responses before snapshotting props.
-      setScanStatus('Report ready');
+      const buildProps=snapshot=>({...snapshot,concentration:snapshot.concentration?withConcentrationContext(snapshot.concentration):null,
+        liquidityRefreshing:false,liquidityError:snapshot.liquidity?'':'Current market discovery unavailable or still in progress.',
+        frozenHolderObservation,holderSnapshotCompatible:false,providerUsage:{...providerUsageRef.current},
+        inspectionTiming:{...snapshot.inspectionTiming,requests:[...requestTimings.current]},
+        investigationProgress:{...snapshot.investigationProgress,expiresAt:new Date(Date.now()+70000).toISOString()}});
+      const apply=snapshot=>{
+        if(!current())return;const firstMint=snapshot.result&&!lastSnapshot?.result;lastSnapshot=snapshot;
+        if(firstMint)setScanStatus(snapshot.result.mintAuthority?'Active mint authority observed; other checks continue.':snapshot.result.freezeAuthority?'Active freeze authority observed; other checks continue.':'Mint and freeze authorities revoked; other checks continue.');
+        if(snapshot.result){primaryAccepted=true;setResult(snapshot.result);}
+        setExtensions(snapshot.extensions);if(snapshot.concentration){const accountData=snapshot.concentration;setConcentration(withConcentrationContext(accountData));}
+        setCreatorEvidence(snapshot.creatorEvidence);setLiquidity(snapshot.liquidity);liquiditySnapshot.current=snapshot.liquidity;
+        setCurrentLiquidity(snapshot.currentLiquidity);setCurrentCreator(snapshot.currentCreator);setWorkerEvidence(snapshot.workerEvidence);
+        setHolderConnections(snapshot.historicalHolders);setVerifiedHolderAssessment(snapshot.verifiedHolderEnvelope);setHolderEvidenceState(snapshot.holderEvidenceState);
+        setInvestigationState(snapshot.investigationState||snapshot.investigationProgress);setInspectionTiming(snapshot.inspectionTiming);
+        if(activeReportId){const props=buildProps(snapshot);persistQueue=persistQueue.catch(()=>{}).then(()=>current()?updateReport(activeReportId,props):null);}
+      };
+      await runStagedTokenScan({mint:address,read,signal:controller.signal,onUpdate:apply,onInitial:async snapshot=>{
+        if(!current())return;apply(snapshot);setSavingReport(true);
+        const id=await saveReport(buildProps(snapshot));if(!current())return;
+        activeReportId=id;const url='/?report='+encodeURIComponent(id);setReportUrl(url);setBusy(false);scanLock.current=false;setSavingReport(false);setScanStatus('Bounded intelligence investigation continues.');
+        try{window.open(url,'_blank','noopener,noreferrer');}catch{}
+      }});
+      await persistQueue;
+      if(current())setScanStatus('');
 
-    } catch (failure) { if(current()){if(!primaryAccepted)setResult(null);if(primaryAccepted)setScanStatus('Report ready');setError(primaryAccepted?"Additional evidence unavailable or timed out. Current mint observation retained; unresolved attributes remain Unknown.":failure.name === "AbortError" ? "Token inspection timed out. Evidence remains incomplete; no automatic retry was made." : "Token inspection unavailable or mismatched. Evidence remains Unknown.");} }
-    finally { clearTimeout(timer);controller.signal.removeEventListener('abort',cancel);if(current()){inspection.current=null;scanLock.current=false;setBusy(false);if(!historyOnly&&inspectionStartedAt.current!==null)setInspectionTiming(p=>({...p,initialSourcesMs:Math.round(performance.now()-inspectionStartedAt.current)}));} }
+    } catch (failure) { if(current()){if(activeReportId&&lastSnapshot){await persistQueue.catch(()=>{});try{await updateReport(activeReportId,{...lastSnapshot,providerUsage:{...providerUsageRef.current},inspectionTiming:{...lastSnapshot.inspectionTiming,requests:[...requestTimings.current]},investigationProgress:{...lastSnapshot.investigationProgress,stage:'bounded_stopped',reason:failure.name==='AbortError'?'time_limit':'evidence_unavailable'}});}catch{}}if(!primaryAccepted)setResult(null);if(primaryAccepted)setScanStatus('');setError(primaryAccepted?"Additional evidence unavailable or timed out. Current mint observation retained; unresolved attributes remain Unknown.":failure.name === "AbortError" ? "Token inspection timed out. Evidence remains incomplete; no automatic retry was made." : "Token inspection unavailable or mismatched. Evidence remains Unknown.");} }
+    finally { clearTimeout(timer);controller.signal.removeEventListener('abort',cancel);controller.abort();if(current()){inspection.current=null;scanLock.current=false;setBusy(false);if(!historyOnly&&inspectionStartedAt.current!==null)setInspectionTiming(p=>({...p,boundedReportMs:Math.round(performance.now()-inspectionStartedAt.current)}));setSavingReport(false);} }
   }
-  useEffect(()=>{
-    if(busy||!result||scanStatus!=='Report ready')return;
-    let cancelled=false;
-    const props={result,extensions,concentration,creatorEvidence,liquidity,liquidityError,
-      liquidityRefreshing:false,historicalHolders:holderConnections,
-      holderSnapshotCompatible:holderReconciliation?.compatible===true,
-      verifiedHolderEnvelope:verifiedHolderAssessment,holderEvidenceState,
-      frozenHolderObservation,workerEvidence,currentLiquidity,currentCreator,providerUsage,inspectionTiming};
-    setSavingReport(true);
-    saveReport(props).then(id=>{
-      if(cancelled)return;
-      const url='/?report='+encodeURIComponent(id);setReportUrl(url);setScanStatus('');
-      try{window.open(url,'_blank','noopener,noreferrer');}catch{}
-    }).catch(()=>{if(!cancelled){setScanStatus('');setError('Report could not be saved. Please retry.');}}).finally(()=>{if(!cancelled)setSavingReport(false);});
-    return ()=>{cancelled=true;};
-  },[busy,result,scanStatus]);
   return <section aria-label="GLITCH Scanner Token Analysis" className="doom-token-inspect" style={{ ...cardStyle, border: "none", boxShadow: "none" }}>
     <div className="scanner-console">
     <h2 className="doom-token-intro">Inspect a Solana token</h2>
@@ -553,8 +517,8 @@ function CreatorLookup() {
       <button type="button" className="scanner-paste" disabled={busy||savingReport} aria-label="Paste token mint address" onClick={async()=>{try{const text=await navigator.clipboard.readText();cancelInspection();setBusy(false);setResult(null);liquidityReader.current.reset(text.trim());setMint(text.trim());setError("");}catch{setError("Clipboard unavailable. Touch and hold the address field to paste.");}}}>Paste</button></div>
       <button className="scanner-submit" type="submit" disabled={busy||savingReport}>{busy ? "INSPECTING..." : "INSPECT TOKEN"}</button>
       <div className="scanner-status-slot">
-      {(busy||savingReport)&&<div className="scanner-progress" role="status" aria-live="polite"><strong>ANALYSING TOKEN...</strong><div className="scanner-track"><i /></div><span>{savingReport?"Saving intelligence report.":scanStatus}</span></div>}
-      {reportUrl&&!busy&&!savingReport&&<a className="scanner-report-link" href={reportUrl} target="_blank" rel="noopener noreferrer">VIEW INTELLIGENCE REPORT</a>}
+      {(busy||savingReport)&&<div className="scanner-progress" role="status" aria-live="polite"><strong>ANALYSING TOKEN...</strong><div className="scanner-track"><i /></div><span data-first-evidence={!!result}>{savingReport?"Saving intelligence report.":scanStatus}</span></div>}
+      {reportUrl&&!savingReport&&<a className="scanner-report-link" href={reportUrl} target="_blank" rel="noopener noreferrer">VIEW INTELLIGENCE REPORT</a>}
       {error && <p className="scanner-error" role="alert">{error}</p>}
       </div>
     </form></div>
@@ -565,7 +529,12 @@ function CreatorLookup() {
 
 function CompletedReport({id}) {
   const [report,setReport]=useState(null),[error,setError]=useState('');
-  useEffect(()=>{let active=true;loadReport(id).then(data=>{if(active){if(data)setReport(data);else setError('This report is unavailable in this browser. Return to the scanner to create a report.');}}).catch(()=>{if(active)setError('Unable to read this saved report.');});return()=>{active=false;};},[id]);
+  useEffect(()=>{let active=true,timer,seenRevision;const started=Date.now();
+    const read=async()=>{try{const data=await loadReport(id);if(!active)return;if(!data){setError('This report is unavailable in this browser. Return to the scanner to create a report.');return;}
+      const progressing=['initial_in_progress','deep_in_progress'].includes(data.investigationProgress?.stage),expired=Date.parse(data.investigationProgress?.expiresAt)<=Date.now()||Date.now()-started>=75000;
+      if(seenRevision!==data.evidenceRevision||seenRevision===undefined||expired){setReport(progressing&&expired?{...data,investigationProgress:{...data.investigationProgress,stage:'bounded_stopped',reason:'updates_expired'}}:data);seenRevision=data.evidenceRevision;}
+      if(progressing&&!expired)timer=setTimeout(read,1000);
+    }catch{if(active)setError('Unable to read this saved report.');}};read();return()=>{active=false;clearTimeout(timer);};},[id]);
   return <main className="scanner-home">{error?<p role="alert">{error}</p>:report?<GlitchV11Dashboard key={id} {...report} />:<p role="status">Loading saved intelligence report…</p>}</main>;
 }
 export default function Home() {

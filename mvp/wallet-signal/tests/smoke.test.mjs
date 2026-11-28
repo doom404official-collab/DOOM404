@@ -12,14 +12,18 @@ const poolEvidence = readFileSync(resolve(root, "lib/poolEvidence.js"), "utf8");
 const extensions = readFileSync(resolve(root, "app/api/token-extensions/route.js"), "utf8");
 const concentration = readFileSync(resolve(root, "app/api/token-concentration/route.js"), "utf8");
 
-test("liquidity refresh is independent of token inspection", () => {
-  assert.match(page, /async function refreshLiquidity\(/);
-  assert.match(page, /async function refreshLiquidity\(/);
-  assert.match(dashboard, /Available Liquidity/);
-  assert.match(page, /liquidityRefreshing/);
-  assert.match(page, /await Promise\.allSettled\(tasks\)/);
-  assert.match(liquidity, /provider: "DexScreener"/);
-  assert.match(page, /Promise\.race\(\[refreshLiquidity\(address,controller\.signal\),cancelled\]\)/);
+test("liquidity and current intelligence are independent of historical inspection", () => {
+  const staged=readFileSync(resolve(root,"lib/stagedTokenScan.mjs"),"utf8");
+  assert.match(page,/runStagedTokenScan/);
+  assert.match(page,/async function refreshLiquidity\(/);
+  assert.match(dashboard,/Available Liquidity/);
+  assert.match(page,/liquidityRefreshing/);
+  assert.match(staged,/const marketTask=task\('market_pool_discovery'/);
+  assert.match(staged,/const liquidityTask=task\('reference_sales'/);
+  assert.ok(staged.indexOf("const liquidityTask")<staged.indexOf("const deep=task"));
+  assert.match(staged,/onInitial\(\{\.\.\.snapshot/);
+  assert.match(page,/updateReport\(activeReportId,props\)/);
+  assert.match(liquidity,/provider: "DexScreener"/);
 });
 test("market-data claims remain explicitly limited", () => {
   assert.match(liquidity, /lpLocksVerified: false/);

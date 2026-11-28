@@ -1,0 +1,545 @@
+{
+  "scope": "Deterministic architecture experiment only. Hosted cold/warm results must be recorded separately.",
+  "rows": [
+    {
+      "fixture": "PAID retained UI replay",
+      "trial": 1,
+      "cache": "cold_fixture",
+      "scope": "Synthetic transport-delay experiment using identical response fixtures and the measured baseline dependency graph; not hosted performance qualification.",
+      "baselineReportMs": 195.2,
+      "stagedInitialReportMs": 32.46,
+      "stagedBoundedReportMs": 129,
+      "stages": [
+        {
+          "name": "cached_creator_attribution",
+          "startedMs": 0,
+          "durationMs": 15,
+          "status": "completed"
+        },
+        {
+          "name": "retained_evidence",
+          "startedMs": 0,
+          "durationMs": 16,
+          "status": "completed"
+        },
+        {
+          "name": "mint_security",
+          "startedMs": 0,
+          "durationMs": 21,
+          "status": "completed"
+        },
+        {
+          "name": "extension_epoch_resolution",
+          "startedMs": 1,
+          "durationMs": 31,
+          "status": "completed"
+        },
+        {
+          "name": "retained_holder_relationships",
+          "startedMs": 32,
+          "durationMs": 1,
+          "status": "completed"
+        },
+        {
+          "name": "retained_holder_assessment",
+          "startedMs": 33,
+          "durationMs": 1,
+          "status": "completed"
+        },
+        {
+          "name": "current_creator",
+          "startedMs": 0,
+          "durationMs": 33,
+          "status": "completed"
+        },
+        {
+          "name": "market_pool_discovery",
+          "startedMs": 0,
+          "durationMs": 33,
+          "status": "completed"
+        },
+        {
+          "name": "holder_classification",
+          "startedMs": 0,
+          "durationMs": 35,
+          "status": "completed"
+        },
+        {
+          "name": "extended_holder_sample",
+          "startedMs": 33,
+          "durationMs": 36,
+          "status": "completed"
+        },
+        {
+          "name": "reference_sales",
+          "startedMs": 1,
+          "durationMs": 68,
+          "status": "completed"
+        },
+        {
+          "name": "bounded_history",
+          "startedMs": 32,
+          "durationMs": 81,
+          "status": "completed"
+        },
+        {
+          "name": "final_retained_evidence",
+          "startedMs": 113,
+          "durationMs": 15,
+          "status": "completed"
+        }
+      ],
+      "logicalEndpointReads": 12
+    },
+    {
+      "fixture": "PAID retained UI replay",
+      "trial": 2,
+      "cache": "cold_fixture",
+      "scope": "Synthetic transport-delay experiment using identical response fixtures and the measured baseline dependency graph; not hosted performance qualification.",
+      "baselineReportMs": 195.98,
+      "stagedInitialReportMs": 21.17,
+      "stagedBoundedReportMs": 117,
+      "stages": [
+        {
+          "name": "cached_creator_attribution",
+          "startedMs": 0,
+          "durationMs": 15,
+          "status": "completed"
+        },
+        {
+          "name": "retained_evidence",
+          "startedMs": 0,
+          "durationMs": 15,
+          "status": "completed"
+        },
+        {
+          "name": "mint_security",
+          "startedMs": 0,
+          "durationMs": 20,
+          "status": "completed"
+        },
+        {
+          "name": "extension_epoch_resolution",
+          "startedMs": 0,
+          "durationMs": 21,
+          "status": "completed"
+        },
+        {
+          "name": "retained_holder_relationships",
+          "startedMs": 21,
+          "durationMs": 0,
+          "status": "completed"
+        },
+        {
+          "name": "retained_holder_assessment",
+          "startedMs": 21,
+          "durationMs": 0,
+          "status": "completed"
+        },
+        {
+          "name": "current_creator",
+          "startedMs": 0,
+          "durationMs": 26,
+          "status": "completed"
+        },
+        {
+          "name": "market_pool_discovery",
+          "startedMs": 0,
+          "durationMs": 26,
+          "status": "completed"
+        },
+        {
+          "name": "holder_classification",
+          "startedMs": 0,
+          "durationMs": 35,
+          "status": "completed"
+        },
+        {
+          "name": "extended_holder_sample",
+          "startedMs": 22,
+          "durationMs": 35,
+          "status": "completed"
+        },
+        {
+          "name": "reference_sales",
+          "startedMs": 0,
+          "durationMs": 62,
+          "status": "completed"
+        },
+        {
+          "name": "bounded_history",
+          "startedMs": 21,
+          "durationMs": 80,
+          "status": "completed"
+        },
+        {
+          "name": "final_retained_evidence",
+          "startedMs": 102,
+          "durationMs": 15,
+          "status": "completed"
+        }
+      ],
+      "logicalEndpointReads": 12
+    },
+    {
+      "fixture": "PAID retained UI replay",
+      "trial": 3,
+      "cache": "cold_fixture",
+      "scope": "Synthetic transport-delay experiment using identical response fixtures and the measured baseline dependency graph; not hosted performance qualification.",
+      "baselineReportMs": 194.86,
+      "stagedInitialReportMs": 20.05,
+      "stagedBoundedReportMs": 117,
+      "stages": [
+        {
+          "name": "cached_creator_attribution",
+          "startedMs": 0,
+          "durationMs": 15,
+          "status": "completed"
+        },
+        {
+          "name": "retained_evidence",
+          "startedMs": 0,
+          "durationMs": 15,
+          "status": "completed"
+        },
+        {
+          "name": "mint_security",
+          "startedMs": 0,
+          "durationMs": 19,
+          "status": "completed"
+        },
+        {
+          "name": "extension_epoch_resolution",
+          "startedMs": 0,
+          "durationMs": 20,
+          "status": "completed"
+        },
+        {
+          "name": "retained_holder_relationships",
+          "startedMs": 20,
+          "durationMs": 0,
+          "status": "completed"
+        },
+        {
+          "name": "retained_holder_assessment",
+          "startedMs": 20,
+          "durationMs": 0,
+          "status": "completed"
+        },
+        {
+          "name": "current_creator",
+          "startedMs": 0,
+          "durationMs": 25,
+          "status": "completed"
+        },
+        {
+          "name": "market_pool_discovery",
+          "startedMs": 0,
+          "durationMs": 25,
+          "status": "completed"
+        },
+        {
+          "name": "holder_classification",
+          "startedMs": 0,
+          "durationMs": 35,
+          "status": "completed"
+        },
+        {
+          "name": "extended_holder_sample",
+          "startedMs": 20,
+          "durationMs": 35,
+          "status": "completed"
+        },
+        {
+          "name": "reference_sales",
+          "startedMs": 0,
+          "durationMs": 60,
+          "status": "completed"
+        },
+        {
+          "name": "bounded_history",
+          "startedMs": 20,
+          "durationMs": 80,
+          "status": "completed"
+        },
+        {
+          "name": "final_retained_evidence",
+          "startedMs": 101,
+          "durationMs": 15,
+          "status": "completed"
+        }
+      ],
+      "logicalEndpointReads": 12
+    },
+    {
+      "fixture": "PAID retained UI replay",
+      "trial": 1,
+      "cache": "warm_fixture",
+      "scope": "Synthetic transport-delay experiment using identical response fixtures and the measured baseline dependency graph; not hosted performance qualification.",
+      "baselineReportMs": 56.87,
+      "stagedInitialReportMs": 7.12,
+      "stagedBoundedReportMs": 40,
+      "stages": [
+        {
+          "name": "cached_creator_attribution",
+          "startedMs": 0,
+          "durationMs": 4,
+          "status": "completed"
+        },
+        {
+          "name": "retained_evidence",
+          "startedMs": 0,
+          "durationMs": 4,
+          "status": "completed"
+        },
+        {
+          "name": "mint_security",
+          "startedMs": 0,
+          "durationMs": 6,
+          "status": "completed"
+        },
+        {
+          "name": "extension_epoch_resolution",
+          "startedMs": 0,
+          "durationMs": 7,
+          "status": "completed"
+        },
+        {
+          "name": "retained_holder_relationships",
+          "startedMs": 7,
+          "durationMs": 0,
+          "status": "completed"
+        },
+        {
+          "name": "retained_holder_assessment",
+          "startedMs": 7,
+          "durationMs": 0,
+          "status": "completed"
+        },
+        {
+          "name": "current_creator",
+          "startedMs": 0,
+          "durationMs": 8,
+          "status": "completed"
+        },
+        {
+          "name": "market_pool_discovery",
+          "startedMs": 0,
+          "durationMs": 8,
+          "status": "completed"
+        },
+        {
+          "name": "holder_classification",
+          "startedMs": 0,
+          "durationMs": 10,
+          "status": "completed"
+        },
+        {
+          "name": "extended_holder_sample",
+          "startedMs": 8,
+          "durationMs": 10,
+          "status": "completed"
+        },
+        {
+          "name": "reference_sales",
+          "startedMs": 0,
+          "durationMs": 18,
+          "status": "completed"
+        },
+        {
+          "name": "bounded_history",
+          "startedMs": 7,
+          "durationMs": 25,
+          "status": "completed"
+        },
+        {
+          "name": "final_retained_evidence",
+          "startedMs": 32,
+          "durationMs": 7,
+          "status": "completed"
+        }
+      ],
+      "logicalEndpointReads": 12
+    },
+    {
+      "fixture": "PAID retained UI replay",
+      "trial": 2,
+      "cache": "warm_fixture",
+      "scope": "Synthetic transport-delay experiment using identical response fixtures and the measured baseline dependency graph; not hosted performance qualification.",
+      "baselineReportMs": 59.58,
+      "stagedInitialReportMs": 6.24,
+      "stagedBoundedReportMs": 46,
+      "stages": [
+        {
+          "name": "cached_creator_attribution",
+          "startedMs": 0,
+          "durationMs": 4,
+          "status": "completed"
+        },
+        {
+          "name": "retained_evidence",
+          "startedMs": 0,
+          "durationMs": 4,
+          "status": "completed"
+        },
+        {
+          "name": "mint_security",
+          "startedMs": 0,
+          "durationMs": 5,
+          "status": "completed"
+        },
+        {
+          "name": "extension_epoch_resolution",
+          "startedMs": 0,
+          "durationMs": 6,
+          "status": "completed"
+        },
+        {
+          "name": "retained_holder_relationships",
+          "startedMs": 6,
+          "durationMs": 0,
+          "status": "completed"
+        },
+        {
+          "name": "retained_holder_assessment",
+          "startedMs": 6,
+          "durationMs": 1,
+          "status": "completed"
+        },
+        {
+          "name": "current_creator",
+          "startedMs": 0,
+          "durationMs": 7,
+          "status": "completed"
+        },
+        {
+          "name": "market_pool_discovery",
+          "startedMs": 0,
+          "durationMs": 9,
+          "status": "completed"
+        },
+        {
+          "name": "holder_classification",
+          "startedMs": 0,
+          "durationMs": 9,
+          "status": "completed"
+        },
+        {
+          "name": "extended_holder_sample",
+          "startedMs": 7,
+          "durationMs": 11,
+          "status": "completed"
+        },
+        {
+          "name": "reference_sales",
+          "startedMs": 0,
+          "durationMs": 23,
+          "status": "completed"
+        },
+        {
+          "name": "bounded_history",
+          "startedMs": 6,
+          "durationMs": 30,
+          "status": "completed"
+        },
+        {
+          "name": "final_retained_evidence",
+          "startedMs": 39,
+          "durationMs": 4,
+          "status": "completed"
+        }
+      ],
+      "logicalEndpointReads": 12
+    },
+    {
+      "fixture": "PAID retained UI replay",
+      "trial": 3,
+      "cache": "warm_fixture",
+      "scope": "Synthetic transport-delay experiment using identical response fixtures and the measured baseline dependency graph; not hosted performance qualification.",
+      "baselineReportMs": 61.88,
+      "stagedInitialReportMs": 7.66,
+      "stagedBoundedReportMs": 38,
+      "stages": [
+        {
+          "name": "cached_creator_attribution",
+          "startedMs": 0,
+          "durationMs": 7,
+          "status": "completed"
+        },
+        {
+          "name": "retained_evidence",
+          "startedMs": 0,
+          "durationMs": 7,
+          "status": "completed"
+        },
+        {
+          "name": "mint_security",
+          "startedMs": 0,
+          "durationMs": 7,
+          "status": "completed"
+        },
+        {
+          "name": "extension_epoch_resolution",
+          "startedMs": 0,
+          "durationMs": 7,
+          "status": "completed"
+        },
+        {
+          "name": "retained_holder_relationships",
+          "startedMs": 8,
+          "durationMs": 0,
+          "status": "completed"
+        },
+        {
+          "name": "retained_holder_assessment",
+          "startedMs": 8,
+          "durationMs": 0,
+          "status": "completed"
+        },
+        {
+          "name": "current_creator",
+          "startedMs": 0,
+          "durationMs": 8,
+          "status": "completed"
+        },
+        {
+          "name": "market_pool_discovery",
+          "startedMs": 0,
+          "durationMs": 8,
+          "status": "completed"
+        },
+        {
+          "name": "holder_classification",
+          "startedMs": 0,
+          "durationMs": 11,
+          "status": "completed"
+        },
+        {
+          "name": "extended_holder_sample",
+          "startedMs": 8,
+          "durationMs": 10,
+          "status": "completed"
+        },
+        {
+          "name": "reference_sales",
+          "startedMs": 0,
+          "durationMs": 18,
+          "status": "completed"
+        },
+        {
+          "name": "bounded_history",
+          "startedMs": 8,
+          "durationMs": 25,
+          "status": "completed"
+        },
+        {
+          "name": "final_retained_evidence",
+          "startedMs": 33,
+          "durationMs": 5,
+          "status": "completed"
+        }
+      ],
+      "logicalEndpointReads": 12
+    }
+  ]
+}

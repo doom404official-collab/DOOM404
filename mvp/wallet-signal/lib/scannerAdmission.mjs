@@ -1,3 +1,4 @@
+import {traceSpan,traceEvent,withScannerTrace} from './scannerTrace.mjs';
 import {createHash,createHmac,randomUUID,timingSafeEqual} from 'node:crypto';
 import {isIP} from 'node:net';
 import {PublicKey} from '@solana/web3.js';
@@ -66,31 +67,31 @@ async function cacheBody(response){
  try{while(true){const r=await reader.read();if(r.done)break;size+=r.value.byteLength;if(size>262144){reader.cancel().catch(()=>{});return null;}parts.push(r.value);}const data=JSON.parse(Buffer.concat(parts).toString());if(data?.error||['unavailable','current_wallet_unavailable','capacity_limited'].includes(data?.status))return null;return data;}catch{return null;}finally{reader.releaseLock();}
 }
 export function makeScannerAdmission({env=process.env,store,identify=trustedScannerClient,reportUsage=withProviderUsage}={}){
- return async function run(request,handler,route){
+ return async function run(request,handler,route){return withScannerTrace(route,async()=>{
   let admission,ctx,timer;
   const db=store||createScannerQuotaStore({env});
   try{
    if(!authorized(request,route,env))return identityHeaders(zeroUsage(json({error:'Unauthorized'},401)),env);
    let inputTimer;const key=await Promise.race([inputKey(request,route,env),new Promise((_,reject)=>{inputTimer=setTimeout(()=>reject(new ScannerDenied('INPUT_DEADLINE',400)),2000)})]).finally(()=>clearTimeout(inputTimer));const client=identify(request,env),id=randomUUID();
-   admission=await db.admit({p_client:client,p_key:key,p_route:route,p_id:id,p_environment:scannerEnvironment(request,env),p_sha:env.VERCEL_GIT_COMMIT_SHA,p_deployment:env.VERCEL_DEPLOYMENT_ID});
-   if(admission.status==='CACHED'){const response=zeroUsage(json(admission.body,admission.httpStatus));response.headers.set('X-Glitch-Admission-Cache','HIT');return identityHeaders(response,env);}
+   admission=await traceSpan('admission',()=>db.admit({p_client:client,p_key:key,p_route:route,p_id:id,p_environment:scannerEnvironment(request,env),p_sha:env.VERCEL_GIT_COMMIT_SHA,p_deployment:env.VERCEL_DEPLOYMENT_ID}));
+   if(admission.status==='CACHED'){traceEvent('admission_cache_hit');const response=zeroUsage(json(admission.body,admission.httpStatus));response.headers.set('X-Glitch-Admission-Cache','HIT');return identityHeaders(response,env);}
    if(admission.status!=='ADMITTED')throw new ScannerDenied(admission.status||'QUOTA_STORE_UNAVAILABLE',['RATE_LIMIT','DUPLICATE','CONCURRENT_LIMIT'].includes(admission.status)?429:admission.status==='RELEASE_NOT_AUTHORIZED'?403:503,admission.retryAfter||5);
    if(admission.lease!==id||!Number.isInteger(admission.deadlineMs)||admission.deadlineMs<1||admission.deadlineMs>60000)throw new ScannerDenied('QUOTA_STORE_UNAVAILABLE');
    ctx={store:db,lease:id,controller:new AbortController(),closed:false,denial:null};
    const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{const error=new ScannerDenied('REQUEST_DEADLINE');ctx.denial=error;ctx.closed=true;ctx.controller.abort(error);reject(error);},admission.deadlineMs);});
-   const task=scannerContext.run(ctx,()=>wrappedUsage.has(route)?handler(request):reportUsage(handler,request));
+   const task=traceSpan('handler',()=>scannerContext.run(ctx,()=>wrappedUsage.has(route)?handler(request):reportUsage(handler,request)));
    const response=await Promise.race([task,deadline]);
    if(ctx.denial)throw ctx.denial;
    clearTimeout(timer);ctx.closed=true;ctx.controller.abort();
-   const body=request.method==='GET'?await cacheBody(response):null;
-   await db.finish({p_id:id,p_body:body,p_status:response.status});
+   const body=request.method==='GET'?await traceSpan('response_cache_projection',()=>cacheBody(response)):null;
+   await traceSpan('admission_finish',()=>db.finish({p_id:id,p_body:body,p_status:response.status}));
    admission=null;response.headers.set('X-Glitch-Admission','durable-v1');return identityHeaders(response,env);
   }catch(error){
    if(ctx){ctx.closed=true;ctx.controller.abort();}clearTimeout(timer);
    if(admission?.lease){try{await db.finish({p_id:admission.lease,p_body:null,p_status:503});}catch{}}
    const response=deny(isScannerDenied(error)?error:new ScannerDenied('SCANNER_UNAVAILABLE'));if(ctx?.attempts){for(const [name,value] of Object.entries({'Rpc-Requests':ctx.attempts.rpcHttp,'Rpc-Calls':ctx.attempts.rpcCalls,'Market-Requests':ctx.attempts.market,'Quote-Requests':ctx.attempts.quotes,'Provider-Http-Requests':ctx.attempts.other}))response.headers.set('X-Glitch-'+name,String(value));}return identityHeaders(response,env);
   }
- };
+ });};
 }
 installScannerProviderGuard();
 export const withScannerAdmission=makeScannerAdmission();

@@ -10,3 +10,10 @@ test('completed reports isolate sequential mints and reload without fetch',async
 test('missing, malformed and mismatched saved report identities fail closed',async()=>{
  const rows=database();assert.equal(await loadReport('../A'),null);const id=crypto.randomUUID();assert.equal(await loadReport(id),null);rows.set(id,{version:1,mint:'A',props:{result:{mint:'B'}}});assert.equal(await loadReport(id),null);
 });
+test('progressive updates retain report identity and reject cross-token replacement',async()=>{
+ const {updateReport}=await import('../lib/completedReport.mjs');database();
+ const id=await saveReport({result:{mint:'A'},evidenceRevision:1,investigationProgress:{stage:'deep_in_progress'}});
+ await updateReport(id,{result:{mint:'A'},evidenceRevision:2,workerEvidence:{history:'bounded'},investigationProgress:{stage:'bounded_complete'}});
+ assert.equal((await loadReport(id)).evidenceRevision,2);assert.equal((await loadReport(id)).workerEvidence.history,'bounded');
+ await assert.rejects(updateReport(id,{result:{mint:'B'}}),/MINT_MISMATCH/);assert.equal((await loadReport(id)).result.mint,'A');
+});
