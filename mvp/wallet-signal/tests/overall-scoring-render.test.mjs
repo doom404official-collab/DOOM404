@@ -47,7 +47,7 @@ test('dashboard observations do not invent running scans, ranking or missing num
  assert.match(html,/Evidence observations · not ranked/);
  assert.doesNotMatch(html,/Top 3 Overall Findings|Historical scanning continues|evidence is still being collected/);
  assert.match(html,/Limited assessment:/);
- assert.match(html,/aria-current="page"[^>]*>.*?g11-nav-full">Overall/);
+ assert.match(html,/aria-current="page"[^>]*>.*?g11-nav-full">Overview/);
  assert.equal((html.match(/class="g11-action"[^>]*>.*?<\/button>/g)||[]).length>=5,true);
  assert.match(html,/Liquidity &amp; Safety/);
 });

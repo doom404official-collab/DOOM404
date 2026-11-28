@@ -26,7 +26,7 @@ test('all four HUDs consume evidence without mutating assessments or inventing g
  assert.match(html,/Evidence Intelligence/);assert.doesNotMatch(html,/NaN|undefined|Infinity/);
  }
  const holders=renderToStaticMarkup(createElement(HUD,{assessment:a,selected:'holder_intelligence'}));
- assert.match(holders,/Aggregate concentration/);assert.doesNotMatch(holders,/independently owned|wallet-node/);
+ assert.match(holders,/Top-20 concentration/);assert.doesNotMatch(holders,/independently owned|wallet-node/);
  assert.deepEqual(a,before);
 });
 test('missing and partial evidence does not become verified or green status',()=>{

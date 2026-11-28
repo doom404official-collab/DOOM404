@@ -41,8 +41,8 @@ test('critical warnings stay in the scoreboard and top insights without a numeri
  base.flags=[f,{id:'severe_reference_exit_cost',severity:'critical',detail:'Severe exit cost'}];base.criticalRisk=true;
  base.coveragePct=100;base.riskScore=15;
  const html=renderToStaticMarkup(createElement(Panel,{assessment:base,selected:'overall'}));
- assert.ok(html.indexOf('Critical risk observed')<html.indexOf('Attribute score summary'));
- assert.ok(html.indexOf('Verified restricted sale')<html.indexOf('KEY TOKEN INSIGHTS'));
+ assert.match(html,/role="alert"/);
+ assert.ok(html.indexOf('Verified restricted sale')<html.indexOf('View supporting evidence'));assert.equal((html.match(/Verified restricted sale/g)||[]).length,1);
  assert.equal(base.riskScore,15);assert.doesNotMatch(html,/Maturity not established|Token Maturity/);
 });
 

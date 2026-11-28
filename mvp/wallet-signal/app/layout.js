@@ -14,3 +14,5 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
+import "./SimplifiedReport.css";

@@ -26,21 +26,21 @@ test('each dashboard tab renders exactly one consolidated disclaimer after optio
  assert.match(html,/<footer class="g11-disclaimer"><p>GLITCH Scanner provides evidence-based risk assessments/);
  assert.match(html,/<\/footer><\/section>$/);
 });
-test('persistent token identity and original mascot remain available with absent mint evidence',()=>{
+test('token identity stays available without decorative mascot or fabricated metadata',()=>{
  const html=renderToStaticMarkup(createElement(Dashboard,{}));
  assert.match(html,/Not assessed/);assert.match(html,/Not established/);
- assert.match(html,/DOOM404 official red-hooded robot mascot/);
- assert.match(html,/aria-label="Copy full mint address"/);
+ assert.doesNotMatch(html,/red-hooded robot mascot|header-banner.png/);assert.match(html,/Token metadata unavailable/);
+ assert.match(html,/>Copy mint</);
  assert.equal((html.match(/not financial advice/g)||[]).length,1);
 });
 
 test('report identity uses matching retained metadata and avoids repeated mint fallback',()=>{
  const props=replay();const liquidity={...props.reportedLiquidity,tokenMetadata:{mint:props.result.mint,name:'Example Token',symbol:'EXAMPLE'}};
  const html=renderToStaticMarkup(createElement(Dashboard,{...props,liquidity}));
- assert.match(html,/<span class="ti-token-name">Example Token<\/span>/);assert.doesNotMatch(html,/<h3>Example Token/);assert.match(html,/ti-symbol\">EXAMPLE/);
+ assert.match(html,/<h2>Example Token \(EXAMPLE\)<\/h2>/);
  assert.doesNotMatch(html,/<span role=\"status\"><\/span>/);
  const duplicate=renderToStaticMarkup(createElement(Dashboard,{...props,liquidity:{...liquidity,tokenMetadata:{mint:props.result.mint,name:'Paid',symbol:'PAID'}}}));
- assert.doesNotMatch(duplicate,/ti-token-name/);assert.match(duplicate,/ti-symbol">PAID/);
+ assert.doesNotMatch(duplicate,/ti-token-name/);assert.match(duplicate,/<h2>Paid<\/h2>/);
  assert.doesNotMatch(duplicate,/PROTECTED PREVIEW|>Full screen</);
  const wrong=renderToStaticMarkup(createElement(Dashboard,{...props,liquidity:{...liquidity,tokenMetadata:{...liquidity.tokenMetadata,mint:'wrong'}}}));
  assert.doesNotMatch(wrong,/Example Token/);

@@ -13,10 +13,10 @@ const render=(assessment,selected='overall')=>renderToStaticMarkup(createElement
 test('scoreboard precedes selectable attributes, insights and flags without mutating evidence',()=>{
  const args=replay(),before=structuredClone(args),assessment=practicalAssessmentV2(args),scores=structuredClone(assessment),html=render(assessment);
  assert.equal(assessment.coveragePct,83);assert.equal(assessment.riskScore,15.15);
- assert.ok(html.indexOf('Overall assessment')<html.indexOf('Attribute score summary'));
- assert.ok(html.indexOf('Attribute score summary')<html.indexOf('KEY TOKEN INSIGHTS'));
- assert.ok(html.indexOf('KEY TOKEN INSIGHTS')<html.indexOf('Prioritized risk flags'));
- assert.equal((html.match(/class="g11-attribute-card"/g)||[]).length,4);
+ assert.ok(html.indexOf('Overall assessment')<html.indexOf('Attribute-wise Risk Score'));
+ assert.ok(html.indexOf('Attribute-wise Risk Score')<html.indexOf('Risks Identified'));
+ assert.ok(html.indexOf('Risks Identified')<html.indexOf('Prioritized risk flags'));
+ assert.equal((html.match(/<button>/g)||[]).length,4);
  assert.match(html,/Observed risk floor/);assert.match(html,/83%/);
  assert.deepEqual(args,before);assert.deepEqual(assessment,scores);
 });
@@ -40,7 +40,7 @@ test('all ten criterion names are readable and their risk points match each engi
 });
 test('critical warnings open by default while no new score severity thresholds are introduced',()=>{
  const a=practicalAssessmentV2(replay());a.flags.unshift({id:'reference_exit_unavailable',severity:'critical',detail:'Reference sale unavailable.'});
- const html=render(a);assert.match(html,/g11-flag--critical" open=""/);assert.match(html,/Critical risk/);assert.match(html,/Reference sale unavailable/);
+ const html=render(a);assert.match(html,/role="alert"/);assert.match(html,/Reference sale unavailable/);
  assert.match(html,/higher means greater risk/);assert.doesNotMatch(html,/Low risk|Medium risk|High risk|safe rating/);
 });
 test('sparse evidence stays visibly incomplete and generic disclaimers do not repeat in panels',()=>{
