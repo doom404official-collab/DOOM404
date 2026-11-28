@@ -1,0 +1,63 @@
+{
+  "candidateSha": null,
+  "selectionMethod": "10 source-unused Solana mints from recent DexScreener profile snapshot plus10 deterministic hash-ranked mainnet mints from archived Solana token registry; no token forensic investigation before initial scan",
+  "selectionSeed": "DOOM404-RI107-20261128-unseen-selection",
+  "preflightSourceOccurrences": 0,
+  "scopeLimitation": "Actual protocol diversity is determined post-scan. This is investigation-core qualification; full hosted report qualification remains separate.",
+  "mints": [
+    "GfCYBjm53ccUbyyDUqWTQc2idTsjM1EQCPPYUiR3pump",
+    "436BcX8hF6ERozLniyL8d75bVJbRvxJJtdroKWC2pump",
+    "25AjGcSqMxJ9EFN3NN2P7j4rv7odDdnhjSHzaemgpump",
+    "6yiZmaeQSW3FUHYjqtzZFNSM6Xy4zJ89XeQRcg6mpump",
+    "GS514xunWdMXSMJmV1t3buC7AfWBgupe6EgiB3zNpump",
+    "FvNopjpk7upJ4GghufMrJJ7W8aaH2tdoEozDZtUbiYKD",
+    "FDubarsoPNtdArUFcoMEhhfcZT2Ahepzs3ggwgnGpump",
+    "D93retv2ARUMciip7EA4rUWtu653QhjQKCkni1FPpump",
+    "BFJbGUL1rWf22nF9CHAJuGzpQaxQeD79qT25TXXEpump",
+    "GiUpEeH93E5J5gQvgjB8v6rKx1guaPR7ZU2eaSppTx9Q",
+    "CizWKoDGhVXbFowZr3pMLxY5rnPr7yXtLNN2dQ2AbEDZ",
+    "Aovr4TdVH6qtZHcv4og6CLqn7gjNYtmDRQULYZSTz1Qf",
+    "BKGp1At3yLDK1NE2gfMuwv1QMAHBwnqgSdULsyzjUagA",
+    "4iPKfHxmYX29fr5nnXdNifA52GJKokWeRmQ67hApGySJ",
+    "AkAF22MXs5xcwH1BineDvrD81sFV1dCuXX5PQzYdko46",
+    "3gr25JueJADKQrmqeS6cRQukvbiNffHdMofj6xf7XBV5",
+    "H5iiBHeCGKkzucX5PwEn2cf2uWHyVnAg3aq5RRsWF5P8",
+    "9qRarZBguWMeD2QMZVxEyVYDWRFKJqbPbyDuJNCriojb",
+    "DYu4rwdqSRmeastBxQVrsRYzM6bZMGUMSB6cDfWNarw9",
+    "3npZ7QNBiRLYNrGqEy4Uefm5GXdruPBoxS7FktV2bkE3"
+  ],
+  "recent": [
+    "GfCYBjm53ccUbyyDUqWTQc2idTsjM1EQCPPYUiR3pump",
+    "436BcX8hF6ERozLniyL8d75bVJbRvxJJtdroKWC2pump",
+    "25AjGcSqMxJ9EFN3NN2P7j4rv7odDdnhjSHzaemgpump",
+    "6yiZmaeQSW3FUHYjqtzZFNSM6Xy4zJ89XeQRcg6mpump",
+    "GS514xunWdMXSMJmV1t3buC7AfWBgupe6EgiB3zNpump",
+    "FvNopjpk7upJ4GghufMrJJ7W8aaH2tdoEozDZtUbiYKD",
+    "FDubarsoPNtdArUFcoMEhhfcZT2Ahepzs3ggwgnGpump",
+    "D93retv2ARUMciip7EA4rUWtu653QhjQKCkni1FPpump",
+    "BFJbGUL1rWf22nF9CHAJuGzpQaxQeD79qT25TXXEpump",
+    "GiUpEeH93E5J5gQvgjB8v6rKx1guaPR7ZU2eaSppTx9Q"
+  ],
+  "legacy": [
+    "CizWKoDGhVXbFowZr3pMLxY5rnPr7yXtLNN2dQ2AbEDZ",
+    "Aovr4TdVH6qtZHcv4og6CLqn7gjNYtmDRQULYZSTz1Qf",
+    "BKGp1At3yLDK1NE2gfMuwv1QMAHBwnqgSdULsyzjUagA",
+    "4iPKfHxmYX29fr5nnXdNifA52GJKokWeRmQ67hApGySJ",
+    "AkAF22MXs5xcwH1BineDvrD81sFV1dCuXX5PQzYdko46",
+    "3gr25JueJADKQrmqeS6cRQukvbiNffHdMofj6xf7XBV5",
+    "H5iiBHeCGKkzucX5PwEn2cf2uWHyVnAg3aq5RRsWF5P8",
+    "9qRarZBguWMeD2QMZVxEyVYDWRFKJqbPbyDuJNCriojb",
+    "DYu4rwdqSRmeastBxQVrsRYzM6bZMGUMSB6cDfWNarw9",
+    "3npZ7QNBiRLYNrGqEy4Uefm5GXdruPBoxS7FktV2bkE3"
+  ],
+  "sources": [
+    "https://api.dexscreener.com/token-profiles/latest/v1",
+    "https://github.com/solana-labs/token-list/blob/main/src/tokens/solana.tokenlist.json"
+  ],
+  "engineSourceBase": "39a5f8710f066886ef523d754bf76eaf3cf525bb",
+  "vaultPreflight": {
+    "tablesChecked": 12,
+    "matchingRows": 0,
+    "manualEvidencePreloaded": false
+  }
+}
