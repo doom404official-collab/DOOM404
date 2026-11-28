@@ -1,0 +1,689 @@
+{
+  "candidateSha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+  "releaseReady": false,
+  "rows": [
+    {
+      "requirement": "RI-91",
+      "title": "ANSEM material transfer",
+      "previousStatus": "Partially complete",
+      "rootCause": "Attribution and 650M-token checked transfer recovered; recipient purpose/control and overlap incomplete.",
+      "correctiveImplementation": "Fresh mint/account/authority snapshot and generic material-recipient binding.",
+      "acceptanceEvidence": "Known live core retains transfer; no sale or creator-beneficial-control inference.",
+      "liveValidationResult": "Known live core retains transfer; no sale or creator-beneficial-control inference.",
+      "remainingLimitation": "Subsequent tracing draft inaccessible/unpublished; historical 49.23% overlap not established.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-92",
+      "title": "CATE acquisition",
+      "previousStatus": "Partially complete",
+      "rootCause": "Creator established; native launch purchase was previously undecoded.",
+      "correctiveImplementation": "Protocol-role/typed-event/raw token/native consideration reconciliation.",
+      "acceptanceEvidence": "Actual initial purchase 96449438144093 raw at six decimals recovered through live core.",
+      "liveValidationResult": "Actual initial purchase 96449438144093 raw at six decimals recovered through live core.",
+      "remainingLimitation": "Acquisition history remains bounded; no lifetime completeness claim.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-93",
+      "title": "DCTY rewards",
+      "previousStatus": "Partially complete",
+      "rootCause": "Recorded 26/26 did not establish live discovery.",
+      "correctiveImplementation": "Automatic token-account retrieval, bounded cursor continuation and distinct reward producer.",
+      "acceptanceEvidence": "Current live cold26/26 and warm26/26 exact transaction+instruction+raw reference matches; no runtime signature input.",
+      "liveValidationResult": "Current live cold26/26 and warm26/26 exact transaction+instruction+raw reference matches; no runtime signature input.",
+      "remainingLimitation": "Core qualification verified; full hosted pipeline acceptance remains open.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-94",
+      "title": "Routed transactions",
+      "previousStatus": "Partially complete",
+      "rootCause": "Nested legs, historic suffixes, temporary quote accounts and native fee variants caused misses.",
+      "correctiveImplementation": "Pump/AMM and LaunchLab economic-boundary decoders; zero-net intermediate exclusion; semantic dedup.",
+      "acceptanceEvidence": "Prior failed legacy-sale token now12/12 reference events cold/warm.",
+      "liveValidationResult": "Prior failed legacy-sale token now12/12 reference events cold/warm.",
+      "remainingLimitation": "Not universal Jupiter/cross-protocol support. Three newly verified transfer outflows remain undiscovered and unsupported by current narrow movement decoder.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-95",
+      "title": "Basket creator history",
+      "previousStatus": "Partially complete",
+      "rootCause": "Designated creator differs from creation user/funding sender.",
+      "correctiveImplementation": "Role-aware LaunchLab attribution and historical-account discovery.",
+      "acceptanceEvidence": "Normal core returns bounded zero events, not verified lifetime inactivity.",
+      "liveValidationResult": "Normal core returns bounded zero events, not verified lifetime inactivity.",
+      "remainingLimitation": "Historical creator acquisition/closed non-ATA accounts unresolved; zero current balance is not evidence of sale.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-96",
+      "title": "Basket controls",
+      "previousStatus": "Partially complete",
+      "rootCause": "Original eight-account membership not retained; current material controls partly unresolved.",
+      "correctiveImplementation": "Generic Streamflow receipt/metadata/PDA/current controls/upgrade checks.",
+      "acceptanceEvidence": "Current Streamflow escrow verified; material unknown allocations retained.",
+      "liveValidationResult": "Current Streamflow escrow verified; material unknown allocations retained.",
+      "remainingLimitation": "Original eight/28.19% cannot be reconstructed from retained membership; other controlling programs lack supported full decoders.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-97",
+      "title": "Broader attribution",
+      "previousStatus": "Partially complete",
+      "rootCause": "Fixture-bound creation roles and optional LaunchLab suffix limits.",
+      "correctiveImplementation": "Pump recognized layouts and actual mint birth; LaunchLab designated creator and validated optional suffix.",
+      "acceptanceEvidence": "Original blind supported attribution8/10; corrected first holdout5/5; newest holdout4/4 asserted supported roles correct.",
+      "liveValidationResult": "Original blind supported attribution8/10; corrected first holdout5/5; newest holdout4/4 asserted supported roles correct.",
+      "remainingLimitation": "Old direct/custom launches remain unresolved. Future and unrecognized versions unsupported.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-98",
+      "title": "Ten-second performance",
+      "previousStatus": "Partially complete",
+      "rootCause": "Prior full mandatory investigation median14.32s.",
+      "correctiveImplementation": "Bounded pagination, immutable reuse, deduplication and independent parallel work.",
+      "acceptanceEvidence": "Latest core-only holdout median4.794s cold/4.508s warm; P958.516s/6.173s.",
+      "liveValidationResult": "Latest core-only holdout median4.794s cold/4.508s warm; P958.516s/6.173s.",
+      "remainingLimitation": "Full-report ten-second target UNQUALIFIED. Initial/decision-ready/full report timings not measured by core harness.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-99",
+      "title": "Architecture audit",
+      "previousStatus": "Partially complete",
+      "rootCause": "PAID pinned production paths and manual historical cache could mask first-scan gaps.",
+      "correctiveImplementation": "Source import audit; pinned route retirement; isolated cache preflight; provenance separation.",
+      "acceptanceEvidence": "Inventory retained; qualification cache independent of production token evidence.",
+      "liveValidationResult": "Inventory retained; qualification cache independent of production token evidence.",
+      "remainingLimitation": "Comprehensive ingestion/provenance and full hosted autonomy audit remain open.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-100",
+      "title": "Token-specific production exceptions",
+      "previousStatus": "Partially complete",
+      "rootCause": "Pinned PAID mint/snapshot/pool/run rules in active evidence paths.",
+      "correctiveImplementation": "Generic schema/hash/PDA/mint-bound proofs; fixture migration; privileged pinned routes410.",
+      "acceptanceEvidence": "Known-literal production import audit and unrelated-mint regression passed. No active token-specific investigation path found in audited graph.",
+      "liveValidationResult": "Known-literal production import audit and unrelated-mint regression passed. No active token-specific investigation path found in audited graph.",
+      "remainingLimitation": "Two dated offline maintenance guards retain PAID allowlists, unreachable from app graph. Audit scope is explicit, not proof over every database/configuration record.",
+      "finalStatus": "Complete and verified",
+      "statusScope": "Audited production source import graph and known-token literals only"
+    },
+    {
+      "requirement": "RI-101",
+      "title": "Protocol discovery",
+      "previousStatus": "Partially complete",
+      "rootCause": "Unknown launches could be confused with generic payer/mint authority.",
+      "correctiveImplementation": "Actual token program, supported creation discriminator/version and role evidence.",
+      "acceptanceEvidence": "SPL/Token22 and supported Pump/LaunchLab mechanisms exercised.",
+      "liveValidationResult": "SPL/Token22 and supported Pump/LaunchLab mechanisms exercised.",
+      "remainingLimitation": "Full supported protocol matrix and all alternative launch/migration versions not live-qualified.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-102",
+      "title": "Creator discovery",
+      "previousStatus": "Partially complete",
+      "rootCause": "Manual attribution and sparse origin indices.",
+      "correctiveImplementation": "Indexed origin, existing Helius fallback, bounded standard receipt fallback and role corroboration.",
+      "acceptanceEvidence": "Newest4/4 asserted supported creators match independent post-scan official-role review;6remain unresolved.",
+      "liveValidationResult": "Newest4/4 asserted supported creators match independent post-scan official-role review;6remain unresolved.",
+      "remainingLimitation": "Closed non-ATA history and direct/custom creator roles remain unresolved.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-103",
+      "title": "Adaptive history",
+      "previousStatus": "Partially complete",
+      "rootCause": "Missing historical accounts and producer-specific replay gaps.",
+      "correctiveImplementation": "Deterministic token accounts/cursors/decoder epoch/reward/route/material-transfer branches.",
+      "acceptanceEvidence": "Known live scans and source tests pass; warm continuation adds30events on one holdout without loss.",
+      "liveValidationResult": "Known live scans and source tests pass; warm continuation adds30events on one holdout without loss.",
+      "remainingLimitation": "Three accessible transfer receipts never enter retained cold/warm caches. General alternate historical indices incomplete.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-104",
+      "title": "Fallback hierarchy",
+      "previousStatus": "Partially complete",
+      "rootCause": "Provider gaps and bounded failures need honest terminal states.",
+      "correctiveImplementation": "Primary indexed origin, Helius fallback, bounded standard signatures; quota/deadline/continuation states.",
+      "acceptanceEvidence": "Existing quotas retained; incomplete history never marked complete.",
+      "liveValidationResult": "Existing quotas retained; incomplete history never marked complete.",
+      "remainingLimitation": "Comprehensive alternate account-history fallback and deployed failure injection remain unqualified.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-105",
+      "title": "Autonomous allocation",
+      "previousStatus": "Partially complete",
+      "rootCause": "Program ownership alone insufficient for lock/control claims.",
+      "correctiveImplementation": "Generic Streamflow fresh metadata/authority/upgrade decoding; observed concentration distinct from control.",
+      "acceptanceEvidence": "FLOAT/Basket current supported Streamflow checks retained.",
+      "liveValidationResult": "FLOAT/Basket current supported Streamflow checks retained.",
+      "remainingLimitation": "Arbitrary vesting, escrow, Raydium/Meteora/Magna control coverage incomplete; no unrestricted-selling claim from unknown ownership.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-106",
+      "title": "Automatic persistence",
+      "previousStatus": "Partially complete",
+      "rootCause": "Manual evidence/cache not proof of runtime retention.",
+      "correctiveImplementation": "Atomic CAS finish with append-only normalized evidence; isolated qualification archive; private/public separation.",
+      "acceptanceEvidence": "Postgres role/idempotence/concurrency tests passed; live core observations retained automatically.",
+      "liveValidationResult": "Postgres role/idempotence/concurrency tests passed; live core observations retained automatically.",
+      "remainingLimitation": "Hosted full normal-runtime persistence flow and comprehensive provenance qualification remain open.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-107",
+      "title": "Blind20",
+      "previousStatus": "Partially complete",
+      "rootCause": "Known fixtures cannot establish unseen autonomy.",
+      "correctiveImplementation": "Frozen ace candidate,20unseen source/cache-zero mints,40cold/warm captures before references.",
+      "acceptanceEvidence": "All results including failures retained; initial8/10supported creators and1event; later corrected replay preserved separately.",
+      "liveValidationResult": "All results including failures retained; initial8/10supported creators and1event; later corrected replay preserved separately.",
+      "remainingLimitation": "Initial blind FAILED. Core-only harness does not certify full report holder/liquidity/risk scope.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-108",
+      "title": "Independent comparison",
+      "previousStatus": "Partially complete",
+      "rootCause": "Counts alone hide mismatched/missing events.",
+      "correctiveImplementation": "Post-scan independent bounded references, official roles/opcodes, signature+instruction+type+raw matching.",
+      "acceptanceEvidence": "Initial reference36events; newest30accessibleevents including3physical transfers; newest27/30both phases.",
+      "liveValidationResult": "Initial reference36events; newest30accessibleevents including3physical transfers; newest27/30both phases.",
+      "remainingLimitation": "Not lifetime recall. Assertions outside bounded reference remain unverified. Full holder/liquidity/risk/control reference audits incomplete.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-109",
+      "title": "Fresh holdouts",
+      "previousStatus": "Partially complete",
+      "rootCause": "Corrections invalidate tuning-set generalization claims.",
+      "correctiveImplementation": "First fresh10 on650; second fresh10 on5328, both cache/source preflight and post-scan references.",
+      "acceptanceEvidence": "First19/30failed; corrected legacy case12/12. Second27/30failed after3outflows verified.",
+      "liveValidationResult": "First19/30failed; corrected legacy case12/12. Second27/30failed after3outflows verified.",
+      "remainingLimitation": "Correct reusable retrieval/decoding defect; freeze new SHA and evaluate another genuinely fresh10. Current holdout is now a development case.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    },
+    {
+      "requirement": "RI-110",
+      "title": "Cold/warm",
+      "previousStatus": "Partially complete",
+      "rootCause": "Retention and dynamic freshness need separate proof.",
+      "correctiveImplementation": "Automatically retained core observations, decoder-aware reuse and fresh current balances.",
+      "acceptanceEvidence": "Newest10:0lost event keys,0duplicates;4attributed wallets freshly observed; requests138→132.",
+      "liveValidationResult": "Newest10:0lost event keys,0duplicates;4attributed wallets freshly observed; requests138→132.",
+      "remainingLimitation": "6unresolved creator cases have no creator-wallet freshness proof. Full hosted/report/cache qualification remains open.",
+      "finalStatus": "Partially complete",
+      "statusScope": "Overall requirement remains open"
+    }
+  ],
+  "earlierRequirements": {
+    "inherited": [
+      {
+        "requirement": "RI-16",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Aggregate flag used >50/high only. Versioned half-open policy now handles every requested boundary and minimum observed samples."
+      },
+      {
+        "requirement": "RI-17",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Independent largest-wallet alert was absent. Implemented ≥20 critical and exact boundaries. Full custodian/vesting/treasury control classification still not established for all candidates."
+      },
+      {
+        "requirement": "RI-18",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Weighted score could obscure a severe finding. Independent critical banner and always-visible alert list preserve the numerical score."
+      },
+      {
+        "requirement": "RI-19",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "No compound explanation. Added concentration ≥30% plus quote metric ≥5% conditional interaction, with zero additional score points."
+      },
+      {
+        "requirement": "RI-20",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Old critical classification followed saturated depth points, including 15% large-order impact. Replaced with size-specific ≥20% critical policy; 10–<20 high. Numerical depth formula retained."
+      },
+      {
+        "requirement": "RI-21",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Quote failures discarded all observations. Per-size provider timeout/error/invalid-route evidence retained; no failure becomes executable=false. Complete protocol-specific failure taxonomy is not yet available for every adapter."
+      },
+      {
+        "requirement": "RI-22",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Verified negative reference execution can fully assess the depth criterion; missing quote metrics leave it incomplete. Adverse observations do not reduce coverage. No complete live TOMO replay claimed."
+      },
+      {
+        "requirement": "RI-23",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Compact quote cells accepted only fee-inclusive values. Shared canonical metric selection now powers compact cells and chart; numerical recovery shortfalls remain visible with their actual basis."
+      },
+      {
+        "requirement": "RI-24",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Shared quote projection preserves fee basis and restricts proceeds examples; focused parity tests cover all three metrics."
+      },
+      {
+        "requirement": "RI-25",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Alchemy route identifier appeared as a protocol. Provider, quote source, routing and returned pool addresses are separate; underlying protocol remains unresolved when not independently identified."
+      },
+      {
+        "requirement": "RI-26",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Existing direct pool controls cover PumpSwap and Raydium CPMM; up to two candidate pools are inspected. No new Orca/CLMM/Meteora withdrawal decoder was implemented. No quoted route or low LP claims is called permanently locked."
+      },
+      {
+        "requirement": "RI-27",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Earliest-three candidates and two supported creator decoders limit discovery. Expanded to twelve bounded candidates. FLOAT LaunchLab role retained; metadata authority is explicitly distinct. GTA6/ANSEM/SI/TRUMP complete attribution remains unresolved."
+      },
+      {
+        "requirement": "RI-28",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Expanded bounded candidate window and explicit terminal metadata; no unsupported generic fee-payer/authority becomes project creator. Additional archival pagination/unsupported launch decoding remains open."
+      },
+      {
+        "requirement": "RI-29",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Enrichment required a previously verified ≥1% purchase, excluding FLOAT with zero purchases. Positive holdings plus zero acquired events now trigger the existing two spare reads. Added a strict direct SPL receipt verifier; actual FLOAT acquisition mechanism remains unestablished."
+      },
+      {
+        "requirement": "RI-30",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Nine transactions = one creation plus eight selected recent transactions. Exposed bounded stop reason, retained event classes and progressive early token-account query without raising the 18-request cap. Lifetime pagination remains incomplete."
+      },
+      {
+        "requirement": "RI-31",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "PAID exact six-to-34 aggregation and 73,894.650006 diagnostic difference preserved. Missing opening balance and continuous history prevent a reconciled balance label. No invented receipt."
+      },
+      {
+        "requirement": "RI-32",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Incomplete creator history event zeroes now say “None recovered in assessed history”; current verified zero balance stays numeric."
+      },
+      {
+        "requirement": "RI-33",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Existing transaction reuse, top-three prioritization, dust and mint filters retained. No common ownership claim. Broader exchange-source exclusion and additional relationship history remain unresolved."
+      },
+      {
+        "requirement": "RI-34",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "RPC largest-account endpoint returns at most twenty token accounts; exclusions/grouping produce 17–19 wallets. Counts/scope exposed. No approved paginated holder index was added, so twenty eligible wallets cannot always be recovered."
+      },
+      {
+        "requirement": "RI-35",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Existing same-owner aggregation retained; program/custody/vesting/treasury allocation taxonomy remains incomplete. Program-account exclusions must not be interpreted as verified infrastructure."
+      },
+      {
+        "requirement": "RI-36",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Active fee-config authority can change both rate and cap; current 1% is not a future maximum. Alert now critical with supported 100% protocol rate ceiling, cap and epoch caveats. Existing 35-point shared criterion unchanged."
+      },
+      {
+        "requirement": "RI-37",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Configured and mutable fee findings shared 35 points. Grouped into one transfer-fee control finding; supporting technical evidence and criterion table retained."
+      },
+      {
+        "requirement": "RI-38",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Critical status, weighted risk, coverage, drivers and unresolved items shown independently; publication threshold unchanged."
+      },
+      {
+        "requirement": "RI-39",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Creator 60% = assessed direct-wallet-exposure criterion; remaining 40% disposition history remains incomplete. API completion does not earn coverage. Attribution alone does not prove history or independence."
+      },
+      {
+        "requirement": "RI-40",
+        "inheritedStatus": "Partially complete",
+        "currentStatus": "Partially complete",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "59.5/63/66.5/70 = 17/18/19/20 × 3.5 distribution coverage, separate from relationship criterion. Saturation exception removed. Eligibility-classification limitations remain as RI-35."
+      },
+      {
+        "requirement": "RI-41",
+        "inheritedStatus": "Complete and verified",
+        "currentStatus": "Complete and verified",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Zero-coverage attributes are unassessed; partial zero points include missing-criteria explanation. Critical alerts remain independent."
+      },
+      {
+        "requirement": "RI-42",
+        "inheritedStatus": "Implemented but awaiting verification",
+        "currentStatus": "Implemented but awaiting verification",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Coverage text and bar follow requested completeness bands; text semantics retained. Physical Android review remains required."
+      },
+      {
+        "requirement": "RI-43",
+        "inheritedStatus": "Implemented but awaiting verification",
+        "currentStatus": "Implemented but awaiting verification",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "One numerical-band policy drives arcs, numbers, attribute bars and classification labels across five tabs. Exact HEX bands and neutral low/partial exception are regression-tested. Numerical scores and coverage calculations unchanged."
+      },
+      {
+        "requirement": "RI-44",
+        "inheritedStatus": "Implemented but awaiting verification",
+        "currentStatus": "Implemented but awaiting verification",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Individual icons, headings, status labels and critical left border use evidence-specific severity. Unresolved uses grey question mark, context grey information, low/unclassified positive points muted neutral. Known quote and fee criterion tiers remain distinct from overall risk."
+      },
+      {
+        "requirement": "RI-45",
+        "inheritedStatus": "Implemented but awaiting verification",
+        "currentStatus": "Implemented but awaiting verification",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Verified critical finding triggers the red assessment accent and CRITICAL RISK IDENTIFIED banner below its score, overrides reassuring colour/status and sorts before every other finding. Score retained, even when overall score unpublished."
+      },
+      {
+        "requirement": "RI-46",
+        "inheritedStatus": "Implemented but awaiting verification",
+        "currentStatus": "Implemented but awaiting verification",
+        "acceptanceScope": "Inherited recorded status; not newly certified by core qualification.",
+        "remainingLimitation": "Frozen panel/tab structure preserved. Numerical boundary, five-tab, mixed-severity, incomplete/zero/critical, mobile/desktop and accessible contrast checks passed in browser emulation. Owner physical Android acceptance remains open."
+      }
+    ],
+    "missing": [
+      {
+        "requirement": "RI-47",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-48",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-49",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-50",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-51",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-52",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-53",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-54",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-55",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-56",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-57",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-58",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-59",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-60",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-61",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-62",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-63",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-64",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-65",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-66",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-67",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-68",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-69",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-70",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-71",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-72",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-73",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-74",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-75",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-76",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-77",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-78",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-79",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-80",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-81",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-82",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-83",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-84",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-85",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-86",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-87",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-88",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-89",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      },
+      {
+        "requirement": "RI-90",
+        "currentStatus": "Blocked with specific reason",
+        "remainingLimitation": "No current per-requirement acceptance artifact was recovered during this closure review. Prior work is preserved; no completion is inferred."
+      }
+    ]
+  }
+}

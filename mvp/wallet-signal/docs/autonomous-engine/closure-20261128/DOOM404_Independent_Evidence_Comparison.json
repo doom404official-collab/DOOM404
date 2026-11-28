@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 2,
+  "updatedAt": "2026-11-28T20:11:08.546Z",
+  "releaseReady": false,
+  "integratedCandidateSha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+  "sourcePublicationSha": "4303f624a0c17c155db3806102797bc9928fbee9",
+  "deployedCandidateSha": "e9be17b5591511abeb6d7454c031d80c20ef6dc2",
+  "productionPromoted": false,
+  "scope": "Isolated normal investigation core. Not full hosted application or full-report qualification.",
+  "publication": "Sanitized summaries only; private receipts, Vault records, cursors and internal provenance are excluded.",
+  "ci": [
+    {
+      "id": 46183140862,
+      "name": "GLITCH LQ08C offline execution contract",
+      "branch": "integration/glitch-app-main-20261118",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46183140862"
+    },
+    {
+      "id": 46183140878,
+      "name": "GLITCH Liquidity offline recovery tests",
+      "branch": "integration/glitch-app-main-20261118",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46183140878"
+    },
+    {
+      "id": 46183140839,
+      "name": "GLITCH Liquidity LQ08 runtime contract offline",
+      "branch": "integration/glitch-app-main-20261118",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46183140839"
+    },
+    {
+      "id": 46183140855,
+      "name": "GLITCH LQ08 automatic worker offline gate",
+      "branch": "integration/glitch-app-main-20261118",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46183140855"
+    },
+    {
+      "id": 46183140811,
+      "name": "GLITCH Liquidity worker offline safety tests",
+      "branch": "integration/glitch-app-main-20261118",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46183140811"
+    },
+    {
+      "id": 46183135343,
+      "name": "Scanner security and regression",
+      "branch": "integration/glitch-app-main-20261118",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46183135343"
+    },
+    {
+      "id": 46182735852,
+      "name": "Scanner independent post-scan reference collection",
+      "branch": "qualification/autonomous-engine-20261128",
+      "status": "completed",
+      "conclusion": "skipped",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46182735852"
+    },
+    {
+      "id": 46182735851,
+      "name": "Scanner security and regression",
+      "branch": "qualification/autonomous-engine-20261128",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46182735851"
+    },
+    {
+      "id": 46182735864,
+      "name": "Scanner isolated autonomous core qualification",
+      "branch": "qualification/autonomous-engine-20261128",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46182735864"
+    }
+  ],
+  "coreBenchmarks": [
+    {
+      "kind": "known",
+      "phase": "cold",
+      "durationMs": {
+        "n": 12,
+        "median": 5971.5,
+        "p95": 10067,
+        "max": 10067
+      },
+      "requests": {
+        "n": 12,
+        "median": 17,
+        "p95": 18,
+        "max": 18
+      },
+      "totalRequests": 204
+    },
+    {
+      "kind": "known",
+      "phase": "warm",
+      "durationMs": {
+        "n": 12,
+        "median": 5225,
+        "p95": 7934,
+        "max": 7934
+      },
+      "requests": {
+        "n": 12,
+        "median": 16,
+        "p95": 17,
+        "max": 17
+      },
+      "totalRequests": 191
+    },
+    {
+      "kind": "holdout",
+      "phase": "cold",
+      "durationMs": {
+        "n": 10,
+        "median": 4794,
+        "p95": 8516,
+        "max": 8516
+      },
+      "requests": {
+        "n": 10,
+        "median": 14.5,
+        "p95": 18,
+        "max": 18
+      },
+      "totalRequests": 138
+    },
+    {
+      "kind": "holdout",
+      "phase": "warm",
+      "durationMs": {
+        "n": 10,
+        "median": 4508,
+        "p95": 6173,
+        "max": 6173
+      },
+      "requests": {
+        "n": 10,
+        "median": 14,
+        "p95": 18,
+        "max": 18
+      },
+      "totalRequests": 132
+    }
+  ],
+  "budget": {
+    "globalRpcDailyLimit": 6000,
+    "globalRpcDailyUsed": 5680,
+    "globalRpcDailyRemaining": 320,
+    "alchemyDailyUsed": 5106,
+    "heliusDailyUsed": 574,
+    "observedAt": "2026-11-28T20:11:08.546Z",
+    "note": "Read from existing durable counters; budgets unchanged."
+  },
+  "status": "Partially complete",
+  "matchingKey": [
+    "mint",
+    "transaction signature",
+    "outer instruction index",
+    "inner instruction index",
+    "event class",
+    "raw amount"
+  ],
+  "referenceScope": "After captures only: at most12earliest mint receipts and12earliest scanner-discovered token-account receipts via existing provider. Incomplete lifetime and not all report domains.",
+  "independence": "Separate post-scan reviewer uses official protocol roles/opcodes and actual raw balances; newest comparison did not call production event producers. Native wallet-cost/holder/liquidity/control/risk verification excluded.",
+  "known": {
+    "DCTY": {
+      "referenceEvents": 26,
+      "coldMatches": 26,
+      "warmMatches": 26,
+      "classification": "Reward receipts, not purchases",
+      "runtimeReferenceSignatureInput": false
+    },
+    "priorFailedLegacySaleCase": {
+      "referenceEvents": 12,
+      "coldMatches": 12,
+      "warmMatches": 12
+    }
+  },
+  "initialBlindReference": {
+    "tokens": 20,
+    "events": 36,
+    "source650Recovered": 34,
+    "missedExplicitBurns": 2,
+    "latestSourceKnownReplay": "Signed-burn correction exercised live on original failed token; original blind set not fully rerun at5328."
+  },
+  "newestHoldout": {
+    "tokens": 10,
+    "referenceEvents": 30,
+    "coldMatched": 27,
+    "warmMatched": 27,
+    "coldRecall": 0.9,
+    "warmRecall": 0.9,
+    "falseCreatorAssertions": 0,
+    "creatorPrecisionWithinFourAsserted": 1,
+    "creatorSuccessWithinFourSupported": 1,
+    "overallEventPrecision": null,
+    "classificationPrecisionWithinMatchedReference": 1,
+    "limitation": "Outside-reference asserted events are unverified, so overall historical precision is not100%. Six unresolved creators are not false attributions.",
+    "rows": [
+      {
+        "mint": "PgFtGGquvnv2zEkjG2N2QPvBTBrafuExGYEqahRpump",
+        "assertedCreator": true,
+        "creatorCorrect": true,
+        "referenceEvents": 2,
+        "recoveredCold": 2,
+        "recoveredWarm": 2,
+        "missedAccessibleEvents": 0,
+        "coldAssertions": 2,
+        "warmAssertions": 2,
+        "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+      },
+      {
+        "mint": "47P6Y81cVuCQFYguHHrjMyVpHufkmTTTyuKxaPB5EC1E",
+        "assertedCreator": false,
+        "creatorCorrect": null,
+        "referenceEvents": 0,
+        "recoveredCold": 0,
+        "recoveredWarm": 0,
+        "missedAccessibleEvents": 0,
+        "coldAssertions": 0,
+        "warmAssertions": 0,
+        "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+      },
+      {
+        "mint": "6C9r2gzu8Pr54hTevHo3x5gSj9JqtpApj7obJnrtpump",
+        "assertedCreator": true,
+        "creatorCorrect": true,
+        "referenceEvents": 12,
+        "recoveredCold": 12,
+        "recoveredWarm": 12,
+        "missedAccessibleEvents": 0,
+        "coldAssertions": 14,
+        "warmAssertions": 14,
+        "outsideReferenceAssertionsMustNotBeCalledFalse": 2
+      },
+      {
+        "mint": "7sgu7H7zP2xt1AXqRzjcWMrZYvip3ML1fH7vhixDpump",
+        "assertedCreator": true,
+        "creatorCorrect": true,
+        "referenceEvents": 12,
+        "recoveredCold": 9,
+        "recoveredWarm": 9,
+        "missedAccessibleEvents": 3,
+        "coldAssertions": 21,
+        "warmAssertions": 51,
+        "outsideReferenceAssertionsMustNotBeCalledFalse": 12
+      },
+      {
+        "mint": "4KXCDChFWqgKdBWzYTaZa76SJAcip8p1n5ky2Pdopump",
+        "assertedCreator": true,
+        "creatorCorrect": true,
+        "referenceEvents": 4,
+        "recoveredCold": 4,
+        "recoveredWarm": 4,
+        "missedAccessibleEvents": 0,
+        "coldAssertions": 4,
+        "warmAssertions": 4,
+        "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+      },
+      {
+        "mint": "2GPWmqQNmaAL8Vj48ETdjeuXd62snKMyZXGyGWjd3Ugw",
+        "assertedCreator": false,
+        "creatorCorrect": null,
+        "referenceEvents": 0,
+        "recoveredCold": 0,
+        "recoveredWarm": 0,
+        "missedAccessibleEvents": 0,
+        "coldAssertions": 0,
+        "warmAssertions": 0,
+        "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+      },
+      {
+        "mint": "AASZr8AE3AK6nuSv7vJSdMgAUhKhsbg4iuRb1M81ETMN",
+        "assertedCreator": false,
+        "creatorCorrect": null,
+        "referenceEvents": 0,
+        "recoveredCold": 0,
+        "recoveredWarm": 0,
+        "missedAccessibleEvents": 0,
+        "coldAssertions": 0,
+        "warmAssertions": 0,
+        "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+      },
+      {
+        "mint": "FcjViE1oVbXFza5ry9Q7WZ9XNd95zu1LqEiSUdeJMPTP",
+        "assertedCreator": false,
+        "creatorCorrect": null,
+        "referenceEvents": 0,
+        "recoveredCold": 0,
+        "recoveredWarm": 0,
+        "missedAccessibleEvents": 0,
+        "coldAssertions": 0,
+        "warmAssertions": 0,
+        "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+      },
+      {
+        "mint": "488DGeMxRHmofoEtfrPE6geMT7EzwP9HMn76cDq5ZKwt",
+        "assertedCreator": false,
+        "creatorCorrect": null,
+        "referenceEvents": 0,
+        "recoveredCold": 0,
+        "recoveredWarm": 0,
+        "missedAccessibleEvents": 0,
+        "coldAssertions": 0,
+        "warmAssertions": 0,
+        "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+      },
+      {
+        "mint": "76aYNHbDfHemxSS7vmh6eJGfjodK8m7srCxiYCrKxzY1",
+        "assertedCreator": false,
+        "creatorCorrect": null,
+        "referenceEvents": 0,
+        "recoveredCold": 0,
+        "recoveredWarm": 0,
+        "missedAccessibleEvents": 0,
+        "coldAssertions": 0,
+        "warmAssertions": 0,
+        "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+      }
+    ]
+  },
+  "newestDefect": {
+    "count": 3,
+    "mechanism": "Token-2022 transferChecked to new associated token accounts, with raw annotation instruction and single-signer encoded multisig authority fields.",
+    "observation": "Exact source decreases and destination increases are1000000000000,1000000000000,100000000000 raw, decimals6.",
+    "classification": "Physical external transfer out; economic purpose and beneficiary relationship unresolved. No sale claim.",
+    "retrieval": "All3signatures absent from retained transactionCache, creatorHistoryCheckpoint and adaptiveCreator for cold and warm observations.",
+    "decoder": "Current narrow direct movement checks reject annotation program, Token22 outgoing/new destination and encoded multisig authority pattern. This is a latent decoder gap in addition to discovery gap.",
+    "persistence": "Cannot classify absent events as persistence failure. No event reached final report.",
+    "correctiveAction": "Investigate targeted cursor/discovery coverage, then implement authenticated general checked-transfer/account-birth proof without adding token/address/signature production constants. Replay, cross-token regression, freeze and fresh holdout required.",
+    "status": "Open; no unsafe decoder broadening committed."
+  },
+  "integrity": {
+    "manualIntelligenceInterventionDuringBlind": 0,
+    "inappropriateTokenSpecificActivePathsFoundAfterCorrection": 0,
+    "fabricatedCreatorAssertionsFoundInReviewedScope": 0,
+    "fabricatedEventsFoundInReviewedScope": 0,
+    "unsupportedDefinitiveOwnershipClaimsFoundInReviewedScope": 0,
+    "note": "Observed counts apply only to independently reviewed subset; incomplete audit cannot establish global absence."
+  }
+}

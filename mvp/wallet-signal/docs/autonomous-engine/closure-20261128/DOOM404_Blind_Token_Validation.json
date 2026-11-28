@@ -1,0 +1,609 @@
+{
+  "schemaVersion": 2,
+  "updatedAt": "2026-11-28T20:11:08.546Z",
+  "releaseReady": false,
+  "integratedCandidateSha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+  "sourcePublicationSha": "4303f624a0c17c155db3806102797bc9928fbee9",
+  "deployedCandidateSha": "e9be17b5591511abeb6d7454c031d80c20ef6dc2",
+  "productionPromoted": false,
+  "scope": "Isolated normal investigation core. Not full hosted application or full-report qualification.",
+  "publication": "Sanitized summaries only; private receipts, Vault records, cursors and internal provenance are excluded.",
+  "ci": [
+    {
+      "id": 46183140862,
+      "name": "GLITCH LQ08C offline execution contract",
+      "branch": "integration/glitch-app-main-20261118",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46183140862"
+    },
+    {
+      "id": 46183140878,
+      "name": "GLITCH Liquidity offline recovery tests",
+      "branch": "integration/glitch-app-main-20261118",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46183140878"
+    },
+    {
+      "id": 46183140839,
+      "name": "GLITCH Liquidity LQ08 runtime contract offline",
+      "branch": "integration/glitch-app-main-20261118",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46183140839"
+    },
+    {
+      "id": 46183140855,
+      "name": "GLITCH LQ08 automatic worker offline gate",
+      "branch": "integration/glitch-app-main-20261118",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46183140855"
+    },
+    {
+      "id": 46183140811,
+      "name": "GLITCH Liquidity worker offline safety tests",
+      "branch": "integration/glitch-app-main-20261118",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46183140811"
+    },
+    {
+      "id": 46183135343,
+      "name": "Scanner security and regression",
+      "branch": "integration/glitch-app-main-20261118",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46183135343"
+    },
+    {
+      "id": 46182735852,
+      "name": "Scanner independent post-scan reference collection",
+      "branch": "qualification/autonomous-engine-20261128",
+      "status": "completed",
+      "conclusion": "skipped",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46182735852"
+    },
+    {
+      "id": 46182735851,
+      "name": "Scanner security and regression",
+      "branch": "qualification/autonomous-engine-20261128",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46182735851"
+    },
+    {
+      "id": 46182735864,
+      "name": "Scanner isolated autonomous core qualification",
+      "branch": "qualification/autonomous-engine-20261128",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "url": "https://github.com/doom404official-collab/DOOM404/actions/runs/46182735864"
+    }
+  ],
+  "coreBenchmarks": [
+    {
+      "kind": "known",
+      "phase": "cold",
+      "durationMs": {
+        "n": 12,
+        "median": 5971.5,
+        "p95": 10067,
+        "max": 10067
+      },
+      "requests": {
+        "n": 12,
+        "median": 17,
+        "p95": 18,
+        "max": 18
+      },
+      "totalRequests": 204
+    },
+    {
+      "kind": "known",
+      "phase": "warm",
+      "durationMs": {
+        "n": 12,
+        "median": 5225,
+        "p95": 7934,
+        "max": 7934
+      },
+      "requests": {
+        "n": 12,
+        "median": 16,
+        "p95": 17,
+        "max": 17
+      },
+      "totalRequests": 191
+    },
+    {
+      "kind": "holdout",
+      "phase": "cold",
+      "durationMs": {
+        "n": 10,
+        "median": 4794,
+        "p95": 8516,
+        "max": 8516
+      },
+      "requests": {
+        "n": 10,
+        "median": 14.5,
+        "p95": 18,
+        "max": 18
+      },
+      "totalRequests": 138
+    },
+    {
+      "kind": "holdout",
+      "phase": "warm",
+      "durationMs": {
+        "n": 10,
+        "median": 4508,
+        "p95": 6173,
+        "max": 6173
+      },
+      "requests": {
+        "n": 10,
+        "median": 14,
+        "p95": 18,
+        "max": 18
+      },
+      "totalRequests": 132
+    }
+  ],
+  "budget": {
+    "globalRpcDailyLimit": 6000,
+    "globalRpcDailyUsed": 5680,
+    "globalRpcDailyRemaining": 320,
+    "alchemyDailyUsed": 5106,
+    "heliusDailyUsed": 574,
+    "observedAt": "2026-11-28T20:11:08.546Z",
+    "note": "Read from existing durable counters; budgets unchanged."
+  },
+  "status": "Partially complete",
+  "initialBlind": {
+    "candidateSha": "aceadc0db3ef9a29234be41101f2857426a6945d",
+    "runId": "46172617077-1",
+    "tokens": 20,
+    "phases": 2,
+    "captures": 40,
+    "mints": [
+      "GfCYBjm53ccUbyyDUqWTQc2idTsjM1EQCPPYUiR3pump",
+      "436BcX8hF6ERozLniyL8d75bVJbRvxJJtdroKWC2pump",
+      "25AjGcSqMxJ9EFN3NN2P7j4rv7odDdnhjSHzaemgpump",
+      "6yiZmaeQSW3FUHYjqtzZFNSM6Xy4zJ89XeQRcg6mpump",
+      "GS514xunWdMXSMJmV1t3buC7AfWBgupe6EgiB3zNpump",
+      "FvNopjpk7upJ4GghufMrJJ7W8aaH2tdoEozDZtUbiYKD",
+      "FDubarsoPNtdArUFcoMEhhfcZT2Ahepzs3ggwgnGpump",
+      "D93retv2ARUMciip7EA4rUWtu653QhjQKCkni1FPpump",
+      "BFJbGUL1rWf22nF9CHAJuGzpQaxQeD79qT25TXXEpump",
+      "GiUpEeH93E5J5gQvgjB8v6rKx1guaPR7ZU2eaSppTx9Q",
+      "CizWKoDGhVXbFowZr3pMLxY5rnPr7yXtLNN2dQ2AbEDZ",
+      "Aovr4TdVH6qtZHcv4og6CLqn7gjNYtmDRQULYZSTz1Qf",
+      "BKGp1At3yLDK1NE2gfMuwv1QMAHBwnqgSdULsyzjUagA",
+      "4iPKfHxmYX29fr5nnXdNifA52GJKokWeRmQ67hApGySJ",
+      "AkAF22MXs5xcwH1BineDvrD81sFV1dCuXX5PQzYdko46",
+      "3gr25JueJADKQrmqeS6cRQukvbiNffHdMofj6xf7XBV5",
+      "H5iiBHeCGKkzucX5PwEn2cf2uWHyVnAg3aq5RRsWF5P8",
+      "9qRarZBguWMeD2QMZVxEyVYDWRFKJqbPbyDuJNCriojb",
+      "DYu4rwdqSRmeastBxQVrsRYzM6bZMGUMSB6cDfWNarw9",
+      "3npZ7QNBiRLYNrGqEy4Uefm5GXdruPBoxS7FktV2bkE3"
+    ],
+    "preflight": {
+      "sourceOccurrences": 0,
+      "tokenSpecificVaultRecords": 0,
+      "checkedVaultTables": 12
+    },
+    "manualIntelligenceInputs": 0,
+    "manualForensicsBeforeInitialCapture": false,
+    "creator": {
+      "supportedReferenceCases": 10,
+      "correct": 8,
+      "falseAsserted": 0,
+      "unresolvedAll20": 12
+    },
+    "historicalEventsAsserted": 1,
+    "verdict": "FAILED",
+    "note": "Subsequent corrections/replays are development cases, not new blind qualification."
+  },
+  "freshHoldouts": [
+    {
+      "candidateSha": "650dc439876ec514349ce0853b02c96fdf405aeb",
+      "runId": "46178210064-1",
+      "tokens": 10,
+      "creatorCorrect": 5,
+      "creatorAsserted": 5,
+      "referenceEvents": 30,
+      "recoveredReferenceEvents": 19,
+      "missedLegacyNativeSales": 11,
+      "verdict": "FAILED"
+    },
+    {
+      "candidateSha": "5328d3374312a1eb33c755cb470e49bea5f30cb2",
+      "runId": "46182735864-1",
+      "tokens": 10,
+      "preflight": {
+        "selectionSeed": "DOOM404-RI109-20261128-final-fresh-holdout",
+        "selectionMethod": "Five hash-ranked source-unused Solana latest-boost listing mints plus five hash-ranked source-unused mainnet registry mints; no filtering by expected scanner performance and no prior on-chain forensic lookup.",
+        "mints": [
+          "PgFtGGquvnv2zEkjG2N2QPvBTBrafuExGYEqahRpump",
+          "47P6Y81cVuCQFYguHHrjMyVpHufkmTTTyuKxaPB5EC1E",
+          "6C9r2gzu8Pr54hTevHo3x5gSj9JqtpApj7obJnrtpump",
+          "7sgu7H7zP2xt1AXqRzjcWMrZYvip3ML1fH7vhixDpump",
+          "4KXCDChFWqgKdBWzYTaZa76SJAcip8p1n5ky2Pdopump",
+          "2GPWmqQNmaAL8Vj48ETdjeuXd62snKMyZXGyGWjd3Ugw",
+          "AASZr8AE3AK6nuSv7vJSdMgAUhKhsbg4iuRb1M81ETMN",
+          "FcjViE1oVbXFza5ry9Q7WZ9XNd95zu1LqEiSUdeJMPTP",
+          "488DGeMxRHmofoEtfrPE6geMT7EzwP9HMn76cDq5ZKwt",
+          "76aYNHbDfHemxSS7vmh6eJGfjodK8m7srCxiYCrKxzY1"
+        ],
+        "sourceOccurrences": 0,
+        "scope": "Normal investigation core; full hosted application qualification remains separate.",
+        "priorHoldoutRetained": true,
+        "vaultPreflight": [
+          {
+            "table_name": "creator_intelligence_jobs",
+            "token_records": 0
+          },
+          {
+            "table_name": "creator_investigation_checkpoints",
+            "token_records": 0
+          },
+          {
+            "table_name": "glitch_holder_scan_jobs",
+            "token_records": 0
+          },
+          {
+            "table_name": "glitch_top20_snapshots",
+            "token_records": 0
+          },
+          {
+            "table_name": "liquidity_evidence_checkpoints",
+            "token_records": 0
+          },
+          {
+            "table_name": "liquidity_evidence_snapshots",
+            "token_records": 0
+          },
+          {
+            "table_name": "onchain_transaction_evidence",
+            "token_records": 0
+          },
+          {
+            "table_name": "scanner_creator_evidence",
+            "token_records": 0
+          },
+          {
+            "table_name": "scanner_qualification_observations",
+            "token_records": 0
+          },
+          {
+            "table_name": "scanner_token_investigations",
+            "token_records": 0
+          },
+          {
+            "table_name": "token_creator_attributions",
+            "token_records": 0
+          },
+          {
+            "table_name": "scanner_qualification_references",
+            "token_records": 0
+          },
+          {
+            "table_name": "intelligence_source_observations",
+            "token_records": 0
+          }
+        ],
+        "preflightTimestamp": "2026-11-28T19:42:25.969Z"
+      },
+      "rows": [
+        {
+          "mint": "PgFtGGquvnv2zEkjG2N2QPvBTBrafuExGYEqahRpump",
+          "assertedCreator": true,
+          "creatorCorrect": true,
+          "referenceEvents": 2,
+          "recoveredCold": 2,
+          "recoveredWarm": 2,
+          "missedAccessibleEvents": 0,
+          "coldAssertions": 2,
+          "warmAssertions": 2,
+          "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+        },
+        {
+          "mint": "47P6Y81cVuCQFYguHHrjMyVpHufkmTTTyuKxaPB5EC1E",
+          "assertedCreator": false,
+          "creatorCorrect": null,
+          "referenceEvents": 0,
+          "recoveredCold": 0,
+          "recoveredWarm": 0,
+          "missedAccessibleEvents": 0,
+          "coldAssertions": 0,
+          "warmAssertions": 0,
+          "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+        },
+        {
+          "mint": "6C9r2gzu8Pr54hTevHo3x5gSj9JqtpApj7obJnrtpump",
+          "assertedCreator": true,
+          "creatorCorrect": true,
+          "referenceEvents": 12,
+          "recoveredCold": 12,
+          "recoveredWarm": 12,
+          "missedAccessibleEvents": 0,
+          "coldAssertions": 14,
+          "warmAssertions": 14,
+          "outsideReferenceAssertionsMustNotBeCalledFalse": 2
+        },
+        {
+          "mint": "7sgu7H7zP2xt1AXqRzjcWMrZYvip3ML1fH7vhixDpump",
+          "assertedCreator": true,
+          "creatorCorrect": true,
+          "referenceEvents": 12,
+          "recoveredCold": 9,
+          "recoveredWarm": 9,
+          "missedAccessibleEvents": 3,
+          "coldAssertions": 21,
+          "warmAssertions": 51,
+          "outsideReferenceAssertionsMustNotBeCalledFalse": 12
+        },
+        {
+          "mint": "4KXCDChFWqgKdBWzYTaZa76SJAcip8p1n5ky2Pdopump",
+          "assertedCreator": true,
+          "creatorCorrect": true,
+          "referenceEvents": 4,
+          "recoveredCold": 4,
+          "recoveredWarm": 4,
+          "missedAccessibleEvents": 0,
+          "coldAssertions": 4,
+          "warmAssertions": 4,
+          "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+        },
+        {
+          "mint": "2GPWmqQNmaAL8Vj48ETdjeuXd62snKMyZXGyGWjd3Ugw",
+          "assertedCreator": false,
+          "creatorCorrect": null,
+          "referenceEvents": 0,
+          "recoveredCold": 0,
+          "recoveredWarm": 0,
+          "missedAccessibleEvents": 0,
+          "coldAssertions": 0,
+          "warmAssertions": 0,
+          "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+        },
+        {
+          "mint": "AASZr8AE3AK6nuSv7vJSdMgAUhKhsbg4iuRb1M81ETMN",
+          "assertedCreator": false,
+          "creatorCorrect": null,
+          "referenceEvents": 0,
+          "recoveredCold": 0,
+          "recoveredWarm": 0,
+          "missedAccessibleEvents": 0,
+          "coldAssertions": 0,
+          "warmAssertions": 0,
+          "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+        },
+        {
+          "mint": "FcjViE1oVbXFza5ry9Q7WZ9XNd95zu1LqEiSUdeJMPTP",
+          "assertedCreator": false,
+          "creatorCorrect": null,
+          "referenceEvents": 0,
+          "recoveredCold": 0,
+          "recoveredWarm": 0,
+          "missedAccessibleEvents": 0,
+          "coldAssertions": 0,
+          "warmAssertions": 0,
+          "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+        },
+        {
+          "mint": "488DGeMxRHmofoEtfrPE6geMT7EzwP9HMn76cDq5ZKwt",
+          "assertedCreator": false,
+          "creatorCorrect": null,
+          "referenceEvents": 0,
+          "recoveredCold": 0,
+          "recoveredWarm": 0,
+          "missedAccessibleEvents": 0,
+          "coldAssertions": 0,
+          "warmAssertions": 0,
+          "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+        },
+        {
+          "mint": "76aYNHbDfHemxSS7vmh6eJGfjodK8m7srCxiYCrKxzY1",
+          "assertedCreator": false,
+          "creatorCorrect": null,
+          "referenceEvents": 0,
+          "recoveredCold": 0,
+          "recoveredWarm": 0,
+          "missedAccessibleEvents": 0,
+          "coldAssertions": 0,
+          "warmAssertions": 0,
+          "outsideReferenceAssertionsMustNotBeCalledFalse": 0
+        }
+      ],
+      "creatorCorrect": 4,
+      "creatorAsserted": 4,
+      "creatorUnresolved": 6,
+      "referenceEvents": 30,
+      "recoveredReferenceEvents": 27,
+      "missedAccessibleTransfers": 3,
+      "referenceRecall": 0.9,
+      "verdict": "FAILED"
+    }
+  ],
+  "warmCacheChecks": [
+    {
+      "mint": "PgFtGGquvnv2zEkjG2N2QPvBTBrafuExGYEqahRpump",
+      "coldEvents": 2,
+      "warmEvents": 2,
+      "lostColdEventKeys": 0,
+      "coldDuplicates": 0,
+      "warmDuplicates": 0,
+      "dynamicObservedAgain": true,
+      "coldCurrentSlot": 475077779,
+      "warmCurrentSlot": 475077810,
+      "historyComplete": false,
+      "coldMs": 6081,
+      "warmMs": 3735,
+      "coldRequests": 17,
+      "warmRequests": 15
+    },
+    {
+      "mint": "47P6Y81cVuCQFYguHHrjMyVpHufkmTTTyuKxaPB5EC1E",
+      "coldEvents": 0,
+      "warmEvents": 0,
+      "lostColdEventKeys": 0,
+      "coldDuplicates": 0,
+      "warmDuplicates": 0,
+      "dynamicObservedAgain": false,
+      "coldCurrentSlot": null,
+      "warmCurrentSlot": null,
+      "historyComplete": false,
+      "coldMs": 8516,
+      "warmMs": 6173,
+      "coldRequests": 18,
+      "warmRequests": 18
+    },
+    {
+      "mint": "6C9r2gzu8Pr54hTevHo3x5gSj9JqtpApj7obJnrtpump",
+      "coldEvents": 14,
+      "warmEvents": 14,
+      "lostColdEventKeys": 0,
+      "coldDuplicates": 0,
+      "warmDuplicates": 0,
+      "dynamicObservedAgain": true,
+      "coldCurrentSlot": 475078094,
+      "warmCurrentSlot": 475078125,
+      "historyComplete": false,
+      "coldMs": 6233,
+      "warmMs": 4132,
+      "coldRequests": 17,
+      "warmRequests": 16
+    },
+    {
+      "mint": "7sgu7H7zP2xt1AXqRzjcWMrZYvip3ML1fH7vhixDpump",
+      "coldEvents": 21,
+      "warmEvents": 51,
+      "lostColdEventKeys": 0,
+      "coldDuplicates": 0,
+      "warmDuplicates": 0,
+      "dynamicObservedAgain": true,
+      "coldCurrentSlot": 475078250,
+      "warmCurrentSlot": 475078275,
+      "historyComplete": false,
+      "coldMs": 4550,
+      "warmMs": 5036,
+      "coldRequests": 15,
+      "warmRequests": 14
+    },
+    {
+      "mint": "4KXCDChFWqgKdBWzYTaZa76SJAcip8p1n5ky2Pdopump",
+      "coldEvents": 4,
+      "warmEvents": 4,
+      "lostColdEventKeys": 0,
+      "coldDuplicates": 0,
+      "warmDuplicates": 0,
+      "dynamicObservedAgain": true,
+      "coldCurrentSlot": 475078399,
+      "warmCurrentSlot": 475078431,
+      "historyComplete": false,
+      "coldMs": 6161,
+      "warmMs": 5451,
+      "coldRequests": 17,
+      "warmRequests": 15
+    },
+    {
+      "mint": "2GPWmqQNmaAL8Vj48ETdjeuXd62snKMyZXGyGWjd3Ugw",
+      "coldEvents": 0,
+      "warmEvents": 0,
+      "lostColdEventKeys": 0,
+      "coldDuplicates": 0,
+      "warmDuplicates": 0,
+      "dynamicObservedAgain": false,
+      "coldCurrentSlot": null,
+      "warmCurrentSlot": null,
+      "historyComplete": false,
+      "coldMs": 3245,
+      "warmMs": 3239,
+      "coldRequests": 9,
+      "warmRequests": 9
+    },
+    {
+      "mint": "AASZr8AE3AK6nuSv7vJSdMgAUhKhsbg4iuRb1M81ETMN",
+      "coldEvents": 0,
+      "warmEvents": 0,
+      "lostColdEventKeys": 0,
+      "coldDuplicates": 0,
+      "warmDuplicates": 0,
+      "dynamicObservedAgain": false,
+      "coldCurrentSlot": null,
+      "warmCurrentSlot": null,
+      "historyComplete": false,
+      "coldMs": 2170,
+      "warmMs": 3225,
+      "coldRequests": 9,
+      "warmRequests": 9
+    },
+    {
+      "mint": "FcjViE1oVbXFza5ry9Q7WZ9XNd95zu1LqEiSUdeJMPTP",
+      "coldEvents": 0,
+      "warmEvents": 0,
+      "lostColdEventKeys": 0,
+      "coldDuplicates": 0,
+      "warmDuplicates": 0,
+      "dynamicObservedAgain": false,
+      "coldCurrentSlot": null,
+      "warmCurrentSlot": null,
+      "historyComplete": false,
+      "coldMs": 3908,
+      "warmMs": 2779,
+      "coldRequests": 11,
+      "warmRequests": 11
+    },
+    {
+      "mint": "488DGeMxRHmofoEtfrPE6geMT7EzwP9HMn76cDq5ZKwt",
+      "coldEvents": 0,
+      "warmEvents": 0,
+      "lostColdEventKeys": 0,
+      "coldDuplicates": 0,
+      "warmDuplicates": 0,
+      "dynamicObservedAgain": false,
+      "coldCurrentSlot": null,
+      "warmCurrentSlot": null,
+      "historyComplete": false,
+      "coldMs": 2701,
+      "warmMs": 4884,
+      "coldRequests": 11,
+      "warmRequests": 11
+    },
+    {
+      "mint": "76aYNHbDfHemxSS7vmh6eJGfjodK8m7srCxiYCrKxzY1",
+      "coldEvents": 0,
+      "warmEvents": 0,
+      "lostColdEventKeys": 0,
+      "coldDuplicates": 0,
+      "warmDuplicates": 0,
+      "dynamicObservedAgain": false,
+      "coldCurrentSlot": null,
+      "warmCurrentSlot": null,
+      "historyComplete": false,
+      "coldMs": 5038,
+      "warmMs": 5784,
+      "coldRequests": 14,
+      "warmRequests": 14
+    }
+  ],
+  "qualificationLimitations": [
+    "Normal investigation core, not full hosted pipeline.",
+    "Holdout diversity did not demonstrate unseen reward, escrow and all routed protocols.",
+    "No lifetime historical recall claim.",
+    "No new successful holdout after latest material defect."
+  ]
+}
