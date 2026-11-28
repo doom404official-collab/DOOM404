@@ -31,7 +31,7 @@ export function deriveHistoricalCreatorAccountCandidate({mint,creator,transactio
 // Cursor progress certifies retrieval under a particular event decoder set.
 // Replaying after a decoder upgrade preserves facts, but must revisit pages
 // whose previously unsupported instructions may now be understood.
-export const CREATOR_HISTORY_DECODER_EPOCH='creator-history-decoders-v10';
+export const CREATOR_HISTORY_DECODER_EPOCH='creator-history-decoders-v11';
 export function prepareCreatorHistoryCheckpoint(observation,mint,creator,now=Date.now()){
  const p=observation?.creatorHistoryCheckpoint;
  if(observation?.mint!==mint||p?.mint!==mint||p.creator!==creator)return null;
