@@ -1,0 +1,36 @@
+name: Scanner independent post-scan reference collection
+on:
+  push:
+    branches: [qualification/autonomous-engine-20261128]
+    paths: ['tooling/glitch-qualification/independent-reference.mjs', '.github/workflows/scanner-independent-reference.yml']
+permissions:
+  contents: read
+concurrency:
+  group: scanner-autonomous-live
+  cancel-in-progress: false
+jobs:
+  reference:
+    if: github.repository == 'doom404official-collab/DOOM404'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run test:smoke
+      - name: Collect existing-provider reference receipts after frozen captures
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          REFERENCE_RUN_ID: '46172617077-1'
+          REFERENCE_CANDIDATE_SHA: aceadc0db3ef9a29234be41101f2857426a6945d
+        run: node ../../tooling/glitch-qualification/independent-reference.mjs

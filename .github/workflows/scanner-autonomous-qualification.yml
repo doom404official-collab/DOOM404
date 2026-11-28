@@ -2,7 +2,7 @@ name: Scanner isolated autonomous core qualification
 on:
   push:
     branches: [qualification/autonomous-engine-20261128]
-    paths: ['mvp/wallet-signal/**', '.github/workflows/scanner-autonomous-qualification.yml']
+    paths: ['mvp/wallet-signal/lib/**', 'mvp/wallet-signal/scripts/qualification/live-core.mjs', '.github/workflows/scanner-autonomous-qualification.yml']
 permissions:
   contents: read
 concurrency:
@@ -10,9 +10,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   qualification:
-    if: github.repository == 'doom404official-collab/DOOM404'
+    if: github.repository == 'doom404official-collab/DOOM404' && !contains(github.event.head_commit.message, '[reference-only]')
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 12
     defaults:
       run:
         working-directory: mvp/wallet-signal
@@ -26,12 +26,12 @@ jobs:
           node-version: '24'
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm run test:smoke
-      - name: Blind mint-only investigation core cold and warm capture
+      - name: Known-fixture mint-only core cold and warm capture
         env:
           ALCHEMY_RPC_URL: ${{ secrets.ALCHEMY_RPC_URL }}
           ALCHEMY_SOLANA_ARCHIVE_RPC_URL: ${{ secrets.ALCHEMY_SOLANA_ARCHIVE_RPC_URL }}
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          QUALIFICATION_MINTS: '["GfCYBjm53ccUbyyDUqWTQc2idTsjM1EQCPPYUiR3pump","436BcX8hF6ERozLniyL8d75bVJbRvxJJtdroKWC2pump","25AjGcSqMxJ9EFN3NN2P7j4rv7odDdnhjSHzaemgpump","6yiZmaeQSW3FUHYjqtzZFNSM6Xy4zJ89XeQRcg6mpump","GS514xunWdMXSMJmV1t3buC7AfWBgupe6EgiB3zNpump","FvNopjpk7upJ4GghufMrJJ7W8aaH2tdoEozDZtUbiYKD","FDubarsoPNtdArUFcoMEhhfcZT2Ahepzs3ggwgnGpump","D93retv2ARUMciip7EA4rUWtu653QhjQKCkni1FPpump","BFJbGUL1rWf22nF9CHAJuGzpQaxQeD79qT25TXXEpump","GiUpEeH93E5J5gQvgjB8v6rKx1guaPR7ZU2eaSppTx9Q","CizWKoDGhVXbFowZr3pMLxY5rnPr7yXtLNN2dQ2AbEDZ","Aovr4TdVH6qtZHcv4og6CLqn7gjNYtmDRQULYZSTz1Qf","BKGp1At3yLDK1NE2gfMuwv1QMAHBwnqgSdULsyzjUagA","4iPKfHxmYX29fr5nnXdNifA52GJKokWeRmQ67hApGySJ","AkAF22MXs5xcwH1BineDvrD81sFV1dCuXX5PQzYdko46","3gr25JueJADKQrmqeS6cRQukvbiNffHdMofj6xf7XBV5","H5iiBHeCGKkzucX5PwEn2cf2uWHyVnAg3aq5RRsWF5P8","9qRarZBguWMeD2QMZVxEyVYDWRFKJqbPbyDuJNCriojb","DYu4rwdqSRmeastBxQVrsRYzM6bZMGUMSB6cDfWNarw9","3npZ7QNBiRLYNrGqEy4Uefm5GXdruPBoxS7FktV2bkE3"]'
+          QUALIFICATION_MINTS: '["9hjBLBrc7WZW2H8UQvBAvG5WiTZotXUv2Bdcn4f4pump","Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump","9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump","3Tg6YnNrfPdFfsY14MaNsDMWLseAyrUDS3myJtbaJN6f"]'
         run: node scripts/qualification/live-core.mjs
