@@ -8,7 +8,7 @@ const validInstructionIdentity=e=>e&&typeof e.signature==='string'&&e.signature.
 const validAmount=amount=>['string','number','bigint'].includes(typeof amount)&&
  (typeof amount!=='number'||Number.isSafeInteger(amount))&&
  /^[0-9]+$/.test(String(amount))&&BigInt(amount)>0n;
-const TYPES=new Set(['LAUNCH_DISTRIBUTION','PURCHASE','EXTERNAL_RECEIPT','EXTERNAL_TRANSFER_OUT','VERIFIED_SALE','VERIFIED_BURN','INTERNAL_TRANSFER']);
+const TYPES=new Set(['DIRECT_MINT_RECEIPT','LAUNCH_DISTRIBUTION','PURCHASE','EXTERNAL_RECEIPT','EXTERNAL_TRANSFER_OUT','VERIFIED_SALE','VERIFIED_BURN','INTERNAL_TRANSFER']);
 export function summarizeCreatorAcquisitionLedger({mint,creator,events=[],historyComplete=false,attributionComplete=false}={}){
  if(typeof mint!=='string'||typeof creator!=='string'||!Array.isArray(events))throw Error('INVALID_CREATOR_LEDGER');
  const accepted=new Map(),blocked=new Set(),rejections=new Map();
@@ -22,6 +22,7 @@ export function summarizeCreatorAcquisitionLedger({mint,creator,events=[],histor
   if(!Number.isSafeInteger(e.timestamp)||e.timestamp<=0)return 'INVALID_TIMESTAMP';
   if(!validAmount(e.amountRaw))return 'INVALID_AMOUNT';
   if((e.type==='PURCHASE'||e.type==='VERIFIED_SALE')&&e.settlementVerified!==true)return 'SETTLEMENT_VERIFICATION_MISSING';
+  if(e.type==='DIRECT_MINT_RECEIPT'&&e.mintInstructionVerified!==true)return 'MINT_INSTRUCTION_VERIFICATION_MISSING';
   if(e.type==='LAUNCH_DISTRIBUTION'&&e.launchInstructionVerified!==true)return 'LAUNCH_INSTRUCTION_VERIFICATION_MISSING';
   if(e.type==='VERIFIED_BURN'&&e.burnInstructionVerified!==true)return 'BURN_INSTRUCTION_VERIFICATION_MISSING';
   if(e.type==='INTERNAL_TRANSFER'&&e.bothWalletsAttributed!==true)return 'INTERNAL_ATTRIBUTION_MISSING';
@@ -36,6 +37,7 @@ export function summarizeCreatorAcquisitionLedger({mint,creator,events=[],histor
    !validAmount(e.amountRaw)||
    (e.type==='VERIFIED_SALE'&&e.settlementVerified!==true)||
    (e.type==='PURCHASE'&&e.settlementVerified!==true)||
+   (e.type==='DIRECT_MINT_RECEIPT'&&e.mintInstructionVerified!==true)||
    (e.type==='LAUNCH_DISTRIBUTION'&&e.launchInstructionVerified!==true)||
    (e.type==='VERIFIED_BURN'&&e.burnInstructionVerified!==true)||
    (e.type==='INTERNAL_TRANSFER'&&e.bothWalletsAttributed!==true)){
@@ -57,13 +59,13 @@ export function summarizeCreatorAcquisitionLedger({mint,creator,events=[],histor
  for(const id of blocked)accepted.delete(id);
  const rejected=[...rejections.values()].sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));
  const sum=type=>[...accepted.values()].filter(e=>e.type===type).reduce((a,e)=>a+BigInt(e.amountRaw),0n);
- const launch=sum('LAUNCH_DISTRIBUTION'),purchases=sum('PURCHASE'),receipts=sum('EXTERNAL_RECEIPT'),
+ const launch=sum('LAUNCH_DISTRIBUTION'),purchases=sum('PURCHASE'),receipts=sum('EXTERNAL_RECEIPT'),directMints=sum('DIRECT_MINT_RECEIPT'),
   transfersOut=sum('EXTERNAL_TRANSFER_OUT'),sales=sum('VERIFIED_SALE'),burned=sum('VERIFIED_BURN');
- const acquired=launch+purchases+receipts;
+ const acquired=launch+purchases+receipts+directMints;
  const reconciled=acquired-transfersOut-sales-burned;
  const eligible=historyComplete===true&&attributionComplete===true&&rejected.length===0&&reconciled>=0n&&acquired>0n;
  return {status:eligible?'EVIDENCE_READY':'INCOMPLETE',acceptedCount:accepted.size,rejected,
-  launchRaw:launch.toString(),purchasedRaw:purchases.toString(),externalReceivedRaw:receipts.toString(),
+  ...(directMints>0n?{directMintReceivedRaw:directMints.toString()}:{}),launchRaw:launch.toString(),purchasedRaw:purchases.toString(),externalReceivedRaw:receipts.toString(),
   externalTransferredOutRaw:transfersOut.toString(),verifiedSoldRaw:sales.toString(),burnedRaw:burned.toString(),
   totalAcquiredRaw:acquired.toString(),reconciledRemainingRaw:reconciled.toString(),
   historyComplete:historyComplete===true,attributionComplete:attributionComplete===true,

@@ -44,7 +44,7 @@ export function projectPumpLiquidityV2(raw,mint){
   const flags=[];
   const delegatedVault=[1,2].some(i=>{const d=get(i).data;return d.readUInt32LE(72)!==0&&d.readBigUInt64LE(121)>0n&&new PublicKey(d.subarray(76,108)).toBase58()!==raw.addresses[0];});
   if(delegatedVault)flags.push({id:"external_vault_delegate",severity:"critical",detail:"A pool vault retains an external spending delegate. LP claims alone do not bound withdrawal exposure."});
-  if(referenceQuotes.some(q=>q.executable===false))flags.push({id:'reference_exit_unavailable',severity:'critical',detail:'A defined reference sale cannot be funded by the real quote reserves under the current protocol calculation.'});
+  if(referenceQuotes.some(q=>q.executable===false&&q.reason==='insufficient_real_quote_reserves'))flags.push({id:'reference_exit_unavailable',severity:'critical',detail:'A defined reference sale cannot be funded by the real quote reserves under the current protocol calculation.'});
   if(global.disableFlags&16)flags.push({id:'selling_disabled',severity:'critical',detail:'PumpSwap global configuration currently disables selling.'});
   if(global.disableFlags&4)flags.push({id:'withdrawals_disabled',severity:'high',detail:'PumpSwap global configuration currently disables withdrawals.'});
   flags.push({id:'protocol_admin_controls',severity:global.admin?.toBase58?.()&&global.admin.toBase58()!=='11111111111111111111111111111111'?'high':'information',detail:'Protocol global operation controls remain separate from LP redemption exposure; a retained protocol administrator can change operation flags. Program upgrade authority is not certified by this calculation.'});

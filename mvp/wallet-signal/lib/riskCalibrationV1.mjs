@@ -26,7 +26,7 @@ export function scorePresentation({score,coverage=0,unresolved=false,critical=fa
  return {...band,numericBand:band.severity};
 }
 export function findingPresentation(f={}){
- if(f.unresolved)return {severity:'unresolved',label:'Unresolved evidence',color:'#808080',icon:'?',rank:6};
+ if(f.unresolved)return {severity:'unresolved',label:'Unresolved evidence',color:'#808080',icon:'?',rank:f.materialAllocation?0.5:6};
  if(f.category==='Unscored contextual observation')return {severity:'contextual',label:'Contextual observation',color:'#808080',icon:'ⓘ',rank:5};
  const map={critical:['Critical risk','#EF4444',0],high:['High risk','#FB633B',1],elevated:['Elevated risk','#F97316',2],moderate:['Moderate risk','#EAB308',3],low:['Low observed risk','#9CA3AF',4],limited:['Low observed risk','#9CA3AF',4]};
  const item=map[f.severity];return item?{severity:f.severity==='limited'?'low':f.severity,label:item[0],color:item[1],icon:f.severity==='low'||f.severity==='limited'?'•':'warning',rank:item[2]}:{severity:'observed',label:'Observed risk factor',color:'#9CA3AF',icon:'•',rank:4};
@@ -37,9 +37,10 @@ export function canonicalQuote(q){
  const terminal=q.executable===false;
  const fields=[['impactIncludingFeesPct','fee-inclusive exit estimate'],['quoteRecoveryShortfallPct','quote recovery shortfall'],['providerPriceImpactPct','provider-reported price impact']];
  const selected=terminal?null:fields.find(([field])=>valid(q[field]));
- const value=selected?q[selected[0]]:null,basis=selected?.[1]||q.failureReason||'unavailable';
+ const reasons={insufficient_real_quote_reserves:'insufficient real quote reserves on assessed route',selling_disabled:'selling disabled on assessed protocol',swaps_disabled_or_not_open:'assessed pool swaps disabled or not open'};
+ const value=selected?q[selected[0]]:null,basis=selected?.[1]||reasons[q.reason]||q.failureReason||q.reason||'unavailable';
  const spot=q.valuationBasis==='spot_quote_notional'||q.measurement!=='reference_quote_recovery'&&q.measurement!=='provider_reported_price_impact'&&q.referenceNotionalSol===Number(q.referenceNotional)&&typeof q.quoteOutputRaw==='string'&&typeof q.baseInputRaw==='string';
- return {value,basis,label:value===null?'Unavailable':value.toFixed(2)+'%',severity:exitSeverity(value),feeVerified:selected?.[0]==='impactIncludingFeesPct',proceeds:selected?.[0]==='impactIncludingFeesPct'&&spot?Number(q.referenceNotional)*(1-value/100):null,executionStatus:terminal?(q.failureReason||'assessed_route_execution_limitation'):value===null?'unresolved':'quoted'};
+ return {value,basis,label:value===null?'Unavailable':value.toFixed(2)+'%',severity:exitSeverity(value),feeVerified:selected?.[0]==='impactIncludingFeesPct',proceeds:selected?.[0]==='impactIncludingFeesPct'&&spot?Number(q.referenceNotional)*(1-value/100):null,executionStatus:terminal?(q.reason||q.failureReason||'assessed_route_execution_limitation'):value===null?'unresolved':'quoted'};
 }
 export function calibratedFlags({share,largest,quotes=[]}={}){
  const flags=[];
