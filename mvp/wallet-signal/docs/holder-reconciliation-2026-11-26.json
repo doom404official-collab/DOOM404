@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+  "canonicalJobId": null,
+  "automaticRecoveryAllowed": false,
+  "jobs": [
+    {
+      "id": "d07c0256-b472-4089-a237-99ed5e5c8cc4",
+      "version": 1812,
+      "storedHash": "4a8d4362d534525426f2ae9fe8b67d751f2e9a6922e1a72bac13f247869d5685",
+      "recomputedHash": "4a8d4362d534525426f2ae9fe8b67d751f2e9a6922e1a72bac13f247869d5685",
+      "hashMatches": true,
+      "snapshots": [
+        {
+          "id": "ba763c77fe73034b20b2ffe8ee72750265dd5776110cdf4f4ded364b9bc31746",
+          "slot": 457269064,
+          "snapshotOnly": [],
+          "checkpointOnly": [],
+          "walletSetMatches": true,
+          "frozenAccountHash": null,
+          "hashBlocker": "FROZEN_TOKEN_ACCOUNT_IDENTITIES_NOT_RETAINED",
+          "safeToAttachSnapshot": false,
+          "snapshotProvenanceVerified": false
+        },
+        {
+          "id": "8bfd2ea655c9d363b53f50c0416f58bd5e8ef313ddea0d67af42fc3eafa7d34a",
+          "slot": 457273431,
+          "snapshotOnly": [],
+          "checkpointOnly": [],
+          "walletSetMatches": true,
+          "frozenAccountHash": null,
+          "hashBlocker": "FROZEN_TOKEN_ACCOUNT_IDENTITIES_NOT_RETAINED",
+          "safeToAttachSnapshot": false,
+          "snapshotProvenanceVerified": false
+        },
+        {
+          "id": "1379bcb43b07be4b783dd4aa67bcabab50cc363cf36c4ca31c943204ccda0153",
+          "slot": 457305617,
+          "snapshotOnly": [
+            "CHubsXab3kTQCYV8ZULMgnCNbxdrUgi1BvfAWnFHexHA"
+          ],
+          "checkpointOnly": [
+            "1nc1nerator11111111111111111111111111111111"
+          ],
+          "walletSetMatches": false,
+          "frozenAccountHash": null,
+          "hashBlocker": "FROZEN_TOKEN_ACCOUNT_IDENTITIES_NOT_RETAINED",
+          "safeToAttachSnapshot": false,
+          "snapshotProvenanceVerified": false
+        }
+      ]
+    },
+    {
+      "id": "c670f393-31b0-470c-a01f-cb2b813a1219",
+      "version": 2138,
+      "storedHash": "0d32cb2520641acbe17aa84f4b98745a7f4160b5f28893e2631d7201d6d0f0b3",
+      "recomputedHash": "0d32cb2520641acbe17aa84f4b98745a7f4160b5f28893e2631d7201d6d0f0b3",
+      "hashMatches": true,
+      "snapshots": [
+        {
+          "id": "ba763c77fe73034b20b2ffe8ee72750265dd5776110cdf4f4ded364b9bc31746",
+          "slot": 457269064,
+          "snapshotOnly": [
+            "BM9CcyErJcu2mjrFvUsRRrD3snGeHDDVirJLvL6EjvMN"
+          ],
+          "checkpointOnly": [
+            "CHubsXab3kTQCYV8ZULMgnCNbxdrUgi1BvfAWnFHexHA"
+          ],
+          "walletSetMatches": false,
+          "frozenAccountHash": null,
+          "hashBlocker": "FROZEN_TOKEN_ACCOUNT_IDENTITIES_NOT_RETAINED",
+          "safeToAttachSnapshot": false,
+          "snapshotProvenanceVerified": false
+        },
+        {
+          "id": "8bfd2ea655c9d363b53f50c0416f58bd5e8ef313ddea0d67af42fc3eafa7d34a",
+          "slot": 457273431,
+          "snapshotOnly": [
+            "BM9CcyErJcu2mjrFvUsRRrD3snGeHDDVirJLvL6EjvMN"
+          ],
+          "checkpointOnly": [
+            "CHubsXab3kTQCYV8ZULMgnCNbxdrUgi1BvfAWnFHexHA"
+          ],
+          "walletSetMatches": false,
+          "frozenAccountHash": null,
+          "hashBlocker": "FROZEN_TOKEN_ACCOUNT_IDENTITIES_NOT_RETAINED",
+          "safeToAttachSnapshot": false,
+          "snapshotProvenanceVerified": false
+        },
+        {
+          "id": "1379bcb43b07be4b783dd4aa67bcabab50cc363cf36c4ca31c943204ccda0153",
+          "slot": 457305617,
+          "snapshotOnly": [
+            "BM9CcyErJcu2mjrFvUsRRrD3snGeHDDVirJLvL6EjvMN"
+          ],
+          "checkpointOnly": [
+            "1nc1nerator11111111111111111111111111111111"
+          ],
+          "walletSetMatches": false,
+          "frozenAccountHash": null,
+          "hashBlocker": "FROZEN_TOKEN_ACCOUNT_IDENTITIES_NOT_RETAINED",
+          "safeToAttachSnapshot": false,
+          "snapshotProvenanceVerified": false
+        }
+      ]
+    }
+  ],
+  "reviewedSha": "4dd35bc76d9ac0abce045feb497fb65d5b2cf0a1",
+  "observedDate": "2026-11-26",
+  "source": "Supabase acwmtobcbpkjfqiatyke read-only queries; original ordered SHA-256 algorithm",
+  "coverage": [
+    {
+      "version": 1812,
+      "checked": 11540,
+      "pending": 2862,
+      "relationships": 29,
+      "providerExhausted": 6,
+      "verifiedEvidence": 294,
+      "pendingEvidence": 168,
+      "retainedTransfers": 14977,
+      "networkProcessed": 2788
+    },
+    {
+      "version": 2138,
+      "checked": 12581,
+      "pending": 2087,
+      "relationships": 27,
+      "providerExhausted": 7,
+      "verifiedEvidence": 256,
+      "pendingEvidence": 328,
+      "retainedTransfers": 16610,
+      "networkProcessed": 3022
+    }
+  ],
+  "sharedVerifiedSignatures": 201,
+  "persistedTransferEdges": 0,
+  "limitations": [
+    "Both jobs retain no snapshot provenance.",
+    "All frozen rankings omit token-account identities required by the original hash algorithm.",
+    "Version 1812 matches wallet membership of two different slots; membership cannot disambiguate them.",
+    "Version 2138 matches none of the three frozen wallet sets and retains the incinerator.",
+    "A cursor absent from the signature map in each job requires inspection of discovery filtering, not an assumption of corruption.",
+    "Verified signatures shared by both jobs must be deduplicated per instruction and relationship before reuse; 201 shared signatures do not establish 201 reusable relationships.",
+    "Aggregate undirected checkpoint edges cannot be inserted into instruction-indexed transfer edges without original transfer identity."
+  ],
+  "mutations": {
+    "database": false,
+    "workers": false,
+    "providerReads": 0,
+    "scorePromoted": false
+  },
+  "validation": {
+    "focusedTests": 29,
+    "regressionTests": 1934,
+    "failures": 0,
+    "node": "24.22.3"
+  },
+  "milestoneStatus": "BLOCKED_MISSING_HISTORICAL_IDENTITY_PROVENANCE"
+}

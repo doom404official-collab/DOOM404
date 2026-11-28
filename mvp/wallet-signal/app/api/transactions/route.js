@@ -1,13 +1,11 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import {withScannerAdmission} from '../../../lib/scannerAdmission.mjs';
+import { createReliableConnection } from "../../../lib/reliableConnection.js";
+import { PublicKey } from "@solana/web3.js";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 const SAMPLE_LIMIT = 20;
-
-function wait(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function getProgramId(instruction) {
   if (!instruction) return "Unknown";
@@ -36,7 +34,7 @@ function classifyTransaction(transaction) {
     "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
 
   const token2022Program =
-    "TokenzQdBNbLqP5VEhdkAS6EPFfC4V6Q3QY3FZx";
+    "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
 
   let category = "Other / Unknown";
 
@@ -55,6 +53,7 @@ function classifyTransaction(transaction) {
 }
 
 export async function GET(request) {
+ return withScannerAdmission(request,async (request)=>{
   try {
     const { searchParams } = new URL(request.url);
     const address = searchParams.get("address");
@@ -77,14 +76,7 @@ export async function GET(request) {
       );
     }
 
-    const rpcUrl =
-      process.env.SOLANA_RPC_URL ||
-      "https://api.mainnet-beta.solana.com";
-
-    const connection = new Connection(rpcUrl, {
-      commitment: "confirmed",
-      disableRetryOnRateLimit: true
-    });
+    const connection = createReliableConnection();
 
     const signatures =
       await connection.getSignaturesForAddress(
@@ -145,7 +137,8 @@ export async function GET(request) {
         }
       }
 
-      await wait(700);
+      // The shared RPC transport already spaces requests by 300ms and
+      // applies bounded retries/backoff; avoid adding a second fixed delay.
     }
 
     return NextResponse.json({
@@ -191,4 +184,6 @@ export async function GET(request) {
       { status: isRateLimit ? 429 : 500 }
     );
   }
+
+ },"transactions");
 }

@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {chartMaximum,protocolName,securityControls} from '../lib/evidenceHudPresentation.mjs';
+import {practicalAssessmentV2} from '../lib/practicalScoringV2.mjs';
+import {replay} from './fixtures/ui-assessment-replay.mjs';
+import {loadJSX} from './helpers/render-jsx.mjs';
+import {createElement} from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+const HUD=loadJSX(new URL('../app/EvidenceHUD.jsx',import.meta.url)).default;
+const Panel=loadJSX(new URL('../app/PracticalAssessmentPanel.jsx',import.meta.url)).default;
+test('percentage axis starts at zero, fits zeros, small and extreme values',()=>{for(const v of [0,.00001,.1,7.79,100,240])assert.ok(chartMaximum([null,v])>=v&&chartMaximum([null,v])>0);assert.equal(chartMaximum([1.02,1.68,7.79]),8);});
+test('protocol aliases are explicit and unknown identifiers are not attributed',()=>{assert.equal(protocolName('pump_amm'),'PumpSwap');assert.equal(protocolName('spl-token-2022'),'Solana Token-2022');assert.equal(protocolName('orca_fake'),'Unidentified program');});
+test('control rows distinguish observed absence, active and missing authorities',()=>{const r=replay(),a=practicalAssessmentV2(r).scores.token_security;assert.equal(securityControls(a,r.result)[2].status,'Revoked');const active={...r,result:{...r.result,freezeAuthority:r.currentCreator.creator}};assert.equal(securityControls(practicalAssessmentV2(active).scores.token_security,active.result)[3].status,'Freeze control active');assert.equal(securityControls(a,{...r.result,freezeAuthority:undefined})[2].status,'Unresolved');assert.ok(securityControls(practicalAssessmentV2({}).scores.token_security,{}).every(x=>x.status==='Unresolved'));});
+test('critical evidence precedes HUD once and retained timestamp is not scan timestamp',()=>{const r=replay();r.result.freezeAuthority=r.currentCreator.creator;const a=practicalAssessmentV2(r);a.scores.token_security.flags.push({id:'test-critical',severity:'critical',detail:'Material test condition'});let html=renderToStaticMarkup(createElement(Panel,{assessment:a,selected:'token_security',result:r.result}));assert.ok(html.indexOf('Material test condition')<html.indexOf('Security controls'));assert.equal((html.match(/Material test condition/g)||[]).length,1);const snapshot='2026-11-26T05:23:00Z';a.scores.holder_intelligence.metrics.snapshotObservedAt=snapshot;html=renderToStaticMarkup(createElement(HUD,{assessment:a,selected:'holder_intelligence'}));assert.match(html,/Retained holder snapshot/);assert.match(html,/2026-11-26T05:23:00Z/);assert.equal((html.match(/class="simple-holder-row"/g)||[]).length,3);});

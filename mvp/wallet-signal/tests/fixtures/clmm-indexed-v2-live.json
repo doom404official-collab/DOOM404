@@ -1,0 +1,21 @@
+{
+  "source": "Existing Alchemy Solana mainnet finalized; retained actual receipt",
+  "address": "35aFe6FhR7CnbLJE5ma8c93YJ2pkrURCTYv2GvVTAack",
+  "response": {
+    "context": {
+      "apiVersion": "4.4.1",
+      "slot": 474917110
+    },
+    "value": {
+      "data": [
+        "KLUv/QBYZQoA1BH37eP118PeRv+BbmZjDDu3JNxZ5J9sxDBuYDpqrMoG+j404rQK1ZedjVQD7UaBR6m46HZ5eHx76PljbV/756YsylGny8aEYM+FTZ3Wfbnv+uyihcJc1hcYFu3BxNqJrYFknXSzeAMK9tnG+nrzvtutOj1l82qryXQxsbvkwtL24OR8pgIDRS9dYQXqCeJA06pzd14LxmBbJfxjDbDk1HMR5H5P3VyHZklsvRAhVwaLjvEJIXxL84bt1wakdeeUZjkNipd8gRD0c4LjIW0Inx0DdBbhNFH4oaEDG8A6jePIrgH6GA206jXm6AYGAQAeH/Dg0oADAEHovCP7jKKdCABCqAAmULagBABdXcljWgEAcjgAIGAQAD3FlMg5SwQSALRABaDD4AymBgRlPLGMCvkH8WIpgC8cIiQAQwwGIALEAMWALaANgFGdAFI=",
+        "base64+zstd"
+      ],
+      "executable": false,
+      "lamports": 8493760,
+      "owner": "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK",
+      "rentEpoch": 18446744073709552000,
+      "space": 1544
+    }
+  }
+}

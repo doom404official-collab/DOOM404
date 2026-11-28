@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "date": "2026-11-26",
+  "baseline": "76125681387ec9a50421dfcf66048c5a21b5f250",
+  "integratedRegression": {
+    "total": 2045,
+    "initialPassed": 2042,
+    "initialFailures": 3,
+    "failureReasons": [
+      "Expected database source count predates independent relationship source",
+      "Read-only request assertion predates independent relationship source",
+      "Sequential liquidity source assertion predates parallel retrieval"
+    ],
+    "correctedAssertions": "30 targeted checks; remaining single count assertion corrected and all 9 checks in its file passed",
+    "productionBuild": "next build passed",
+    "databasePersistenceScript": "SKIPPED_NOT_OPTED_IN; not represented as live persistence validation"
+  },
+  "database": {
+    "schemaChanges": 0,
+    "appendOnlyEvidence": [
+      "liquidity_evidence_checkpoints.evidence.practicalScoringEvidenceV2",
+      "creator_intelligence_jobs.state.practicalScoringEvidenceV2"
+    ],
+    "verifiedLiquiditySlot": 474083510,
+    "verifiedCreatorWalletSlot": 474084637,
+    "retainedTargetCreatorTransactions": 1,
+    "originalHistoryPreserved": true
+  },
+  "providerRequests": {
+    "directAlchemyRequests": 20,
+    "captureTruncations": 3,
+    "directMarketHttpAttempts": 1,
+    "lq09HistoricalAccountReads": 0,
+    "remainingLq09Allowance": 1,
+    "applicationRequests": "Recorded separately from deployed response usage headers and server usage logs"
+  },
+  "release": "Preview verification pending; production not authorized"
+}

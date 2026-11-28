@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {scanCreatorOrigin} from '../lib/creatorOriginPagedScan.mjs';
+const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+const signatures=['1'.repeat(88),'2'.repeat(88),'3'.repeat(88),'4'.repeat(88)];
+const calls=[];
+const lookupSignaturePage=async(_mint,{before}={})=>{
+ calls.push(before||null);
+ const offset=before?signatures.indexOf(before)+1:0;
+ const entries=signatures.slice(offset,offset+2).map(signature=>({signature,err:null}));
+ return {entries,nextCursor:entries.at(-1)?.signature||null,exhausted:offset+2>=signatures.length};
+};
+const successfulTx={meta:{err:null,innerInstructions:[]},transaction:{message:{accountKeys:[],instructions:[]}}};
+const first=await scanCreatorOrigin({mint,lookupSignaturePage,fetchTransaction:async()=>successfulTx,maxPages:3,maxTransactions:2});
+assert.equal(first.nextCursor,signatures[1]);
+assert.equal(first.retrieved,2);
+assert.equal(first.historyComplete,false);
+const second=await scanCreatorOrigin({mint,before:first.nextCursor,lookupSignaturePage,fetchTransaction:async()=>successfulTx,maxPages:3,maxTransactions:2});
+assert.equal(second.nextCursor,signatures[3]);
+assert.deepEqual(second.sampledSignatures,[signatures[2],signatures[3]]);
+assert.deepEqual(calls,[null,signatures[1]]);
+console.log('creator successful transaction two-run resume tests passed');

@@ -1,0 +1,426 @@
+# Creator CI-06–08 evidence relay — proposed design for parent review
+
+Status: default-disabled offline preparation. No route, workflow, environment activation, migration, credential or live capability exists. No deployment/principal choice below is approved. Uses the existing wallet-signal Vercel project and existing GLITCH Supabase project/private `creator-historical-evidence` bucket; no new infrastructure. Parent reports the bucket private, 1 MiB, JSON/octet-stream; this task did not query it.
+
+## Compatibility findings
+
+- [GitHub discovery](https://token.actions.githubusercontent.com/.well-known/openid-configuration) names the official issuer, pinned JWKS endpoint and RS256. [Claim reference](https://docs.github.com/en/actions/reference/security/oidc) distinguishes `workflow_ref`/`workflow_sha` from reusable `job_workflow_ref`/`job_workflow_sha`. Bind repository/owner names and IDs, ref, commit, workflow SHA/ref, run ID/attempt, manual event, environment, runner type, audience and exact subject from a server-controlled manifest. Subject format can vary; verify it rather than guessing. Require signature verification, integer nonnegative `iat`/`nbf`/`exp`, current validity and a proposed ten-minute maximum age since `iat`, with no clock-skew allowance. This freshness rule is a proposed verifier policy, not a claim about GitHub token lifetime. A valid token with a longer `exp - iat` is accepted, but the capability independently expires by the earlier of token expiry, the approved five-minute window and issuance plus five minutes. Real GitHub claim/time compatibility remains a pre-activation test. An eventual protected job needs separately approved `id-token: write` and exact reviewed checkout; neither is changed now.
+- [Supabase createSignedUploadUrl](https://supabase.com/docs/reference/javascript/file-buckets-createsigneduploadurl) documents a two-hour upload capability. No reviewed API documents a five-minute TTL override or per-token revocation guarantee. Do not claim either. Therefore do not give that capability to Actions.
+- Proposed alternative: Vercel accepts an opaque 256-bit capability plus verified GitHub OIDC on every upload. It checks the absolute five-minute manifest/capability expiry, consumes a durable one-object claim before upload, and performs a normal non-upsert Storage upload server-side. Readback uses a separate approved manifest/audience and one-use claim, returns only a matching-hash result, and never returns account bytes or download tokens. Window expiry stops new admission; it cannot undo an already-dispatched storage request. Late/unknown writes require reconciliation and cannot be retried automatically.
+- [Storage access control](https://supabase.com/docs/guides/storage/security/access-control) supports distinct INSERT/SELECT policies; upsert requires additional privileges. No UPDATE/DELETE is proposed. The older broad service-role transport is not a least-privilege substitute. The changelog markdown fetch was unavailable (web content-type error, executor HTTP 403); relevant current API pages were readable.
+
+## Concrete flow and proposed authority
+
+1. Parent approves exact code, capture object/slot/account/hash, a short absolute window and known run/attempt; the server receives that immutable manifest. No wildcard repo/ref/run, automatic new manifest or perpetual enable flag. An already-running protected job could wait for manifest approval before its sensitive step; no workflow change or dispatch is made now.
+2. GitHub OIDC authenticates the caller. The retained authentic-account preflight runs server-side before issuance. It fixes account, slot, owner/header, length and account-data hash, then snapshots the exact payload bytes/hash. This cannot prove historical schema applicability or recipient authorization and never promotes a score.
+3. The relay reserves the object permanently and stores only hashes/binding metadata, not raw evidence or capability plaintext. It returns a five-minute-or-shorter opaque capability. Concurrent issuance loses; claims are not deleted on expiry. Upload independently verifies OIDC and atomically consumes capability+payload hash+length+run binding before Storage I/O. Failure does not release the claim.
+4. A separately approved readback manifest with a distinct GitHub run ID requests verification. The relay consumes a readback claim, fetches the private object server-side, checks exact bytes/hash, and reports only verified/mismatch/uncertain status. An audience string is not a principal: the upload job can request a token for the read audience, but its signed run ID will not match the independently approved read manifest. This is run-bound authorization, not proof of a different human/operator or environment. A failed readback is not automatic permission to issue another one; reconciliation needs review.
+
+**Proposed least-privilege server arrangement (not configured):** dedicated NOLOGIN database roles for reservation, consumption and readback; a separately provisioned server connection principal may assume only the required roles. Issuer needs INSERT on reservations. Consumer needs SELECT of reservation binding columns and INSERT on consumptions. Verifier needs SELECT of reservation/consumption bindings and INSERT on readback claims. Exact invoker-function EXECUTE, schema USAGE and corresponding RLS policies must be reviewed. No UPDATE/DELETE, PUBLIC/anon/authenticated grants, service-role fallback or public Data API exposure.
+
+Storage would use separately approved server-only upload and readback identities in existing Supabase Auth, with exact-identity RLS on the fixed bucket/object: uploader INSERT only; reader SELECT only. This is a proposal to create narrowly scoped principals later, not a statement that they exist. Their enrollment, server credential storage/refresh, interaction with all existing permissive policies, and Vercel branch/deployment scope require review before implementation of a live adapter. This avoids copying a project JWT signing key or broad service-role key into Actions. No OAuth enrollment, account creation, grant or credential reading is performed.
+
+## Current offline preparation and limits
+
+- `creatorEvidenceOidc.mjs`: real Node RSA verification, pinned resolver, explicit manifest/timestamps, algorithm/key-source restrictions, duplicate JSON-key rejection. Local tests generate ephemeral synthetic RSA keys; no production keys are generated or retained.
+- `creatorEvidenceRelay.mjs`: disabled factory and server-side prepared stage, permanent claim/consume interface, no-overwrite upload, distinct readback authentication, expiry and uncertainty. Only the Creator wrapper runs authentic preflight; the prepared-stage API must never be exposed directly as a route.
+- Retained policy/coordinator/preflight/private-retention helpers reused from b61d92e. The exact live account bytes are unavailable offline. Positive stage tests use synthetic prepared bytes and real cryptographic authentication; the actual Creator wrapper rejects the synthetic historical capture. This is not authentic capture acceptance.
+- A disposable-only SQL proposal and harness passed 16 checks in a network-isolated PostgreSQL 17 container, including expiry after waiting on a concurrent consumption, replay, rollback and restricted invoker privileges. An actual parameterized adapter-to-psql bridge passed reservation/concurrent consumption/separate readback. This is not hosted schema, driver or Storage-policy verification. No migration is applied outside the disposable database.
+- Default-disabled private-query and fixed-project/object Storage adapters are prepared with injected server dependencies; neither reads credentials/environment or connects by itself. A default-disabled HTTP handler is tested but is not imported by any app route. It accepts only POST on three exact paths, bearer authentication, JSON MIME and bounded streamed bodies; it emits no-store redacted results. Focused verification after authentication-order corrections totals 62 tests. Exact final full-regression and publication results are recorded in the existing tracker.
+
+## Minimal later approval packet
+
+Separate approvals are needed for: (1) the exact Vercel deployment and OIDC trust manifest/subject policy; (2) the reviewed claims migration, private roles/memberships/RLS and server connection credential; (3) the exact Storage Auth identities/policies and deployment credential scope, with existing-policy audit; (4) retention/deletion interval, access-audit ownership and encryption/key-management expectations; (5) a bounded real capture/upload/readback run with exact provider/request/object/window limits and evidence preservation. No blanket live, schema or scoring authority is requested here.
+
+Before live acceptance: review endpoint body limits, no-secret logging, bounded request/body parsing, certificate/JWKS rotation failure, token time/skew policy, multi-instance replay/expiry, storage conflict, uncertain response and readback mismatch; verify ordinary workers/capture remain disabled. Preserve permanent claim history on rollback, close admission and reconcile uncertain writes. Native two-hour signed upload is not an escape hatch. CI-06–08 and historical/scoring/release gates remain open.
+
+## Binding and transport limits for review
+
+Only the authentic-preflight Creator wrapper may be connected to a future route. The exported prepared stage is a server-internal seam for trusted preflight output and synthetic testing; it must never accept a caller-declared `READY_FOR_RESTRICTED_REVIEW` object over HTTP. The HTTP handler constructs the authentic wrapper itself. Request data never selects the project, bucket, object, signing-key URL, SQL function or authorization manifest.
+
+JWKS retrieval uses the official fixed HTTPS path, rejects redirects, bounds decoded data to 64 KiB/5 seconds and accepts one matching RSA signing key (2048–8192 bits, RS256, verify use). Unknown/duplicate kid and fetch/parse failure stop authentication without trying a caller URL. There is no stale-key fallback. Key rotation availability and actual deployed HTTP behavior still need separately authorized compatibility verification. Request bodies are limited to 1 MiB/5 seconds (readback body exactly the empty object); declared/chunked excess and cancellation are rejected. Upload and readback require exact server-controlled manifests, distinct run IDs and durable claims; audience names alone do not separate principals. Storage requests reject redirects and upsert; a separate server identity supplies each operation. No native capability, service-role fallback or implicit credential refresh is implemented.
+
+A noncooperative backend can finish an already-sent operation after cancellation. The coordinator returns reconciliation-required, never releases/reissues the claim, and never retries. Tests explicitly finish an upload late, reject a second upload and reconcile via the separately authenticated readback path. An OIDC lifetime longer than five minutes does not extend capability or manifest admission.
+
+The private claims proposal remains guarded to `glitch_creator_evidence_test`, outside migration/deployment paths. Its local fixture installs test roles/policies only in tmpfs PostgreSQL. It does not install production memberships, Data API exposure or Storage policies. A real Node database driver must honor or safely report cancellation; actual pinned-driver cancellation/TLS behavior is now tested locally as recorded below; hosted deployment acceptance is still not implied.
+
+
+## Focused authentication review correction
+HTTP admission cryptographically authenticates the action-specific manifest before reading/parsing a body. Direct issuance also authenticates before capture preflight. Cheap canonical JWT/header screening rejects malformed or prohibited headers before JWKS I/O; it returns no authentication proof. Operations independently authenticate and recheck expiry before claims/Storage, so an earlier successful admission cannot survive an expired body read. No caller-supplied authenticated flag or transferable proof is introduced. Repeated verification is intentional in this unwired preparation; any later caching needs separate review without weakening those checks.
+
+**Minimal activation decision:** approve an exact upload run manifest and a separately approved, distinct readback run manifest, each with its own at-most-five-minute window. The same repository/workflow/environment may be proposed for both runs, but the operator must independently approve the read run; no automatic trust in any subsequent run is allowed. A separate environment/protection boundary is not currently asserted. Same-run readback is rejected by this implementation and would need explicit design review. Both runs can request arbitrary audiences; the signed run ID plus all other exact manifest claims are the authority. The relay still needs the separately scoped server-side Storage identities described above; no roles, grants, credentials or capabilities are activated by these corrections.
+
+**Positive live-test prerequisite:** authentic pinned account bytes are currently unavailable. Never reserve or upload synthetic bytes at the canonical historical object path. The smallest positive storage/auth-flow validation would require separate approval for one dedicated nonhistorical test object, narrow test permissions/manifests and bounded upload/readback; this would validate only that test flow, not authentic capture or historical preflight. The current fixed historical relay does not support that object: no test route or public prepared-stage bypass has been added. It must remain disabled pending a separately reviewed test-only arrangement or provision of authentic bytes with verified provenance under separate capture approval. Local synthetic cryptographic/SQL tests remain the currently available validation. No archival RPC/provider entitlement is assumed or proposed as verified.
+
+## Final closed synthetic acceptance proposal (not activated)
+
+This section supplies the dedicated test arrangement previously absent. It does not authorize activation or supersede historical preflight. The test object is **only** `creator-historical-evidence/relay-tests/creator-auth-flow-v1.json` in the existing private bucket. Exact UTF-8 content is the following line plus one LF, **75 bytes**:
+
+```json
+{"kind":"synthetic-auth-flow-test","version":1,"historicalEvidence":false}
+```
+
+SHA-256: `c902eeb22e2fc05e6378f0c578686d991c1cc70d72aeefa61dc7ae0ffe1343dd`. No historical account, mint, slot or provenance is asserted. No synthetic hosted reservation/upload may use `global/` or the canonical historical path. The test wrapper constructs these bytes internally; issue accepts only `{}`, upload accepts only the exact bytes, and no caller selects a profile, workflow, destination or prepared payload. Both wrappers enforce their own fixed workflow. Historical wrapper/path/preflight remain intact.
+
+**Prepared executable entry point:** `createCreatorSyntheticTestIntegration` in `lib/creatorEvidenceSyntheticIntegration.mjs`, default disabled. It composes the actual OIDC/HTTP/claims/Storage mechanisms with three distinct injected private database clients and separate upload/readback credential providers. Its only candidate paths are POST `/api/creator-evidence-test/{issue,upload,verify}`; these are not app routes today. No active workflow or environment variable imports/enables it. The exact mock transport test runs this composition through real RSA signatures and all adapters. The approved server must supply immutable upload/read manifests; request JSON cannot do so. Only one bounded request-local JWKS snapshot is reused, while every layer rechecks signature/claims/expiry. No global or stale-key fallback.
+
+### Exact decision and proposed permission scope
+
+Approve only the following test profile after parent source review, with separately recorded actual bindings. No approval is requested by this engineering packet itself.
+
+| Surface | Proposed scope; currently unapplied |
+| --- | --- |
+| Deployment | Existing GLITCH Vercel project `prj_AbsbiTw8Kc8axGpZ3FFpH9VvDS4e`, Preview only, recovery branch only, one reviewed immutable commit/deployment. No production/assessment credential scope. Exact deployment URL/audiences sealed at activation; no aliases or wildcard URLs. |
+| GitHub | Candidate manual-only `creator-evidence-relay-test.yml`, recovery ref, exact repository/owner IDs, workflow SHA, commit SHA, hosted runner and exact subject/environment. One upload run and one separately approved distinct readback run, both attempt 1. No existing workflow change/dispatch is prepared as active code. Actual claim compatibility must pass before any issue/claim. |
+| Admission | Separate absolute upload/readback windows, each positive and <=300 seconds. A run may not open/extend its window. Readback can overlap only if independently approved; durable consumption requires a prior upload claim. Zero Solana/provider-history RPC, one upload and one readback, no retries/deletion/overwrite. |
+| Database | New private **test-only** `creator_relay_test_private` schema and three durable one-row-per-object tables/functions. Exact proposed DDL is `creator-evidence-synthetic-disposable.sql`, guarded to the disposable DB and outside migrations. A hosted migration would require approval and removal of that guard in a separately reviewed artifact; never execute this local file against hosted data. |
+| Database roles | `creator_test_issuer`: INSERT reservation + execute reserve. `creator_test_consumer`: SELECT reservation, INSERT consumption + execute consume. `creator_test_verifier`: SELECT reservation/consumption, INSERT readback + execute readback. All require only schema USAGE; no UPDATE/DELETE, owner/BYPASSRLS, public exposure, or historical-schema grants. Three separately approved server connection principals map one-to-one to these NOLOGIN roles. No passwords/memberships exist from this code. |
+| Storage identities | Two separately approved server-only Supabase Auth identities, one uploader and one reader, identified by exact returned UIDs. No GitHub user receives their tokens. Proposed RLS permits uploader INSERT and reader SELECT only for the fixed test bucket/object within their separate absolute windows. No UPDATE/DELETE or historical prefix; existing permissive policies and inherited grants must be audited before claiming this isolation. |
+| Secret placement | Private DB connections and separate Storage sessions only in the approved Preview integration scope. No service-role fallback, project JWT signing key, credential copying to Actions or automatic refresh. Runtime providers return existing approved access tokens or fail closed; expired tokens do not trigger refresh/retry. |
+| Retention | Proposed: keep the 75-byte object and minimal claims until explicit owner-approved deletion, no automatic cleanup. Claims are not reset on failure/expiry. No new project, bucket, compute tier, alerting or billable infrastructure is proposed. Existing usage is not represented as literally cost-free. |
+
+`creator-evidence-synthetic-permissions.sql.in` contains exact proposed grants/RLS and guarded placeholders for actual SHA/run/UID/window values. It deliberately cannot be applied unresolved. The local fixture substitutes synthetic values and tests the exact policies, including distinct runs/UIDs and max-five-minute windows. Storage table/auth helper there are minimal local models; actual hosted Storage/Auth acceptance and project-specific database endpoint/CA compatibility remain unverified. The API-key header contract and real-driver TLS behavior are now resolved/tested below. The runtime-client preparation gap is now closed by pinned `pg` 8.23.1 and the bounded adapter described below. Actual endpoint/CA/login bindings remain unconfigured; no hosted connection or credential setup is authorized. No essential provider limitation has been demonstrated, but compatibility is not assumed.
+
+### Bounded activation and closeout sequence for parent review
+
+1. Confirm the dedicated object is absent read-only and that the exact frozen historical object/claims are untouched. Audit all applicable Storage policies and role memberships; any broader access blocks the proposed isolation until separately reviewed. Review the filled permission/migration artifact and runtime driver before approval.
+2. After explicit setup approval only, provision the narrow server principals/Auth identities, private schema and exact policies on the existing project, with the reviewed Preview composition. Keep issuance closed while real GitHub claim compatibility is checked. Do not create a public prepared-stage path. Pin the deployment and exact run manifests; never let the caller approve its own run.
+3. Parent separately approves the actual upload run/window, then the distinct readback run/window. Issue only the fixed 75-byte test capability, submit one exact upload and one separately authenticated readback. Return only status/hash/counts, never tokens/session material. Any uncertain operation stops the sequence for read-only reconciliation; no automatic second POST or claim reset. Successful readback proves only this synthetic auth/storage flow, never authentic capture, history completeness or score eligibility.
+4. Window expiry closes new admission even on older deployments. Close the integration and independently reconcile dispatched writes and the stored hash. Explicitly revoke approved database memberships/connections and Auth sessions/credential scope in a separately authorized cleanup; preserve durable claims and object pending retention decision. Do not silently delete test data.
+
+**Expiry is not universal credential revocation.** GitHub OIDC JWTs follow their issuer expiry; the relay window/capability expires independently. Database credentials and Auth identities/refresh sessions can survive token/window expiry until explicitly revoked. Issued Storage access JWTs may remain cryptographically valid until their own expiry; session revocation is not claimed to invalidate every already-issued JWT immediately. The proposed absolute RLS windows deny new object operations after cutoff, subject to the required existing-policy audit. Already dispatched writes may finish after cutoff/cancellation; window closure or a later deployment cannot undo them. No native two-hour signed upload token is used. Durable one-use claims remain consumed, and late/uncertain writes require independent reconciliation.
+
+Authentic pinned account bytes are still unavailable. Approval or success of this dedicated synthetic test does not supply them and does not authorize archival RPC. No further preparation scope is implied by this packet.
+
+
+## Real runtime compatibility closure (offline, not activation)
+
+Selected and lockfile-pinned **pg 8.23.1**. `creatorEvidencePostgres.mjs` uses a dedicated connection for each exact parameterized test-claim function; it rejects arbitrary SQL, concurrent use of one client, missing connection fields, connection strings and caller TLS overrides. CA parsing, hostname verification, `rejectUnauthorized: true` and TLS 1.2 minimum are mandatory. Identity/password/database/host are explicit supplied server configuration, not environment fallbacks. It sets explicit startup options/search path/row security and session statement/lock timeouts; no hosted settings are changed. Default connect/query bounds are 2/5 seconds (hard configurable maxima 3/10 seconds), both followed by monotonic deadline checks. The connection is destroyed on completion/cancellation/failure and never pooled or automatically retried. No app route/workflow imports it.
+
+`createCreatorSyntheticRuntimeIntegration` composes three separate real clients from explicit server-provided configs. The same fixed 75-byte object, distinct readback run and exact claims persist. A caller cannot supply connection details over HTTP. Existing proposed role/grant/RLS SQL required no widening: the real driver authenticated with separate synthetic SCRAM logins and successfully exercised issuer, consumer and verifier permissions; issuer execution of the verifier function was denied.
+
+**Demonstrated driver behavior:** `pg` 8.23.1 ignores `query({signal})`; a raw `query_timeout` can reject before a mutation later commits. Closing a client connection after dispatch also does not guarantee rollback: the fixture observed exactly one persisted reservation after cancellation. The adapter implements its own signal/deadline race and socket closure, returning `CREATOR_PG_OUTCOME_UNKNOWN` after dispatch. It never claims cancellation means rollback, never retries the write and requires independent reconciliation. Before dispatch, it returns `CREATOR_PG_NOT_DISPATCHED`. Server statement timeout is a further bound, not a guarantee that every uncertain response is a failed write. Real TLS/SCRAM tests also cover wrong CA/hostname/password, slow query, stalled handshake, overlapping calls and no retained client sessions.
+
+**Storage gateway correction:** official [Supabase API-key documentation](https://supabase.com/docs/guides/getting-started/api-keys) distinguishes the application API key from the user's JWT. The adapter now requires an explicitly supplied `sb_publishable_...` key on **`apikey`**, alongside the scoped uploader/reader JWT on **`Authorization: Bearer`**. It rejects secret/legacy keys rather than falling back to elevated access or treating an API key as a user. Both fixed-object POST and authenticated GET carry these separate headers; missing/malformed keys fail before credentials or transport are requested. The key must be the approved project's actual publishable key; none was read, created or copied. Hosted token validity/RLS remains an authorized-live-acceptance prerequisite, not an unresolved header-design question. [Private Storage download documentation](https://supabase.com/docs/guides/storage/serving/downloads) supplies the authenticated object path. No native signed upload is introduced.
+
+Driver references: [Client configuration](https://node-postgres.com/apis/client), [TLS and connection-string override caveat](https://node-postgres.com/features/ssl). The official Supabase changelog markdown reader rejected its content type; no compatibility conclusion was drawn from that unavailable index. The specific current API-key docs and actual pinned driver/local PostgreSQL behavior are the evidence used here.
+
+**Remaining activation bindings/approvals only:** approved immutable Preview deployment and route wiring; exact repository/workflow/commit/run/environment/subject/audience manifests and absolute windows; reviewed actual project database host/port/database/CA and three narrow login credentials; approved application of the private test schema and exact role memberships/RLS; two actual Storage Auth UIDs/access sessions and project publishable key; audit of existing permissive policies; owner-approved retention/closeout and one bounded synthetic upload/readback acceptance. Any pooler/endpoint must support the tested TLS/startup/session-timeout contract and fail closed otherwise; no endpoint is assumed reachable or compatible without the separately approved check. No new driver, authentication authority, generic payload mechanism, broad grant or historical RPC is needed. Actual Auth/Storage deployment acceptance remains pending permission; authentic historical bytes remain unavailable and unrelated to synthetic acceptance.
+
+## Closed restricted setup candidate — no test-window authorization
+
+Owner approved restricted setup in direct reply at 20:51:26 UTC on 2026-10-27. That approval does **not** authorize a test window, upload, readback, capture or historical RPC. Parent alone handles actual setup/audit; no child hosted action is authorized.
+
+Parent's read-only audit at 20:52 UTC found both private schema names and `creator_test_%` roles absent, synthetic object absent, bucket private/1 MiB/JSON+octet-stream, Storage RLS enabled with no policies, no authenticated public-table access or executable public SECURITY DEFINER functions, and empty recovery-branch Vercel environment inventory. These are supplied audit facts, not reads repeated here. The candidate assumes those names remain absent and requires PostgreSQL 17 membership semantics and an authorized administrative executor. It aborts on name collisions or unexpected privilege inheritance; it never reuses roles, removes other users' grants or weakens a policy to make setup pass.
+
+**Exact setup SQL:** `creator-evidence-closed-setup.sql` (outside active migrations). Single transaction; no placeholders for runs/windows/UIDs/passwords. It creates the unchanged fixed-object test tables/invoker functions, three NOLOGIN capability roles and three LOGIN roles with `PASSWORD NULL` and `CONNECTION LIMIT 0`. Each login inherits exactly its one capability role with ADMIN=false, INHERIT=true, SET=false. Minimal table/function grants are asserted exactly; schema remains private and every table has a restrictive false guard, with no permissive admission policy. Even a future-looking caller record or an accidentally added permissive policy cannot open those guards. No credential is generated/read/printed. Connection admission and claim admission are both closed.
+
+The in-transaction assertions check role/password presence booleans (never return password hashes), exact memberships, no privileged attributes, exact test-table/function rights, no accessible outside application tables and no executable non-extension outside SECURITY DEFINER functions. This is stricter than the supplied authenticated/public audit for the new database principals: if inherited PUBLIC access is discovered, setup rolls back and parent must review it; do not automatically revoke existing global grants. Ordinary invoker helper/extension execution is not asserted absent, and is not a grant of historical table access. Administrative access to the required catalogs is a prerequisite; failure is a stop, not permission escalation.
+
+**Storage setup companion:** `creator-evidence-closed-storage.sql.in` requires only the two actual newly created test Auth UIDs—not run/window values. It verifies both identities exist and differ, then installs a restrictive deny-subject policy across all Storage objects for those UIDs. It grants nothing and defeats any permissive policy for those identities, including historical paths. Other UIDs (and null UID contexts) are unchanged. It cannot constrain owner/service-role/BYPASSRLS access, so those must never be used as test identities. Apply the companion before issuing/storing test sessions. If the identities cannot yet be provisioned securely, stop that portion; schema setup can remain closed independently. Do not substitute synthetic UUIDs in hosted SQL.
+
+### Supported credential provisioning, without model-visible secrets
+
+The parent has confirmed the signed-in dashboard offers Create new user with email/password; the connected Auth plugin lacks user creation. The smallest supported path is **owner-operated UI provisioning**: owner selects two controlled service addresses, generates unique passwords in their password manager, enters them directly in the Supabase dashboard and records only resulting UIDs for the parent. No passwords, session tokens or screenshots containing them enter model/tool arguments or chat. Creating inboxes, changing SMTP/confirmation policy or using invented addresses is not authorized. If owner interaction/controlled addresses are unavailable, Auth provisioning remains blocked; do not widen grants or use service-role credentials to work around the missing tool.
+
+For database credentials, keep PASSWORD NULL and zero connections until the owner/operator can provision through owner-operated `psql` over verified TLS using the interactive `\password creator_test_issuer_login` command (and corresponding consumer/verifier commands), rather than embedding plaintext in SQL/history, then place only each narrow login credential in the exact recovery-branch Preview scope through owner-operated Vercel input. Generating/storing credentials is within the parent's restricted-setup approval; raising connection limits or enabling the runtime is **not** part of this closed SQL. Storage Auth sessions need not be minted during setup. Later, an explicitly authorized owner-side sign-in can supply scoped sessions without copying service-role material to Actions. [Supabase admin createUser](https://supabase.com/docs/reference/javascript/auth-admin-createuser) is a supported server-only alternative, but it requires privileged admin credentials and a secure execution path not provided by the current plugin; no such helper or credential transfer is added here. Do not expose a new provisioning endpoint.
+
+### Later activation and non-destructive closeout
+
+A separately approved sealed-window change must supply exact upload/readback runs, distinct identities, immutable deployment/SHA and <=five-minute windows; replace the restrictive false guards with reviewed sealed predicates, add only the matching narrow permissive policies, and deliberately open bounded login/runtime admission. **Do not apply the old all-in-one permissions template to an existing closed setup**: its role creation will collide and it does not replace the closed guards. Parent must review the differential activation artifact once real bindings exist. No expired or invented window is used to simulate authorization.
+
+Before COMMIT, any error rolls the entire setup back. After COMMIT, `creator-evidence-closed-closeout.sql` is the exact non-destructive parent-only closeout candidate: NOLOGIN/zero connection limits, remove the three memberships, restore false guards. Keep the Storage deny-subject policy; removing it could restore broader permissive access. No automatic DROP/DELETE, object removal, password reset, session termination or Auth deletion occurs. Existing sessions/dispatched work are not promised cancelled by NOLOGIN or membership removal; reconcile and revoke session/credential scope explicitly if access was ever opened. Retain objects/claims/schema for review until separate deletion approval.
+
+Beyond the current setup approval: any claim/upload/readback/test window, activating routes/workflows, broadening inherited/public permissions, new infrastructure, historical data access, or destructive cleanup requires separate authorization. Parent may execute only independently reviewed closed setup and securely provision the narrowly approved identities/Preview credentials; the child performs none of those hosted actions.
+
+Provisioning reference: [PostgreSQL psql password command](https://www.postgresql.org/docs/17/app-psql.html#APP-PSQL-META-COMMAND-PASSWORD) prompts and encrypts before issuing ALTER ROLE. The owner must operate that terminal directly; neither prompts nor values pass through this agent. Schema setup itself requires no password material. [PostgreSQL role](https://www.postgresql.org/docs/17/sql-createrole.html) and [membership](https://www.postgresql.org/docs/17/sql-grant.html) contracts support the explicit closed-login/membership settings tested here.
+
+### Effective schema-access correction
+Parent's additional read-only catalog check confirms PUBLIC SELECT on `extensions.pg_stat_statements` and `extensions.pg_stat_statements_info`, but **no PUBLIC USAGE on `extensions`** and no other memberships for the proposed roles. The setup assertion now requires both schema USAGE and a relation privilege before treating an outside relation as reachable. This follows [PostgreSQL schema privileges](https://www.postgresql.org/docs/17/ddl-schemas.html#DDL-SCHEMAS-PRIV): a table ACL alone is insufficient. No extension name, table name or entire schema is exempted; no grant or revoke is added.
+
+Disposable tests install the real pg_stat_statements extension, retain its PUBLIC SELECT, prove the test role's SELECT fails at schema access, then prove a later PUBLIC schema-USAGE grant causes the audit to fail and roll back. An accessible public wrapper view over the otherwise unreachable statistics view is also rejected. Existing public historical-table rejection remains covered. Schema grants or memberships changed later require re-audit; this is a point-in-time setup assertion, not automatic monitoring.
+
+No statistics exception or owner policy decision is needed under the confirmed facts. [pg_stat_statements documentation](https://www.postgresql.org/docs/17/pgstatstatements.html) masks other users' query text/query IDs from ordinary roles, but does not hide all statistics/user OIDs. This correction does not rely on that masking and does not authorize metadata access. If schema USAGE becomes available, stop and review rather than assume the views are harmless.
+
+### Differential sealed window after installed closed setup (unapplied, October 28)
+
+Parent reports the closed schema and deny-subject Storage guard installed; database logins still have null passwords and zero connection admission. Owner credential provisioning is deferred to their personal laptop. No workaround, credential retrieval or hosted operation is part of this preparation. The earlier all-in-one permissions template must not be applied over these existing roles.
+
+`lib/creatorEvidenceSealedBinding.mjs` validates a complete owner-reviewed binding and **renders SQL only**. `creator-evidence-sealed-transition.sql` is the differential candidate, outside active migrations. It requires the actual immutable Vercel deployment ID/URL, reviewed commit, approval reference, two actual Auth UIDs and complete independently approved upload/readback OIDC manifests (distinct run IDs, attempt 1, exact workflow/ref/SHA/audiences/subjects/environments, future windows of at most 300 seconds). No defaults, placeholder runs, expired-window authorization or caller-selected profile are accepted. Syntax validation does not prove deployment identity or owner approval: parent must independently verify all actual bindings before applying the rendered transaction. These bindings and the test window remain unresolved, not authorized by restricted setup approval.
+
+The transaction rechecks provisioned-but-closed login attributes, exact memberships/table/function privileges, outside effective access and installed restrictive policies. It takes an advisory transaction lock and claim-table locks; rejects previous claims, an existing seal, conflicting identities or policy collisions; and rolls back partial DDL on failure. It records one owner-only seal with no runtime grants and no supported re-opening path. Original restrictive guards are narrowed to the exact sealed window, with command-specific Storage restrictions that still deny test-identity UPDATE/DELETE under unrelated permissive policies. Unrelated policies remain intact. Only the fixed test path is admitted; the relay still enforces the exact 75 bytes/hash, since Storage RLS does not validate object bytes. The transition deliberately opens connection limit 1 and password validity bounded by the corresponding expiry; this is a **later activation change**, not closed setup. Connection admission can begin before the sealed data window, but all claim/Storage data admission remains time-gated.
+
+Use `creator-evidence-sealed-closeout.sql` after a seal exists, including for early closure. It restores the deny-subject Storage guard and false claim guards, sets NOLOGIN/zero connections, revokes the three memberships and records closure once. It preserves bindings, immutable claims, objects and unrelated policies. It performs no deletion, password reset, session termination or automatic retry. The older closed-setup closeout is for the never-activated state only. Expiry alone does not delete credentials, end existing sessions or cancel in-flight writes. An operation already dispatched may finish after expiry/closeout; retain uncertainty and require independently authorized reconciliation. Closing access does not authorize cleanup or another window.
+
+Remaining activation prerequisites: owner-operated secure provisioning; parent review of exact deployment/commit and separate real run manifests; explicit upload/readback-window approval; audit of the installed state; separately reviewed disabled-runtime deployment/wiring and secure Preview-only bindings; then one bounded synthetic validation and non-destructive closeout. No historical acceptance follows from a synthetic result. Real historical bytes remain unavailable. This change adds no route, workflow, runtime enablement, credential or automatic SQL application.
+
+### Sealed runtime composition preparation (October 28, still unwired)
+
+`createCreatorSealedRuntime` reuses the existing real-driver runtime/HTTP/crypto/claim/Storage factories. It accepts only server-owned explicit configuration: `enabled`, `sealedBinding`, `deployment`, `postgresConfigs`, `storageSessions`, `publishableKey`. Omission or any value other than literal true for enabled returns a disabled handler before credential access. Enabled malformed configuration throws a fixed redacted error before connection/JWKS/Storage activity. No process environment, request-supplied configuration, broad-secret fallback, identity callback or session refresh is added.
+
+Both runtime manifests are derived from the same validated binding, not separately supplied. Deployment target must be Preview and exact project/ID/immutable URL/commit/recovery branch must match the seal; each request origin must match too. Database configs permit only direct `db.acwmtobcbpkjfqiatyke.supabase.co:5432`, database `postgres`, the corresponding issuer/consumer/verifier login and validated TLS CA. No pooler, service-role, postgres user or connection-string override is supported. Direct hostname reachability/CA and effective hosted role grants still require separately authorized verification; no alternative destination is silently substituted.
+
+The two fixed Storage sessions must structurally identify the sealed distinct UIDs with authenticated role/audience and the exact project's Auth issuer, and last through the respective window. This is a misconfiguration screen, not cryptographic authentication of Storage tokens; the hosted Auth/Storage gateway remains responsible for signature validation. Tokens remain server-side and are never returned to Actions. The project publishable key remains separate. All values are snapshotted, no automatic refresh/retry occurs, and expiry is checked again before each credential use and operation.
+
+A compatibility defect was corrected: future-only SQL-preparation validation cannot be reused unchanged after a window starts. Runtime validation accepts already-started valid windows while retaining exact schema/identity/duration checks; an entirely expired binding is rejected. Each action separately checks its own current window before body/JWKS/store access. Thus an independently approved later readback can remain available after upload closes. SQL rendering always forces preparation mode, even if a caller requests runtime mode; it cannot render activation of an already-started window.
+
+The unapplied route and workflow skeletons are under `docs/proposals/creator-evidence-integration/`, outside active paths and explicitly disabled. They are review artifacts, not executable acceptance delivery. Before actual wiring, parent must match the configuration to the installed SQL seal, independently confirm deployment identity and choose the exact protected GitHub environment/subject, two real dispatch IDs and windows. A future reviewed runner must request GitHub OIDC for the sealed action audience, issue/upload the exact fixed bytes once in the upload run, then use only the separate readback run for verify; never transfer database/Auth credentials to Actions. No provider calls, retries, arbitrary payloads/URLs, reset, capture or history path are permitted. Keep capability/OIDC values out of logs/artifacts. A malformed/uncertain operation stops; no automatic second attempt. No live runner or credential loader is included in this preparation.
+
+Local composition tests use real synthetic RSA signatures through the existing HTTP/claim adapters with instrumented pg Client methods and Storage transport. They are not a substitute for the previously retained actual TLS/SCRAM disposable-driver tests, nor for hosted Auth/Storage/deployment compatibility. Runtime preparation does not prove the seal was installed or that supplied credentials are genuine; owner/parent setup and explicit test-window approval remain prerequisites. Historical evidence remains Unknown.
+
+### Recovery Preview credential loader and owner input contract (offline)
+
+The server entrypoint is `lib/creatorEvidenceEnvironment.server.js`, marked `server-only`; it delegates to the Node-only loader and existing sealed runtime. No route/workflow imports it. `createCreatorEnvironmentRuntime()` defaults to disabled and performs zero environment/credential reads. Only explicit server-owned `enabled:true` plus the existing approved seal, separate Storage sessions and publishable key can prepare a handler. There is **no environment enable variable**. The loader never returns credentials/configuration or logs source errors; errors are the fixed `CREATOR_ENV_CONFIGURATION_REJECTED` without a cause.
+
+Owner-operated input, after parent review of this contract: in the existing wallet-signal Vercel project `prj_AbsbiTw8Kc8axGpZ3FFpH9VvDS4e`, select **Preview only**, Git branch **fix/glitch-recovery-preflight-20261027** only. Do not choose all Preview branches, Production or Development, and do not redeploy/activate as part of entering values. Use private server variables, never NEXT_PUBLIC names, source files, chat, screenshots or shell arguments containing passwords.
+
+| Exact variable name | Owner input | Vercel type |
+| --- | --- | --- |
+| `CREATOR_TEST_DB_ISSUER_PASSWORD` | Password saved for `creator_test_issuer_login` | Secret/sensitive |
+| `CREATOR_TEST_DB_CONSUMER_PASSWORD` | Password saved for `creator_test_consumer_login` | Secret/sensitive |
+| `CREATOR_TEST_DB_VERIFIER_PASSWORD` | Password saved for `creator_test_verifier_login` | Secret/sensitive |
+| `CREATOR_TEST_DB_CA_PEM` | Complete downloaded CA certificate text, including BEGIN/END lines and real line breaks | Private Config; certificate is not a password |
+
+Paste passwords exactly from the password manager—no surrounding quotes, trimming or URL encoding. Empty, NUL/newline-containing or over-4096-character passwords are rejected. CA input is PEM contents, **not** a Windows file path, private key, URL or text containing literal backslash-n sequences. No certificate bypass or automatic file/URL loading exists. The existing driver validates the certificate and uses hostname verification/rejectUnauthorized. Host `db.acwmtobcbpkjfqiatyke.supabase.co`, port 5432, database postgres and all three narrow usernames are fixed in code; do not add host/user/connection-string variables. No service-role/admin credential or PGPASSWORD/DATABASE_URL fallback is supported.
+
+Before any secret read, the loader requires Vercel system metadata `VERCEL_ENV=preview`, `VERCEL_TARGET_ENV=preview`, exact recovery `VERCEL_GIT_COMMIT_REF`, and the exact `VERCEL_PROJECT_ID`. It validates the seal, then requires `VERCEL_DEPLOYMENT_ID`, `VERCEL_URL` (hostname, converted to HTTPS) and `VERCEL_GIT_COMMIT_SHA` to match it. Missing/wrong system metadata fails closed; do not manually spoof it. These are configuration checks, not independent proof that a seal was installed or a deployment approved. Parent must still verify actual deployment/SQL bindings. Production, other branches and custom environments are rejected before credential access.
+
+These four names close the database credential-input gap only. No Auth access tokens are minted or refreshed, and no environment format for the future seal or Storage sessions is invented here. They remain explicit server-owned runtime inputs requiring later reviewed wiring and real approved windows/run IDs. Keep current connection limits at zero. Storing passwords alone grants no test-window authority and does not enable a route. Vercel deployments may retain their environment snapshot; later expiry/closeout must still use the reviewed server/database window controls, not rely on deleting variables to revoke prior deployments.
+
+Validation: 32 new loader cases plus 23 retained sealed-runtime cases pass (55 focused). They cover disabled zero reads, strict opt-in, missing/malformed credentials, scope/deployment rejection before secret reads, CA validation, fixed host/role configuration, redacted source errors and no broad-secret/environment enumeration. A separate temporary mock Next client fixture fails compilation on the `server-only` import as intended; no active route was added. A temporary Server Component fixture using the same entrypoint builds and renders disabled successfully, also with network blocked. Full regression/build results are recorded in the existing tracker. No real passwords, hosted reads/writes or environment changes were used.
+
+References: [Vercel system metadata](https://vercel.com/docs/environment-variables/system-environment-variables), [Vercel environment scoping](https://vercel.com/docs/environment-variables), and [Next.js server-only import protection](https://nextjs.org/docs/app/getting-started/server-and-client-components#preventing-environment-poisoning). Owner entry and subsequent deployment/activation remain parent-controlled; this implementation is offline preparation, not hosted acceptance.
+
+### Local-only endpoint/runner delivery package — publication paused
+
+Parent reports the owner provisioned all three login passwords while connection limits remain zero, and verified exactly four sensitive recovery-branch Preview variables without decrypting them. This task does not read their values. Because Preview now contains credentials, **this package is local only: no push, deployment, CI dispatch, active route or registered workflow**. Liquidity is unchanged and paused.
+
+Implemented `createCreatorSyntheticEndpoint` and its server-only entrypoint reuse the existing loader, sealed runtime, real-driver wrapper, cryptographic verifier, permanent claims and fixed 75-byte fixture. Disabled returns before all dependency/environment access. On a later expressly armed revision, the endpoint checks path/method/token structure and exact Preview identity, then performs one bounded private configuration read with the corresponding existing issuer or verifier login. It does not consume the request body before cryptographic authentication by the retained handler. No caller supplies a seal, Storage token, host or profile. A wrong/missing configuration is closed; once mutation handling begins, exceptional/uncertain outcomes require reconciliation and are never retried.
+
+**New permission proposal, not covered by existing setup:** `creator-evidence-runtime-delivery.sql` (SHA-256 `c9f9dc0815a24e0040fcfbcc095e04a327887cad6424d09ece55c6e88766ea37`) adds one immutable singleton `creator_relay_test_private.runtime_delivery` and a narrowly scoped SECURITY DEFINER `relay_runtime_configuration(jsonb)`, owned by the applying trusted administrator. No new login or infrastructure. Runtime roles have no table SELECT/UPDATE/DELETE. Only issuer and verifier capability roles receive function EXECUTE; actual session_user, action, exact deployment/project/commit/branch, installed seal, phase window and closed_at must match. Issuer gets only the uploader access token; verifier gets only the reader access token. The consumer cannot read configuration. This is additional sensitive read authority and a trusted-administrator function, requiring explicit review/approval—not an implicit extension of the earlier grants. Session authentication does not cryptographically prove execution originates in Vercel: a leaked narrow login password could request its matching phase configuration during that window. This risk must be included in the approval; deployment-field comparisons alone do not eliminate it.
+
+The owner supplies the existing seal, project publishable key and two short-lived Auth access tokens through one private temporary parameter input. The SQL rejects missing/mismatched inputs, existing delivery objects and installation after the window starts. Existing historical objects/claims are untouched. Tokens are retained in the private row; read permission expires with the phase or closeout, but retention is not deletion and a dispatched response may arrive late. Actual Auth token lifetime may exceed five minutes; the relay/SQL/Storage window bounds admission independently. The administrator can inspect the row, so operator/platform parameter logging and retention require review. No refresh tokens, service-role key or automatic sign-in/refresh is used.
+
+`install-runtime-delivery.mjs.in` is an unapplied, hard-disabled owner-side secure-input helper: existing pg dependency, fixed GLITCH TLS destination, reviewed SQL hash, muted terminal prompts and parameterized temporary input. It does not log errors/values. It is syntax-checked only, not a verified owner provisioning tool; a secure terminal dry-run with synthetic input and platform parameter-log review remain prerequisites before handling real Auth tokens. No agent receives tokens. Storage sign-in itself is not performed or implemented here.
+
+`runCreatorSyntheticAttempt` owns one attempt. Upload requests OIDC once, reserves once through `/issue`, then sends only the fixed bytes once to `/upload`; readback independently requests OIDC once and calls `/verify` once. All transport redirects are rejected; bodies, deadlines and cancellation are bounded. After any POST dispatch, malformed/lost/cancelled response is conservatively reconciliation-required. No retry, overwrite, delete, capture, source reset or historical/RPC call exists. Receipts contain status/reconciliation flag/retries=0/history=false/score=false, never token/capability/response bytes. GitHub OIDC transport only accepts the Actions HTTPS host family and uses the runner-issued bearer in memory.
+
+The route, runner and workflow candidates remain under `docs/proposals/creator-evidence-integration/`, not active paths. Both code literals and job admission remain disabled. The workflow proposes `creator-evidence-synthetic-test` as a **not-yet-configured protected environment**, exact recovery ref/commit, attempt 1 and per-run concurrency. Two pending jobs therefore cannot replace/cancel one another. Claims remain the distributed replay guard; Actions concurrency is not presented as distributed fencing. The proposed subject assumes the standard environment subject and must be checked against real signed claims without broadening scope on mismatch.
+
+**Non-circular choreography for later approval:**
+
+1. Parent reviews this local commit before any push. Owner separately approves publication of the disabled preparation and its normal Preview build with existing credentials. No route/workflow is wired by that publication. Current remote remains the previously reviewed `52aaf228c9fab515ad2754ad82fbdd964778a840` unless parent later authorizes a push.
+2. Before an actual test, parent prepares/reviews the final armed route and runner revision and its minimal workflow registration. A new workflow_dispatch path needs registration on the default branch; that protected/default-branch change is **not currently authorized**. No blanket merge is proposed. Configure the specifically approved protected environment before dispatch; absent protection is a stop. Final arming/publication/deployment requires explicit approval; toggling code afterward would change the reviewed commit/deployment and invalidate a seal.
+3. Obtain and independently verify the immutable ID/URL of that final deployment while database admission remains closed and no seal/delivery is installed. Do not store final deployment/run IDs in Vercel env vars and redeploy afterward. The read-on-request private envelope is how the already-deployed code receives later-approved bindings.
+4. With explicit approval for the two pending dispatches and future <=300-second windows, create one upload run and one readback run at the exact final SHA. Both stop at the protected environment gate before checkout/OIDC/execution. Their real run IDs are now known. Inputs provide immutable endpoint/SHA/start/end/action; runner identity comes from GitHub, never fabricated. Parent builds and verifies both exact manifests, separate run IDs, actual OIDC subject/environment compatibility and approval references.
+5. Under separately approved transition/configuration permissions, install the existing future-only seal and then the exact runtime-delivery row before either window starts, using owner-operated secure input. A failed/uncertain installation stops the sequence; reconcile, never reset/reopen the seal or create replacement runs automatically. Do not release either job until all database/Storage/deployment checks pass. Separate transactions do not imply atomic activation; held jobs and future windows prevent authorized execution during preparation.
+6. Release only upload in its window. Review its redacted result. Independently release readback only if allowed by the approved reconciliation plan; uncertainty does not authorize an automatic retry. After the approved attempt(s) or failure, use retained non-destructive sealed closeout: false guards, NOLOGIN/zero limits, membership revocation and closed_at. That also blocks runtime configuration reads. Preserve claims/object/seal/delivery for review; deletion, session termination and additional attempts need separate authority.
+
+This sequence requires no circular redeploy, guessed run IDs, reset or repeat dispatch. If a run expires while waiting, it does not get a fresh window automatically. Independent readback means a distinct approved run, not proof of a different human. A synthetic pass validates only this storage/auth flow, never authentic historical allocation, coverage or score.
+
+**Approval packet for parent consolidation:** (A) exact local commit publication and disabled Preview build, with no new hosted configuration; (B) separately reviewed final endpoint/workflow registration/protection/arming and immutable deployment; (C) the existing sealed transition plus this exact configuration-reader grant and private short-lived-token retention, owner-operated secure input and its audit; (D) one upload and one independently approved readback run, attempt 1, fixed 75-byte object, each <=5 minutes, zero blockchain requests, no retries/overwrite/deletion, followed by non-destructive closeout. These are proposed scopes, not approvals received. Do not ask the owner to approve a live window before final identity and permission review.
+
+Validation: 77 focused loader/runtime/delivery cases pass, including real synthetic RSA verification through the end-to-end runner/endpoint composition, concurrent duplicate upload, expiry/cancellation/late Storage completion, malformed response, wrong identity/scope/Storage role, disabled zero reads and redaction. 25 actual disposable PostgreSQL checks prove phase-only token reads, direct access denial, before/after-window and closeout denial, identity mismatches and no overwrite. All 1,577 regression tests and build/lint/types passed after the phase-only refinement; persistence stayed SKIPPED_NOT_OPTED_IN. The exact disabled route proposal also compiled in a temporary offline Next fixture. Full evidence is recorded in the existing Creator tracker. Hosted Auth/Storage/protection/terminal provisioning remain unverified; no live operation or publication occurred.
+
+### Local bootstrap correction after independent review
+
+The preceding endpoint description is superseded for authentication ordering. Before any DB password/CA read or SQL connection, the endpoint now obtains JWKS only from the pinned GitHub resolver and cryptographically verifies RS256 signature, issuer, audience, token time claims and fixed repository/owner IDs, recovery ref, proposed workflow/environment/subject, attempt 1, hosted runner and deployment commit/workflow commit. These non-secret constraints are code-owned; no caller-supplied bootstrap policy or authenticated flag exists. Only public Vercel identity metadata is read first. Body consumption remains forbidden until the later exact seal authentication succeeds.
+
+This is deliberately two-stage trust. Bootstrap authenticates the fixed deployment/workflow principal; its signed numeric run ID is not execution authority. A one-second internal verification interval is only the current authentication instant, not a fabricated approved test window. After the bounded private configuration read, the existing handler independently verifies the exact installed upload/readback run, approved window and claims before consuming a body or touching permanent claims/Storage. A correctly signed but unapproved run may perform that configuration read; it cannot reserve or upload. The actual proposed environment/subject still requires pre-activation compatibility review, with no automatic broadening.
+
+Local tests add forged-signature and 18 invalid claim variants with instrumented secret reads, SQL connections and body getters, all zero on rejection. A genuine expired installed envelope stops after one authenticated configuration read. A signed different run fails the installed seal without body/claim/Storage activity. The misleading prior wrong-role/stale-envelope test name is corrected. Disabled zero-access behavior and no retry/uncertain outcomes remain unchanged. SQL/token retention, installer behavior and hosted role/default-ACL compatibility remain UNACCEPTED; this correction grants no publication or activation authority.
+
+### Local installer and administrative replay review
+
+The disabled installer now bounds connection establishment to 5 seconds and each query to 10 seconds, in addition to server statement/lock timeouts. Ctrl+C, SIGTERM and prompt EOF abort; socket teardown is explicit. Cleanup does not await a potentially stalled `end()`. A dispatched migration followed by error/cancellation/timeout reports INSTALL_OUTCOME_UNKNOWN_RECONCILE; no retry occurs. Read/temporary-input failures before migration dispatch report NOT_INSTALLED, not an assurance that no temporary input ever reached the server. Tokens remain subject to the separately documented host parameter-log/retention risk.
+
+Nine synthetic Linux PTY scenarios passed: success (including non-cooperative end), prompt Ctrl+C/EOF, connection error/stall, read stall, migration error/stall and Ctrl+C after migration dispatch. All assert no synthetic secrets/error contents in terminal output, restored terminal echo, bounded exit, teardown and at most one dispatch. The harness copies the proposal to a temporary file, changes only its false gate and pg import to a synthetic transport, and uses the actual readline/TTY interaction. No real network/credentials are used. This is not proof of Windows terminal behavior or real transport cancellation; existing pg-driver evidence is retained, and actual owner-terminal compatibility remains a pre-activation prerequisite.
+
+The unchanged exact runtime-delivery SQL now passes 31 disposable checks (prior 25 plus six administrator/default-grant assertions). Fixture bootstrap constructs the pre-existing schema/roles, assigns ownership to postgres, grants only administrative INHERIT FALSE/SET FALSE memberships, then connects as actual NOSUPERUSER CREATEROLE CREATEDB BYPASSRLS postgres. It installs broad anon/authenticated/service_role table/sequence/function default ACLs before replaying the exact candidate. Candidate revokes remove the new table/function default grants; phase readers, direct DML denial, rejection rollback and closeout continue to pass. The fixture deliberately does not claim to replay hosted closed setup creation; it models its existing ownership boundary. No hosted helper/extension/ownership behavior or complete effective hosted permission audit is proved.
+
+SQL hash remains c9f9dc0815a24e0040fcfbcc095e04a327887cad6424d09ece55c6e88766ea37. No grant changes were needed. Trusted-administrator token access, token retention, signed-run configuration-read authority and hosted role/default-ACL compatibility remain unaccepted approval items. No active routes/workflows or publication changed. Unchanged application verification remains the preceding 98 focused / 1,598 full passing checks; this slice changes only disabled installer proposal, fixtures and documentation.
+
+### Local owner Auth-to-installer preparation (not activated)
+
+The hard-disabled installer now invokes `obtainCreatorOwnerSessions` in the same process after reading the approved seal. It privately prompts for the project publishable key and each existing identity's email/password. Fixed subjects are uploader `4b4d628a-d0cc-438e-bf04-661d1a5ea546` and reader `3393dbd5-209f-4e3b-934d-57006fcdc4fa`; the three database passwords are not Storage credentials. No credentials are discovered from environment, command arguments or files. A seal naming other subjects is rejected before sign-in.
+
+The helper defaults disabled. In an explicitly armed future installer invocation it makes at most one password-grant POST per subject to the exact GLITCH HTTPS Auth endpoint, refuses redirects, bounds response size/time and cancellation, and never refreshes/retries/signs up/resets passwords. Each response must match the fixed subject/project/authenticated role, non-anonymous identity, expected audience and valid token time claims covering the phase expiry. The proposed local credential acceptance cap is one hour for token lifetime; it does not change hosted token settings or promise a five-minute JWT. MFA-enrolled responses, CAPTCHA/other errors and insufficient lifetime stop rather than broaden the flow. Token claims are scope-checked from the pinned TLS Auth response; this helper is not an independent JWT signature verifier. Hosted Auth/Storage retain that responsibility.
+
+Only access tokens are returned in memory to the existing parameterized temporary SQL input. Refresh tokens are discarded and never returned, stored or used. JavaScript memory cleanup is not a forensic-erasure guarantee; server Auth sessions can remain after a local failure. The installer tracks dispatched sign-ins and reports AUTH_OUTCOME_RECONCILIATION_REQUIRED on any subsequent pre-install failure, including a reader failure after uploader success. Migration dispatch retains INSTALL_OUTCOME_UNKNOWN_RECONCILE. No automatic session deletion, reauthentication or installation retry occurs. A new attempt requires reconciliation and separate authority. The previously proposed private database token retention is unchanged and remains unaccepted.
+
+Public contract review: Supabase Auth OpenAPI `https://raw.githubusercontent.com/supabase/auth/master/openapi.yaml` documents `/token?grant_type=password` and the access/refresh response; `https://supabase.com/docs/guides/auth/sessions` describes token/session lifetimes. Public changelog HTML was reviewed; the markdown reader rejected its content type. No project endpoint or live session was accessed. SDK persistence/refresh behavior is avoided by using one-shot fetch directly.
+
+#### Owner Windows synthetic rehearsal — later, not executed on Windows
+
+Only PowerShell and psql 17 are confirmed installed. Node 24 availability is unverified, and the real installer additionally requires the reviewed `pg` 8.23.1 dependency. Do not assume installing either is authorized or necessary for the current offline work. The synthetic rehearsal needs Node 24 only: its pg transport is a fixture and all socket connections are blocked. No dependency download, Auth sign-in, database connection or setup permission is needed by the rehearsal itself.
+
+After the owner receives/reviews the exact candidate files through an approved publication/delivery step, use a separate PowerShell terminal at `mvp/wallet-signal`:
+
+1. Run `node --version`. Stop if Node 24 is unavailable; do not silently install software.
+2. Run `node tests/fixtures/creator-evidence/owner-installer-dryrun.mjs success`.
+3. Enter only the printed synthetic values in order: `SYNTHETIC_PASSWORD`, `sb_publishable_synthetic`, `doom404official@gmail.com`, `SYNTHETIC_PASSWORD`, `vijayananthrajkumar@gmail.com`, `SYNTHETIC_PASSWORD`. Entered characters must not echo. Never use real credentials in this rehearsal.
+4. Confirm a reported synthetic install, a `SYNTHETIC_EVENTS` list containing two auth events and one dispatch, and normal terminal input afterward. Temporary fixture files contain code/CA/SQL only, not tokens, and are removed.
+5. Repeat with `interrupt-prompt` and press Ctrl+C at the first prompt; expect NOT_INSTALLED. Repeat with `interrupt-auth`, supply synthetic prompts until SYNTHETIC_AUTH_PENDING, then Ctrl+C; expect AUTH_OUTCOME_RECONCILIATION_REQUIRED. Repeat with `interrupt-write`, cancel at SYNTHETIC_WRITE_PENDING; expect INSTALL_OUTCOME_UNKNOWN_RECONCILE. No retry of an actual operation is involved: these are isolated mock executions.
+
+This portable procedure is prepared, not claimed Windows-compatible. If a terminal echoes synthetic input, hangs, lacks Node or behaves differently, stop and report only non-sensitive behavior. Do not run the real disabled installer, copy Auth access tokens, or change its false gate. Owner possession of the two actual identity credentials, secure Windows behavior, real pg/TLS compatibility, grants/token-retention approval, immutable deployment/run/window bindings and explicit session-creation/live-test authority remain prerequisites. No workflow/route arming or registration is included.
+
+Validation for this local slice: 25 new helper tests / 123 focused tests pass; full 1,623 tests and build/lint/types pass with network blocked, persistence SKIPPED_NOT_OPTED_IN. Thirteen synthetic Linux PTY cases exercise the combined flow and assert no entered values, JWTs, refresh token or provider error text in terminal output, restored terminal state, bounded teardown and exact dispatch counts. SQL unchanged; retained 31 checks reused. No claim of real session acquisition, Windows operation or complete flow acceptance. Local commit only.
+
+
+### Local email-scope correction
+
+Before either password prompt or Auth POST, the owner helper trims surrounding whitespace and compares the phase email case-insensitively against the fixed upload/readback addresses supplied for this task. It sends only the canonical allowed address. Exact response UID checks remain unchanged. Wrong/swapped upload email causes zero sign-ins; wrong/swapped reader email after uploader success causes one prior sign-in and AUTH_OUTCOME_RECONCILIATION_REQUIRED, with no reader password prompt or request. Synthetic rehearsal now uses those fixed email identifiers with fake passwords and blocked transports; it never uses real credentials. This is local-only preparation, not account/session activity or publication authority.
+
+### Proposed server-managed session lifecycle — local preparation, 2026-10-29
+
+This supersedes manual owner session/token delivery as the recommended operational
+path. It does not approve machine-principal designation, secrets, grants, deployment
+or a test window. Prior owner helper, installer and runtime-delivery SQL remain
+retained review evidence; do not apply the token-table proposal for this path. The
+old endpoint template still describes that prior design and must not be armed.
+No active route or workflow imports the new provider.
+
+`creatorEvidenceServerSession.mjs` is a default-disabled Storage identity callback.
+Trusted composition supplies the separately installed non-secret seal, deployment
+identity and caller OIDC token; none may come from request configuration. It verifies
+the pinned GitHub signature and exact phase/run/window/deployment before reserving
+or reading an Auth password. The separate SQL claim then compares the full seal
+against the installed row, serializes against closeout and permanently consumes one
+phase. Only a definite `true` permits credential access. The same narrow pg driver
+has an `authAttempt` purpose with one fixed parameterized statement, no retries.
+Upload uses the consumer database login; readback uses verifier. Issuer receives no
+Auth-attempt function privilege.
+
+Proposed variable names (not created/read): `CREATOR_MACHINE_UPLOAD_PASSWORD` and
+`CREATOR_MACHINE_READBACK_PASSWORD`. They bind only the retained exact upload and
+readback UIDs/emails. Passwords belong in server-only sensitive configuration for
+one separately approved deployment scope, never NEXT_PUBLIC, Actions, chat or
+service-role fallback. No production scope is implied. Public key remains a pinned
+project publishable key, not an authorization substitute.
+
+The new unapplied `creator-evidence-server-session.sql` alternative requires the
+reviewed sealed transition and rejects an existing runtime token-delivery table.
+It creates only a private permanent `auth_attempts` table and one narrowly granted
+function. Broad inherited table/function defaults are explicitly revoked. No
+credential, run, window, Storage permission, connection limit or login is installed.
+It is outside migration paths. The exact candidate currently supports only the
+fixed 75-byte synthetic seal; a production historical admission must retain the
+existing authentic preflight and receive its own reviewed binding policy. Do not
+use the synthetic seal as authority for real historical objects.
+
+One invocation makes at most one Auth password-grant request after reservation.
+The claim is committed before dispatch and deliberately remains `UNKNOWN` even
+when no request could be sent. A lost SQL response, bad password, lost Auth response,
+late response, cancellation or expiry never releases it. Fresh processes and new
+JWT jti values cannot retry the phase. This prevents duplicate application attempts,
+not exactly-once network delivery. SDK refresh, retries and cross-request caches are
+absent; refresh tokens are discarded and access tokens are returned only in memory
+to the existing Storage callback. JS strings cannot promise forensic erasure.
+
+Storage's no-overwrite policy and independently expiring admission remain mandatory.
+A completed reservation cannot stop an already dispatched request. Closeout must
+first deny new admission, reconcile uncertain Auth/Storage operations, and retain
+claims. Discarding a refresh token does not terminate its server session. Session
+termination/credential rotation is an explicit owner-admin closeout task; access
+JWTs can survive sign-out until expiry unless the separately reviewed RLS admission
+blocks them. No automatic logout, deletion, password rotation or privileged admin
+operation is implemented. Do not infer authentication acceptance from these mocks.
+
+Finite remaining approval package:
+1. Approve the existing two UIDs as dedicated machine principals and a secure
+   one-time password provisioning channel. Supported Auth admin password assignment
+   needs trusted administrative access; no such channel has been verified here.
+   Keep broad service-role keys out of the relay/Actions. Windows tooling remains
+   unverified and is not required for routine server operation.
+2. Review/apply only the exact alternative schema/function grants and Storage
+   admission/closeout policy, then privately provision the two narrowly scoped
+   secrets. Audit effective permissions. No historical-path access is implicit.
+3. Review the final disabled composition replacing the prior endpoint's token-table
+   lookup with a non-secret seal lookup after crypto bootstrap; pass the authenticated
+   exact-run token into these callbacks. Register routes/workflow only after separate
+   approval. Existing body/preflight/claim guards must remain upstream of Storage.
+4. Approve an immutable deployment and two independent run/window bindings for one
+   synthetic upload/readback, <=5 minutes each, then verify denial and reconciliation
+   after closeout. No scan or authentic-history acceptance follows from this test.
+
+This slice implements the session boundary and SQL reservation, not the final
+endpoint replacement or hosted integration. Existing authentic preflight, permanent
+Storage claims, Unknown evidence and historical data remain unchanged. No new
+infrastructure or recurring work is proposed. Costs remain subject to existing
+Auth/Storage/function quotas, not guaranteed zero.
+
+Local validation for this slice: 40 new provider cases (including cryptographic
+negative cases, durable-store mocks and both existing Storage callbacks), 1,668
+application tests passed with network blocked. Build/lint/type checks passed with
+telemetry disabled; the first build attempt hit read-only telemetry configuration
+before compilation, after all tests passed. The exact alternative SQL passed 26
+checks in disposable network-disabled PostgreSQL 17 under a nonsuperuser postgres
+administrator and broad default ACL fixture. Eight concurrent connections produced
+one winner; fresh connections could not replay, wrong role/seal/deployment/expiry
+failed, and closed admission rejected an otherwise unconsumed readback. These are
+not hosted Auth/Storage/RLS acceptance or Windows validation. No push or CI dispatch.
+
+### Completed inactive endpoint composition — local-only follow-up
+
+This section supersedes the earlier remaining-composition item. The existing
+`createCreatorSyntheticEndpoint` now uses `relay_session_binding`, not the old
+runtime-delivery function/table. The endpoint remains unimported by active app
+routes and has no environment enable flag. Existing inactive route/workflow
+proposals remain inactive. No additional parallel endpoint or manual token installer
+is needed for this synthetic path.
+
+Ordering is executable in the composed handler: fixed cryptographic bootstrap
+before database credentials; private non-secret seal lookup; exact signed run,
+window, deployment and fixed UID validation before body or Auth credentials; then
+existing HTTP body/preflight and claim handling. Issue has no session callback.
+Upload consumes its Storage claim before reserving its Auth attempt and reading
+only the upload password. Readback consumes its independent claim before reserving
+its Auth attempt and reading only the reader password. All callbacks are request
+scoped and lazy. `CREATOR_MACHINE_PUBLISHABLE_KEY` is a non-secret project
+publishable key; the two password names and existing database/CA names are unchanged.
+No caller configuration or authenticated boolean is introduced.
+
+Typed `CreatorEvidenceReconciliation` carries only a fixed redacted message through
+Storage and relay to HTTP 409. Readback cancellation/timeouts after its durable claim
+also require reconciliation, even if an outer cancellation race settles before the
+provider can throw its typed error. Late Auth completion never leads to a Storage
+read. No attempt or evidence claim is released automatically.
+
+The SQL alternative now contains the non-secret reader plus installation checks:
+exact nonsuperuser postgres administrator/schema/seal ownership; expected runtime
+role attributes and memberships/grantors; no runtime schema CREATE, seal-table
+access or existing mutation privileges; no unexpected reachable outside access;
+only known default ACL grantees followed by explicit revokes and effective privilege
+postconditions. It accepts closed connection limit 0 or the retained transition's
+limit 1 with exactly the sealed phase expiry. It never changes limits itself.
+Unexpected installed token-delivery state, objects, memberships or permissions abort
+the transaction. The new objects are owned by the explicitly required installer.
+
+Disposable test limitation: stock PostgreSQL cannot demote its bootstrap OID10 role
+as Supabase does. The fixture creates nonsuperuser postgres and explicitly models
+the supplied bootstrap grantor catalog before executing the candidate. This fixture
+setup is not executable deployment guidance. The end-to-end harness runs the actual
+endpoint, driver statement contract and claim SQL under separate local database
+logins; Docker/psql substitutes only the network transport. Auth/JWKS/Storage use
+synthetic responses and real local RSA signatures. Claim-admission policies are a
+bounded local model, not proof of hosted Storage RLS or the entire sealed-transition
+migration. Existing driver TLS/cancellation and sealed-transition suites remain
+separate evidence; hosted catalog compatibility must be reviewed before application.
+
+Remaining finite live prerequisites: reviewed candidate SQL/policies and effective
+permissions; secure one-time provisioning of the two existing proposed machine
+identities and exact server secret scope; separately authorized publication and
+inactive route/workflow registration; immutable deployment and two independently
+approved run/windows; then one synthetic upload/readback and explicit admission,
+session and uncertainty closeout. No historical RPC, production activation or score
+acceptance is part of that test. The authentic historical wrapper remains unchanged
+and required for any future historical-object integration.
+
+Observed follow-up verification: 149 focused tests passed; full 1,671 application
+tests and build/lint/type stage passed with network blocked and telemetry disabled,
+persistence SKIPPED_NOT_OPTED_IN. The hardened exact SQL passed 38 disposable checks,
+including owner/grantor/admin/inherit/set/default-ACL drift rollback. Two fresh
+local database compositions passed: concurrent upload plus independent readback,
+and uncertain readback Auth with no GET/retry. Ordered traces contain operation and
+variable names only, never values. No active route/workflow references were found.
+All publication, hosted integration and acceptance gates remain unchanged.

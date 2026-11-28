@@ -1,8 +1,11 @@
 name: GLITCH creator historical worker
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '23 * * * *'
+    inputs:
+      reviewed_sha:
+        description: 'Exact reviewed integration SHA; cached evidence reconciliation only'
+        required: true
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -11,24 +14,43 @@ concurrency:
 jobs:
   creator-history:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 6
     defaults:
       run:
         working-directory: mvp/wallet-signal
     steps:
+      - name: Verify reviewed reconciliation admission
+        working-directory: .
+        env:
+          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+        run: |
+          python3 - <<'PY'
+          import os,re
+          assert os.environ['GITHUB_REPOSITORY']=='doom404official-collab/DOOM404'
+          assert os.environ['GITHUB_REF']=='refs/heads/integration/glitch-app-main-20261118'
+          assert os.environ['GITHUB_EVENT_NAME']=='workflow_dispatch'
+          assert os.environ['GITHUB_RUN_ATTEMPT']=='1'
+          assert re.fullmatch('[0-9a-f]{40}',os.environ['REVIEWED_SHA'])
+          assert os.environ['REVIEWED_SHA']==os.environ['GITHUB_SHA']
+          PY
       - uses: actions/checkout@v4
         with:
-          ref: feature/creator-history-worker-500
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: mvp/wallet-signal/package-lock.json
-      - run: npm ci --no-audit --no-fund
-      - name: Resume bounded creator investigation
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Reconcile retained creator evidence without historical replay
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
-        run: node scripts/creator-worker-run.mjs
+        run: node scripts/creator-reconciliation-resume.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: creator-cached-resume-${{ github.run_id }}
+          path: mvp/wallet-signal/creator-reconciliation-resume-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false

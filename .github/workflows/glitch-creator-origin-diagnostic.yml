@@ -1,13 +1,27 @@
 name: GLITCH creator origin diagnostic
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'diagnostic or three pinned reconciliation transaction reads'
+        type: choice
+        options: [diagnostic, reconciliation]
+        default: diagnostic
+      batch:
+        description: 'Pinned holder/origin, creator outflows, or one seven-day sale candidate'
+        type: choice
+        options: [holder_origin, creator_outflows, creator_sale]
+        default: holder_origin
+      reviewed_sha:
+        description: 'Exact reviewed integration SHA required for reconciliation'
+        type: string
 
 permissions:
   contents: read
 
 jobs:
   inspect:
-    if: github.ref == 'refs/heads/feature/glitch-assessment-sprint1'
+    if: inputs.mode != 'reconciliation' && github.ref == 'refs/heads/feature/glitch-assessment-sprint1'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     defaults:
@@ -38,3 +52,50 @@ jobs:
         env:
           HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
         run: node scripts/diagnose-top20-holder-links.mjs
+
+  reconciliation:
+    if: inputs.mode == 'reconciliation'
+    concurrency:
+      group: glitch-reconciliation-targeted-transactions
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - name: Validate reviewed execution identity
+        working-directory: .
+        env:
+          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+        run: |
+          python3 - <<'PY'
+          import os,re
+          assert os.environ['GITHUB_REPOSITORY']=='doom404official-collab/DOOM404'
+          assert os.environ['GITHUB_REF']=='refs/heads/integration/glitch-app-main-20261118'
+          assert os.environ['GITHUB_EVENT_NAME']=='workflow_dispatch'
+          assert os.environ['GITHUB_RUN_ATTEMPT']=='1'
+          assert re.fullmatch('[0-9a-f]{40}',os.environ['REVIEWED_SHA'])
+          assert os.environ['REVIEWED_SHA']==os.environ['GITHUB_SHA']
+          PY
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Capture three pinned public-chain transactions without history restart
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          RECONCILIATION_BATCH: ${{ inputs.batch }}
+        run: node scripts/capture-reconciliation-transactions.mjs
+      - name: Preserve targeted transaction evidence even on partial failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reconciliation-transactions-${{ github.run_id }}
+          path: mvp/wallet-signal/reconciliation-transactions.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false

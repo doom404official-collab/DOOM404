@@ -1,0 +1,6 @@
+// A GitHub status for Vercel's native required deployment checks. No Vercel token.
+const e=process.env,allowed=new Set(['scanner-security','scanner-regression','scanner-reviewed-sha']);
+if(e.GITHUB_REPOSITORY!=='doom404official-collab/DOOM404'||e.GITHUB_REF!=='refs/heads/integration/glitch-app-main-20261118'||!/^[a-f0-9]{40}$/.test(e.GITHUB_SHA||'')||!allowed.has(e.SCANNER_CHECK_NAME)||!['pending','success','failure'].includes(e.SCANNER_CHECK_STATE))throw Error('UNTRUSTED_CHECK_CONTEXT');
+const r=await fetch('https://api.github.com/repos/'+e.GITHUB_REPOSITORY+'/statuses/'+e.GITHUB_SHA,{method:'POST',headers:{Authorization:'Bearer '+e.GITHUB_TOKEN,Accept:'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'},body:JSON.stringify({state:e.SCANNER_CHECK_STATE,context:'Vercel - doom404-wallet-signal: '+e.SCANNER_CHECK_NAME,description:'Scanner release gate: '+e.SCANNER_CHECK_STATE,target_url:'https://github.com/'+e.GITHUB_REPOSITORY+'/actions/runs/'+e.GITHUB_RUN_ID}),redirect:'error',signal:AbortSignal.timeout(10000)});
+if(!r.ok)throw Error('CHECK_STATUS_UPDATE_FAILED');
+console.log('Native deployment check updated:',e.SCANNER_CHECK_NAME,e.SCANNER_CHECK_STATE);

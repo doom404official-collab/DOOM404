@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {assessCreatorInitialAllocation} from '../lib/creatorInitialAllocationEvidence.mjs';
+const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+const creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
+const input={mint,creator,launchTimestamp:1700000000};
+const unknown=assessCreatorInitialAllocation({...input,distributions:[]});
+assert.equal(unknown.initialAttributableRaw,null);
+assert.equal(unknown.zeroAllocationVerified,false);
+const observed=assessCreatorInitialAllocation({...input,distributions:[{mint,recipient:creator,verifiedLaunchDistribution:true,instructionVerified:true,signature:'1'.repeat(88),timestamp:1700000000,amountRaw:'1000'}]});
+assert.equal(observed.verifiedObservedRaw,'1000');
+assert.equal(observed.initialAttributableRaw,null);
+const zero=assessCreatorInitialAllocation({...input,coverageComplete:true,distributions:[]});
+assert.equal(zero.initialAttributableRaw,'0');
+assert.equal(zero.zeroAllocationVerified,true);
+console.log('creator initial allocation evidence tests passed');

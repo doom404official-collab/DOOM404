@@ -1,0 +1,75 @@
+{
+  "selectionSeed": "DOOM404-RI109-20261128-final-fresh-holdout",
+  "selectionMethod": "Five hash-ranked source-unused Solana latest-boost listing mints plus five hash-ranked source-unused mainnet registry mints; no filtering by expected scanner performance and no prior on-chain forensic lookup.",
+  "mints": [
+    "PgFtGGquvnv2zEkjG2N2QPvBTBrafuExGYEqahRpump",
+    "47P6Y81cVuCQFYguHHrjMyVpHufkmTTTyuKxaPB5EC1E",
+    "6C9r2gzu8Pr54hTevHo3x5gSj9JqtpApj7obJnrtpump",
+    "7sgu7H7zP2xt1AXqRzjcWMrZYvip3ML1fH7vhixDpump",
+    "4KXCDChFWqgKdBWzYTaZa76SJAcip8p1n5ky2Pdopump",
+    "2GPWmqQNmaAL8Vj48ETdjeuXd62snKMyZXGyGWjd3Ugw",
+    "AASZr8AE3AK6nuSv7vJSdMgAUhKhsbg4iuRb1M81ETMN",
+    "FcjViE1oVbXFza5ry9Q7WZ9XNd95zu1LqEiSUdeJMPTP",
+    "488DGeMxRHmofoEtfrPE6geMT7EzwP9HMn76cDq5ZKwt",
+    "76aYNHbDfHemxSS7vmh6eJGfjodK8m7srCxiYCrKxzY1"
+  ],
+  "sourceOccurrences": 0,
+  "scope": "Normal investigation core; full hosted application qualification remains separate.",
+  "priorHoldoutRetained": true,
+  "vaultPreflight": [
+    {
+      "table_name": "creator_intelligence_jobs",
+      "token_records": 0
+    },
+    {
+      "table_name": "creator_investigation_checkpoints",
+      "token_records": 0
+    },
+    {
+      "table_name": "glitch_holder_scan_jobs",
+      "token_records": 0
+    },
+    {
+      "table_name": "glitch_top20_snapshots",
+      "token_records": 0
+    },
+    {
+      "table_name": "liquidity_evidence_checkpoints",
+      "token_records": 0
+    },
+    {
+      "table_name": "liquidity_evidence_snapshots",
+      "token_records": 0
+    },
+    {
+      "table_name": "onchain_transaction_evidence",
+      "token_records": 0
+    },
+    {
+      "table_name": "scanner_creator_evidence",
+      "token_records": 0
+    },
+    {
+      "table_name": "scanner_qualification_observations",
+      "token_records": 0
+    },
+    {
+      "table_name": "scanner_token_investigations",
+      "token_records": 0
+    },
+    {
+      "table_name": "token_creator_attributions",
+      "token_records": 0
+    },
+    {
+      "table_name": "scanner_qualification_references",
+      "token_records": 0
+    },
+    {
+      "table_name": "intelligence_source_observations",
+      "token_records": 0
+    }
+  ],
+  "preflightTimestamp": "2026-11-28T19:42:25.969Z",
+  "candidateSha": "recorded_by_github_sha_at_capture"
+}

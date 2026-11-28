@@ -16,7 +16,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: glitch-liquidity-history-worker
+  group: glitch-liquidity-lq08-auto-worker-offline-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   offline-plan:

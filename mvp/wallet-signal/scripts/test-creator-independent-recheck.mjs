@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {recheckCreatorOrigin} from '../lib/creatorIndependentOriginRecheck.mjs';
+const mint='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+const creator='6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC';
+const evidence=[{creator,signature:'1'.repeat(88),programId:'6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P',decoderVersion:'pump-fun-create_v2-prefix-v1'}];
+const missing=await recheckCreatorOrigin({mint,evidence,rpc:{fetchTransaction:async()=>null}});
+assert.equal(missing.status,'TRANSACTION_UNAVAILABLE');
+assert.equal(missing.rechecked,false);
+assert.equal(missing.beneficialOwnerVerified,undefined);
+const transaction={meta:{err:null}};
+const verifyCreation=()=>({status:'VERIFIED',decodedRoles:[{address:creator,programId:evidence[0].programId,decoderVersion:evidence[0].decoderVersion}]});
+const confirmed=await recheckCreatorOrigin({mint,evidence,rpc:{fetchTransaction:async()=>transaction},verifyCreation});
+assert.equal(confirmed.status,'ONCHAIN_CREATOR_RECHECKED');
+assert.equal(confirmed.rechecked,true);
+assert.equal(confirmed.beneficialOwnerVerified,false);
+const mismatch=await recheckCreatorOrigin({mint,evidence,rpc:{fetchTransaction:async()=>transaction},
+ verifyCreation:()=>({status:'VERIFIED',decodedRoles:[{address:'different',programId:evidence[0].programId,decoderVersion:evidence[0].decoderVersion}]})});
+assert.equal(mismatch.status,'ATTRIBUTION_MISMATCH');
+assert.equal(mismatch.rechecked,false);
+console.log('creator independent origin recheck tests passed');

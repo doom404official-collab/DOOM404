@@ -1,0 +1,646 @@
+{
+  "rows": [
+    {
+      "mode": "before",
+      "width": 320,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n3 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 320,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 320,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 320,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n2 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 320,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n1 material finding"
+    },
+    {
+      "mode": "before",
+      "width": 337,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n3 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 337,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 337,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 337,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n2 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 337,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n1 material finding"
+    },
+    {
+      "mode": "before",
+      "width": 360,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n3 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 360,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 360,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 360,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n2 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 360,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n1 material finding"
+    },
+    {
+      "mode": "before",
+      "width": 390,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n3 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 390,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 390,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 390,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n2 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 390,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n1 material finding"
+    },
+    {
+      "mode": "before",
+      "width": 449,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n3 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 449,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 449,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 449,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n2 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 449,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n1 material finding"
+    },
+    {
+      "mode": "before",
+      "width": 768,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n3 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 768,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 768,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 768,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n2 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 768,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n1 material finding"
+    },
+    {
+      "mode": "before",
+      "width": 1024,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n3 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 1024,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 1024,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 1024,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n2 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 1024,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n1 material finding"
+    },
+    {
+      "mode": "before",
+      "width": 1440,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n3 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 1440,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 1440,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 1440,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n2 material findings"
+    },
+    {
+      "mode": "before",
+      "width": 1440,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n1 material finding"
+    },
+    {
+      "mode": "after",
+      "width": 320,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 4 observed risk factors | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 320,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 0 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 320,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 2 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 320,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 320,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor"
+    },
+    {
+      "mode": "after",
+      "width": 337,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 4 observed risk factors | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 337,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 0 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 337,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 2 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 337,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 337,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor"
+    },
+    {
+      "mode": "after",
+      "width": 360,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 4 observed risk factors | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 360,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 0 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 360,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 2 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 360,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 360,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor"
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 4 observed risk factors | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 0 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 2 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor"
+    },
+    {
+      "mode": "after",
+      "width": 449,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 4 observed risk factors | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 449,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 0 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 449,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 2 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 449,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 449,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor"
+    },
+    {
+      "mode": "after",
+      "width": 768,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 4 observed risk factors | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 768,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 0 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 768,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 2 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 768,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 768,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor"
+    },
+    {
+      "mode": "after",
+      "width": 1024,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 4 observed risk factors | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 1024,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 0 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 1024,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 2 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 1024,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 1024,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor"
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "label": "Overall",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 4 observed risk factors | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "label": "Token Security",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 0 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "label": "Holder Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 2 observed risk factors"
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "label": "Liquidity & Safety",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor | 2 contextual observations"
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "label": "Creator Intelligence",
+      "overflow": false,
+      "disclaimers": 1,
+      "text": "Risks Identified\n0 critical risks | 1 observed risk factor"
+    }
+  ],
+  "errors": [],
+  "external": []
+}

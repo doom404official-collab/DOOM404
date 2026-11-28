@@ -1,0 +1,56 @@
+{
+  "source": "https://api.mainnet-beta.solana.com",
+  "observedAt": 1795871699.3740907,
+  "method": "getTokenAccountsByOwner",
+  "params": [
+    "5pZph7WVu66medeMT4Rq6eCPZmNBFkLEYACXjnZTpdwc",
+    {
+      "mint": "3Tg6YnNrfPdFfsY14MaNsDMWLseAyrUDS3myJtbaJN6f"
+    },
+    {
+      "encoding": "jsonParsed",
+      "commitment": "finalized"
+    }
+  ],
+  "response": {
+    "jsonrpc": "2.0",
+    "result": {
+      "context": {
+        "slot": 474966221,
+        "apiVersion": "4.3.0-beta.2"
+      },
+      "value": [
+        {
+          "pubkey": "CigHjLZhbDpnQaesXzD53MTG3KsRstbEsoyX3FQQSxML",
+          "account": {
+            "lamports": 1488440,
+            "data": {
+              "program": "spl-token",
+              "parsed": {
+                "info": {
+                  "isNative": false,
+                  "mint": "3Tg6YnNrfPdFfsY14MaNsDMWLseAyrUDS3myJtbaJN6f",
+                  "owner": "5pZph7WVu66medeMT4Rq6eCPZmNBFkLEYACXjnZTpdwc",
+                  "state": "initialized",
+                  "tokenAmount": {
+                    "amount": "0",
+                    "decimals": 6,
+                    "uiAmount": 0.0,
+                    "uiAmountString": "0"
+                  }
+                },
+                "type": "account"
+              },
+              "space": 165
+            },
+            "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "executable": false,
+            "rentEpoch": 18446744073709551615,
+            "space": 165
+          }
+        }
+      ]
+    },
+    "id": 1
+  }
+}

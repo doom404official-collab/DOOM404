@@ -1,29 +1,56 @@
 name: GLITCH liquidity archive state
 on:
   workflow_dispatch:
+    inputs:
+      reviewed_sha:
+        description: 'Exact reviewed integration SHA; two historical account reads maximum'
+        required: true
+        type: string
 permissions:
   contents: read
+concurrency:
+  group: glitch-lq09-bounded-reconciliation
+  cancel-in-progress: false
 jobs:
   inspect:
-    if: github.ref == 'refs/heads/feature/glitch-liquidity-evidence-worker'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 6
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
     steps:
+      - name: Validate reviewed execution identity
+        working-directory: .
+        env:
+          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+        run: |
+          python3 - <<'PY'
+          import os,re
+          assert os.environ['GITHUB_REPOSITORY']=='doom404official-collab/DOOM404'
+          assert os.environ['GITHUB_REF']=='refs/heads/integration/glitch-app-main-20261118'
+          assert os.environ['GITHUB_EVENT_NAME']=='workflow_dispatch'
+          assert os.environ['GITHUB_RUN_ATTEMPT']=='1'
+          assert re.fullmatch('[0-9a-f]{40}',os.environ['REVIEWED_SHA'])
+          assert os.environ['REVIEWED_SHA']==os.environ['GITHUB_SHA']
+          PY
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Inspect Alchemy historical accounts
-        working-directory: mvp/wallet-signal
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Retain fee-sweep transaction and at most two historical accounts
         env:
-          GLITCH_ARCHIVE_PREVIEW_URL: https://doom404-wallet-signal-opv7qntcs-doom-404.vercel.app
-          GLITCH_LIQUIDITY_PROBE_TOKEN: ${{ secrets.GLITCH_LIQUIDITY_PROBE_TOKEN }}
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-        run: node scripts/liquidity-archive-state-worker.mjs
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          ALCHEMY_SOLANA_ARCHIVE_RPC_URL: ${{ secrets.ALCHEMY_SOLANA_ARCHIVE_RPC_URL }}
+        run: node scripts/capture-lq09-reconciliation.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: liquidity-archive-state-evidence
-          path: mvp/wallet-signal/liquidity-archive-state-evidence.json
-          if-no-files-found: ignore
-          retention-days: 30
+          name: lq09-reconciliation-${{ github.run_id }}
+          path: mvp/wallet-signal/lq09-reconciliation-evidence.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false

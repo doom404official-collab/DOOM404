@@ -1,0 +1,89 @@
+{
+  "selectionSeed": "DOOM404-RI109-20261128-fresh-holdout",
+  "selectionMethod": "Five deterministic hash-ranked source-unused recent profile mints plus five source-unused mainnet registry mints, independent of expected performance. No token forensics before capture.",
+  "mints": [
+    "CQpb2WSz3GiS3geRyxukRrE1DyxxV8XBFwCaWuNwpump",
+    "9mzd8ozjxXu9ApNoQaSbAXWcRJB7rGpaD9LLMdo5Pn2c",
+    "AQdRK8YPLdiKmXQVNbSTQfZrPSkmdXSh7uZWAVnEpump",
+    "GMat1LbX2USa4vWSXBMSLPyD5JrY6KJuj4rybLQEpump",
+    "GPqw7AfgGhJ7X3ETz4P6mWDKG7eed4pjeQYVb5Nshidd",
+    "CqWSJtkMMY16q9QLnQxktM1byzVHGRr8b6LCPuZnEeiL",
+    "EKhDvdnC3SPqTuKR5fpkyb4qMNpXJokXvG4SgzaucwNy",
+    "79BXbiiN5HcXH1vRHbQgs9T9Qmae9por26ULEMXuaP7L",
+    "A1LwvSDH2v6swHXP9JMxYJVx6YDzdQdnBDvy8VeBA3g1",
+    "6dmkrp3XjSGyd2kWQCnKtvaufBR4ov7ZDAsrWbGbYTbX"
+  ],
+  "recent": [
+    "CQpb2WSz3GiS3geRyxukRrE1DyxxV8XBFwCaWuNwpump",
+    "9mzd8ozjxXu9ApNoQaSbAXWcRJB7rGpaD9LLMdo5Pn2c",
+    "AQdRK8YPLdiKmXQVNbSTQfZrPSkmdXSh7uZWAVnEpump",
+    "GMat1LbX2USa4vWSXBMSLPyD5JrY6KJuj4rybLQEpump",
+    "GPqw7AfgGhJ7X3ETz4P6mWDKG7eed4pjeQYVb5Nshidd"
+  ],
+  "legacy": [
+    "CqWSJtkMMY16q9QLnQxktM1byzVHGRr8b6LCPuZnEeiL",
+    "EKhDvdnC3SPqTuKR5fpkyb4qMNpXJokXvG4SgzaucwNy",
+    "79BXbiiN5HcXH1vRHbQgs9T9Qmae9por26ULEMXuaP7L",
+    "A1LwvSDH2v6swHXP9JMxYJVx6YDzdQdnBDvy8VeBA3g1",
+    "6dmkrp3XjSGyd2kWQCnKtvaufBR4ov7ZDAsrWbGbYTbX"
+  ],
+  "sourceOccurrences": 0,
+  "productionEvidenceDeleted": false,
+  "scope": "isolated normal investigation core; full hosted report qualification remains separate",
+  "vaultPreflight": [
+    {
+      "table_name": "creator_intelligence_jobs",
+      "token_records": 0
+    },
+    {
+      "table_name": "creator_investigation_checkpoints",
+      "token_records": 0
+    },
+    {
+      "table_name": "glitch_holder_scan_jobs",
+      "token_records": 0
+    },
+    {
+      "table_name": "glitch_top20_snapshots",
+      "token_records": 0
+    },
+    {
+      "table_name": "liquidity_evidence_checkpoints",
+      "token_records": 0
+    },
+    {
+      "table_name": "liquidity_evidence_snapshots",
+      "token_records": 0
+    },
+    {
+      "table_name": "onchain_transaction_evidence",
+      "token_records": 0
+    },
+    {
+      "table_name": "scanner_creator_evidence",
+      "token_records": 0
+    },
+    {
+      "table_name": "scanner_qualification_observations",
+      "token_records": 0
+    },
+    {
+      "table_name": "scanner_token_investigations",
+      "token_records": 0
+    },
+    {
+      "table_name": "token_creator_attributions",
+      "token_records": 0
+    },
+    {
+      "table_name": "scanner_qualification_references",
+      "token_records": 0
+    },
+    {
+      "table_name": "intelligence_source_observations",
+      "token_records": 0
+    }
+  ],
+  "candidateSha": "recorded_by_github_sha_at_capture",
+  "preflightTimestamp": "2026-11-28T18:51:33.051Z"
+}

@@ -1,0 +1,68 @@
+{
+  "slot": 123,
+  "version": 1,
+  "transaction": {
+    "signatures": [
+      "1111111111111111111111111111111111111111111111111111111111111111"
+    ],
+    "message": {
+      "accountKeys": [
+        {
+          "pubkey": "4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi",
+          "signer": true,
+          "writable": true,
+          "source": "transaction"
+        },
+        {
+          "pubkey": "8qbHbw2BbbTHBW1sbeqakYXVKRQM8Ne7pLK7m6CVfeR",
+          "signer": false,
+          "writable": true,
+          "source": "transaction"
+        },
+        {
+          "pubkey": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+          "signer": false,
+          "writable": false,
+          "source": "transaction"
+        }
+      ],
+      "recentBlockhash": "CktRuQ2mttgRGkXJtyksdKHjUdc2C4TgDzyB98oEzy8",
+      "transactionConfig": {
+        "priorityFee": null,
+        "computeUnitLimit": 200000,
+        "loadedAccountsDataSizeLimit": 65536,
+        "heapSize": null
+      },
+      "instructions": [
+        {
+          "programId": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+          "accounts": [
+            "4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi",
+            "8qbHbw2BbbTHBW1sbeqakYXVKRQM8Ne7pLK7m6CVfeR"
+          ],
+          "data": "cDvrMHxZowC",
+          "stackHeight": 1
+        }
+      ]
+    }
+  },
+  "meta": {
+    "err": null,
+    "innerInstructions": [
+      {
+        "index": 0,
+        "instructions": [
+          {
+            "programId": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+            "accounts": [
+              "4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi",
+              "8qbHbw2BbbTHBW1sbeqakYXVKRQM8Ne7pLK7m6CVfeR"
+            ],
+            "data": "cDvrMHxZowC",
+            "stackHeight": 2
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "basis": "Identical controlled inputs; policy thresholds and approved weights unchanged. Evidence validation changed. These fixtures are not current live token valuations.",
+  "rows": [
+    {
+      "name": "stale_frozen_holder",
+      "before": {
+        "riskScore": 15.15,
+        "coveragePct": 83,
+        "scores": {
+          "token_security": {
+            "riskScore": 0,
+            "coveragePct": 100
+          },
+          "holder_intelligence": {
+            "riskScore": 17.28,
+            "coveragePct": 70
+          },
+          "liquidity_quality_safety": {
+            "riskScore": 24.67,
+            "coveragePct": 100
+          },
+          "creator_intelligence": {
+            "riskScore": 6.64,
+            "coveragePct": 60
+          }
+        }
+      },
+      "after": {
+        "riskScore": 9.96,
+        "coveragePct": 49.75,
+        "scores": {
+          "token_security": {
+            "riskScore": 0,
+            "coveragePct": 100
+          },
+          "holder_intelligence": {
+            "riskScore": 0,
+            "coveragePct": 0
+          },
+          "liquidity_quality_safety": {
+            "riskScore": 24.67,
+            "coveragePct": 65
+          },
+          "creator_intelligence": {
+            "riskScore": 6.64,
+            "coveragePct": 60
+          }
+        }
+      }
+    },
+    {
+      "name": "unverified_small_lp_claim",
+      "before": {
+        "riskScore": 15.15,
+        "coveragePct": 83,
+        "scores": {
+          "token_security": {
+            "riskScore": 0,
+            "coveragePct": 100
+          },
+          "holder_intelligence": {
+            "riskScore": 17.28,
+            "coveragePct": 70
+          },
+          "liquidity_quality_safety": {
+            "riskScore": 24.67,
+            "coveragePct": 100
+          },
+          "creator_intelligence": {
+            "riskScore": 6.64,
+            "coveragePct": 60
+          }
+        }
+      },
+      "after": {
+        "riskScore": 15.15,
+        "coveragePct": 70.75,
+        "scores": {
+          "token_security": {
+            "riskScore": 0,
+            "coveragePct": 100
+          },
+          "holder_intelligence": {
+            "riskScore": 17.28,
+            "coveragePct": 70
+          },
+          "liquidity_quality_safety": {
+            "riskScore": 24.67,
+            "coveragePct": 65
+          },
+          "creator_intelligence": {
+            "riskScore": 6.64,
+            "coveragePct": 60
+          }
+        }
+      }
+    },
+    {
+      "name": "invalid_holder_raw_proof",
+      "before": {
+        "riskScore": 30.96,
+        "coveragePct": 63.05,
+        "scores": {
+          "token_security": {
+            "riskScore": 0,
+            "coveragePct": 100
+          },
+          "holder_intelligence": {
+            "riskScore": 70,
+            "coveragePct": 3.5
+          },
+          "liquidity_quality_safety": {
+            "riskScore": 24.67,
+            "coveragePct": 100
+          },
+          "creator_intelligence": {
+            "riskScore": 6.64,
+            "coveragePct": 60
+          }
+        }
+      },
+      "after": {
+        "riskScore": 9.96,
+        "coveragePct": 49.75,
+        "scores": {
+          "token_security": {
+            "riskScore": 0,
+            "coveragePct": 100
+          },
+          "holder_intelligence": {
+            "riskScore": 0,
+            "coveragePct": 0
+          },
+          "liquidity_quality_safety": {
+            "riskScore": 24.67,
+            "coveragePct": 65
+          },
+          "creator_intelligence": {
+            "riskScore": 6.64,
+            "coveragePct": 60
+          }
+        }
+      }
+    }
+  ]
+}

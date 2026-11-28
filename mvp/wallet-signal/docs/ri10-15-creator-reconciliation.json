@@ -1,0 +1,89 @@
+{
+  "source": "Read-only Supabase retained rows queried 28 November 2026; no additional blockchain reads",
+  "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+  "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+  "before": {
+    "acceptedCount": 6,
+    "purchasedRaw": "15664233491746",
+    "verifiedSoldRaw": "0",
+    "burnedRaw": "9870122682565",
+    "externalTransferredOutRaw": "5200000000000",
+    "rejectedCount": 0
+  },
+  "after": {
+    "acceptedCount": 34,
+    "purchasedRaw": "15664233491746",
+    "verifiedSoldRaw": "0",
+    "burnedRaw": "9939092130424",
+    "externalTransferredOutRaw": "5200000000000",
+    "rejectedCount": 0
+  },
+  "rows": [
+    {
+      "type": "PURCHASE",
+      "previousCount": 1,
+      "previousRaw": "15664233491746",
+      "latestUniqueCount": 1,
+      "latestRaw": "15664233491746",
+      "duplicatesExcluded": 7,
+      "attribution": "Retained verified creator-wallet event; fresh prior 24 full transaction bodies not retained in current receipt set",
+      "windowStart": "2026-09-15T19:20:20.000Z",
+      "windowEnd": "2026-11-28T04:52:17.000Z"
+    },
+    {
+      "type": "VERIFIED_BURN",
+      "previousCount": 3,
+      "previousRaw": "9870122682565",
+      "latestUniqueCount": 31,
+      "latestRaw": "9939092130424",
+      "duplicatesExcluded": 0,
+      "attribution": "Retained verified creator-wallet event; fresh prior 24 full transaction bodies not retained in current receipt set",
+      "windowStart": "2026-09-15T19:20:20.000Z",
+      "windowEnd": "2026-11-28T04:52:17.000Z"
+    },
+    {
+      "type": "EXTERNAL_TRANSFER_OUT",
+      "previousCount": 2,
+      "previousRaw": "5200000000000",
+      "latestUniqueCount": 2,
+      "latestRaw": "5200000000000",
+      "duplicatesExcluded": 0,
+      "attribution": "Retained verified creator-wallet event; fresh prior 24 full transaction bodies not retained in current receipt set",
+      "windowStart": "2026-09-15T19:20:20.000Z",
+      "windowEnd": "2026-11-28T04:52:17.000Z"
+    },
+    {
+      "type": "VERIFIED_SALE",
+      "previousCount": 0,
+      "previousRaw": "0",
+      "latestUniqueCount": 0,
+      "latestRaw": "0",
+      "duplicatesExcluded": 0,
+      "attribution": "Retained verified creator-wallet event; fresh prior 24 full transaction bodies not retained in current receipt set",
+      "windowStart": "2026-09-15T19:20:20.000Z",
+      "windowEnd": "2026-11-28T04:52:17.000Z"
+    }
+  ],
+  "accounting": {
+    "classification": "BOUNDED_HISTORICAL_EVIDENCE",
+    "observedNetRaw": "525141361322",
+    "diagnosticDifferenceRaw": "73894650006",
+    "expectedClosingRaw": null,
+    "residualRaw": null,
+    "openingBalanceEstablished": false,
+    "closingBoundaryCompatible": false,
+    "salesStatus": "NO_MATCHING_EVENTS_RECOVERED"
+  },
+  "currentWallet": {
+    "slot": 474828638,
+    "observedAt": "2026-11-28T05:04:50.994Z",
+    "rawBalance": "599036011328",
+    "accountCount": 1
+  },
+  "retainedProcessedSignatures": 4656,
+  "latestBoundedTransactionsChecked": 9,
+  "latestReceiptCount": 5,
+  "latestUniqueNewBurns": 28,
+  "additionalBurnRaw": "68969447859",
+  "historyComplete": false
+}

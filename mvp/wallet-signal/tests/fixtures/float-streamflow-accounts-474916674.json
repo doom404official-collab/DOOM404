@@ -1,0 +1,78 @@
+{
+  "addresses": [
+    "EHnacy7YmGsBfEwvvZdfxCbKeaWJX7D74Lwg1UkgHeEo",
+    "9j2oZbiRdtSE8ugu3iyEG7bdbhFpUW2QXNnsx2yRAb9H",
+    "4xebxoXTaPwUnXY9fYEhEoohniB2RqhbXq2J7QBZYnPm"
+  ],
+  "rpcResponse": {
+    "context": {
+      "apiVersion": "4.4.1",
+      "slot": 474916674
+    },
+    "value": [
+      {
+        "data": {
+          "parsed": {
+            "info": {
+              "isNative": false,
+              "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+              "owner": "EHnacy7YmGsBfEwvvZdfxCbKeaWJX7D74Lwg1UkgHeEo",
+              "state": "initialized",
+              "tokenAmount": {
+                "amount": "49893683978906",
+                "decimals": 6,
+                "uiAmount": 49893683.978906,
+                "uiAmountString": "49893683.978906"
+              }
+            },
+            "type": "account"
+          },
+          "program": "spl-token",
+          "space": 165
+        },
+        "executable": false,
+        "lamports": 1488440,
+        "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "rentEpoch": 18446744073709552000,
+        "space": 165
+      },
+      {
+        "data": [
+          "BAAAAAAAAAAEppAKawAAAAAAAAAAAAAAAAAAAAAAAAAA4PoxawAAAAAAAAAAAAAAABuDJ04Ylxpjtvdy7XDDB68hojjyXGBLPZI4FIZ2rI6+OtSF3GD81/SaxnLNwm6IE9QGBxSqZc0SunQw8xEqg1QbgydOGJcaY7b3cu1wwwevIaI48lxgSz2SOBSGdqyOvjrUhdxg/Nf0msZyzcJuiBPUBgcUqmXNErp0MPMRKoNUoilMNdsf/k7tpOQRyFWWSYgkryTsbQxcMchXkql0UZnFdMKT/kBc7lmaSfdFTQKmut+mTG6nq87mY+8iOIA65EHl5R1mQ0ba9Ai8PKVNKf8XMsMfSRvbApBNvbh6jHDCYcZdUxZp7tYjabJmDwApF0yAtiZl3LxEKmMjAIQGEY16+/IDNAAAAHr78gM0AAAAZmbmPigp+QuIMWyScFLfUMs+zjq2crPSV2Bj6nWVz/QzM+cBDLujhIuEv5oYA3kO7T6cZbs2QTS8TF5bMJhEGOnbVFCbxozHBQAAAJvGjMcFAAAAzcxMPeD6MWsAAAAAhaDP+yYtAAABAAAAAAAAAIWgz/smLQAA4PoxawAAAACFoM/7Ji0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaIkJAICy5g4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFcJ/yzkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "base64"
+        ],
+        "executable": false,
+        "lamports": 166258560,
+        "owner": "strmRqUCoQUgGUan5YhzUZa6KqdzwX5L6FpUxfmKg5m",
+        "rentEpoch": 18446744073709552000,
+        "space": 1104
+      },
+      {
+        "data": {
+          "parsed": {
+            "info": {
+              "isNative": false,
+              "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+              "owner": "2rQ13KrAdDsAtd1LuKV1kGj6nFB4V4GsD9GAYKXi353T",
+              "state": "initialized",
+              "tokenAmount": {
+                "amount": "1",
+                "decimals": 6,
+                "uiAmount": 1e-06,
+                "uiAmountString": "0.000001"
+              }
+            },
+            "type": "account"
+          },
+          "program": "spl-token",
+          "space": 165
+        },
+        "executable": false,
+        "lamports": 1488440,
+        "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "rentEpoch": 18446744073709552000,
+        "space": 165
+      }
+    ]
+  }
+}

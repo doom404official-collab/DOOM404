@@ -1,0 +1,60 @@
+{
+  "officialRepository": "pump-fun/pump-public-docs",
+  "path": "idl/pump.json",
+  "commit": "e0687ae9b7e064a0f54efc7297c65eecfbba3a8f",
+  "committedAt": "2026-09-12T14:28:42Z",
+  "fileSha256": "ffe966c42f1af41652ee753fe2f1e3f7cd4077d7e6f49faf3138959c8b56064b",
+  "historicalBinaryApplicabilityCertified": false,
+  "instructions": [
+    {
+      "name": "buy_exact_sol_in",
+      "discriminator": [
+        56,
+        252,
+        116,
+        8,
+        158,
+        223,
+        205,
+        95
+      ],
+      "args": [
+        {
+          "name": "spendable_sol_in",
+          "type": "u64"
+        },
+        {
+          "name": "min_tokens_out",
+          "type": "u64"
+        },
+        {
+          "name": "track_volume",
+          "type": {
+            "defined": {
+              "name": "OptionBool"
+            }
+          }
+        }
+      ],
+      "accountNames": [
+        "global",
+        "fee_recipient",
+        "mint",
+        "bonding_curve",
+        "associated_bonding_curve",
+        "associated_user",
+        "user",
+        "system_program",
+        "token_program",
+        "creator_vault",
+        "event_authority",
+        "program",
+        "global_volume_accumulator",
+        "user_volume_accumulator",
+        "fee_config",
+        "fee_program"
+      ]
+    }
+  ],
+  "evidenceScope": "Transaction-local settlement independently reconciled against parsed inner instructions and pre/post balances; no historical fee-recipient authorization assertion."
+}

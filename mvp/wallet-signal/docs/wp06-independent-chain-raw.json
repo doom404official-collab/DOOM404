@@ -1,0 +1,977 @@
+{
+  "logicalProviderReads": 40,
+  "receipts": [
+    {
+      "kind": "mint_accounts",
+      "pubkeys": [
+        "A6BBHdxCNFmpLqCzEzdoZ2wVPLVcr6jcxFn7oEeMpump",
+        "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+        "FgGYazS7QTmuQYK8M4k2EC1xfsD62aJweKHvcYPBpump"
+      ],
+      "observedAt": "2026-11-28T09:47:29.990Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474907799\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"extensions\": [\n              {\n                \"extension\": \"metadataPointer\",\n                \"state\": {\n                  \"authority\": null,\n                  \"metadataAddress\": \"A6BBHdxCNFmpLqCzEzdoZ2wVPLVcr6jcxFn7oEeMpump\"\n                }\n              },\n              {\n                \"extension\": \"tokenMetadata\",\n                \"state\": {\n                  \"additionalMetadata\": [],\n                  \"mint\": \"A6BBHdxCNFmpLqCzEzdoZ2wVPLVcr6jcxFn7oEeMpump\",\n                  \"name\": \"LEND Utility\",\n                  \"symbol\": \"LEND\",\n                  \"updateAuthority\": null,\n                  \"uri\": \"https://ipfs.io/ipfs/bafkreig5yv6lomzm2nc2cfl5kwspmacqakvwljlgxzsrkh2jpmajrxtoce\"\n                }\n              }\n            ],\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"1000000000000000\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 414\n      },\n      \"executable\": false,\n      \"lamports\": 2753360,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 414\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"extensions\": [\n              {\n                \"extension\": \"metadataPointer\",\n                \"state\": {\n                  \"authority\": null,\n                  \"metadataAddress\": \"4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump\"\n                }\n              },\n              {\n                \"extension\": \"tokenMetadata\",\n                \"state\": {\n                  \"additionalMetadata\": [],\n                  \"mint\": \"4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump\",\n                  \"name\": \"The Pumpfun Bull\",\n                  \"symbol\": \"HPD\",\n                  \"updateAuthority\": null,\n                  \"uri\": \"https://j7m.io/metadata/55a91a9f50654a71.json\"\n                }\n              }\n            ],\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"954082648355569\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 382\n      },\n      \"executable\": false,\n      \"lamports\": 2590800,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 382\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"extensions\": [\n              {\n                \"extension\": \"metadataPointer\",\n                \"state\": {\n                  \"authority\": null,\n                  \"metadataAddress\": \"FgGYazS7QTmuQYK8M4k2EC1xfsD62aJweKHvcYPBpump\"\n                }\n              },\n              {\n                \"extension\": \"tokenMetadata\",\n                \"state\": {\n                  \"additionalMetadata\": [],\n                  \"mint\": \"FgGYazS7QTmuQYK8M4k2EC1xfsD62aJweKHvcYPBpump\",\n                  \"name\": \"Bot Fight Club\",\n                  \"symbol\": \"BFC\",\n                  \"updateAuthority\": null,\n                  \"uri\": \"https://ipfs.io/ipfs/bafkreibfbvis5d67ee2ojw5qiy4dgeaddq3qsbhsoeqzk4we3fzcs6xmai\"\n                }\n              }\n            ],\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"999761736673470\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 415\n      },\n      \"executable\": false,\n      \"lamports\": 2758440,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 415\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "mint_accounts",
+      "pubkeys": [
+        "GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg",
+        "EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump",
+        "A7xhY12G388pXGsBuweS6NkyZyv53ogH1dNfEkCMpump"
+      ],
+      "observedAt": "2026-11-28T09:47:31.053Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474907803\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"extensions\": [\n              {\n                \"extension\": \"metadataPointer\",\n                \"state\": {\n                  \"authority\": null,\n                  \"metadataAddress\": \"GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg\"\n                }\n              },\n              {\n                \"extension\": \"tokenMetadata\",\n                \"state\": {\n                  \"additionalMetadata\": [],\n                  \"mint\": \"GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg\",\n                  \"name\": \"Crime Inu\",\n                  \"symbol\": \"CI\",\n                  \"updateAuthority\": null,\n                  \"uri\": \"https://j7m.io/metadata/5bf16d43649240c0.json\"\n                }\n              }\n            ],\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"957687716715724\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 374\n      },\n      \"executable\": false,\n      \"lamports\": 2550160,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 374\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"extensions\": [\n              {\n                \"extension\": \"metadataPointer\",\n                \"state\": {\n                  \"authority\": null,\n                  \"metadataAddress\": \"EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump\"\n                }\n              },\n              {\n                \"extension\": \"tokenMetadata\",\n                \"state\": {\n                  \"additionalMetadata\": [],\n                  \"mint\": \"EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump\",\n                  \"name\": \"Replicants\",\n                  \"symbol\": \"REP\",\n                  \"updateAuthority\": null,\n                  \"uri\": \"https://ipfs.io/ipfs/bafkreibuxakpcnigw64dlhm7by547dh5ftj2np2ahubm7sgd6n2wx5rwna\"\n                }\n              }\n            ],\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"955009391346570\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 411\n      },\n      \"executable\": false,\n      \"lamports\": 2738120,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 411\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"extensions\": [\n              {\n                \"extension\": \"metadataPointer\",\n                \"state\": {\n                  \"authority\": null,\n                  \"metadataAddress\": \"A7xhY12G388pXGsBuweS6NkyZyv53ogH1dNfEkCMpump\"\n                }\n              },\n              {\n                \"extension\": \"tokenMetadata\",\n                \"state\": {\n                  \"additionalMetadata\": [],\n                  \"mint\": \"A7xhY12G388pXGsBuweS6NkyZyv53ogH1dNfEkCMpump\",\n                  \"name\": \"ascend\",\n                  \"symbol\": \"ascend\",\n                  \"updateAuthority\": null,\n                  \"uri\": \"https://meta.uxento.io/data/c10e6d0d-d524-4655-b79c-a3948e7b24a6\"\n                }\n              }\n            ],\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"999992448380154\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 394\n      },\n      \"executable\": false,\n      \"lamports\": 2651760,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 394\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "mint_accounts",
+      "pubkeys": [
+        "Ab4YRbH4bPwsi4EykXZL2nzo4SiZXtgpPDdDVcPLpump",
+        "8i2ssMZBaS3HShu5hoDEV4tVLf5RGXeNJnK3LNTHTH9e",
+        "DXLE6M12GsJW23aTU2VpZeJcgQ8rwTwQbzmDKvMSpump"
+      ],
+      "observedAt": "2026-11-28T09:47:32.077Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.0\",\n    \"slot\": 474907809\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"extensions\": [\n              {\n                \"extension\": \"metadataPointer\",\n                \"state\": {\n                  \"authority\": null,\n                  \"metadataAddress\": \"Ab4YRbH4bPwsi4EykXZL2nzo4SiZXtgpPDdDVcPLpump\"\n                }\n              },\n              {\n                \"extension\": \"tokenMetadata\",\n                \"state\": {\n                  \"additionalMetadata\": [],\n                  \"mint\": \"Ab4YRbH4bPwsi4EykXZL2nzo4SiZXtgpPDdDVcPLpump\",\n                  \"name\": \"twin\",\n                  \"symbol\": \"twin\",\n                  \"updateAuthority\": null,\n                  \"uri\": \"https://metadata.j7tracker.io/m/D3VsjYbb43\"\n                }\n              }\n            ],\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"1000000000000000\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 368\n      },\n      \"executable\": false,\n      \"lamports\": 2519680,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 368\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"999997756134431\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 82\n      },\n      \"executable\": false,\n      \"lamports\": 1066800,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"extensions\": [\n              {\n                \"extension\": \"metadataPointer\",\n                \"state\": {\n                  \"authority\": null,\n                  \"metadataAddress\": \"DXLE6M12GsJW23aTU2VpZeJcgQ8rwTwQbzmDKvMSpump\"\n                }\n              },\n              {\n                \"extension\": \"tokenMetadata\",\n                \"state\": {\n                  \"additionalMetadata\": [],\n                  \"mint\": \"DXLE6M12GsJW23aTU2VpZeJcgQ8rwTwQbzmDKvMSpump\",\n                  \"name\": \"USD2\",\n                  \"symbol\": \"USD2\",\n                  \"updateAuthority\": null,\n                  \"uri\": \"https://j7m.io/metadata/9f97b91c596347a3.json\"\n                }\n              }\n            ],\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"999999965798104\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 371\n      },\n      \"executable\": false,\n      \"lamports\": 2534920,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 371\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "mint_accounts",
+      "pubkeys": [
+        "8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump"
+      ],
+      "observedAt": "2026-11-28T09:47:33.283Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474907813\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"extensions\": [\n              {\n                \"extension\": \"metadataPointer\",\n                \"state\": {\n                  \"authority\": null,\n                  \"metadataAddress\": \"8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump\"\n                }\n              },\n              {\n                \"extension\": \"tokenMetadata\",\n                \"state\": {\n                  \"additionalMetadata\": [],\n                  \"mint\": \"8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump\",\n                  \"name\": \"Useless Shitty Dollar 1  \",\n                  \"symbol\": \"USD1\",\n                  \"updateAuthority\": null,\n                  \"uri\": \"https://ipfs.io/ipfs/QmYkX5Q3ydkrpbFEjVnKg8YTZP2NQJHAiHKmjJv2bzPxBk\"\n                }\n              }\n            ],\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"962530322097992\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 414\n      },\n      \"executable\": false,\n      \"lamports\": 2753360,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 414\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "pool_accounts",
+      "pubkeys": [
+        "9aQWgTXohYvc5YjpTUrt7r4DRmodz83tivH8qxAxyQy6",
+        "5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1"
+      ],
+      "observedAt": "2026-11-28T09:47:48.763Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474907887\n  },\n  \"value\": [\n    {\n      \"data\": [\n        \"F7f4N2DYrGCOh4hJvVYCAIPkfmILAAAAju91/StYAQCDOFtmBAAAAACAxqR+jQMAAIbH4gTKQmEadvds6WmWslqTpBloGE2+G10RpMqFtLpyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABo5tQAAAAAAHgXUQEAAAAAAACsI/wGAAAAAAAAAAAAAAAAAAAAAAAAALK4TRwAAAAAhsfiBMpCYRp292zpaZayWpOkGWgYTb4bXRGkyoW0unI=\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 18934864435,\n      \"owner\": \"6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 206\n    },\n    {\n      \"data\": [\n        \"8ZptBBGxbbz+AAD5Ngthqhiy+kvAFPhhZoqUOi12JKMeII9kMd8ktYuErTWvjLxhTIQSr77El8fGuM6+B+W6+KQSL4Gnc9RU60V/BpuIV/6rgYT7aH9jRhjANdrEOdwa6ztVmKDwAAAAAAEOItOELErwScLyfdNVNJ2LeOmxiFSbXdqti+T9JfrAyRwr8oXPFoH4XL/7aDTkyK/xmT0eu/D40fHsFVtfzZJU+3/WH9PhVrQho/gGgQs7TBwHFin1S+0egLTNi909gkxHTWxZ0AMAALWjDPs6dfUdnxKdExpf5sIIoxJBU2HQNeUzmAMbsgjsAADRbOatAwAAAAAAAAAAAAAAAAAAAAAAAAAAAJENiDYAAAAAosmvMwAAAAAAAAAAAAAAAAAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 2179320,\n      \"owner\": \"pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 301\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "pool_accounts",
+      "pubkeys": [
+        "Fr3eWtB9kFcnpwWmL8jPRt9CjboCjDuHfTPuPc26fqZ4",
+        "CYv5vfuQZBzF2XNAbpsNAAMpEPcZhFTxQNDPrkDbP1iH"
+      ],
+      "observedAt": "2026-11-28T09:47:49.820Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474907891\n  },\n  \"value\": [\n    {\n      \"data\": [\n        \"F7f4N2DYrGDkG/ZrlwwDAGmng7sIAAAA5IPjHwYOAgBp+1+/AQAAAACAxqR+jQMAAEvtelgChmcwqLU2NTyrUPP3PWeRJrGz/qFLlx/tNltSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKeUjQAAAAAAAACsI/wGAAAAAAAAAAAAAAAAAAAAAAAAANYyThwAAAAAS+16WAKGZzCotTY1PKtQ8/c9Z5EmsbP+oUuXH+02W1I=\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 7516681184,\n      \"owner\": \"6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 206\n    },\n    {\n      \"data\": [\n        \"8ZptBBGxbbz8AADWMmOQXD0OoIT8LxNao0liOpmfmFDcBnqQpOTlFjUQRukJs6xiFw4/r130fU4IsPJ6O29sa1n+M+6rrMkWVHmxBpuIV/6rgYT7aH9jRhjANdrEOdwa6ztVmKDwAAAAAAHzfSDFc/k/0Cgq6Mk3Ca1JkTZuohDDH2vu8hIqFDmmhGEckj7BnuvdJzeK+tjCjAb975EQvE5OgeH7H7NsVmv8CyNKyjHnwG85oF3QggnoqzJIogBn+P6dzecM7sw0dqTTCWxZ0AMAAIdJof0mbSUzAcpHjDdstek5Jv/7ItAlBoPTOs/nhpWSAAAtklYXBAAAAAAAAAAAAAAAAAAAAAAAAAAAALZheQAAAAAAkE9OAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 2179320,\n      \"owner\": \"pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 301\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "pool_accounts",
+      "pubkeys": [
+        "C6pjRCBEic7yT5i6KaCaMvPeqCdPJJvXSyfWGn4Xntem",
+        "6tsimZ6oUt9Rr5Zrbk1rHyhgSY3BchZy6GCYAzEmXi4r"
+      ],
+      "observedAt": "2026-11-28T09:47:50.716Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474907896\n  },\n  \"value\": [\n    {\n      \"data\": [\n        \"8ZptBBGxbbz/AAAwRrqmlptBsInmWQ2w+OoAtPFXpCYOjdgnPLeTL2v2Bc2Zh4YX7ZwxjWah6gcr2MjigjwcUWJI9fRDe/pTbubvBpuIV/6rgYT7aH9jRhjANdrEOdwa6ztVmKDwAAAAAAGVuXx1kdK0GMVjWE2xkOnUs1rzfDj73j8LNM8tAo4JHf8DGS2P7cqxam+7ZZMsgu7QXgJR7fOukQQfR0YHl6LjxxZ3LuCWgaGP/ClNvtvNKxgtLEWlb2xDSaPgzz5cVTKEomtZ0AMAAAF2+pKmBUA2IYOjQn5Jy3DgnIardE9wQNnjIMMkaKtHAAAXAhUYBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfkAJAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 2179320,\n      \"owner\": \"pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 301\n    },\n    {\n      \"data\": [\n        \"F7f4N2DYrGBCSHi5giQDAIKuDHkIAAAAQrBlbfElAgCCAul8AQAAAACAxqR+jQMAABajNCuQeYTfGTx1JwZvF/MYlYObRAOd4Q76YSW30kgxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEMeCEAAAAAAAdkGgAAAAAAAACsI/wGAAAAAAAAAAAAAAAAAAAAAAAAALEpThwAAAAAAte+RNEN9VrSLgs9nbQgI2VQRQ0fSNf40yyZN8TzvH4=\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 6396232293,\n      \"owner\": \"6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 206\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "pool_accounts",
+      "pubkeys": [
+        "AisvTGbbTRexrHHVeTdvvUrPDQXKZQufn1ZLpmma5aVM",
+        "D68Dez4Zyi5agvSiTfgEX6jsBpkMVScTSp63ULUixJ5y"
+      ],
+      "observedAt": "2026-11-28T09:47:51.864Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474907900\n  },\n  \"value\": [\n    {\n      \"data\": [\n        \"F7f4N2DYrGDUM9lIw5YDAPwZgbqyAAAA1JvG/DGYAgB+Hk52CgAAAACAxqR+jQMAABu1KcaHpRvnfBOl6ip2GjC2X8S8lFQ9DmkmD//rYD1WAAAMRfffjZ5ylWKEkz9tmLdXAy6D34RgT7XhF//2HVsS+WQAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAH77MkSoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1696720,\n      \"owner\": \"6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 206\n    },\n    {\n      \"data\": [\n        \"9+3j9dfD3kazIT+6i/nIf6keR4GWKMOD4AvqfpjHoD4DuhBpz8P28zUsvJYsOd6At/QES60QCOSNPLjP+fUJnT2BHJohEqvAJrFXfzpJweYDuWrRtRdMqJe7qgIWrHA9QgIO0bARwK+j1vRQIi0kN/c3Cy2vQ86JoInUCFwkD/Kw1Jwnmrc494SASSDDXOz3zIaLFxhrpUZi6l/7AydYE95AIV62meA9BpuIV/6rgYT7aH9jRhjANdrEOdwa6ztVmKDwAAAAAAFyhL54ut5GLrd7B4omjzBlTlF9V8EeI/eo5SV0dhsMRQbd9uHXZaGT2cvhRs7reawctIXtX1s3kTqM9YV+/wCpBt324ddloZPZy+FGzut5rBy0he1fWzeROoz1hX7/AKnslORD0TtPkTEkRjLapJokKBRaBb987VxIrwOqwi94y/0ACQkGujK8f80DAAAyBzsBAAAAAFW9GvUNAAAAcVplAgAAAADQMmkEFAAAAK6QCmsAAAAASwQAAAAAAAABAQAAAAAAAPbyHgUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 3886200,\n      \"owner\": \"CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 637\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "pool_accounts",
+      "pubkeys": [
+        "iECtPUj6bmB5zBLDVdVBpSUx23UjkZetCrU9ZKYwfjv",
+        "B8EpbHovFiAxp7Gvsyuv4GjMYzj51KqP49sGLAYxnmKQ"
+      ],
+      "observedAt": "2026-11-28T09:47:52.754Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474907905\n  },\n  \"value\": [\n    {\n      \"data\": [\n        \"F7f4N2DYrGDBJRxUy+wBAFBHFNUNAAAAwY0JCDruAABQm/DYBgAAAACAxqR+jQMAADuhHR3dBDCteaXbV/KtZvB9LChjWH8MR9Uc4OaxserxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEcucMAAAAAABblNQEAAAAAAACsI/wGAAAAAAAAAAAAAAAAAAAAAAAAAKnLTRwAAAAAZKChVuikQANSlOgv1Xn3H5JclBX4kKm1hyD87fQ9htk=\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 29444283730,\n      \"owner\": \"6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 206\n    },\n    {\n      \"data\": [\n        \"8ZptBBGxbbz/AAABdjEpjJvt5we1UcUyz1GzMmSidTsBaYMDJMJFHBtXKgHuI1l3kBu8tjD4TWIhEpvYrQt2947rpSFVm1j1neOPBpuIV/6rgYT7aH9jRhjANdrEOdwa6ztVmKDwAAAAAAEeLtQ/4zRCHVXecb31sC8Nn73l7iDWffXJu6JDZhzbyACib+R5W1HomVrn1Acyq+a4vCRRsfj5dVIeeJ0+/O+aMeQjmqCW1plu7oZjM8vUVXlg+B5rQzvHMVP3RPuyaYaAQ2tZ0AMAAOuMfKEIoMXpsE1WVW9fz/X5xqqBmV+OWOgYgR2+Y562AAB/7hj7AwAAAAAAAAAAAAAAAAAAAAAAAAAAAGiH8xwAAAAA4ssRAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 2179320,\n      \"owner\": \"pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 301\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "pump_vault_mints",
+      "mint": "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+      "pool": "5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1",
+      "addresses": [
+        "2tyHQLiT6EsMQTs5qwkbKnJ3ChWZj3RnijdRtTqpaG1Z",
+        "HvkPhPzBVxU3cDMPyhySjcUaa3BP5zDj4mqhwXdcuLBD",
+        "xBWUpAwrjqFziHcGf5k86rbYbWZMK9JzjJ9LGth7bLc"
+      ],
+      "pubkeys": [
+        "2tyHQLiT6EsMQTs5qwkbKnJ3ChWZj3RnijdRtTqpaG1Z",
+        "HvkPhPzBVxU3cDMPyhySjcUaa3BP5zDj4mqhwXdcuLBD",
+        "xBWUpAwrjqFziHcGf5k86rbYbWZMK9JzjJ9LGth7bLc"
+      ],
+      "observedAt": "2026-11-28T09:48:32.967Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.0\",\n    \"slot\": 474908094\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump\",\n            \"owner\": \"5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"253539921438270\",\n              \"decimals\": 6,\n              \"uiAmount\": 253539921.43827,\n              \"uiAmountString\": \"253539921.43827\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"isNative\": true,\n            \"mint\": \"So11111111111111111111111111111111111111112\",\n            \"owner\": \"5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1\",\n            \"rentExemptReserve\": {\n              \"amount\": \"1488440\",\n              \"decimals\": 9,\n              \"uiAmount\": 0.00148844,\n              \"uiAmountString\": \"0.00148844\"\n            },\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"53907749589\",\n              \"decimals\": 9,\n              \"uiAmount\": 53.907749589,\n              \"uiAmountString\": \"53.907749589\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 165\n      },\n      \"executable\": false,\n      \"lamports\": 53909238029,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 9,\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": \"5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1\",\n            \"supply\": \"0\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 82\n      },\n      \"executable\": false,\n      \"lamports\": 1066800,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "pump_vault_mints",
+      "mint": "GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg",
+      "pool": "CYv5vfuQZBzF2XNAbpsNAAMpEPcZhFTxQNDPrkDbP1iH",
+      "addresses": [
+        "7Y5pHXoaBuPdMTgk3jjgrSrscvsCJtykgmZBu8tiRiZ9",
+        "kUhSUtiJpi3VpSQmuKP4GtkjfryRuK7gHSBb5QseRqV",
+        "HPUjbYDCxfqemQ3k8X1ziBxbpwgfj7qaaaEkpXReBKco"
+      ],
+      "pubkeys": [
+        "7Y5pHXoaBuPdMTgk3jjgrSrscvsCJtykgmZBu8tiRiZ9",
+        "kUhSUtiJpi3VpSQmuKP4GtkjfryRuK7gHSBb5QseRqV",
+        "HPUjbYDCxfqemQ3k8X1ziBxbpwgfj7qaaaEkpXReBKco"
+      ],
+      "observedAt": "2026-11-28T09:48:33.861Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908099\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg\",\n            \"owner\": \"CYv5vfuQZBzF2XNAbpsNAAMpEPcZhFTxQNDPrkDbP1iH\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"549965569390257\",\n              \"decimals\": 6,\n              \"uiAmount\": 549965569.390257,\n              \"uiAmountString\": \"549965569.390257\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"isNative\": true,\n            \"mint\": \"So11111111111111111111111111111111111111112\",\n            \"owner\": \"CYv5vfuQZBzF2XNAbpsNAAMpEPcZhFTxQNDPrkDbP1iH\",\n            \"rentExemptReserve\": {\n              \"amount\": \"1488440\",\n              \"decimals\": 9,\n              \"uiAmount\": 0.00148844,\n              \"uiAmountString\": \"0.00148844\"\n            },\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"14667410316\",\n              \"decimals\": 9,\n              \"uiAmount\": 14.667410316,\n              \"uiAmountString\": \"14.667410316\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 165\n      },\n      \"executable\": false,\n      \"lamports\": 14668898756,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 9,\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": \"CYv5vfuQZBzF2XNAbpsNAAMpEPcZhFTxQNDPrkDbP1iH\",\n            \"supply\": \"0\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 82\n      },\n      \"executable\": false,\n      \"lamports\": 1066800,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "pump_vault_mints",
+      "mint": "EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump",
+      "pool": "C6pjRCBEic7yT5i6KaCaMvPeqCdPJJvXSyfWGn4Xntem",
+      "addresses": [
+        "JAThnKVQBVeJk43uHjae5GJeKorGCbf4HTBKDDwGEr2E",
+        "EQA12iGj6mE5NgwEs1k7uP12KhaiuF1VMs8nFL5361zZ",
+        "B5TnvsEKoUXCVL47z5LAYP3BJwvDMsRTP3axAtTYwNFW"
+      ],
+      "pubkeys": [
+        "JAThnKVQBVeJk43uHjae5GJeKorGCbf4HTBKDDwGEr2E",
+        "EQA12iGj6mE5NgwEs1k7uP12KhaiuF1VMs8nFL5361zZ",
+        "B5TnvsEKoUXCVL47z5LAYP3BJwvDMsRTP3axAtTYwNFW"
+      ],
+      "observedAt": "2026-11-28T09:48:34.996Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908104\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump\",\n            \"owner\": \"C6pjRCBEic7yT5i6KaCaMvPeqCdPJJvXSyfWGn4Xntem\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"134475266675705\",\n              \"decimals\": 6,\n              \"uiAmount\": 134475266.675705,\n              \"uiAmountString\": \"134475266.675705\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"isNative\": true,\n            \"mint\": \"So11111111111111111111111111111111111111112\",\n            \"owner\": \"C6pjRCBEic7yT5i6KaCaMvPeqCdPJJvXSyfWGn4Xntem\",\n            \"rentExemptReserve\": {\n              \"amount\": \"1488440\",\n              \"decimals\": 9,\n              \"uiAmount\": 0.00148844,\n              \"uiAmountString\": \"0.00148844\"\n            },\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"114272808517\",\n              \"decimals\": 9,\n              \"uiAmount\": 114.272808517,\n              \"uiAmountString\": \"114.272808517\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 165\n      },\n      \"executable\": false,\n      \"lamports\": 114274296957,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 9,\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": \"C6pjRCBEic7yT5i6KaCaMvPeqCdPJJvXSyfWGn4Xntem\",\n            \"supply\": \"0\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 82\n      },\n      \"executable\": false,\n      \"lamports\": 1066800,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "pump_vault_mints",
+      "mint": "8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump",
+      "pool": "B8EpbHovFiAxp7Gvsyuv4GjMYzj51KqP49sGLAYxnmKQ",
+      "addresses": [
+        "13UfHqTLSc6En2dB8iR58tVtfcgvS6tMVunbtRGniTbf",
+        "4MkkBfAX9oWdDWWN7s8LS16Xwd5D6G7Fp5P6CCzxHmLy",
+        "32peWvYNzbVhghSC8CJgcwAjbznsDebrUeBLVqj3xetF"
+      ],
+      "pubkeys": [
+        "13UfHqTLSc6En2dB8iR58tVtfcgvS6tMVunbtRGniTbf",
+        "4MkkBfAX9oWdDWWN7s8LS16Xwd5D6G7Fp5P6CCzxHmLy",
+        "32peWvYNzbVhghSC8CJgcwAjbznsDebrUeBLVqj3xetF"
+      ],
+      "observedAt": "2026-11-28T09:48:36.035Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908109\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump\",\n            \"owner\": \"B8EpbHovFiAxp7Gvsyuv4GjMYzj51KqP49sGLAYxnmKQ\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"958961188066894\",\n              \"decimals\": 6,\n              \"uiAmount\": 958961188.066894,\n              \"uiAmountString\": \"958961188.066894\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"isNative\": true,\n            \"mint\": \"So11111111111111111111111111111111111111112\",\n            \"owner\": \"B8EpbHovFiAxp7Gvsyuv4GjMYzj51KqP49sGLAYxnmKQ\",\n            \"rentExemptReserve\": {\n              \"amount\": \"1488440\",\n              \"decimals\": 9,\n              \"uiAmount\": 0.00148844,\n              \"uiAmountString\": \"0.00148844\"\n            },\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"3367589211\",\n              \"decimals\": 9,\n              \"uiAmount\": 3.367589211,\n              \"uiAmountString\": \"3.367589211\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 165\n      },\n      \"executable\": false,\n      \"lamports\": 3369077651,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 9,\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": \"B8EpbHovFiAxp7Gvsyuv4GjMYzj51KqP49sGLAYxnmKQ\",\n            \"supply\": \"0\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 82\n      },\n      \"executable\": false,\n      \"lamports\": 1066800,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "cpmm_controls",
+      "pool": "D68Dez4Zyi5agvSiTfgEX6jsBpkMVScTSp63ULUixJ5y",
+      "mint": "8i2ssMZBaS3HShu5hoDEV4tVLf5RGXeNJnK3LNTHTH9e",
+      "addresses": [
+        "D68Dez4Zyi5agvSiTfgEX6jsBpkMVScTSp63ULUixJ5y",
+        "3c3LQDkkCck9sbQWQiiDr4xvo1BinRCGJHREqyNcQMTL",
+        "C2ZZZicfQjbUjMEjBJwBAuMoamMrs6oaBUcx7tAYrZxA",
+        "So11111111111111111111111111111111111111112",
+        "8i2ssMZBaS3HShu5hoDEV4tVLf5RGXeNJnK3LNTHTH9e",
+        "9vEGozQrstGyCYTMVew6nYA1M4BFUuVguG4RNuDa2YfE",
+        "D4FPEruKEHrG5TenZ2mpDGEfu1iUvTiqBxvpU8HLBvC2"
+      ],
+      "pubkeys": [
+        "D68Dez4Zyi5agvSiTfgEX6jsBpkMVScTSp63ULUixJ5y",
+        "3c3LQDkkCck9sbQWQiiDr4xvo1BinRCGJHREqyNcQMTL",
+        "C2ZZZicfQjbUjMEjBJwBAuMoamMrs6oaBUcx7tAYrZxA",
+        "So11111111111111111111111111111111111111112",
+        "8i2ssMZBaS3HShu5hoDEV4tVLf5RGXeNJnK3LNTHTH9e",
+        "9vEGozQrstGyCYTMVew6nYA1M4BFUuVguG4RNuDa2YfE",
+        "D4FPEruKEHrG5TenZ2mpDGEfu1iUvTiqBxvpU8HLBvC2"
+      ],
+      "observedAt": "2026-11-28T09:48:37.068Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908114\n  },\n  \"value\": [\n    {\n      \"data\": [\n        \"9+3j9dfD3kazIT+6i/nIf6keR4GWKMOD4AvqfpjHoD4DuhBpz8P28zUsvJYsOd6At/QES60QCOSNPLjP+fUJnT2BHJohEqvAJrFXfzpJweYDuWrRtRdMqJe7qgIWrHA9QgIO0bARwK+j1vRQIi0kN/c3Cy2vQ86JoInUCFwkD/Kw1Jwnmrc494SASSDDXOz3zIaLFxhrpUZi6l/7AydYE95AIV62meA9BpuIV/6rgYT7aH9jRhjANdrEOdwa6ztVmKDwAAAAAAFyhL54ut5GLrd7B4omjzBlTlF9V8EeI/eo5SV0dhsMRQbd9uHXZaGT2cvhRs7reawctIXtX1s3kTqM9YV+/wCpBt324ddloZPZy+FGzut5rBy0he1fWzeROoz1hX7/AKnslORD0TtPkTEkRjLapJokKBRaBb987VxIrwOqwi94y/0ACQkGujK8f80DAAAzMEEBAAAAABJR1QMOAAAAHGhnAgAAAAC4DlIJFAAAAK6QCmsAAAAASwQAAAAAAAABAQAAAAAAAKqoKwUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 3886200,\n      \"owner\": \"CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 637\n    },\n    {\n      \"data\": [\n        \"BpuIV/6rgYT7aH9jRhjANdrEOdwa6ztVmKDwAAAAAAHrANn1spK0IUrH0De01vBkULlkYA3zcwUrtehPL46aZ0A1gNgTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAAAA4thYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 85238147960,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    },\n    {\n      \"data\": [\n        \"coS+eLreRi63eweKJo8wZU5RfVfBHiP3qOUldHYbDEXrANn1spK0IUrH0De01vBkULlkYA3zcwUrtehPL46aZ8RRQ+54xwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1488440,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    },\n    {\n      \"data\": [\n        \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1934806676637,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    },\n    {\n      \"data\": [\n        \"AAAAAAeDqBUmIQ+UoOjoTSCHADs6QmDSnOedrP4hpOp3H6YoH9QHH36NAwAGAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1066800,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    },\n    {\n      \"data\": [\n        \"AQAAAOsA2fWykrQhSsfQN7TW8GRQuWRgDfNzBSu16E8vjppnEmwZvF4AAAAJAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1066800,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    },\n    {\n      \"data\": [\n        \"2vQhaMvLK2//AAAAxAkAAAAAAADA1AEAAAAAAECcAAAAAAAAgNHwCAAAAAAF2xU6D/SH9pzeiQAf7ExGlbbUIV6iRLh71Otyh/hXqNcGSjj20XsRPl9m3PtjuHN//OJkSr8KALmLNDVtY4WD9AEAAAAAAABQwwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 2584522,\n      \"owner\": \"CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 236\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "pump_atomic_controls",
+      "mint": "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+      "pubkeys": [
+        "5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1",
+        "2tyHQLiT6EsMQTs5qwkbKnJ3ChWZj3RnijdRtTqpaG1Z",
+        "HvkPhPzBVxU3cDMPyhySjcUaa3BP5zDj4mqhwXdcuLBD",
+        "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+        "xBWUpAwrjqFziHcGf5k86rbYbWZMK9JzjJ9LGth7bLc",
+        "So11111111111111111111111111111111111111112",
+        "ADyA8hdefvWN2dbGGWFotbzWxrAvLW83WG6QCVXvJKqw",
+        "5PHirr8joyTMp9JMm6nW7hNDVyEYdkzDqazxPD7RaTjx"
+      ],
+      "observedAt": "2026-11-28T09:49:30.872Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908360\n  },\n  \"value\": [\n    {\n      \"data\": [\n        \"8ZptBBGxbbz+AAD5Ngthqhiy+kvAFPhhZoqUOi12JKMeII9kMd8ktYuErTWvjLxhTIQSr77El8fGuM6+B+W6+KQSL4Gnc9RU60V/BpuIV/6rgYT7aH9jRhjANdrEOdwa6ztVmKDwAAAAAAEOItOELErwScLyfdNVNJ2LeOmxiFSbXdqti+T9JfrAyRwr8oXPFoH4XL/7aDTkyK/xmT0eu/D40fHsFVtfzZJU+3/WH9PhVrQho/gGgQs7TBwHFin1S+0egLTNi909gkxHTWxZ0AMAALWjDPs6dfUdnxKdExpf5sIIoxJBU2HQNeUzmAMbsgjsAADbtECoAwAAAAAAAAAAAAAAAAAAAAAAAAAAALTS9jkAAAAAdbzmNQAAAAAAAAAAAAAAAAAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 2179320,\n      \"owner\": \"pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 301\n    },\n    {\n      \"data\": [\n        \"Na+MvGFMhBKvvsSXx8a4zr4H5br4pBIvgadz1FTrRX8/oheFkMti9hjT+DQkfyxG8bTvWnKmBaKhZBezp+I4LipUfYVL4wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgcAAAA=\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": [\n        \"BpuIV/6rgYT7aH9jRhjANdrEOdwa6ztVmKDwAAAAAAE/oheFkMti9hjT+DQkfyxG8bTvWnKmBaKhZBezp+I4LuyOeMwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAAAA4thYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 54971548964,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    },\n    {\n      \"data\": [\n        \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8XJXrbtjAwAGAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARIAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADWvjLxhTIQSr77El8fGuM6+B+W6+KQSL4Gnc9RU60V/EwCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANa+MvGFMhBKvvsSXx8a4zr4H5br4pBIvgadz1FTrRX8QAAAAVGhlIFB1bXBmdW4gQnVsbAMAAABIUEQtAAAAaHR0cHM6Ly9qN20uaW8vbWV0YWRhdGEvNTVhOTFhOWY1MDY1NGE3MS5qc29uAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 2590800,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 382\n    },\n    {\n      \"data\": [\n        \"AQAAAD+iF4WQy2L2GNP4NCR/LEbxtO9acqYFoqFkF7On4jguAAAAAAAAAAAJAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1066800,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    },\n    {\n      \"data\": [\n        \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1934806676637,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    },\n    {\n      \"data\": [\n        \"lQicyqD8sNnTu4yrNBzgUoRX8sOBfTJ4RBlj3NVf7Vi6JMmZ3awCqhQAAAAAAAAABQAAAAAAAAAAF2yyhLW8UJXMNDAWk+LPaOIiS0GMY5xFyKaFWGhaCG0jDhqi4a4UHYC/jsLCTQPfR0AaTPFuqYRkBphZrEsRp4Zkxu1i9l/YXgF60FQjby72KvRRtvAV330W4S1K5G+LnBrh22uwuGjGT5/jXLA/xoMRuSlwzIyixR8gcNwGBKC/AYetJ2zv8Nkv23EpsAjnFOvXaLrlkMPtN6cPpCrNMcOOCW7I9h71iFs4aV3WEnwa7LbncaOovEGMaQBENc28y268Ow4A/yVTEZKGM55UX/j6kFflZwVr1W3cJILkacndBrbMCcBXws9bip1rnFDlXK1ojGfnBxaJJFPbYACPVAUAAAAAAAAAByFdmUB5NpThFgZs5Fm4GP35u6DHtBt4P6OhIMpBlTKii1/SarR5pqnMbL9rCyPrYYhaNx4BIKypE77vPROKeOiTFB+xjp8VdNgQ4XjhnjBgTjF1qi5KMt/IYAcn0QcJATWEU2JWCU+RKBkSfvpORGtDM3IXk9E4dvmq2/PcfQtfbnUBgiD5QmdwAyN7TWtFN1m0pcaQtZw12bsYegkMvSozmHqeuxNnmatZklsT5dyLMIHfAF20J8FHj6Rv+MNHoHTpVD8+N6LQRiJ63ctOnHdMRCWMQ+3ySqiq4fACFGZb2kw4zW23Q49ZtAi7nsO0yp6K0fHyRlPEmbV5bCDb+bMt3Z7qPzmzchFccYR8GEXPpTbGhQdOAw5E0CHePvnjXEy3gPCO4v7oS+xEald4Jdpo1Dn6il2jsMXP9Q9j9FRrAUOeZRDAPWX62THonQS+C7cNUZcfUcQV+zRMB9tBnyEiAiNVFqkXE0xnWIxJOCCuFV7pZmVXesG3GNpH3c8qBQ7mp+IgaLuIZAqlf5CTCMYf73EaAWP1p1XAcLyGDR9jZyB87NpbzGyx6vDxbWhARWaxjVbSSBrLMXAyZW6QVRx4RJZB+ElY3HOnaoXYdW9VwCzayom6GTJ5DDaKsVfpLXPFS5a1yTGUHkbqS+Lg4xEndE/Gt0z7RV7+r4vVcXks7UT8H3j5SjPQkJxea1+wIVcK2Nutjej9s9IO0c2Z645Oh3AVfuvrZ4plXbmbN/axMmx2V9uQz7ioer74x7byyGmIEwAAAAAAAPSEYofB0vyr1vGBX2l/VABW/RZVaGEbANPK6XSCwSxlAQEsAQAAAAAAAA==\",\n        \"base64\"\n      ],\n      \"executable\": false,\n      \"lamports\": 9272823,\n      \"owner\": \"pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 949\n    },\n    {\n      \"data\": [\n        \"jzSSu9t7TJv/07uMqzQc4FKEV/LDgX0yeEQZY9zVX+1YuiTJmd2sAqoZAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAZAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAXQAAAAAAAAAeAAAAAAAAAABo88lhAAAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAAXwAAAAAAAAAA7NNCVgEAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAAFoAAAAAAAAAABhtwzwCAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAABVAAAAAAAAAABg+u8gAwAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAAUAAAAAAAAAAAqIccBQQAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAAEsAAAAAAAAAAJicZe4IAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAABGAAAAAAAAAADIduxnDQAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAAQQAAAAAAAAAAFEUf3xEAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAADwAAAAAAAAAAGATUlYWAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAAA3AAAAAAAAAACs4YTNGgAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAAMgAAAAAAAAAA+K+3RB8AAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAAC0AAAAAAAAAACiKPr4jAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAAAoAAAAAAAAAAB0WHE1KAAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAAIwAAAAAAAAAAwCakrCwAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAAB4AAAAAAAAAAAz11iMxAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAAAcAAAAAAAAAABYwwmbNQAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAAGQAAAAAAAAAAiJ2QFDoAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAABcAAAAAAAAAANRrw4s+AAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAAAUAAAAAAAAAADq1DEDQwAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAAEgAAAAAAAAAAbAgpekcAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAAA8AAAAAAAAAALjWW/FLAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAAANAAAAAAAAAAAgmTpmUAAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAACgAAAAAAAAAANH8V4lQAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAAAgAAAAAAAAAAIBNSFlZAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAAAFAAAAAAAAABkAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAABdAAAAAAAAAB4AAAAAAAAAAI6svA0AAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAABfAAAAAAAAAAC4ZNlFAAAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAAWgAAAAAAAAAAiFJqdAAAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAAFUAAAAAAAAAAFhA+6IAAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAABQAAAAAAAAAAAoLozRAAAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAASwAAAAAAAAAAIEqp0QEAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAAEYAAAAAAAAAADDvfboCAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAABBAAAAAAAAAABAlFKjAwAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAAPAAAAAAAAAAAUDknjAQAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAADcAAAAAAAAAAGDe+3QFAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAAAyAAAAAAAAAABwg9BdBgAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAALQAAAAAAAAAAgCilRgcAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAACgAAAAAAAAAAJDNeS8IAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAAAjAAAAAAAAAACgck4YCQAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAAHgAAAAAAAAAAsBcjAQoAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAABwAAAAAAAAAAMC89+kKAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAAAZAAAAAAAAAADQYczSCwAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAAFwAAAAAAAAAA4AahuwwAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAABQAAAAAAAAAAPCrdaQNAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAAASAAAAAAAAAAAAUUqNDgAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAADwAAAAAAAAAAEPYedg8AAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAAA0AAAAAAAAAACCb814QAAAAAAAAAAAAABQAAAAAAAAABQAAAAAAAAAKAAAAAAAAAAAwQMhHEQAAAAAAAAAAAAAUAAAAAAAAAAUAAAAAAAAACAAAAAAAAAAAQOWcMBIAAAAAAAAAAAAAFAAAAAAAAAAFAAAAAAAAAAUAAAAAAAAAFAAAAAAAAAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n\n... [truncated — response too large. Use more specific filters or pagination to narrow results.]"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "pump_atomic_controls_zstd",
+      "mint": "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+      "pubkeys": [
+        "5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1",
+        "2tyHQLiT6EsMQTs5qwkbKnJ3ChWZj3RnijdRtTqpaG1Z",
+        "HvkPhPzBVxU3cDMPyhySjcUaa3BP5zDj4mqhwXdcuLBD",
+        "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+        "xBWUpAwrjqFziHcGf5k86rbYbWZMK9JzjJ9LGth7bLc",
+        "So11111111111111111111111111111111111111112",
+        "ADyA8hdefvWN2dbGGWFotbzWxrAvLW83WG6QCVXvJKqw",
+        "5PHirr8joyTMp9JMm6nW7hNDVyEYdkzDqazxPD7RaTjx"
+      ],
+      "observedAt": "2026-11-28T09:49:41.309Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908408\n  },\n  \"value\": [\n    {\n      \"data\": [\n        \"KLUv/QBYlQgAhBDxmm0EEbFtvP4AAPk2C2GqGLL6S8AU+GFmipQ6LXYkox4gj2Qx3yS1i4StNa+MvGFMhBKvvsSXx8a4zr4H5br4pBIvgadz1FTrRX8Gm4hX/quBhPtof2NGGMA12sQ53BrrO1WYoPAAAAAAAQ4i04QsSvBJwvJ901U0nYt46bGIVJtd2q2L5P0l+sDJHCvyhc8Wgfhcv/toNOTIr/GZPR678PjR8ewVW1/NklT7f9Yf0+FWtCGj+AaBCztMHAcWKfVL7R6AtM2L3T2CTEdNbFnQAwAAtaMM+zp19R2fEp0TGl/mwgijEkFTYdA15TOYAxuyCOwAAP3IwKcDAESURDoAAAAAw+YYNgACAGD+expIAQ==\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 2179320,\n      \"owner\": \"pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 301\n    },\n    {\n      \"data\": [\n        \"KLUv/QBYxQIA5AQ1r4y8YUyEEq++xJfHxrjOvgfluvikEi+Bp3PUVOtFfz+iF4WQy2L2GNP4NCR/LEbxtO9acqYFoqFkF7On4jguiGngHH/mAAEAAgcAAAACAAQnHh5wBg==\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": [\n        \"KLUv/QBYzQIA9AQGm4hX/quBhPtof2NGGMA12sQ53BrrO1WYoPAAAAAAAT+iF4WQy2L2GNP4NCR/LEbxtO9acqYFoqFkF7On4jguN+p5kgwAAQEAAAA4thYAAgCB6IwPMAM=\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 53998559343,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    },\n    {\n      \"data\": [\n        \"KLUv/QBYtQQAZAgAAPFyV627YwMABgEAARIAQAA1r4y8YUyEEq++xJfHxrjOvgfluvikEi+Bp3PUVOtFfxMAkAAQAAAAVGhlIFB1bXBmdW4gQnVsbAMAAABIUEQtAAAAaHR0cHM6Ly9qN20uaW8vbWV0YWRhdGEvNTVhOTFhOWY1MDY1NGE3MS5qc29uAAAAAAUAR8ABAf4AridIvQOw\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 2590800,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 382\n    },\n    {\n      \"data\": [\n        \"KLUv/QBYjQEAhAIBAAAAP6IXhZDLYvYY0/g0JH8sRvG071pypgWioWQXs6fiOC4ACQEAAgAAGXXBEw==\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1066800,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    },\n    {\n      \"data\": [\n        \"KLUv/QBYbQAAKAAACQEAAgAAOUIACw==\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1934806676637,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    },\n    {\n      \"data\": [\n        \"KLUv/QBYqR0AlQicyqD8sNnTu4yrNBzgUoRX8sOBfTJ4RBlj3NVf7Vi6JMmZ3awCqhQAAAAAAAAABQAAAAAAAAAAF2yyhLW8UJXMNDAWk+LPaOIiS0GMY5xFyKaFWGhaCG0jDhqi4a4UHYC/jsLCTQPfR0AaTPFuqYRkBphZrEsRp4Zkxu1i9l/YXgF60FQjby72KvRRtvAV330W4S1K5G+LnBrh22uwuGjGT5/jXLA/xoMRuSlwzIyixR8gcNwGBKC/AYetJ2zv8Nkv23EpsAjnFOvXaLrlkMPtN6cPpCrNMcOOCW7I9h71iFs4aV3WEnwa7LbncaOovEGMaQBENc28y268Ow4A/yVTEZKGM55UX/j6kFflZwVr1W3cJILkacndBrbMCcBXws9bip1rnFDlXK1ojGfnBxaJJFPbYACPVAUAAAAAAAAAByFdmUB5NpThFgZs5Fm4GP35u6DHtBt4P6OhIMpBlTKii1/SarR5pqnMbL9rCyPrYYhaNx4BIKypE77vPROKeOiTFB+xjp8VdNgQ4XjhnjBgTjF1qi5KMt/IYAcn0QcJATWEU2JWCU+RKBkSfvpORGtDM3IXk9E4dvmq2/PcfQtfbnUBgiD5QmdwAyN7TWtFN1m0pcaQtZw12bsYegkMvSozmHqeuxNnmatZklsT5dyLMIHfAF20J8FHj6Rv+MNHoHTpVD8+N6LQRiJ63ctOnHdMRCWMQ+3ySqiq4fACFGZb2kw4zW23Q49ZtAi7nsO0yp6K0fHyRlPEmbV5bCDb+bMt3Z7qPzmzchFccYR8GEXPpTbGhQdOAw5E0CHePvnjXEy3gPCO4v7oS+xEald4Jdpo1Dn6il2jsMXP9Q9j9FRrAUOeZRDAPWX62THonQS+C7cNUZcfUcQV+zRMB9tBnyEiAiNVFqkXE0xnWIxJOCCuFV7pZmVXesG3GNpH3c8qBQ7mp+IgaLuIZAqlf5CTCMYf73EaAWP1p1XAcLyGDR9jZyB87NpbzGyx6vDxbWhARWaxjVbSSBrLMXAyZW6QVRx4RJZB+ElY3HOnaoXYdW9VwCzayom6GTJ5DDaKsVfpLXPFS5a1yTGUHkbqS+Lg4xEndE/Gt0z7RV7+r4vVcXks7UT8H3j5SjPQkJxea1+wIVcK2Nutjej9s9IO0c2Z645Oh3AVfuvrZ4plXbmbN/axMmx2V9uQz7ioer74x7byyGmIEwAAAAAAAPSEYofB0vyr1vGBX2l/VABW/RZVaGEbANPK6XSCwSxlAQEsAQAAAAAAAA==\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 9272823,\n      \"owner\": \"pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 949\n    },\n    {\n      \"data\": [\n        \"KLUv/QBYZQ0A5BOPNJK723tMm//Tu4yrNBzgUoRX8sOBfTJ4RBlj3NVf7Vi6JMmZ3awCqhkABQACAF0AHgBo88lhABQAXwDs00JWAVoYbcM8AlVg+u8gA1CohxwFBEuYnGXuCEbIduxnDUEURR/fETxgE1JWFjes4YTNGjL4r7dEHy0oij6+Iyh0WHE1KCPAJqSsLB4M9dYjMRxYwwmbNRmInZAUOhfUa8OLPhTq1DEDQxJsCCl6Rw+41lvxSw0gmTpmUAo0fxXiVAiATUhZWQWOrLwNuGTZRQCIUmp0AFhA+6IAKC6M0QAgSqnRATDvfboCQJRSowNQOSeMBGDe+3QFcIPQXQaAKKVGB5DNeS8IoHJOGAmwFyMBCsC89+kK0GHM0gvgBqG7DPCrdaQNAFFKjQ4Q9h52D5vzXhAwQMhHEUDlnDASFAVcqIFMJSB6+58BsJMkwwESgBDAkFAJRIAQIAQIQvB94RF+/wzJN5wzFY+MmzzSmEZnrCrRubtzp93o7xMXfG3+GC+tZhGRQgQCIZGIEFIQAIlEiiCCAKiIIFcbhJeu7hhBcTIxCY7dBE2WF1U=\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 33103977,\n      \"owner\": \"pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 4097\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_accounts",
+      "mint": "A6BBHdxCNFmpLqCzEzdoZ2wVPLVcr6jcxFn7oEeMpump",
+      "observedAt": "2026-11-28T09:50:33.599Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908657\n  },\n  \"value\": [\n    {\n      \"address\": \"E9B3FuSDJuWNaAt7JHjcCWmZcz7Qy6MG8WsDGwNjxFCn\",\n      \"amount\": \"568013686049562\",\n      \"decimals\": 6,\n      \"uiAmount\": 568013686.049562,\n      \"uiAmountString\": \"568013686.049562\"\n    },\n    {\n      \"address\": \"BVZpQ13qfHXFbxT2iD8ugEgRnEXSqDaf6KaRXqSv7AHj\",\n      \"amount\": \"151184927228437\",\n      \"decimals\": 6,\n      \"uiAmount\": 151184927.228437,\n      \"uiAmountString\": \"151184927.228437\"\n    },\n    {\n      \"address\": \"588qDsigHfy8WbupdjLpcGXCLTaB3ATJ7YD4YJtDDWfF\",\n      \"amount\": \"39212404864541\",\n      \"decimals\": 6,\n      \"uiAmount\": 39212404.864541,\n      \"uiAmountString\": \"39212404.864541\"\n    },\n    {\n      \"address\": \"BqWdD7FmQuWAKEuddXu55DagXjwM2eMtDPvmoxSHPa5b\",\n      \"amount\": \"35222465090779\",\n      \"decimals\": 6,\n      \"uiAmount\": 35222465.090779,\n      \"uiAmountString\": \"35222465.090779\"\n    },\n    {\n      \"address\": \"7m6Mavexkg6WMM6w754pAJ7Mc8Qvwmsc9ZBPkaxB2tdu\",\n      \"amount\": \"33083869055267\",\n      \"decimals\": 6,\n      \"uiAmount\": 33083869.055267,\n      \"uiAmountString\": \"33083869.055267\"\n    },\n    {\n      \"address\": \"HsLf7qPGuJamxfdAzKGPtJ3qRRssMYZrkkggGSgzdB3b\",\n      \"amount\": \"29922067221223\",\n      \"decimals\": 6,\n      \"uiAmount\": 29922067.221223,\n      \"uiAmountString\": \"29922067.221223\"\n    },\n    {\n      \"address\": \"FjgUcT1rnGM4CwzAdyyQ8yrdC7BrhKjAaVwaMcGmhRiH\",\n      \"amount\": \"21069507927405\",\n      \"decimals\": 6,\n      \"uiAmount\": 21069507.927405,\n      \"uiAmountString\": \"21069507.927405\"\n    },\n    {\n      \"address\": \"HVoT6Hi2eWmTHNxNRfX4Ds14nbFQSFdDyyhNDiLEjFCk\",\n      \"amount\": \"19825887212675\",\n      \"decimals\": 6,\n      \"uiAmount\": 19825887.212675,\n      \"uiAmountString\": \"19825887.212675\"\n    },\n    {\n      \"address\": \"4K4ebKHEgKwT6TpiQGF25eVHexK8DV6y8USzfD8QBgtg\",\n      \"amount\": \"16668318869737\",\n      \"decimals\": 6,\n      \"uiAmount\": 16668318.869737,\n      \"uiAmountString\": \"16668318.869737\"\n    },\n    {\n      \"address\": \"E89KCz5W6WCKJCBiGns4bSNCB98vYdyo34aMNV3iSBf6\",\n      \"amount\": \"12376761432210\",\n      \"decimals\": 6,\n      \"uiAmount\": 12376761.43221,\n      \"uiAmountString\": \"12376761.43221\"\n    },\n    {\n      \"address\": \"CMZLggjXjs9mQ9yHhtMBswLqKHjzqtuDsxzfGvGWuYEg\",\n      \"amount\": \"10336761766662\",\n      \"decimals\": 6,\n      \"uiAmount\": 10336761.766662,\n      \"uiAmountString\": \"10336761.766662\"\n    },\n    {\n      \"address\": \"8TwGP5AAMpcwRBHuiUHA2fpHXqucp6jt4PcKDDuwhMpj\",\n      \"amount\": \"8501413344602\",\n      \"decimals\": 6,\n      \"uiAmount\": 8501413.344602,\n      \"uiAmountString\": \"8501413.344602\"\n    },\n    {\n      \"address\": \"BT1cA3kJE38oN9kLwpyJT2QGsqoUMQwH4pc55Wd2YmZ4\",\n      \"amount\": \"6783706955405\",\n      \"decimals\": 6,\n      \"uiAmount\": 6783706.955405,\n      \"uiAmountString\": \"6783706.955405\"\n    },\n    {\n      \"address\": \"E7tD6SYUy8i3MwiVrCTDQw9Kgi4f6LobyreuW5uXa89m\",\n      \"amount\": \"6763924469785\",\n      \"decimals\": 6,\n      \"uiAmount\": 6763924.469785,\n      \"uiAmountString\": \"6763924.469785\"\n    },\n    {\n      \"address\": \"AmLdDucwLbyWM9S6rsyXdiS74Z1VEJLhN6Lymb2r8QF8\",\n      \"amount\": \"6000000000000\",\n      \"decimals\": 6,\n      \"uiAmount\": 6000000,\n      \"uiAmountString\": \"6000000\"\n    },\n    {\n      \"address\": \"FCkLyGp1Dog72J49A3qeDUCyjC7UZHT9v5AFRFgRkrFo\",\n      \"amount\": \"5990958916689\",\n      \"decimals\": 6,\n      \"uiAmount\": 5990958.916689,\n      \"uiAmountString\": \"5990958.916689\"\n    },\n    {\n      \"address\": \"FjNMJQKowZWZcLfZ9HcCYuCi9U7EnxKMcvsC7GmJDUs5\",\n      \"amount\": \"4395988823771\",\n      \"decimals\": 6,\n      \"uiAmount\": 4395988.823771,\n      \"uiAmountString\": \"4395988.823771\"\n    },\n    {\n      \"address\": \"8j66UPFUeQSzBXV1N7iEENryVD8TKPDbQjgZ5Tv8dVQY\",\n      \"amount\": \"2746977830411\",\n      \"decimals\": 6,\n      \"uiAmount\": 2746977.830411,\n      \"uiAmountString\": \"2746977.830411\"\n    },\n    {\n      \"address\": \"F1WZLNgbNYovo83BMsnyg2FyfhzjYkhWS7vXS48VqmGn\",\n      \"amount\": \"2513009000000\",\n      \"decimals\": 6,\n      \"uiAmount\": 2513009,\n      \"uiAmountString\": \"2513009\"\n    },\n    {\n      \"address\": \"28x18gSJRL9mg7QECtJk8h7g3TX9CBGjm4h29VnbviNK\",\n      \"amount\": \"2234863768774\",\n      \"decimals\": 6,\n      \"uiAmount\": 2234863.768774,\n      \"uiAmountString\": \"2234863.768774\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_accounts",
+      "mint": "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+      "observedAt": "2026-11-28T09:50:34.734Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908661\n  },\n  \"value\": [\n    {\n      \"address\": \"2tyHQLiT6EsMQTs5qwkbKnJ3ChWZj3RnijdRtTqpaG1Z\",\n      \"amount\": \"250793167517628\",\n      \"decimals\": 6,\n      \"uiAmount\": 250793167.517628,\n      \"uiAmountString\": \"250793167.517628\"\n    },\n    {\n      \"address\": \"2Li5caDoayD4YRqEJ2uQYS8cBVxoTnJVAN2zEtKEGHYh\",\n      \"amount\": \"100000000000000\",\n      \"decimals\": 6,\n      \"uiAmount\": 100000000,\n      \"uiAmountString\": \"100000000\"\n    },\n    {\n      \"address\": \"5m2Qrd4J1KT16VhLbshooR4D7XkWT9erspy7pHDj2A1k\",\n      \"amount\": \"38505742239485\",\n      \"decimals\": 6,\n      \"uiAmount\": 38505742.239485,\n      \"uiAmountString\": \"38505742.239485\"\n    },\n    {\n      \"address\": \"8dgkswPueKWpzngq4a4RkDxuoFy2ZFzr4GTnhEv1A5Em\",\n      \"amount\": \"21606124018923\",\n      \"decimals\": 6,\n      \"uiAmount\": 21606124.018923,\n      \"uiAmountString\": \"21606124.018923\"\n    },\n    {\n      \"address\": \"G6ni457kMjUCzK13An7GGpCT6XX7WpqZyMu3h95AJg65\",\n      \"amount\": \"18576635133618\",\n      \"decimals\": 6,\n      \"uiAmount\": 18576635.133618,\n      \"uiAmountString\": \"18576635.133618\"\n    },\n    {\n      \"address\": \"5GfW7yu7dzwWfQuczerqZsRG6mrySnphfRVRNmk6U5Ku\",\n      \"amount\": \"12587064560946\",\n      \"decimals\": 6,\n      \"uiAmount\": 12587064.560946,\n      \"uiAmountString\": \"12587064.560946\"\n    },\n    {\n      \"address\": \"4oqHkGNqrneToX6uEhTmFbzzemizhcymwCrFQx72F6BH\",\n      \"amount\": \"12333806772342\",\n      \"decimals\": 6,\n      \"uiAmount\": 12333806.772342,\n      \"uiAmountString\": \"12333806.772342\"\n    },\n    {\n      \"address\": \"DbniNAc87FCPofFcikbjJmF4XVrXBRuRNH7W12X2Vcpx\",\n      \"amount\": \"12041868547375\",\n      \"decimals\": 6,\n      \"uiAmount\": 12041868.547375,\n      \"uiAmountString\": \"12041868.547375\"\n    },\n    {\n      \"address\": \"CofJhmYmyCv3xYqHQrSR3GUcvZ8XqvbL9CN7UrGiDzej\",\n      \"amount\": \"11523805302776\",\n      \"decimals\": 6,\n      \"uiAmount\": 11523805.302776,\n      \"uiAmountString\": \"11523805.302776\"\n    },\n    {\n      \"address\": \"BVxtmBjNuiRWgzdMsxVT4wEvV692NAE6sGWGNVyvTuLx\",\n      \"amount\": \"10840854261971\",\n      \"decimals\": 6,\n      \"uiAmount\": 10840854.261971,\n      \"uiAmountString\": \"10840854.261971\"\n    },\n    {\n      \"address\": \"6n7TR4kJBpe9aYykQvxBShFnJYJSqZn9nx75zop6JSm7\",\n      \"amount\": \"10559632832406\",\n      \"decimals\": 6,\n      \"uiAmount\": 10559632.832406,\n      \"uiAmountString\": \"10559632.832406\"\n    },\n    {\n      \"address\": \"HW75dJogfYpKUkPS1YXG89t9HBNng7ECcwkR66E5UxCx\",\n      \"amount\": \"10025054656727\",\n      \"decimals\": 6,\n      \"uiAmount\": 10025054.656727,\n      \"uiAmountString\": \"10025054.656727\"\n    },\n    {\n      \"address\": \"CNHX7Day3qyxeqCv4S16HfSxJXQZLvvt6FkJXH1en8Es\",\n      \"amount\": \"9538162573231\",\n      \"decimals\": 6,\n      \"uiAmount\": 9538162.573231,\n      \"uiAmountString\": \"9538162.573231\"\n    },\n    {\n      \"address\": \"HxZtMS6ToHEgtV6fDziEWcRn6ViY1RcZJhM4BdmR7cFx\",\n      \"amount\": \"9342969047811\",\n      \"decimals\": 6,\n      \"uiAmount\": 9342969.047811,\n      \"uiAmountString\": \"9342969.047811\"\n    },\n    {\n      \"address\": \"9fPXtzqsPrGy934PfiiZYsGuV5GQkCSH5MNFs7MMkBZR\",\n      \"amount\": \"9164437593264\",\n      \"decimals\": 6,\n      \"uiAmount\": 9164437.593264,\n      \"uiAmountString\": \"9164437.593264\"\n    },\n    {\n      \"address\": \"HFxVDDYiWppMuUVMg4Q7Sbfdk6wzXgib8PvCxcYuFDA1\",\n      \"amount\": \"9156450556083\",\n      \"decimals\": 6,\n      \"uiAmount\": 9156450.556083,\n      \"uiAmountString\": \"9156450.556083\"\n    },\n    {\n      \"address\": \"4NarxiBYDPF3ja1bwWW3FCTB8mgxipHK9boaNtiaKnnX\",\n      \"amount\": \"8603026926759\",\n      \"decimals\": 6,\n      \"uiAmount\": 8603026.926759,\n      \"uiAmountString\": \"8603026.926759\"\n    },\n    {\n      \"address\": \"7WHBmfrxMS5ut6uemp8LpDZqe6uDd9u7nAj27VFQC4sa\",\n      \"amount\": \"8301447051966\",\n      \"decimals\": 6,\n      \"uiAmount\": 8301447.051966,\n      \"uiAmountString\": \"8301447.051966\"\n    },\n    {\n      \"address\": \"6gV6E75BPgKG8sSUe6QorfwLmBYFfKk4ZYgkuNh8fxgw\",\n      \"amount\": \"8043229942735\",\n      \"decimals\": 6,\n      \"uiAmount\": 8043229.942735,\n      \"uiAmountString\": \"8043229.942735\"\n    },\n    {\n      \"address\": \"GxHs7e3bL5miFh5rt64U7nurmYsEMTsqZVdAWXGdu3iC\",\n      \"amount\": \"7903073705837\",\n      \"decimals\": 6,\n      \"uiAmount\": 7903073.705837,\n      \"uiAmountString\": \"7903073.705837\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_accounts",
+      "mint": "FgGYazS7QTmuQYK8M4k2EC1xfsD62aJweKHvcYPBpump",
+      "observedAt": "2026-11-28T09:50:35.858Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908667\n  },\n  \"value\": [\n    {\n      \"address\": \"7jQRPvU6tsLaKGcrD9dsv7ddKRR94iPBF6s28KcYMg4A\",\n      \"amount\": \"785269421018084\",\n      \"decimals\": 6,\n      \"uiAmount\": 785269421.018084,\n      \"uiAmountString\": \"785269421.018084\"\n    },\n    {\n      \"address\": \"9Mfc37PnWeyqWTvSPUC422Vs4jpnhxxKA11CuXKj9VGA\",\n      \"amount\": \"149999999977318\",\n      \"decimals\": 6,\n      \"uiAmount\": 149999999.977318,\n      \"uiAmountString\": \"149999999.977318\"\n    },\n    {\n      \"address\": \"CFjvvDEBcLxLFnxryPXQmJtBcuB1Sp81gNS1w58k3cFv\",\n      \"amount\": \"32803888666822\",\n      \"decimals\": 6,\n      \"uiAmount\": 32803888.666822,\n      \"uiAmountString\": \"32803888.666822\"\n    },\n    {\n      \"address\": \"x2cohEeUcPHMqDu6fPxBasBStC64g2V57cHmEH85wZp\",\n      \"amount\": \"8347939086228\",\n      \"decimals\": 6,\n      \"uiAmount\": 8347939.086228,\n      \"uiAmountString\": \"8347939.086228\"\n    },\n    {\n      \"address\": \"HbwC95wbLqp7rX89ohEYHjh6ZaNbF79h53rahCyBRaBY\",\n      \"amount\": \"7354842608587\",\n      \"decimals\": 6,\n      \"uiAmount\": 7354842.608587,\n      \"uiAmountString\": \"7354842.608587\"\n    },\n    {\n      \"address\": \"8uaKKXxiihFhQKmmPB5NfDcYv9s3vADJmjAKzvUC7hAZ\",\n      \"amount\": \"6480065894959\",\n      \"decimals\": 6,\n      \"uiAmount\": 6480065.894959,\n      \"uiAmountString\": \"6480065.894959\"\n    },\n    {\n      \"address\": \"7ZJxLAa1jyEY93pSvdZz9TyyW4UPrn2M44wk13vJ28v3\",\n      \"amount\": \"2179697009045\",\n      \"decimals\": 6,\n      \"uiAmount\": 2179697.009045,\n      \"uiAmountString\": \"2179697.009045\"\n    },\n    {\n      \"address\": \"138DeMqBnYtv3mvyA34mfX884JqxLGWUVRKX9Pn2dKbz\",\n      \"amount\": \"1788836725865\",\n      \"decimals\": 6,\n      \"uiAmount\": 1788836.725865,\n      \"uiAmountString\": \"1788836.725865\"\n    },\n    {\n      \"address\": \"Fs2y45YmJhSE922ekdtR4vQuKy4u2FVm3yF46EXEmFuC\",\n      \"amount\": \"1695648788660\",\n      \"decimals\": 6,\n      \"uiAmount\": 1695648.78866,\n      \"uiAmountString\": \"1695648.78866\"\n    },\n    {\n      \"address\": \"Hm4CBh5tMNMXwRw6d56tXCShYMLAEsiwyPYUwXwxU7t\",\n      \"amount\": \"1204387449279\",\n      \"decimals\": 6,\n      \"uiAmount\": 1204387.449279,\n      \"uiAmountString\": \"1204387.449279\"\n    },\n    {\n      \"address\": \"DA3SUWazvoSny5K1krbYgWeo5Nrv2QBSinJYbqTChhGZ\",\n      \"amount\": \"981593310321\",\n      \"decimals\": 6,\n      \"uiAmount\": 981593.310321,\n      \"uiAmountString\": \"981593.310321\"\n    },\n    {\n      \"address\": \"F2MLab2d8n3csTfEQZvj9fPp6p4pUTnHBjCEC35yVtYz\",\n      \"amount\": \"480233573949\",\n      \"decimals\": 6,\n      \"uiAmount\": 480233.573949,\n      \"uiAmountString\": \"480233.573949\"\n    },\n    {\n      \"address\": \"Du1qE6mgmMaVtUsE71ySExrnLGbat9ek9TGrJTbH2ozv\",\n      \"amount\": \"415452551915\",\n      \"decimals\": 6,\n      \"uiAmount\": 415452.551915,\n      \"uiAmountString\": \"415452.551915\"\n    },\n    {\n      \"address\": \"ALXaoFt1VtvtMy7TgGuPzkjEhGg8ErA84EGhkvTSaHaB\",\n      \"amount\": \"349205841785\",\n      \"decimals\": 6,\n      \"uiAmount\": 349205.841785,\n      \"uiAmountString\": \"349205.841785\"\n    },\n    {\n      \"address\": \"GJyxLJWo91Ns3h3LSrnAoxvdwbRxa9yoiXwcizMAyNvt\",\n      \"amount\": \"101763907838\",\n      \"decimals\": 6,\n      \"uiAmount\": 101763.907838,\n      \"uiAmountString\": \"101763.907838\"\n    },\n    {\n      \"address\": \"52RsqL7cN9fR6Ee5DB1oBqUbBY3osa7u47KrhN19awbT\",\n      \"amount\": \"90360198421\",\n      \"decimals\": 6,\n      \"uiAmount\": 90360.198421,\n      \"uiAmountString\": \"90360.198421\"\n    },\n    {\n      \"address\": \"8uuFDRk5tE4VuHZ9S4CsXhN4NCr3n43J8eYz18RP7A23\",\n      \"amount\": \"69735174279\",\n      \"decimals\": 6,\n      \"uiAmount\": 69735.174279,\n      \"uiAmountString\": \"69735.174279\"\n    },\n    {\n      \"address\": \"GNBXw5JPqhQMzRtLgqvM2yhigJ71GwoTbEaB8y3XdqGR\",\n      \"amount\": \"65074786400\",\n      \"decimals\": 6,\n      \"uiAmount\": 65074.7864,\n      \"uiAmountString\": \"65074.7864\"\n    },\n    {\n      \"address\": \"ELTzaFgYt5n1nRe6Phgqi73vXRNsWZbwhL5cwXQ31NuL\",\n      \"amount\": \"40702968112\",\n      \"decimals\": 6,\n      \"uiAmount\": 40702.968112,\n      \"uiAmountString\": \"40702.968112\"\n    },\n    {\n      \"address\": \"H9nXRdyyu7yJcgfwREdCPeBE4dTZkypGfD3UKvbu81YH\",\n      \"amount\": \"35442291196\",\n      \"decimals\": 6,\n      \"uiAmount\": 35442.291196,\n      \"uiAmountString\": \"35442.291196\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_accounts",
+      "mint": "GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg",
+      "observedAt": "2026-11-28T09:50:36.940Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908673\n  },\n  \"value\": [\n    {\n      \"address\": \"7Y5pHXoaBuPdMTgk3jjgrSrscvsCJtykgmZBu8tiRiZ9\",\n      \"amount\": \"567453470373459\",\n      \"decimals\": 6,\n      \"uiAmount\": 567453470.373459,\n      \"uiAmountString\": \"567453470.373459\"\n    },\n    {\n      \"address\": \"BggWrxPWBxhgyrma7ByhUy8oH18fZJ2KRG5VgdngcQ2w\",\n      \"amount\": \"36128229208510\",\n      \"decimals\": 6,\n      \"uiAmount\": 36128229.20851,\n      \"uiAmountString\": \"36128229.20851\"\n    },\n    {\n      \"address\": \"7AK24RdVK63FqWCkw5pMepzQXHH9TwSSkfnPHbpyXGKs\",\n      \"amount\": \"29262406808677\",\n      \"decimals\": 6,\n      \"uiAmount\": 29262406.808677,\n      \"uiAmountString\": \"29262406.808677\"\n    },\n    {\n      \"address\": \"3yqaxVyF91RHNCqcJMKRhuxDgKLWTGLm5U5fuEbnpqqP\",\n      \"amount\": \"28376332888382\",\n      \"decimals\": 6,\n      \"uiAmount\": 28376332.888382,\n      \"uiAmountString\": \"28376332.888382\"\n    },\n    {\n      \"address\": \"5nsTBPnWAAxrC38xeZ8cPEUBmwZDWUUVPwX9J5TM1LQn\",\n      \"amount\": \"24550651108011\",\n      \"decimals\": 6,\n      \"uiAmount\": 24550651.108011,\n      \"uiAmountString\": \"24550651.108011\"\n    },\n    {\n      \"address\": \"3NokEbboLB6eBWA2Vk1PbMovkSef4FvhbH5GfwqQvoi1\",\n      \"amount\": \"19874139850048\",\n      \"decimals\": 6,\n      \"uiAmount\": 19874139.850048,\n      \"uiAmountString\": \"19874139.850048\"\n    },\n    {\n      \"address\": \"F5E4DSCUzuDXvpeQ962pex6m5SMbR9c91UiV8vgDaR5P\",\n      \"amount\": \"19542092307536\",\n      \"decimals\": 6,\n      \"uiAmount\": 19542092.307536,\n      \"uiAmountString\": \"19542092.307536\"\n    },\n    {\n      \"address\": \"8jeFzkzPpJpvA3wBp5gBFoicB76r43DodCXZoiRDxpqt\",\n      \"amount\": \"18604035198872\",\n      \"decimals\": 6,\n      \"uiAmount\": 18604035.198872,\n      \"uiAmountString\": \"18604035.198872\"\n    },\n    {\n      \"address\": \"8e5bGXoH8ivuiNkawbZJVK85YogKvK8bm4g4Du9s1Seh\",\n      \"amount\": \"18257762766559\",\n      \"decimals\": 6,\n      \"uiAmount\": 18257762.766559,\n      \"uiAmountString\": \"18257762.766559\"\n    },\n    {\n      \"address\": \"J2dqDfv3xwE4tJZ3jjwhdrL925jSuVPy7Yijt6Lx9iof\",\n      \"amount\": \"13777158626130\",\n      \"decimals\": 6,\n      \"uiAmount\": 13777158.62613,\n      \"uiAmountString\": \"13777158.62613\"\n    },\n    {\n      \"address\": \"6o53617ME3yLQuSwe4BGXmndYJd5hDUNriQXqCsJoYuL\",\n      \"amount\": \"13597358858887\",\n      \"decimals\": 6,\n      \"uiAmount\": 13597358.858887,\n      \"uiAmountString\": \"13597358.858887\"\n    },\n    {\n      \"address\": \"4tZhcCnVv7TJqVXfdKsJUkWmzyLWv8CmH8kZMgLAq1mC\",\n      \"amount\": \"13113594295465\",\n      \"decimals\": 6,\n      \"uiAmount\": 13113594.295465,\n      \"uiAmountString\": \"13113594.295465\"\n    },\n    {\n      \"address\": \"LB2YNaAst4u4dt1AsgtZmBJvckA8o8NLsTAieUvApHW\",\n      \"amount\": \"9682190043521\",\n      \"decimals\": 6,\n      \"uiAmount\": 9682190.043521,\n      \"uiAmountString\": \"9682190.043521\"\n    },\n    {\n      \"address\": \"6PyTNegmK8qY5wBQDhDpp5UwYH25XVFXpVbikhBCSre\",\n      \"amount\": \"8903213316783\",\n      \"decimals\": 6,\n      \"uiAmount\": 8903213.316783,\n      \"uiAmountString\": \"8903213.316783\"\n    },\n    {\n      \"address\": \"8nMfufmeydvegMUX7GoqPab5NQ4DuiLHZ9bKXGUfvk1T\",\n      \"amount\": \"8519928117809\",\n      \"decimals\": 6,\n      \"uiAmount\": 8519928.117809,\n      \"uiAmountString\": \"8519928.117809\"\n    },\n    {\n      \"address\": \"7iStMcPv1yLPSReu1mhXJyMmUihKtEfuBQUgBmBVuAiL\",\n      \"amount\": \"8113582662753\",\n      \"decimals\": 6,\n      \"uiAmount\": 8113582.662753,\n      \"uiAmountString\": \"8113582.662753\"\n    },\n    {\n      \"address\": \"EWT2Jpxo6nPhZeSafuMsZd4b89fYZssJD7kshcjgCLtj\",\n      \"amount\": \"7967345123190\",\n      \"decimals\": 6,\n      \"uiAmount\": 7967345.12319,\n      \"uiAmountString\": \"7967345.12319\"\n    },\n    {\n      \"address\": \"Ab9tqYzwYcc9R9JAyeHv6uoYvP9n3fHRSFv2hJK1bYA2\",\n      \"amount\": \"7564802199335\",\n      \"decimals\": 6,\n      \"uiAmount\": 7564802.199335,\n      \"uiAmountString\": \"7564802.199335\"\n    },\n    {\n      \"address\": \"Hn4iAeKzetGLSwvhfNVbxd18i3c98eAqNSjqpbjzY8yx\",\n      \"amount\": \"7550220374521\",\n      \"decimals\": 6,\n      \"uiAmount\": 7550220.374521,\n      \"uiAmountString\": \"7550220.374521\"\n    },\n    {\n      \"address\": \"E2TxdThizhkY6qtNvxtwTMrjTB6cnCLgMHxoqLpc29sc\",\n      \"amount\": \"7405187639603\",\n      \"decimals\": 6,\n      \"uiAmount\": 7405187.639603,\n      \"uiAmountString\": \"7405187.639603\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_accounts",
+      "mint": "EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump",
+      "observedAt": "2026-11-28T09:50:38.082Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908678\n  },\n  \"value\": [\n    {\n      \"address\": \"FHKUnucmgEoUD9iugmnErZXV7FQwbmw85wnMzdPXbPww\",\n      \"amount\": \"150000000000000\",\n      \"decimals\": 6,\n      \"uiAmount\": 150000000,\n      \"uiAmountString\": \"150000000\"\n    },\n    {\n      \"address\": \"JAThnKVQBVeJk43uHjae5GJeKorGCbf4HTBKDDwGEr2E\",\n      \"amount\": \"134475266675705\",\n      \"decimals\": 6,\n      \"uiAmount\": 134475266.675705,\n      \"uiAmountString\": \"134475266.675705\"\n    },\n    {\n      \"address\": \"FQ2vtVPJmLuipsM2twQ5BM6szu4baK93FsTUQbnHRASm\",\n      \"amount\": \"29401923369452\",\n      \"decimals\": 6,\n      \"uiAmount\": 29401923.369452,\n      \"uiAmountString\": \"29401923.369452\"\n    },\n    {\n      \"address\": \"7RTMKZxXVeCZz8JcHEXHJ36kB7wgdQbDCMzhu2kmR6QH\",\n      \"amount\": \"24512462936025\",\n      \"decimals\": 6,\n      \"uiAmount\": 24512462.936025,\n      \"uiAmountString\": \"24512462.936025\"\n    },\n    {\n      \"address\": \"ApjCwLicew1GKzDdKhdgr7TwZSRUQ6P3172Qrd2oc8uV\",\n      \"amount\": \"21259301899735\",\n      \"decimals\": 6,\n      \"uiAmount\": 21259301.899735,\n      \"uiAmountString\": \"21259301.899735\"\n    },\n    {\n      \"address\": \"4oTGoEWd4XhNvS7myz5EHut8XfrJQ7ZJZsZhKbMB63Be\",\n      \"amount\": \"19181404771576\",\n      \"decimals\": 6,\n      \"uiAmount\": 19181404.771576,\n      \"uiAmountString\": \"19181404.771576\"\n    },\n    {\n      \"address\": \"75oeRLiK7PF8EmjaXMnUvRgrpynKSULEZU7qvueQkgRa\",\n      \"amount\": \"18637225481020\",\n      \"decimals\": 6,\n      \"uiAmount\": 18637225.48102,\n      \"uiAmountString\": \"18637225.48102\"\n    },\n    {\n      \"address\": \"7UJ1kujckQXTCUny3LJwJzoKiMe9j4sd6Jon9qD6fD46\",\n      \"amount\": \"17613738916346\",\n      \"decimals\": 6,\n      \"uiAmount\": 17613738.916346,\n      \"uiAmountString\": \"17613738.916346\"\n    },\n    {\n      \"address\": \"ETH39yQMh4RJ8YYmUywc6hRV2XtBEWy1a9Mi8oU8CFhn\",\n      \"amount\": \"15437632516500\",\n      \"decimals\": 6,\n      \"uiAmount\": 15437632.5165,\n      \"uiAmountString\": \"15437632.5165\"\n    },\n    {\n      \"address\": \"Bbg4y1JTatecrjr3GxUuCLMfYVFa1nDzjzG3K9sS5YeC\",\n      \"amount\": \"15397230174807\",\n      \"decimals\": 6,\n      \"uiAmount\": 15397230.174807,\n      \"uiAmountString\": \"15397230.174807\"\n    },\n    {\n      \"address\": \"C1Eqjmy85aMdBAj4spzXkEqLy6FWqWdUjakZK2UkaCpZ\",\n      \"amount\": \"15206386891091\",\n      \"decimals\": 6,\n      \"uiAmount\": 15206386.891091,\n      \"uiAmountString\": \"15206386.891091\"\n    },\n    {\n      \"address\": \"GoiVP4fSeLX7hRLbi9VYTpu1FwUWtzfnqckhWApAaRsV\",\n      \"amount\": \"14760147318098\",\n      \"decimals\": 6,\n      \"uiAmount\": 14760147.318098,\n      \"uiAmountString\": \"14760147.318098\"\n    },\n    {\n      \"address\": \"GiX3hV8Qo8yfUBVX3XD7YrgKaUsxizFqWvd4K5GGfRtA\",\n      \"amount\": \"13252199624189\",\n      \"decimals\": 6,\n      \"uiAmount\": 13252199.624189,\n      \"uiAmountString\": \"13252199.624189\"\n    },\n    {\n      \"address\": \"5Rpcm223VGJSYMLaWWxrTHm4Suotp6svnkDKWBBaQKJF\",\n      \"amount\": \"12575343404973\",\n      \"decimals\": 6,\n      \"uiAmount\": 12575343.404973,\n      \"uiAmountString\": \"12575343.404973\"\n    },\n    {\n      \"address\": \"H4TyU88j5auQ5tL9MNEnibbmzXKs1vEwtYQnyqeTrDrf\",\n      \"amount\": \"12285671310019\",\n      \"decimals\": 6,\n      \"uiAmount\": 12285671.310019,\n      \"uiAmountString\": \"12285671.310019\"\n    },\n    {\n      \"address\": \"F4MfqAV5SCbFM8unvdc33FTNSAJoyCdS4sVZQTQhey37\",\n      \"amount\": \"12280376157694\",\n      \"decimals\": 6,\n      \"uiAmount\": 12280376.157694,\n      \"uiAmountString\": \"12280376.157694\"\n    },\n    {\n      \"address\": \"CMVNmm5mT5CcTr8n3LTMJCbrYapmp9zRk3zGxWBoTNbw\",\n      \"amount\": \"12057649046500\",\n      \"decimals\": 6,\n      \"uiAmount\": 12057649.0465,\n      \"uiAmountString\": \"12057649.0465\"\n    },\n    {\n      \"address\": \"HBLNGeWsVe4fRBbrkevJALoNVEc6JRGegPs69MEwDdbg\",\n      \"amount\": \"11940252949920\",\n      \"decimals\": 6,\n      \"uiAmount\": 11940252.94992,\n      \"uiAmountString\": \"11940252.94992\"\n    },\n    {\n      \"address\": \"E3Hx4N4i2zbDdU2u5ByvGJCKUnNJabp5mPLA9GEY7d3G\",\n      \"amount\": \"11861851816631\",\n      \"decimals\": 6,\n      \"uiAmount\": 11861851.816631,\n      \"uiAmountString\": \"11861851.816631\"\n    },\n    {\n      \"address\": \"7emaTSqYgZUL6hHXSfqNCzzqG45TGrceeo9Ur2Nj2Hw7\",\n      \"amount\": \"11290000000000\",\n      \"decimals\": 6,\n      \"uiAmount\": 11290000,\n      \"uiAmountString\": \"11290000\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_accounts",
+      "mint": "A7xhY12G388pXGsBuweS6NkyZyv53ogH1dNfEkCMpump",
+      "observedAt": "2026-11-28T09:50:38.940Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908683\n  },\n  \"value\": [\n    {\n      \"address\": \"GuZ7H93WoV1z4kZhSu5p34T8ankgvgBg2uTWnXgp6DAC\",\n      \"amount\": \"808477396837895\",\n      \"decimals\": 6,\n      \"uiAmount\": 808477396.837895,\n      \"uiAmountString\": \"808477396.837895\"\n    },\n    {\n      \"address\": \"7JU9WctLKgzcsQkq4SgArcWwGfANyvnTsUU3yCDgUqaJ\",\n      \"amount\": \"35578865015455\",\n      \"decimals\": 6,\n      \"uiAmount\": 35578865.015455,\n      \"uiAmountString\": \"35578865.015455\"\n    },\n    {\n      \"address\": \"C6HMdCpUY1UpHzRywkA1cNhEUoZEUCfVox82cJxgYzpn\",\n      \"amount\": \"35246347096220\",\n      \"decimals\": 6,\n      \"uiAmount\": 35246347.09622,\n      \"uiAmountString\": \"35246347.09622\"\n    },\n    {\n      \"address\": \"HBanZf47B2X7289yXKWhaj4sugrwW6mLqzQamduJaNbV\",\n      \"amount\": \"33826820533570\",\n      \"decimals\": 6,\n      \"uiAmount\": 33826820.53357,\n      \"uiAmountString\": \"33826820.53357\"\n    },\n    {\n      \"address\": \"8G6sJAESzRpjTVSiHDX1Fx7e6xgBEEg7VXjoi1wankUP\",\n      \"amount\": \"33214818735672\",\n      \"decimals\": 6,\n      \"uiAmount\": 33214818.735672,\n      \"uiAmountString\": \"33214818.735672\"\n    },\n    {\n      \"address\": \"7WkvFRVstNVhw1wYXZnKYL8n7QudDHtw5wBdVkCVi4w5\",\n      \"amount\": \"18285143996611\",\n      \"decimals\": 6,\n      \"uiAmount\": 18285143.996611,\n      \"uiAmountString\": \"18285143.996611\"\n    },\n    {\n      \"address\": \"9xd6L3Duec63wL2FhXd4Ja1VNEba3oyhPueYqwKhMTL8\",\n      \"amount\": \"6131754145103\",\n      \"decimals\": 6,\n      \"uiAmount\": 6131754.145103,\n      \"uiAmountString\": \"6131754.145103\"\n    },\n    {\n      \"address\": \"2zF8SqShfJvdQSVUgKfQ7ZRs2dVZdcLh3P3h9vLYTUdY\",\n      \"amount\": \"3744424392420\",\n      \"decimals\": 6,\n      \"uiAmount\": 3744424.39242,\n      \"uiAmountString\": \"3744424.39242\"\n    },\n    {\n      \"address\": \"6vHb6fRVAgjGzuXLWjLSs6X3WRUHehdCnF9V8jxLkFMk\",\n      \"amount\": \"3376660594880\",\n      \"decimals\": 6,\n      \"uiAmount\": 3376660.59488,\n      \"uiAmountString\": \"3376660.59488\"\n    },\n    {\n      \"address\": \"4daRN4KRiEPiARnvkkTtufzejNHMt815rZHVCoAYJXYU\",\n      \"amount\": \"3091409310267\",\n      \"decimals\": 6,\n      \"uiAmount\": 3091409.310267,\n      \"uiAmountString\": \"3091409.310267\"\n    },\n    {\n      \"address\": \"Fdeyai1zermUP9krgWBfrbLD4S64RUdc6MKc3b4kucAL\",\n      \"amount\": \"2344024784583\",\n      \"decimals\": 6,\n      \"uiAmount\": 2344024.784583,\n      \"uiAmountString\": \"2344024.784583\"\n    },\n    {\n      \"address\": \"6ELszsBVSFV7EjiHonGipMpnKqXoPzxrNHBwDJ8WLU6J\",\n      \"amount\": \"2073072253450\",\n      \"decimals\": 6,\n      \"uiAmount\": 2073072.25345,\n      \"uiAmountString\": \"2073072.25345\"\n    },\n    {\n      \"address\": \"EksCE6EREqNjg492ZXD92L1BF6UeJau16gSkjZ9UZoBe\",\n      \"amount\": \"1879066238140\",\n      \"decimals\": 6,\n      \"uiAmount\": 1879066.23814,\n      \"uiAmountString\": \"1879066.23814\"\n    },\n    {\n      \"address\": \"Aua6KeeQksEJXVcLRb4g3w3hWB3VG2GbTfBgcN6Yd6by\",\n      \"amount\": \"1738941802908\",\n      \"decimals\": 6,\n      \"uiAmount\": 1738941.802908,\n      \"uiAmountString\": \"1738941.802908\"\n    },\n    {\n      \"address\": \"EPuuE5y4J2HnGZzm423QVMS4C6eSXhi8Vz5cS3j3eaZN\",\n      \"amount\": \"1512495207714\",\n      \"decimals\": 6,\n      \"uiAmount\": 1512495.207714,\n      \"uiAmountString\": \"1512495.207714\"\n    },\n    {\n      \"address\": \"HE8zmHSZMobjcrbhZxD2AqXJgssSDH4EwKYRtAQNpt9N\",\n      \"amount\": \"1019744280642\",\n      \"decimals\": 6,\n      \"uiAmount\": 1019744.280642,\n      \"uiAmountString\": \"1019744.280642\"\n    },\n    {\n      \"address\": \"2DJr2auA4qbapaZE62xPRn4gyDbgzPmiofTdMHgvKWfU\",\n      \"amount\": \"969234316414\",\n      \"decimals\": 6,\n      \"uiAmount\": 969234.316414,\n      \"uiAmountString\": \"969234.316414\"\n    },\n    {\n      \"address\": \"9g4PfZX8ve8tdtDcyTaounvYVaVA88hnGLsENVn4keDi\",\n      \"amount\": \"935643720736\",\n      \"decimals\": 6,\n      \"uiAmount\": 935643.720736,\n      \"uiAmountString\": \"935643.720736\"\n    },\n    {\n      \"address\": \"ExFLDAAggR2814LKvCeCsiTgaP32xLmZT9Ez6wbNpRBb\",\n      \"amount\": \"743331412618\",\n      \"decimals\": 6,\n      \"uiAmount\": 743331.412618,\n      \"uiAmountString\": \"743331.412618\"\n    },\n    {\n      \"address\": \"G38U9QFZ4LGmy759cRvPmQ4ovGSX6jqHVk8qkppRFSnB\",\n      \"amount\": \"735659433997\",\n      \"decimals\": 6,\n      \"uiAmount\": 735659.433997,\n      \"uiAmountString\": \"735659.433997\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_accounts",
+      "mint": "Ab4YRbH4bPwsi4EykXZL2nzo4SiZXtgpPDdDVcPLpump",
+      "observedAt": "2026-11-28T09:50:39.780Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908687\n  },\n  \"value\": [\n    {\n      \"address\": \"8DkuoAZvLysDUsgzUYbBGhqyFqg4NR5Go5XkC9z2aKvk\",\n      \"amount\": \"937190415115220\",\n      \"decimals\": 6,\n      \"uiAmount\": 937190415.11522,\n      \"uiAmountString\": \"937190415.11522\"\n    },\n    {\n      \"address\": \"9RmdbsAh1VRvY9Uga6m2qJCt9hCzhq3MfHXa1dcF1dEK\",\n      \"amount\": \"62177188268735\",\n      \"decimals\": 6,\n      \"uiAmount\": 62177188.268735,\n      \"uiAmountString\": \"62177188.268735\"\n    },\n    {\n      \"address\": \"8qffTVgWvfJhCgkqJSLh9hoEospsHtmng9tzGzTik91u\",\n      \"amount\": \"632396616045\",\n      \"decimals\": 6,\n      \"uiAmount\": 632396.616045,\n      \"uiAmountString\": \"632396.616045\"\n    },\n    {\n      \"address\": \"JBV4xBvC65gRrEWBEQo8Q7gKDWNQFkVf2TZCq5hpJdxx\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"ChzPi4Ae4nWY3G3qfZo3bh8e1aV5wXjXmuo7udEWrH9p\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"BTymTnyEmpNzPQbW5kz2GFpvciBsfZzKbvPVNtGUrkYA\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"BTWgtTW8wUnQ1Yey56XXKhEc3isUutvpbD7p8JBVcQ3K\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"AksBSsaaCsCUZodUT9Hi1H23hoP6jLkWCtMpscF1FUCb\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"Aciu24XVN48yoWB1t8eM1McbJjeA6AFUPYS5Xm6cqEDW\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"AGZcvmRZX7C4xzgNkxHEKd7Rvedz3Da5m6hKgYhgrXqh\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"AE6ZWHNjKBuJDTdXppH4EDu6qDy39BysRaz3y1XyGPe8\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"AAUAT5HAwJErCTuYjAuXQG8pa5iKeS1ij5jCFfuub4ok\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"8dQpoxmEaVkuLFX5fCHDJh3CvtkWMSSdViRSxqUhWxCk\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"531y3xyDmQqXGs6chENaFmsguyoW6V6NoJqN8VoYoroQ\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"3uYLWqMsHfoLon8eB4Ph3rK8rVVhbdSCtcRCmi1wz5s9\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"2ga21tQSokjT15sVUsWgxfHtCXBKbLqzxM3HpwyiXQ7j\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    },\n    {\n      \"address\": \"2TXYvAwix2fa2npi4SjS2Zi5ZWwA4ttVBtmUBEa2Nr7D\",\n      \"amount\": \"0\",\n      \"decimals\": 6,\n      \"uiAmount\": 0,\n      \"uiAmountString\": \"0\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_accounts",
+      "mint": "8i2ssMZBaS3HShu5hoDEV4tVLf5RGXeNJnK3LNTHTH9e",
+      "observedAt": "2026-11-28T09:50:40.629Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908691\n  },\n  \"value\": [\n    {\n      \"address\": \"C2ZZZicfQjbUjMEjBJwBAuMoamMrs6oaBUcx7tAYrZxA\",\n      \"amount\": \"212310766317627\",\n      \"decimals\": 6,\n      \"uiAmount\": 212310766.317627,\n      \"uiAmountString\": \"212310766.317627\"\n    },\n    {\n      \"address\": \"FQ2UxyVmY3UjZQP7vYMB87qtKkP279VaDa1J88XysZXx\",\n      \"amount\": \"30384957615004\",\n      \"decimals\": 6,\n      \"uiAmount\": 30384957.615004,\n      \"uiAmountString\": \"30384957.615004\"\n    },\n    {\n      \"address\": \"G7qZBbT8dYvEEc3KAssRThy2zfWvL5sRg1ysYvWU3BXU\",\n      \"amount\": \"30206144899469\",\n      \"decimals\": 6,\n      \"uiAmount\": 30206144.899469,\n      \"uiAmountString\": \"30206144.899469\"\n    },\n    {\n      \"address\": \"5UnZAFqhXEQfzbsPk8qr78wcDNSWrSB5okw8D55srTC1\",\n      \"amount\": \"27948994302907\",\n      \"decimals\": 6,\n      \"uiAmount\": 27948994.302907,\n      \"uiAmountString\": \"27948994.302907\"\n    },\n    {\n      \"address\": \"78oNLGSWF34niZEeV66dwr8A19NCH8cGPbr1ovmg4yjL\",\n      \"amount\": \"23742530297526\",\n      \"decimals\": 6,\n      \"uiAmount\": 23742530.297526,\n      \"uiAmountString\": \"23742530.297526\"\n    },\n    {\n      \"address\": \"GZRuDouyMLeS85CrrYf7W7ZHifDJJcQCag75gSSj5aiJ\",\n      \"amount\": \"23595828292494\",\n      \"decimals\": 6,\n      \"uiAmount\": 23595828.292494,\n      \"uiAmountString\": \"23595828.292494\"\n    },\n    {\n      \"address\": \"EUuNSk6eWTpcg6SCejKku4NCge2r3KBeAmDCHVwZgi74\",\n      \"amount\": \"23261954257481\",\n      \"decimals\": 6,\n      \"uiAmount\": 23261954.257481,\n      \"uiAmountString\": \"23261954.257481\"\n    },\n    {\n      \"address\": \"8RRGbcu8tiv3iruWGsA6HrLk6Ngb3rZMS22MYoAGLjpo\",\n      \"amount\": \"21877499162004\",\n      \"decimals\": 6,\n      \"uiAmount\": 21877499.162004,\n      \"uiAmountString\": \"21877499.162004\"\n    },\n    {\n      \"address\": \"6MmERfsXH5AjQWMWsdJybBaJ8tNSNTUFhFoeq8gGvWtp\",\n      \"amount\": \"19490309523760\",\n      \"decimals\": 6,\n      \"uiAmount\": 19490309.52376,\n      \"uiAmountString\": \"19490309.52376\"\n    },\n    {\n      \"address\": \"95vbDP55FFmGCDsPjLZyZ4aDPmRemGndz7M8GZufdjQr\",\n      \"amount\": \"18963389663718\",\n      \"decimals\": 6,\n      \"uiAmount\": 18963389.663718,\n      \"uiAmountString\": \"18963389.663718\"\n    },\n    {\n      \"address\": \"B9snxvKuA74fTryksH3PPbfsxJ71zcguzpW1cVZS9tHD\",\n      \"amount\": \"17520162131786\",\n      \"decimals\": 6,\n      \"uiAmount\": 17520162.131786,\n      \"uiAmountString\": \"17520162.131786\"\n    },\n    {\n      \"address\": \"5gVWWwqbEvqUdvLMBTCTzyJ7jZWPbRuVvgyuRJqgudnM\",\n      \"amount\": \"16185457846203\",\n      \"decimals\": 6,\n      \"uiAmount\": 16185457.846203,\n      \"uiAmountString\": \"16185457.846203\"\n    },\n    {\n      \"address\": \"BwBhZxcvxscNphJHiWVTYAbcXf5B3Vr8AZPmEFUW5MPw\",\n      \"amount\": \"14153007776594\",\n      \"decimals\": 6,\n      \"uiAmount\": 14153007.776594,\n      \"uiAmountString\": \"14153007.776594\"\n    },\n    {\n      \"address\": \"DDowNcZecyHuoHJnaicZULPDg7PZn13fsVC5HQZZ7SbR\",\n      \"amount\": \"12209906482436\",\n      \"decimals\": 6,\n      \"uiAmount\": 12209906.482436,\n      \"uiAmountString\": \"12209906.482436\"\n    },\n    {\n      \"address\": \"FxrwggLEpqrsBSo2irC6L4TeRUJHEqLmcdzNg3xgJcbc\",\n      \"amount\": \"11995173422228\",\n      \"decimals\": 6,\n      \"uiAmount\": 11995173.422228,\n      \"uiAmountString\": \"11995173.422228\"\n    },\n    {\n      \"address\": \"E2FJAKjeq3VMePPPYf7wxKfrxwGEuLvydJWyUX5EYFzt\",\n      \"amount\": \"10360870673156\",\n      \"decimals\": 6,\n      \"uiAmount\": 10360870.673156,\n      \"uiAmountString\": \"10360870.673156\"\n    },\n    {\n      \"address\": \"9KbSznuFTCcoFViPmV2SHQDb7N3xwyTfmgBMm1xg2noJ\",\n      \"amount\": \"9503113580813\",\n      \"decimals\": 6,\n      \"uiAmount\": 9503113.580813,\n      \"uiAmountString\": \"9503113.580813\"\n    },\n    {\n      \"address\": \"DQHGMTDkvb1nH7wAhmX25aNu9iziYKQumkBcAm3SS2x9\",\n      \"amount\": \"8927735440224\",\n      \"decimals\": 6,\n      \"uiAmount\": 8927735.440224,\n      \"uiAmountString\": \"8927735.440224\"\n    },\n    {\n      \"address\": \"J7AgtYdy26NjecBST3yCD15tJf1bey3PKLpb8Gcx1VHQ\",\n      \"amount\": \"8840664065505\",\n      \"decimals\": 6,\n      \"uiAmount\": 8840664.065505,\n      \"uiAmountString\": \"8840664.065505\"\n    },\n    {\n      \"address\": \"J5e3KhYSZfS7TXmKKzd2n6zHRsFCyUcqtGRdYCzRDNgk\",\n      \"amount\": \"8705087313175\",\n      \"decimals\": 6,\n      \"uiAmount\": 8705087.313175,\n      \"uiAmountString\": \"8705087.313175\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_accounts",
+      "mint": "DXLE6M12GsJW23aTU2VpZeJcgQ8rwTwQbzmDKvMSpump",
+      "observedAt": "2026-11-28T09:50:41.468Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908695\n  },\n  \"value\": [\n    {\n      \"address\": \"DoNf3AuhJG19AK9ymrNmwhJAFz1X5NfVURwHiAG1VryQ\",\n      \"amount\": \"469936934034888\",\n      \"decimals\": 6,\n      \"uiAmount\": 469936934.034888,\n      \"uiAmountString\": \"469936934.034888\"\n    },\n    {\n      \"address\": \"5kw8SAWKS1ZS7gcLP465Qp3XTLzFTqQ934nzntegcemT\",\n      \"amount\": \"36182572409246\",\n      \"decimals\": 6,\n      \"uiAmount\": 36182572.409246,\n      \"uiAmountString\": \"36182572.409246\"\n    },\n    {\n      \"address\": \"GELQN1LnwpPyCoY4qRsQCJb9L7P7zwtD8Ut2Gw9QeXTx\",\n      \"amount\": \"34574937202246\",\n      \"decimals\": 6,\n      \"uiAmount\": 34574937.202246,\n      \"uiAmountString\": \"34574937.202246\"\n    },\n    {\n      \"address\": \"5KCAx6aRN9t1tHzkdknqHsoyxpeLtzVsDpvuXdNMSwXr\",\n      \"amount\": \"30456102172695\",\n      \"decimals\": 6,\n      \"uiAmount\": 30456102.172695,\n      \"uiAmountString\": \"30456102.172695\"\n    },\n    {\n      \"address\": \"36god73fWmbLxoc1wUt7TjVAED2dAS63w8uCnqJaXoAs\",\n      \"amount\": \"27968531595744\",\n      \"decimals\": 6,\n      \"uiAmount\": 27968531.595744,\n      \"uiAmountString\": \"27968531.595744\"\n    },\n    {\n      \"address\": \"AoWYwdjCRjg1Lp35prUpAxw2X5tEi9aEE96Tv2fQBNJm\",\n      \"amount\": \"25127157254573\",\n      \"decimals\": 6,\n      \"uiAmount\": 25127157.254573,\n      \"uiAmountString\": \"25127157.254573\"\n    },\n    {\n      \"address\": \"9kAuTp2prn9Z2QDByjBiQGTcnXTn4BNSJjdS82nSzph3\",\n      \"amount\": \"25034081276892\",\n      \"decimals\": 6,\n      \"uiAmount\": 25034081.276892,\n      \"uiAmountString\": \"25034081.276892\"\n    },\n    {\n      \"address\": \"DMKHpRxVjPwnCkd5Rr4VdADHcpx81jeqr1xRnEtT5VJT\",\n      \"amount\": \"24399839469319\",\n      \"decimals\": 6,\n      \"uiAmount\": 24399839.469319,\n      \"uiAmountString\": \"24399839.469319\"\n    },\n    {\n      \"address\": \"E7o1BgBdcurtwJt7gNxLXRA69BzFVTDo4UT5ZmkrJjKn\",\n      \"amount\": \"23685951830477\",\n      \"decimals\": 6,\n      \"uiAmount\": 23685951.830477,\n      \"uiAmountString\": \"23685951.830477\"\n    },\n    {\n      \"address\": \"F8hWVn3qF3H6PDuqbemnjmzkeYxAtugbjLBtGdHjxSN3\",\n      \"amount\": \"23449042049952\",\n      \"decimals\": 6,\n      \"uiAmount\": 23449042.049952,\n      \"uiAmountString\": \"23449042.049952\"\n    },\n    {\n      \"address\": \"DPcjFk91cJgxKmieekGk9vi6GXsQfbZ4Bcn7AkPxMFHi\",\n      \"amount\": \"20068572125432\",\n      \"decimals\": 6,\n      \"uiAmount\": 20068572.125432,\n      \"uiAmountString\": \"20068572.125432\"\n    },\n    {\n      \"address\": \"9BJi1P8ciF7MzFRMGkqnoTn8nuj9qvFHrFudocTouYHp\",\n      \"amount\": \"19913034390795\",\n      \"decimals\": 6,\n      \"uiAmount\": 19913034.390795,\n      \"uiAmountString\": \"19913034.390795\"\n    },\n    {\n      \"address\": \"EJcgwFhFa5wag9vMt7e4iteka5TQ8QuMJ1oUgWu4uMfC\",\n      \"amount\": \"16423180465111\",\n      \"decimals\": 6,\n      \"uiAmount\": 16423180.465111,\n      \"uiAmountString\": \"16423180.465111\"\n    },\n    {\n      \"address\": \"DPbsJ68acTihL5wkug7Z6i1q4kLoKCfjr15D57RH7V1C\",\n      \"amount\": \"15603813808698\",\n      \"decimals\": 6,\n      \"uiAmount\": 15603813.808698,\n      \"uiAmountString\": \"15603813.808698\"\n    },\n    {\n      \"address\": \"geV32oKRRz9gk7FsASCVTFKFnk9jSS4d2LjmzHrdWn3\",\n      \"amount\": \"14603615006755\",\n      \"decimals\": 6,\n      \"uiAmount\": 14603615.006755,\n      \"uiAmountString\": \"14603615.006755\"\n    },\n    {\n      \"address\": \"DRVR5TwrJUj7hdDhpuT7LK98mZ8cr792CSi33ose3wLz\",\n      \"amount\": \"11694421831453\",\n      \"decimals\": 6,\n      \"uiAmount\": 11694421.831453,\n      \"uiAmountString\": \"11694421.831453\"\n    },\n    {\n      \"address\": \"5fx7TPgYVXoTa8mr8zH8Px1mjDphzngE3isw5TW5UvCN\",\n      \"amount\": \"11556356154076\",\n      \"decimals\": 6,\n      \"uiAmount\": 11556356.154076,\n      \"uiAmountString\": \"11556356.154076\"\n    },\n    {\n      \"address\": \"4ivqF5M6UHVuYPFhJuZWQezX42ppKczvTeFMKvz39b6d\",\n      \"amount\": \"10863703577682\",\n      \"decimals\": 6,\n      \"uiAmount\": 10863703.577682,\n      \"uiAmountString\": \"10863703.577682\"\n    },\n    {\n      \"address\": \"WBVjZvBEY9x6AkrMVSxBfWyDhwG4rofVNE7TAmo3Ub4\",\n      \"amount\": \"10577275111912\",\n      \"decimals\": 6,\n      \"uiAmount\": 10577275.111912,\n      \"uiAmountString\": \"10577275.111912\"\n    },\n    {\n      \"address\": \"5Kv34K6grQPsFUMx7sUu4tYhnCFCTeaMW8zN1tLLaJyn\",\n      \"amount\": \"10338400673965\",\n      \"decimals\": 6,\n      \"uiAmount\": 10338400.673965,\n      \"uiAmountString\": \"10338400.673965\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_accounts",
+      "mint": "8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump",
+      "observedAt": "2026-11-28T09:50:42.363Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908700\n  },\n  \"value\": [\n    {\n      \"address\": \"13UfHqTLSc6En2dB8iR58tVtfcgvS6tMVunbtRGniTbf\",\n      \"amount\": \"958961188066894\",\n      \"decimals\": 6,\n      \"uiAmount\": 958961188.066894,\n      \"uiAmountString\": \"958961188.066894\"\n    },\n    {\n      \"address\": \"8yUce3uLAmEUdVZoFYXda5UTmxaqUvVZHjPqvA6XZYkZ\",\n      \"amount\": \"580707613389\",\n      \"decimals\": 6,\n      \"uiAmount\": 580707.613389,\n      \"uiAmountString\": \"580707.613389\"\n    },\n    {\n      \"address\": \"EfAjZnczVjtRWf9TfDojZhnBSwU4RyxxLveor44g2npg\",\n      \"amount\": \"467637773168\",\n      \"decimals\": 6,\n      \"uiAmount\": 467637.773168,\n      \"uiAmountString\": \"467637.773168\"\n    },\n    {\n      \"address\": \"2zhobfYituGXwfHaAoaQhkSJfArUwaBrcpoxRkfstFMz\",\n      \"amount\": \"326961928083\",\n      \"decimals\": 6,\n      \"uiAmount\": 326961.928083,\n      \"uiAmountString\": \"326961.928083\"\n    },\n    {\n      \"address\": \"vQQRccC2FhjVdPnH2cp4BfkSariq8pMBJ2xhKXX2LHm\",\n      \"amount\": \"278723408904\",\n      \"decimals\": 6,\n      \"uiAmount\": 278723.408904,\n      \"uiAmountString\": \"278723.408904\"\n    },\n    {\n      \"address\": \"4bgvRaKf4jSbBsDufWAtDcftjJMwJAHiySdYiSh7XWX7\",\n      \"amount\": \"179429126585\",\n      \"decimals\": 6,\n      \"uiAmount\": 179429.126585,\n      \"uiAmountString\": \"179429.126585\"\n    },\n    {\n      \"address\": \"3BxUxHmXrHquSWDKicPRdMUZsDLFgHqp5YXNXDPYtQ4v\",\n      \"amount\": \"120158466084\",\n      \"decimals\": 6,\n      \"uiAmount\": 120158.466084,\n      \"uiAmountString\": \"120158.466084\"\n    },\n    {\n      \"address\": \"D5jouNyMsLCTXXHvnxZFoQNJSM589nNnVPpDDdxHXQca\",\n      \"amount\": \"50422461747\",\n      \"decimals\": 6,\n      \"uiAmount\": 50422.461747,\n      \"uiAmountString\": \"50422.461747\"\n    },\n    {\n      \"address\": \"4psBp8BxHfJsKykruaXv6qcDtwTvHr847RWXN2o9Wx9y\",\n      \"amount\": \"42261223617\",\n      \"decimals\": 6,\n      \"uiAmount\": 42261.223617,\n      \"uiAmountString\": \"42261.223617\"\n    },\n    {\n      \"address\": \"4rJg2uxT2KPocLcNs13qAvxUDcmcaZGSaHpa72Vp2Ugo\",\n      \"amount\": \"41053847349\",\n      \"decimals\": 6,\n      \"uiAmount\": 41053.847349,\n      \"uiAmountString\": \"41053.847349\"\n    },\n    {\n      \"address\": \"7Z9L5UHMYSCQoYFkrtD3PkWSzMPHsyBtwjUXm48rPM7W\",\n      \"amount\": \"40151210362\",\n      \"decimals\": 6,\n      \"uiAmount\": 40151.210362,\n      \"uiAmountString\": \"40151.210362\"\n    },\n    {\n      \"address\": \"EsquLyzwpndJk6Hy5xF5KaPZBbXZqtPnXBiMJbUwDJNE\",\n      \"amount\": \"39397936351\",\n      \"decimals\": 6,\n      \"uiAmount\": 39397.936351,\n      \"uiAmountString\": \"39397.936351\"\n    },\n    {\n      \"address\": \"DSsmAguGtNp3UbooNVKTZDaGWDayifgn8ohb4fhh4kcC\",\n      \"amount\": \"36962274486\",\n      \"decimals\": 6,\n      \"uiAmount\": 36962.274486,\n      \"uiAmountString\": \"36962.274486\"\n    },\n    {\n      \"address\": \"F3LTdSeJR23Y7Mh43Bvs3hmstj4WJJLitrmtooBHATGS\",\n      \"amount\": \"36573354288\",\n      \"decimals\": 6,\n      \"uiAmount\": 36573.354288,\n      \"uiAmountString\": \"36573.354288\"\n    },\n    {\n      \"address\": \"FXHGcfqC79QJzpxyLXqPcTfRWHnYt9nHxCjRWBfeHGRU\",\n      \"amount\": \"36468815181\",\n      \"decimals\": 6,\n      \"uiAmount\": 36468.815181,\n      \"uiAmountString\": \"36468.815181\"\n    },\n    {\n      \"address\": \"3SJB2v4zEbBqhf37rJ9a7uPrUsrmbghyb41r1SQfbGfp\",\n      \"amount\": \"36140089480\",\n      \"decimals\": 6,\n      \"uiAmount\": 36140.08948,\n      \"uiAmountString\": \"36140.08948\"\n    },\n    {\n      \"address\": \"2MEfAs1W34aEgQ9AMBSXP1RuBdWYitXqs3mWPNCuBqyr\",\n      \"amount\": \"35664792244\",\n      \"decimals\": 6,\n      \"uiAmount\": 35664.792244,\n      \"uiAmountString\": \"35664.792244\"\n    },\n    {\n      \"address\": \"Ghuebe3m7StHRV3LagkQsYuXdRviVEy86E6qcnRrzt4e\",\n      \"amount\": \"35205624908\",\n      \"decimals\": 6,\n      \"uiAmount\": 35205.624908,\n      \"uiAmountString\": \"35205.624908\"\n    },\n    {\n      \"address\": \"7rRLB7miRmsEzV8crDTGpU1Z4xcUzZhhWRUE1C8KSKH3\",\n      \"amount\": \"32020620535\",\n      \"decimals\": 6,\n      \"uiAmount\": 32020.620535,\n      \"uiAmountString\": \"32020.620535\"\n    },\n    {\n      \"address\": \"Cco8c4TKtzqTVLCbQ71L9XNu46P8sfMwVrA7aMiNu8WQ\",\n      \"amount\": \"31900808211\",\n      \"decimals\": 6,\n      \"uiAmount\": 31900.808211,\n      \"uiAmountString\": \"31900.808211\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_account_controls",
+      "targets": [
+        {
+          "mint": "A6BBHdxCNFmpLqCzEzdoZ2wVPLVcr6jcxFn7oEeMpump",
+          "account": "E9B3FuSDJuWNaAt7JHjcCWmZcz7Qy6MG8WsDGwNjxFCn"
+        },
+        {
+          "mint": "4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump",
+          "account": "2tyHQLiT6EsMQTs5qwkbKnJ3ChWZj3RnijdRtTqpaG1Z"
+        },
+        {
+          "mint": "FgGYazS7QTmuQYK8M4k2EC1xfsD62aJweKHvcYPBpump",
+          "account": "7jQRPvU6tsLaKGcrD9dsv7ddKRR94iPBF6s28KcYMg4A"
+        },
+        {
+          "mint": "GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg",
+          "account": "7Y5pHXoaBuPdMTgk3jjgrSrscvsCJtykgmZBu8tiRiZ9"
+        }
+      ],
+      "pubkeys": [
+        "E9B3FuSDJuWNaAt7JHjcCWmZcz7Qy6MG8WsDGwNjxFCn",
+        "2tyHQLiT6EsMQTs5qwkbKnJ3ChWZj3RnijdRtTqpaG1Z",
+        "7jQRPvU6tsLaKGcrD9dsv7ddKRR94iPBF6s28KcYMg4A",
+        "7Y5pHXoaBuPdMTgk3jjgrSrscvsCJtykgmZBu8tiRiZ9"
+      ],
+      "observedAt": "2026-11-28T09:50:50.598Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908737\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"A6BBHdxCNFmpLqCzEzdoZ2wVPLVcr6jcxFn7oEeMpump\",\n            \"owner\": \"9aQWgTXohYvc5YjpTUrt7r4DRmodz83tivH8qxAxyQy6\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"568013686049562\",\n              \"decimals\": 6,\n              \"uiAmount\": 568013686.049562,\n              \"uiAmountString\": \"568013686.049562\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"4cZsB6UgdUBTi13JMusBap9r2qGW1MPrdaSVAYkSpump\",\n            \"owner\": \"5HQ3K2ShHyEJdjEstnD2Q8jGFo5TRQg1k56bWPBqXsQ1\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"248109081553090\",\n              \"decimals\": 6,\n              \"uiAmount\": 248109081.55309,\n              \"uiAmountString\": \"248109081.55309\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"FgGYazS7QTmuQYK8M4k2EC1xfsD62aJweKHvcYPBpump\",\n            \"owner\": \"Fr3eWtB9kFcnpwWmL8jPRt9CjboCjDuHfTPuPc26fqZ4\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"785269421018084\",\n              \"decimals\": 6,\n              \"uiAmount\": 785269421.018084,\n              \"uiAmountString\": \"785269421.018084\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"GggaHk9atb7LYq16S2X6FwjQdZT8D8YQ6vydeosgFGtg\",\n            \"owner\": \"CYv5vfuQZBzF2XNAbpsNAAMpEPcZhFTxQNDPrkDbP1iH\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"567453470373459\",\n              \"decimals\": 6,\n              \"uiAmount\": 567453470.373459,\n              \"uiAmountString\": \"567453470.373459\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_account_controls",
+      "targets": [
+        {
+          "mint": "EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump",
+          "account": "FHKUnucmgEoUD9iugmnErZXV7FQwbmw85wnMzdPXbPww"
+        },
+        {
+          "mint": "A7xhY12G388pXGsBuweS6NkyZyv53ogH1dNfEkCMpump",
+          "account": "GuZ7H93WoV1z4kZhSu5p34T8ankgvgBg2uTWnXgp6DAC"
+        },
+        {
+          "mint": "Ab4YRbH4bPwsi4EykXZL2nzo4SiZXtgpPDdDVcPLpump",
+          "account": "8DkuoAZvLysDUsgzUYbBGhqyFqg4NR5Go5XkC9z2aKvk"
+        },
+        {
+          "mint": "8i2ssMZBaS3HShu5hoDEV4tVLf5RGXeNJnK3LNTHTH9e",
+          "account": "C2ZZZicfQjbUjMEjBJwBAuMoamMrs6oaBUcx7tAYrZxA"
+        }
+      ],
+      "pubkeys": [
+        "FHKUnucmgEoUD9iugmnErZXV7FQwbmw85wnMzdPXbPww",
+        "GuZ7H93WoV1z4kZhSu5p34T8ankgvgBg2uTWnXgp6DAC",
+        "8DkuoAZvLysDUsgzUYbBGhqyFqg4NR5Go5XkC9z2aKvk",
+        "C2ZZZicfQjbUjMEjBJwBAuMoamMrs6oaBUcx7tAYrZxA"
+      ],
+      "observedAt": "2026-11-28T09:50:51.651Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908743\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"EqaMtkdjUAHubn2Xn3vMrCCtjz8XQZ5xVDHPn4phpump\",\n            \"owner\": \"6idivWgJJ4Naf97BwN8NVcnQgYaueSvAaphnWjmamYi\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"150000000000000\",\n              \"decimals\": 6,\n              \"uiAmount\": 150000000,\n              \"uiAmountString\": \"150000000\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"A7xhY12G388pXGsBuweS6NkyZyv53ogH1dNfEkCMpump\",\n            \"owner\": \"6tsimZ6oUt9Rr5Zrbk1rHyhgSY3BchZy6GCYAzEmXi4r\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"808477396837895\",\n              \"decimals\": 6,\n              \"uiAmount\": 808477396.837895,\n              \"uiAmountString\": \"808477396.837895\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"Ab4YRbH4bPwsi4EykXZL2nzo4SiZXtgpPDdDVcPLpump\",\n            \"owner\": \"AisvTGbbTRexrHHVeTdvvUrPDQXKZQufn1ZLpmma5aVM\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"937190415115220\",\n              \"decimals\": 6,\n              \"uiAmount\": 937190415.11522,\n              \"uiAmountString\": \"937190415.11522\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"isNative\": false,\n            \"mint\": \"8i2ssMZBaS3HShu5hoDEV4tVLf5RGXeNJnK3LNTHTH9e\",\n            \"owner\": \"GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"212282199481819\",\n              \"decimals\": 6,\n              \"uiAmount\": 212282199.481819,\n              \"uiAmountString\": \"212282199.481819\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 165\n      },\n      \"executable\": false,\n      \"lamports\": 1488440,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "largest_account_controls",
+      "targets": [
+        {
+          "mint": "DXLE6M12GsJW23aTU2VpZeJcgQ8rwTwQbzmDKvMSpump",
+          "account": "DoNf3AuhJG19AK9ymrNmwhJAFz1X5NfVURwHiAG1VryQ"
+        },
+        {
+          "mint": "8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump",
+          "account": "13UfHqTLSc6En2dB8iR58tVtfcgvS6tMVunbtRGniTbf"
+        }
+      ],
+      "pubkeys": [
+        "DoNf3AuhJG19AK9ymrNmwhJAFz1X5NfVURwHiAG1VryQ",
+        "13UfHqTLSc6En2dB8iR58tVtfcgvS6tMVunbtRGniTbf"
+      ],
+      "observedAt": "2026-11-28T09:50:52.582Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908748\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"DXLE6M12GsJW23aTU2VpZeJcgQ8rwTwQbzmDKvMSpump\",\n            \"owner\": \"iECtPUj6bmB5zBLDVdVBpSUx23UjkZetCrU9ZKYwfjv\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"465396466307592\",\n              \"decimals\": 6,\n              \"uiAmount\": 465396466.307592,\n              \"uiAmountString\": \"465396466.307592\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"8Y24KBnY9gaNWDaxohxtEU1gxESvfwdYeGFuHJKpump\",\n            \"owner\": \"B8EpbHovFiAxp7Gvsyuv4GjMYzj51KqP49sGLAYxnmKQ\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"958961188066894\",\n              \"decimals\": 6,\n              \"uiAmount\": 958961188.066894,\n              \"uiAmountString\": \"958961188.066894\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "baseline_largest",
+      "name": "TOMO",
+      "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+      "observedAt": "2026-11-28T09:51:23.509Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908892\n  },\n  \"value\": [\n    {\n      \"address\": \"4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41\",\n      \"amount\": \"463390775498859\",\n      \"decimals\": 6,\n      \"uiAmount\": 463390775.498859,\n      \"uiAmountString\": \"463390775.498859\"\n    },\n    {\n      \"address\": \"AmS7L9wjcJ3aoCsyVSsRFiP2GJP5zfTpUwHyxYZkYGEj\",\n      \"amount\": \"80683773045975\",\n      \"decimals\": 6,\n      \"uiAmount\": 80683773.045975,\n      \"uiAmountString\": \"80683773.045975\"\n    },\n    {\n      \"address\": \"26m1f3TsWkXYpLhKkhKKb2z7hFjH8sWphAwNeWP2xWJh\",\n      \"amount\": \"57921290873594\",\n      \"decimals\": 6,\n      \"uiAmount\": 57921290.873594,\n      \"uiAmountString\": \"57921290.873594\"\n    },\n    {\n      \"address\": \"42rJUTJr73zaLaB2yAxTZLE4293cWbKo3MUXy8GAE3zp\",\n      \"amount\": \"32501180435405\",\n      \"decimals\": 6,\n      \"uiAmount\": 32501180.435405,\n      \"uiAmountString\": \"32501180.435405\"\n    },\n    {\n      \"address\": \"5fzifq3ehAjri8yo2LFHo3A2NP76V439YYxq5Mjv6Wxe\",\n      \"amount\": \"31411630748840\",\n      \"decimals\": 6,\n      \"uiAmount\": 31411630.74884,\n      \"uiAmountString\": \"31411630.74884\"\n    },\n    {\n      \"address\": \"3ad33gax6joTMmNztQxTd5iBnZ3zaMR7jAq9QUocY4Cr\",\n      \"amount\": \"30696044188320\",\n      \"decimals\": 6,\n      \"uiAmount\": 30696044.18832,\n      \"uiAmountString\": \"30696044.18832\"\n    },\n    {\n      \"address\": \"9bvWnfKKswh4D35q4CRnZiimS6wkjcejFjZ5ySnv4ovk\",\n      \"amount\": \"29918440327228\",\n      \"decimals\": 6,\n      \"uiAmount\": 29918440.327228,\n      \"uiAmountString\": \"29918440.327228\"\n    },\n    {\n      \"address\": \"6pRx6xDrGVYYonT1E7a8hF317sLKMdL4oqcZMT7Dm8q6\",\n      \"amount\": \"24602534465405\",\n      \"decimals\": 6,\n      \"uiAmount\": 24602534.465405,\n      \"uiAmountString\": \"24602534.465405\"\n    },\n    {\n      \"address\": \"BAddrz3y2eSG5F2TjBFK3iKCGPQbsXCrGz9R3aJFTjcR\",\n      \"amount\": \"22563914002548\",\n      \"decimals\": 6,\n      \"uiAmount\": 22563914.002548,\n      \"uiAmountString\": \"22563914.002548\"\n    },\n    {\n      \"address\": \"36MfdNVKZHyB2WdSGNDZb3UT4Ua3F8WVTXMJdDsRZpWq\",\n      \"amount\": \"21316077579525\",\n      \"decimals\": 6,\n      \"uiAmount\": 21316077.579525,\n      \"uiAmountString\": \"21316077.579525\"\n    },\n    {\n      \"address\": \"FdDPyWJWGtFnYyrLnvRn3DrPXdQjuVFQsUMdidJr7VPs\",\n      \"amount\": \"16933646545001\",\n      \"decimals\": 6,\n      \"uiAmount\": 16933646.545001,\n      \"uiAmountString\": \"16933646.545001\"\n    },\n    {\n      \"address\": \"HLtgWHaQNZz6kUv6nHJdCKmKWXYns79gd3EgRSC8G64S\",\n      \"amount\": \"15052248461862\",\n      \"decimals\": 6,\n      \"uiAmount\": 15052248.461862,\n      \"uiAmountString\": \"15052248.461862\"\n    },\n    {\n      \"address\": \"61Dk4wWUFnWawXnZrD3fTaX2wf2QmwGr2De6DSAPubHE\",\n      \"amount\": \"14726019550472\",\n      \"decimals\": 6,\n      \"uiAmount\": 14726019.550472,\n      \"uiAmountString\": \"14726019.550472\"\n    },\n    {\n      \"address\": \"GCG2dxhHz2t74Me3EMp771jHMUhko8kyKFbgcH5biuiq\",\n      \"amount\": \"10107756846867\",\n      \"decimals\": 6,\n      \"uiAmount\": 10107756.846867,\n      \"uiAmountString\": \"10107756.846867\"\n    },\n    {\n      \"address\": \"3wTxSzPHhnUSzMCM11WRpMaqPixYPsTFPbZdBmoiKq1u\",\n      \"amount\": \"10098142556357\",\n      \"decimals\": 6,\n      \"uiAmount\": 10098142.556357,\n      \"uiAmountString\": \"10098142.556357\"\n    },\n    {\n      \"address\": \"9Acg9TqSMuz5B7zaLsX223fJ5jXQdz1svvLftCHLKPyn\",\n      \"amount\": \"9447990527922\",\n      \"decimals\": 6,\n      \"uiAmount\": 9447990.527922,\n      \"uiAmountString\": \"9447990.527922\"\n    },\n    {\n      \"address\": \"HDnxi7AqV71K91hqwydcB33G5r4xDG2ozb9i6CbxSZgg\",\n      \"amount\": \"9311506026752\",\n      \"decimals\": 6,\n      \"uiAmount\": 9311506.026752,\n      \"uiAmountString\": \"9311506.026752\"\n    },\n    {\n      \"address\": \"AwDm83soLujRTAsi6YbE9neA3Tth8sVVsb1C5yzvskrt\",\n      \"amount\": \"8937579402717\",\n      \"decimals\": 6,\n      \"uiAmount\": 8937579.402717,\n      \"uiAmountString\": \"8937579.402717\"\n    },\n    {\n      \"address\": \"6vrcxHuGKh8gsGKZmxTe9d5JU2siGgydo8a7MX4jDbZD\",\n      \"amount\": \"7194222908938\",\n      \"decimals\": 6,\n      \"uiAmount\": 7194222.908938,\n      \"uiAmountString\": \"7194222.908938\"\n    },\n    {\n      \"address\": \"BJ6yUNBF4HXvuy37LDu4o4gZVmmjSiMnNLybNYpN7tRv\",\n      \"amount\": \"6044166481410\",\n      \"decimals\": 6,\n      \"uiAmount\": 6044166.48141,\n      \"uiAmountString\": \"6044166.48141\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "baseline_largest",
+      "name": "ANSEM",
+      "mint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump",
+      "observedAt": "2026-11-28T09:51:24.340Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908896\n  },\n  \"value\": [\n    {\n      \"address\": \"GdrKtm8einYWAfjWhAtmoi6Em5cqEitsF4u1GxZkL3f\",\n      \"amount\": \"491003700487968\",\n      \"decimals\": 6,\n      \"uiAmount\": 491003700.487968,\n      \"uiAmountString\": \"491003700.487968\"\n    },\n    {\n      \"address\": \"4NS9y9LTuUw927QgG13oojFcwAnkBnNwQVzGXdGfD6bj\",\n      \"amount\": \"26010449754830\",\n      \"decimals\": 6,\n      \"uiAmount\": 26010449.75483,\n      \"uiAmountString\": \"26010449.75483\"\n    },\n    {\n      \"address\": \"BmCXK8QFCHgjiqGm7peAtBbZpFPJNsp5fYP5rSRazMS8\",\n      \"amount\": \"20589386771100\",\n      \"decimals\": 6,\n      \"uiAmount\": 20589386.7711,\n      \"uiAmountString\": \"20589386.7711\"\n    },\n    {\n      \"address\": \"GQ9KnmgYLjkv3uB6EpTgXfYmX6eLYP35WXCkKrUgQTKK\",\n      \"amount\": \"12280611215419\",\n      \"decimals\": 6,\n      \"uiAmount\": 12280611.215419,\n      \"uiAmountString\": \"12280611.215419\"\n    },\n    {\n      \"address\": \"GZwuJej6yfJ5HJrqM5iSLzvxGFthCha5PZh1UAxr5GAU\",\n      \"amount\": \"10874883332275\",\n      \"decimals\": 6,\n      \"uiAmount\": 10874883.332275,\n      \"uiAmountString\": \"10874883.332275\"\n    },\n    {\n      \"address\": \"NubMtFhLpussJCe9hBB3BghNDKL8HwdTmVxp8rwTfr3\",\n      \"amount\": \"8691007734248\",\n      \"decimals\": 6,\n      \"uiAmount\": 8691007.734248,\n      \"uiAmountString\": \"8691007.734248\"\n    },\n    {\n      \"address\": \"9B8j2P3UbzbvvRMiBEKbKJo7DZzatY9T6gKYNfJScSwm\",\n      \"amount\": \"7609386500708\",\n      \"decimals\": 6,\n      \"uiAmount\": 7609386.500708,\n      \"uiAmountString\": \"7609386.500708\"\n    },\n    {\n      \"address\": \"8nsWUYzretuvBtnZN6PHcbbwS3AHhH7bqTyqyQPhNjvD\",\n      \"amount\": \"6566682044685\",\n      \"decimals\": 6,\n      \"uiAmount\": 6566682.044685,\n      \"uiAmountString\": \"6566682.044685\"\n    },\n    {\n      \"address\": \"9LZcsPHfg2D7HVkQxXmEPfG92gCyGRP85E6wpF3srEB6\",\n      \"amount\": \"5234718344394\",\n      \"decimals\": 6,\n      \"uiAmount\": 5234718.344394,\n      \"uiAmountString\": \"5234718.344394\"\n    },\n    {\n      \"address\": \"3c21bCEBWuRcR6LawUbofBzs5St21J8nojZqQLRQp33p\",\n      \"amount\": \"4841439553524\",\n      \"decimals\": 6,\n      \"uiAmount\": 4841439.553524,\n      \"uiAmountString\": \"4841439.553524\"\n    },\n    {\n      \"address\": \"GPPRcAxSxYyE2Ni6evZArG8hD57ewerezNnrNuK3EU5n\",\n      \"amount\": \"4807379476924\",\n      \"decimals\": 6,\n      \"uiAmount\": 4807379.476924,\n      \"uiAmountString\": \"4807379.476924\"\n    },\n    {\n      \"address\": \"BWeJfZG9UfbtRY9oxzeds5GFhMPT9VT65sdXw635S5Wb\",\n      \"amount\": \"4399424902834\",\n      \"decimals\": 6,\n      \"uiAmount\": 4399424.902834,\n      \"uiAmountString\": \"4399424.902834\"\n    },\n    {\n      \"address\": \"G7DTNv7kNGWUeAsbMdKQGUyuHKdELNgijgtVbtuq6GGe\",\n      \"amount\": \"4295971243779\",\n      \"decimals\": 6,\n      \"uiAmount\": 4295971.243779,\n      \"uiAmountString\": \"4295971.243779\"\n    },\n    {\n      \"address\": \"CGX6cuSDjD9GE5CeB8yPJ1AqfYqVTeLdESX943H4GPab\",\n      \"amount\": \"4014652309766\",\n      \"decimals\": 6,\n      \"uiAmount\": 4014652.309766,\n      \"uiAmountString\": \"4014652.309766\"\n    },\n    {\n      \"address\": \"8EWTVAJcjWD49risD45WBUYc9eF2v7mVzmZZT99Nsiza\",\n      \"amount\": \"3813267603626\",\n      \"decimals\": 6,\n      \"uiAmount\": 3813267.603626,\n      \"uiAmountString\": \"3813267.603626\"\n    },\n    {\n      \"address\": \"CSrSnXpk9moZNhbChTjruzGUqHVYejNFNngNi7R8ExeT\",\n      \"amount\": \"3723030889085\",\n      \"decimals\": 6,\n      \"uiAmount\": 3723030.889085,\n      \"uiAmountString\": \"3723030.889085\"\n    },\n    {\n      \"address\": \"GnyzhweyVAeGhdD9nLrzCUr6T4ZBvnbJoyBEBgN6i5da\",\n      \"amount\": \"3710868921522\",\n      \"decimals\": 6,\n      \"uiAmount\": 3710868.921522,\n      \"uiAmountString\": \"3710868.921522\"\n    },\n    {\n      \"address\": \"23QC7iukQFNqQerVw7c84cgWSXQ1LSjtYjEPXZYKuoaL\",\n      \"amount\": \"3089867836600\",\n      \"decimals\": 6,\n      \"uiAmount\": 3089867.8366,\n      \"uiAmountString\": \"3089867.8366\"\n    },\n    {\n      \"address\": \"EgVE6UuVFMfJUbvNMdUtvy9auaRJx3ytsiMpr8UghHmh\",\n      \"amount\": \"3061061598048\",\n      \"decimals\": 6,\n      \"uiAmount\": 3061061.598048,\n      \"uiAmountString\": \"3061061.598048\"\n    },\n    {\n      \"address\": \"FKctWD7f33UowsXZLEkLPKEGKeQCn7g7x87UnzniPhq\",\n      \"amount\": \"3000059626682\",\n      \"decimals\": 6,\n      \"uiAmount\": 3000059.626682,\n      \"uiAmountString\": \"3000059.626682\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "baseline_largest",
+      "name": "FLOAT",
+      "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+      "observedAt": "2026-11-28T09:51:25.187Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908900\n  },\n  \"value\": [\n    {\n      \"address\": \"H5yeZaYgJax2iATAu8WXJMumR5hTTcaqncwZxSdVNqXF\",\n      \"amount\": \"51525754541263\",\n      \"decimals\": 6,\n      \"uiAmount\": 51525754.541263,\n      \"uiAmountString\": \"51525754.541263\"\n    },\n    {\n      \"address\": \"EHnacy7YmGsBfEwvvZdfxCbKeaWJX7D74Lwg1UkgHeEo\",\n      \"amount\": \"49893683978906\",\n      \"decimals\": 6,\n      \"uiAmount\": 49893683.978906,\n      \"uiAmountString\": \"49893683.978906\"\n    },\n    {\n      \"address\": \"AhQpSUWGUwEpyYueQDBewYWnF45srebu9odaLJQJopKY\",\n      \"amount\": \"25357208936719\",\n      \"decimals\": 6,\n      \"uiAmount\": 25357208.936719,\n      \"uiAmountString\": \"25357208.936719\"\n    },\n    {\n      \"address\": \"2QrtTxpM6hu8F7XDnPYnTRx8q4u1iCtqiLSA9x5FJYtx\",\n      \"amount\": \"24764419767110\",\n      \"decimals\": 6,\n      \"uiAmount\": 24764419.76711,\n      \"uiAmountString\": \"24764419.76711\"\n    },\n    {\n      \"address\": \"2XeawVszHWmRtFiBVZGr8wNYrjPH3ggggLhNVuT8uogh\",\n      \"amount\": \"17435610452828\",\n      \"decimals\": 6,\n      \"uiAmount\": 17435610.452828,\n      \"uiAmountString\": \"17435610.452828\"\n    },\n    {\n      \"address\": \"NtpembbhsexoyApbdSxMpu6ro3MXFHvaYVwsAAHLL9g\",\n      \"amount\": \"16597866473097\",\n      \"decimals\": 6,\n      \"uiAmount\": 16597866.473097,\n      \"uiAmountString\": \"16597866.473097\"\n    },\n    {\n      \"address\": \"Ej3uPjVvr2GWaFJg4a3GrkzAK2nRdUatbjZVv5y8LwfG\",\n      \"amount\": \"15814281494230\",\n      \"decimals\": 6,\n      \"uiAmount\": 15814281.49423,\n      \"uiAmountString\": \"15814281.49423\"\n    },\n    {\n      \"address\": \"DQeQgJUt88PC16KSLYGY9NQuYiNZu9TdPNgktrj1rYVp\",\n      \"amount\": \"15236101193713\",\n      \"decimals\": 6,\n      \"uiAmount\": 15236101.193713,\n      \"uiAmountString\": \"15236101.193713\"\n    },\n    {\n      \"address\": \"2xornsC21cG3QZXyFuqcHuHF6EKoMooXNGrWcThSugy5\",\n      \"amount\": \"15218638447146\",\n      \"decimals\": 6,\n      \"uiAmount\": 15218638.447146,\n      \"uiAmountString\": \"15218638.447146\"\n    },\n    {\n      \"address\": \"HK6mRCmxVt1d37sqUtiHvbdHt7Qec7cXkQnuTedSMfsv\",\n      \"amount\": \"13166990400315\",\n      \"decimals\": 6,\n      \"uiAmount\": 13166990.400315,\n      \"uiAmountString\": \"13166990.400315\"\n    },\n    {\n      \"address\": \"FrW58YjytpE4ykVubvV7PGJTcETthXwz2soBx2zpG8XA\",\n      \"amount\": \"12063996924081\",\n      \"decimals\": 6,\n      \"uiAmount\": 12063996.924081,\n      \"uiAmountString\": \"12063996.924081\"\n    },\n    {\n      \"address\": \"HpHquoXgBrpGws8aej8dZGJXUBK6zu4vT7mNjfVUtznV\",\n      \"amount\": \"9483743220864\",\n      \"decimals\": 6,\n      \"uiAmount\": 9483743.220864,\n      \"uiAmountString\": \"9483743.220864\"\n    },\n    {\n      \"address\": \"3Q5DhqSKMFyAbctvTWWLvspT3fnjzypR4ivUNZv8TP1c\",\n      \"amount\": \"9128864018084\",\n      \"decimals\": 6,\n      \"uiAmount\": 9128864.018084,\n      \"uiAmountString\": \"9128864.018084\"\n    },\n    {\n      \"address\": \"9jPkkv2mSvwAaTJc7FyT3qgKV7VnyV4daPGMmA6Zr77c\",\n      \"amount\": \"8418956641053\",\n      \"decimals\": 6,\n      \"uiAmount\": 8418956.641053,\n      \"uiAmountString\": \"8418956.641053\"\n    },\n    {\n      \"address\": \"4ZYUGxYuDJJFzNV2xrgfHzQwHwMKFMmy3pWzYTNatGJ4\",\n      \"amount\": \"8169162362401\",\n      \"decimals\": 6,\n      \"uiAmount\": 8169162.362401,\n      \"uiAmountString\": \"8169162.362401\"\n    },\n    {\n      \"address\": \"81oZ3n75oAij45qMtvazR9JJDio8GSGbMWm76zyZy8Kd\",\n      \"amount\": \"8129454983765\",\n      \"decimals\": 6,\n      \"uiAmount\": 8129454.983765,\n      \"uiAmountString\": \"8129454.983765\"\n    },\n    {\n      \"address\": \"5zpXjGd3D7mPRcKJRih1CxZP4MoY18CWhQCJSukpMogS\",\n      \"amount\": \"7977030999472\",\n      \"decimals\": 6,\n      \"uiAmount\": 7977030.999472,\n      \"uiAmountString\": \"7977030.999472\"\n    },\n    {\n      \"address\": \"4NhK3Setd56BtzBv59qgoWmK5qjBPbsHahQamC3Lcbbe\",\n      \"amount\": \"7652857395720\",\n      \"decimals\": 6,\n      \"uiAmount\": 7652857.39572,\n      \"uiAmountString\": \"7652857.39572\"\n    },\n    {\n      \"address\": \"CwHqVLWLnFVBoY63QA3UifouncP8txvrHMAU4mHpKRx2\",\n      \"amount\": \"7142928973184\",\n      \"decimals\": 6,\n      \"uiAmount\": 7142928.973184,\n      \"uiAmountString\": \"7142928.973184\"\n    },\n    {\n      \"address\": \"E7noK3d4DvhPoYZB1tSmKrddwgcPZGN3LB3dZ329QGjW\",\n      \"amount\": \"7118005325334\",\n      \"decimals\": 6,\n      \"uiAmount\": 7118005.325334,\n      \"uiAmountString\": \"7118005.325334\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "baseline_largest",
+      "name": "TRUMP",
+      "mint": "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN",
+      "observedAt": "2026-11-28T09:51:26.268Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.3.0\",\n    \"slot\": 474908904\n  },\n  \"value\": [\n    {\n      \"address\": \"HkykUVWTctptXZmRTWearMsH4SaQNmE4Ku3tMJe5v2mH\",\n      \"amount\": \"706131964328498\",\n      \"decimals\": 6,\n      \"uiAmount\": 706131964.328498,\n      \"uiAmountString\": \"706131964.328498\"\n    },\n    {\n      \"address\": \"7DaumTmUaK3xcpd8XJXAjUzDrCqPuj3S1Sc2cbootBUN\",\n      \"amount\": \"57000000000000\",\n      \"decimals\": 6,\n      \"uiAmount\": 57000000,\n      \"uiAmountString\": \"57000000\"\n    },\n    {\n      \"address\": \"3zya4BbfRV8a4nKyAmxqufyGYEH5TF3dZFYZvE5kSj7N\",\n      \"amount\": \"36081252192484\",\n      \"decimals\": 6,\n      \"uiAmount\": 36081252.192484,\n      \"uiAmountString\": \"36081252.192484\"\n    },\n    {\n      \"address\": \"AJehmB6EdvLc34gYKtHUSGt2mvRLkjKYTpX2rqWttfVP\",\n      \"amount\": \"29778647343577\",\n      \"decimals\": 6,\n      \"uiAmount\": 29778647.343577,\n      \"uiAmountString\": \"29778647.343577\"\n    },\n    {\n      \"address\": \"E891sHy7Sw7yYhzSYAJCJipAiUU8YLj33VHkutLNBuck\",\n      \"amount\": \"13335221844491\",\n      \"decimals\": 6,\n      \"uiAmount\": 13335221.844491,\n      \"uiAmountString\": \"13335221.844491\"\n    },\n    {\n      \"address\": \"PBNRanKsUPjUqUxNRM7YnNqZ7jdW3NYSCwBMtDugap6\",\n      \"amount\": \"12000100000107\",\n      \"decimals\": 6,\n      \"uiAmount\": 12000100.000107,\n      \"uiAmountString\": \"12000100.000107\"\n    },\n    {\n      \"address\": \"3UCFy6h41kJSyRxWT7Tra5WUU3EyTZ9t4zRrSRh3kcdQ\",\n      \"amount\": \"10509778089205\",\n      \"decimals\": 6,\n      \"uiAmount\": 10509778.089205,\n      \"uiAmountString\": \"10509778.089205\"\n    },\n    {\n      \"address\": \"8veyTUzoqVsLHe4ACtcn5v5ctfR9yYHaHT3Txg2grATr\",\n      \"amount\": \"5707483449069\",\n      \"decimals\": 6,\n      \"uiAmount\": 5707483.449069,\n      \"uiAmountString\": \"5707483.449069\"\n    },\n    {\n      \"address\": \"BdnDGUhkJYJkHoPeiKfVTDRbGayGtptC5psCSJKxJo1c\",\n      \"amount\": \"5318334742000\",\n      \"decimals\": 6,\n      \"uiAmount\": 5318334.742,\n      \"uiAmountString\": \"5318334.742\"\n    },\n    {\n      \"address\": \"AK93dERw7MJsGFBUPfV1bkXzDviJZM1K6vg2yGDugk7L\",\n      \"amount\": \"3597353634618\",\n      \"decimals\": 6,\n      \"uiAmount\": 3597353.634618,\n      \"uiAmountString\": \"3597353.634618\"\n    },\n    {\n      \"address\": \"3dBurDeLbFW6qnxuB6oW4AUx4F467u4KqgKhMTqNz6NA\",\n      \"amount\": \"3393220312137\",\n      \"decimals\": 6,\n      \"uiAmount\": 3393220.312137,\n      \"uiAmountString\": \"3393220.312137\"\n    },\n    {\n      \"address\": \"6wqp9JMQNFDs2eotmSpJhcgt47fFA6qRa8uDugTFbJGu\",\n      \"amount\": \"3237300204626\",\n      \"decimals\": 6,\n      \"uiAmount\": 3237300.204626,\n      \"uiAmountString\": \"3237300.204626\"\n    },\n    {\n      \"address\": \"CLSgZqZZ9hay1h8q8cdVCPi9J9L4g3Tp45snjv64WFL5\",\n      \"amount\": \"3150000891233\",\n      \"decimals\": 6,\n      \"uiAmount\": 3150000.891233,\n      \"uiAmountString\": \"3150000.891233\"\n    },\n    {\n      \"address\": \"DBxLBME3MbN1oEQhah8adNxYFwuLwhkr7BM3SEJ4uoTC\",\n      \"amount\": \"3117810692529\",\n      \"decimals\": 6,\n      \"uiAmount\": 3117810.692529,\n      \"uiAmountString\": \"3117810.692529\"\n    },\n    {\n      \"address\": \"5B6APqZLqzpbGgd6yyfKdkHX57ReUYqG2MazHq8t9m4K\",\n      \"amount\": \"3000000000070\",\n      \"decimals\": 6,\n      \"uiAmount\": 3000000.00007,\n      \"uiAmountString\": \"3000000.00007\"\n    },\n    {\n      \"address\": \"5UX1smmMEYR2dRATSNHEB1zSHwb2BrF1YxgpwdqxeFjx\",\n      \"amount\": \"2755995454289\",\n      \"decimals\": 6,\n      \"uiAmount\": 2755995.454289,\n      \"uiAmountString\": \"2755995.454289\"\n    },\n    {\n      \"address\": \"D4LAqNcbjFoqnc8qNQ5rooKeTrWeyKiGmUVTnFy6vcs4\",\n      \"amount\": \"2704413843050\",\n      \"decimals\": 6,\n      \"uiAmount\": 2704413.84305,\n      \"uiAmountString\": \"2704413.84305\"\n    },\n    {\n      \"address\": \"36DTh7yScFWQ9kQw4Hh6NbeAgNUAgzbqpm7gEfMCj8ER\",\n      \"amount\": \"2546989499178\",\n      \"decimals\": 6,\n      \"uiAmount\": 2546989.499178,\n      \"uiAmountString\": \"2546989.499178\"\n    },\n    {\n      \"address\": \"7YBjsbgfwfCMLG9MXm1xrirGApdsuynEnXKEPZAcfq9h\",\n      \"amount\": \"2285927525141\",\n      \"decimals\": 6,\n      \"uiAmount\": 2285927.525141,\n      \"uiAmountString\": \"2285927.525141\"\n    },\n    {\n      \"address\": \"9gJzEmywamQhEK7rvPecwveh3ASgfngwmrnhTwDsTVCX\",\n      \"amount\": \"2146393384153\",\n      \"decimals\": 6,\n      \"uiAmount\": 2146393.384153,\n      \"uiAmountString\": \"2146393.384153\"\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "baseline_top3_controls",
+      "targets": [
+        {
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+          "name": "TOMO",
+          "account": "4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41"
+        },
+        {
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+          "name": "TOMO",
+          "account": "AmS7L9wjcJ3aoCsyVSsRFiP2GJP5zfTpUwHyxYZkYGEj"
+        },
+        {
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+          "name": "TOMO",
+          "account": "26m1f3TsWkXYpLhKkhKKb2z7hFjH8sWphAwNeWP2xWJh"
+        },
+        {
+          "mint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump",
+          "name": "ANSEM",
+          "account": "GdrKtm8einYWAfjWhAtmoi6Em5cqEitsF4u1GxZkL3f"
+        }
+      ],
+      "pubkeys": [
+        "4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41",
+        "AmS7L9wjcJ3aoCsyVSsRFiP2GJP5zfTpUwHyxYZkYGEj",
+        "26m1f3TsWkXYpLhKkhKKb2z7hFjH8sWphAwNeWP2xWJh",
+        "GdrKtm8einYWAfjWhAtmoi6Em5cqEitsF4u1GxZkL3f"
+      ],
+      "observedAt": "2026-11-28T09:51:27.212Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.0\",\n    \"slot\": 474908909\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y\",\n            \"owner\": \"4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"463390775498859\",\n              \"decimals\": 6,\n              \"uiAmount\": 463390775.498859,\n              \"uiAmountString\": \"463390775.498859\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y\",\n            \"owner\": \"DiXMHvwxWwb4cgUije7exxhszikbLm6NpcGm3NNgNkCR\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"80683773045975\",\n              \"decimals\": 6,\n              \"uiAmount\": 80683773.045975,\n              \"uiAmountString\": \"80683773.045975\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y\",\n            \"owner\": \"CxcnWnek13DF53VyfTm9ZQYBUh4M1wqWHc7vNDLVzAhd\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"57921290873594\",\n              \"decimals\": 6,\n              \"uiAmount\": 57921290.873594,\n              \"uiAmountString\": \"57921290.873594\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 1513840,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump\",\n            \"owner\": \"7oU9nR9VEvFPwvp2PpXo2LQc6A92QRhcUTwhLWT7MsDM\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"491003700487968\",\n              \"decimals\": 6,\n              \"uiAmount\": 491003700.487968,\n              \"uiAmountString\": \"491003700.487968\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 2074080,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "baseline_top3_controls",
+      "targets": [
+        {
+          "mint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump",
+          "name": "ANSEM",
+          "account": "4NS9y9LTuUw927QgG13oojFcwAnkBnNwQVzGXdGfD6bj"
+        },
+        {
+          "mint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump",
+          "name": "ANSEM",
+          "account": "BmCXK8QFCHgjiqGm7peAtBbZpFPJNsp5fYP5rSRazMS8"
+        },
+        {
+          "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+          "name": "FLOAT",
+          "account": "H5yeZaYgJax2iATAu8WXJMumR5hTTcaqncwZxSdVNqXF"
+        },
+        {
+          "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+          "name": "FLOAT",
+          "account": "EHnacy7YmGsBfEwvvZdfxCbKeaWJX7D74Lwg1UkgHeEo"
+        }
+      ],
+      "pubkeys": [
+        "4NS9y9LTuUw927QgG13oojFcwAnkBnNwQVzGXdGfD6bj",
+        "BmCXK8QFCHgjiqGm7peAtBbZpFPJNsp5fYP5rSRazMS8",
+        "H5yeZaYgJax2iATAu8WXJMumR5hTTcaqncwZxSdVNqXF",
+        "EHnacy7YmGsBfEwvvZdfxCbKeaWJX7D74Lwg1UkgHeEo"
+      ],
+      "observedAt": "2026-11-28T09:51:28.089Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.0\",\n    \"slot\": 474908912\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump\",\n            \"owner\": \"87ZDLDDbMAqmHJwsAgNjpJVCf9gZvwMJJMbFbXNTrkva\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"26010449754830\",\n              \"decimals\": 6,\n              \"uiAmount\": 26010449.75483,\n              \"uiAmountString\": \"26010449.75483\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 2074080,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"extensions\": [\n              {\n                \"extension\": \"immutableOwner\"\n              }\n            ],\n            \"isNative\": false,\n            \"mint\": \"9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump\",\n            \"owner\": \"FnzKY6x7entQ1eR3D225dQyT7ybfka4PskBMQhb8L3CC\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"20589386771100\",\n              \"decimals\": 6,\n              \"uiAmount\": 20589386.7711,\n              \"uiAmountString\": \"20589386.7711\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 170\n      },\n      \"executable\": false,\n      \"lamports\": 2074446,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 170\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"isNative\": false,\n            \"mint\": \"Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr\",\n            \"owner\": \"GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"51525754541263\",\n              \"decimals\": 6,\n              \"uiAmount\": 51525754.541263,\n              \"uiAmountString\": \"51525754.541263\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 165\n      },\n      \"executable\": false,\n      \"lamports\": 1488440,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"isNative\": false,\n            \"mint\": \"Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr\",\n            \"owner\": \"EHnacy7YmGsBfEwvvZdfxCbKeaWJX7D74Lwg1UkgHeEo\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"49893683978906\",\n              \"decimals\": 6,\n              \"uiAmount\": 49893683.978906,\n              \"uiAmountString\": \"49893683.978906\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 165\n      },\n      \"executable\": false,\n      \"lamports\": 1488440,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "baseline_top3_controls",
+      "targets": [
+        {
+          "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+          "name": "FLOAT",
+          "account": "AhQpSUWGUwEpyYueQDBewYWnF45srebu9odaLJQJopKY"
+        },
+        {
+          "mint": "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN",
+          "name": "TRUMP",
+          "account": "HkykUVWTctptXZmRTWearMsH4SaQNmE4Ku3tMJe5v2mH"
+        },
+        {
+          "mint": "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN",
+          "name": "TRUMP",
+          "account": "7DaumTmUaK3xcpd8XJXAjUzDrCqPuj3S1Sc2cbootBUN"
+        },
+        {
+          "mint": "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN",
+          "name": "TRUMP",
+          "account": "3zya4BbfRV8a4nKyAmxqufyGYEH5TF3dZFYZvE5kSj7N"
+        }
+      ],
+      "pubkeys": [
+        "AhQpSUWGUwEpyYueQDBewYWnF45srebu9odaLJQJopKY",
+        "HkykUVWTctptXZmRTWearMsH4SaQNmE4Ku3tMJe5v2mH",
+        "7DaumTmUaK3xcpd8XJXAjUzDrCqPuj3S1Sc2cbootBUN",
+        "3zya4BbfRV8a4nKyAmxqufyGYEH5TF3dZFYZvE5kSj7N"
+      ],
+      "observedAt": "2026-11-28T09:51:28.968Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908915\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"isNative\": false,\n            \"mint\": \"Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr\",\n            \"owner\": \"95ddWCEqs7bX1vAPFXgAxNKmYkCvpQFiurCk4KWg2AST\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"25357208936719\",\n              \"decimals\": 6,\n              \"uiAmount\": 25357208.936719,\n              \"uiAmountString\": \"25357208.936719\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 165\n      },\n      \"executable\": false,\n      \"lamports\": 1488440,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"isNative\": false,\n            \"mint\": \"6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN\",\n            \"owner\": \"2RH6rUTPBJ9rUDPpuV9b8z1YL56k1tYU6Uk5ZoaEFFSK\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"706131964328498\",\n              \"decimals\": 6,\n              \"uiAmount\": 706131964.328498,\n              \"uiAmountString\": \"706131964.328498\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 165\n      },\n      \"executable\": false,\n      \"lamports\": 8148901,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"isNative\": false,\n            \"mint\": \"6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN\",\n            \"owner\": \"9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"57000000000000\",\n              \"decimals\": 6,\n              \"uiAmount\": 57000000,\n              \"uiAmountString\": \"57000000\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 165\n      },\n      \"executable\": false,\n      \"lamports\": 2039313,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"isNative\": false,\n            \"mint\": \"6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN\",\n            \"owner\": \"8N2ssXZGJbvVLszanERuCJpLZd2nuADgpZwLkDDxwNnS\",\n            \"state\": \"initialized\",\n            \"tokenAmount\": {\n              \"amount\": \"36081252192484\",\n              \"decimals\": 6,\n              \"uiAmount\": 36081252.192484,\n              \"uiAmountString\": \"36081252.192484\"\n            }\n          },\n          \"type\": \"account\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 165\n      },\n      \"executable\": false,\n      \"lamports\": 102039280,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "baseline_authorities",
+      "targets": [
+        {
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+          "name": "TOMO",
+          "account": "4RMdSsu8SQKysFQsXij3LkktAXShLyoUSLFq6KQvvz41",
+          "authority": "4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9"
+        },
+        {
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+          "name": "TOMO",
+          "account": "AmS7L9wjcJ3aoCsyVSsRFiP2GJP5zfTpUwHyxYZkYGEj",
+          "authority": "DiXMHvwxWwb4cgUije7exxhszikbLm6NpcGm3NNgNkCR"
+        },
+        {
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+          "name": "TOMO",
+          "account": "26m1f3TsWkXYpLhKkhKKb2z7hFjH8sWphAwNeWP2xWJh",
+          "authority": "CxcnWnek13DF53VyfTm9ZQYBUh4M1wqWHc7vNDLVzAhd"
+        },
+        {
+          "mint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump",
+          "name": "ANSEM",
+          "account": "GdrKtm8einYWAfjWhAtmoi6Em5cqEitsF4u1GxZkL3f",
+          "authority": "7oU9nR9VEvFPwvp2PpXo2LQc6A92QRhcUTwhLWT7MsDM"
+        }
+      ],
+      "pubkeys": [
+        "4ifMsRTMGWZPWmGfqeQQsNQBhzrev5zZRbZEGRTCdVw9",
+        "DiXMHvwxWwb4cgUije7exxhszikbLm6NpcGm3NNgNkCR",
+        "CxcnWnek13DF53VyfTm9ZQYBUh4M1wqWHc7vNDLVzAhd",
+        "7oU9nR9VEvFPwvp2PpXo2LQc6A92QRhcUTwhLWT7MsDM"
+      ],
+      "observedAt": "2026-11-28T09:51:38.798Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908962\n  },\n  \"value\": [\n    {\n      \"data\": [\n        \"KLUv/QBYRQgA5A/xmm0EEbFtvP8AALpZ4mo6ytmv43nGzWusXtAnVBzgezYbhGO3m5SfGpXBxmHbh51RZe0RZdYdsg2sM8NwSt+PFlHJF9s+4T3hsbcGm4hX/quBhPtof2NGGMA12sQ53BrrO1WYoPAAAAAAAT9H7fhmUr4rzwCUhmDWWw2lRHymOK5SZvRfgzrRkDbQMtBTJPkwbpQ/rTOycrf1ZFUp/kB2r1ecobBCwe1GQqqsBrAY5EkuUVcb0X7qQpH0W/mgI6VTmdZtsgbIClDkoq2wbVnQAwAAVrXY5LD3jm336qzhgB1io5lCB2mV0Xd+vdHVy5FJkeIAAKYRHhgEAFk1AAIAIBl7BkgB\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 2179320,\n      \"owner\": \"pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 301\n    },\n    {\n      \"data\": [\n        \"KLUv/SAAAQAA\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 4949999,\n      \"owner\": \"11111111111111111111111111111111\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 0\n    },\n    {\n      \"data\": [\n        \"KLUv/SAAAQAA\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 7687300,\n      \"owner\": \"11111111111111111111111111111111\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 0\n    },\n    {\n      \"data\": [\n        \"KLUv/SAAAQAA\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 150142025,\n      \"owner\": \"11111111111111111111111111111111\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 0\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "baseline_authorities",
+      "targets": [
+        {
+          "mint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump",
+          "name": "ANSEM",
+          "account": "4NS9y9LTuUw927QgG13oojFcwAnkBnNwQVzGXdGfD6bj",
+          "authority": "87ZDLDDbMAqmHJwsAgNjpJVCf9gZvwMJJMbFbXNTrkva"
+        },
+        {
+          "mint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump",
+          "name": "ANSEM",
+          "account": "BmCXK8QFCHgjiqGm7peAtBbZpFPJNsp5fYP5rSRazMS8",
+          "authority": "FnzKY6x7entQ1eR3D225dQyT7ybfka4PskBMQhb8L3CC"
+        },
+        {
+          "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+          "name": "FLOAT",
+          "account": "H5yeZaYgJax2iATAu8WXJMumR5hTTcaqncwZxSdVNqXF",
+          "authority": "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL"
+        },
+        {
+          "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+          "name": "FLOAT",
+          "account": "EHnacy7YmGsBfEwvvZdfxCbKeaWJX7D74Lwg1UkgHeEo",
+          "authority": "EHnacy7YmGsBfEwvvZdfxCbKeaWJX7D74Lwg1UkgHeEo"
+        }
+      ],
+      "pubkeys": [
+        "87ZDLDDbMAqmHJwsAgNjpJVCf9gZvwMJJMbFbXNTrkva",
+        "FnzKY6x7entQ1eR3D225dQyT7ybfka4PskBMQhb8L3CC",
+        "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+        "EHnacy7YmGsBfEwvvZdfxCbKeaWJX7D74Lwg1UkgHeEo"
+      ],
+      "observedAt": "2026-11-28T09:51:39.888Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908967\n  },\n  \"value\": [\n    {\n      \"data\": [\n        \"KLUv/SAAAQAA\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 146578433,\n      \"owner\": \"11111111111111111111111111111111\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 0\n    },\n    {\n      \"data\": [\n        \"KLUv/QBYjQgAFBDxmm0EEbFtvP0AAMU9G6SWkOt9a9VVbhTVMifcgBDV5KbmRyv0oDbAatJUf/Aws0P8o9hWgWlTui2gLhVP0dopCJItRz7zmCfC0D8Gm4hX/quBhPtof2NGGMA12sQ53BrrO1WYoPAAAAAAAa0nZT6hnCcaQvfjKc9H4OWMdj6jjiirYhiUy75BdhcAn+d0G1dl1Ia/wMVPCIZPBds9ElJHof7KixEj4TzU4Dm64x5T0mo7Nhru7LRMxJ9klc/8PACJzCSgz19EiVo3QQLkdFHWAwAAekpJwC69nc0ED+bE1G3UpRn89Zxoex2iGjME5XWU6M0AAFkQcf3/AFIhVc6PAQUAuQ1uEgJzIChMbwA0\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1948306189,\n      \"owner\": \"pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 301\n    },\n    {\n      \"data\": [\n        \"KLUv/SAAAQAA\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1274756502850,\n      \"owner\": \"11111111111111111111111111111111\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 0\n    },\n    {\n      \"data\": [\n        \"KLUv/QBYnQIAlASiKUw12x/+Tu2k5BHIVZZJiCSvJOxtDFwxyFeSqXRRmcV0wpP+QFzuWZpJ90VNAqa636ZMbqerzuZj7yI4gDrkmmJPx2AtAAEAAgAEJx4ecAY=\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1488440,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 165\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "baseline_authorities",
+      "targets": [
+        {
+          "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+          "name": "FLOAT",
+          "account": "AhQpSUWGUwEpyYueQDBewYWnF45srebu9odaLJQJopKY",
+          "authority": "95ddWCEqs7bX1vAPFXgAxNKmYkCvpQFiurCk4KWg2AST"
+        },
+        {
+          "mint": "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN",
+          "name": "TRUMP",
+          "account": "HkykUVWTctptXZmRTWearMsH4SaQNmE4Ku3tMJe5v2mH",
+          "authority": "2RH6rUTPBJ9rUDPpuV9b8z1YL56k1tYU6Uk5ZoaEFFSK"
+        },
+        {
+          "mint": "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN",
+          "name": "TRUMP",
+          "account": "7DaumTmUaK3xcpd8XJXAjUzDrCqPuj3S1Sc2cbootBUN",
+          "authority": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+        },
+        {
+          "mint": "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN",
+          "name": "TRUMP",
+          "account": "3zya4BbfRV8a4nKyAmxqufyGYEH5TF3dZFYZvE5kSj7N",
+          "authority": "8N2ssXZGJbvVLszanERuCJpLZd2nuADgpZwLkDDxwNnS"
+        }
+      ],
+      "pubkeys": [
+        "95ddWCEqs7bX1vAPFXgAxNKmYkCvpQFiurCk4KWg2AST",
+        "2RH6rUTPBJ9rUDPpuV9b8z1YL56k1tYU6Uk5ZoaEFFSK",
+        "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+        "8N2ssXZGJbvVLszanERuCJpLZd2nuADgpZwLkDDxwNnS"
+      ],
+      "observedAt": "2026-11-28T09:51:40.690Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474908971\n  },\n  \"value\": [\n    {\n      \"data\": [\n        \"KLUv/SAAAQAA\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 282864591,\n      \"owner\": \"11111111111111111111111111111111\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 0\n    },\n    {\n      \"data\": [\n        \"KLUv/QBYBQYAdAuto8r/IAjb8SAAAABhY2NkZjlkZWYyYmY0ZTg2ODNmNTEyM2JjZWIyYzZmMfj/Ie3GUriDSEch6CgHUTxJbxhW/Xc5Ej6vrnM/VSkU/1ZbeLrsW9b/BmMzGOog5/Y5jS8ygOj3+MOATiiOeKeNAQAAALV8EBApfrp3VluijzK15UQCiChHPwlhRK+g3mUuC+oHAQEAAABE60/3bY0jxUbxiW9wHb8a+ylzpqRSr9npE2ziXT3N1AABALeD7IEU\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 6142274433,\n      \"owner\": \"magnaSHyv8zzKJJmr8NSz5JXmtdGDTTFPEADmvNAwbj\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 6593\n    },\n    {\n      \"data\": [\n        \"KLUv/SAAAQAA\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 9300003431676336,\n      \"owner\": \"11111111111111111111111111111111\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 0\n    },\n    {\n      \"data\": [\n        \"KLUv/SAAAQAA\",\n        \"base64+zstd\"\n      ],\n      \"executable\": false,\n      \"lamports\": 1199736137,\n      \"owner\": \"11111111111111111111111111111111\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 0\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "kind": "baseline_mints",
+      "targets": [
+        {
+          "name": "TOMO",
+          "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y"
+        },
+        {
+          "name": "ANSEM",
+          "mint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump"
+        },
+        {
+          "name": "FLOAT",
+          "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr"
+        },
+        {
+          "name": "TRUMP",
+          "mint": "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN"
+        }
+      ],
+      "pubkeys": [
+        "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+        "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump",
+        "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+        "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN"
+      ],
+      "observedAt": "2026-11-28T09:52:09.914Z",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"context\": {\n    \"apiVersion\": \"4.4.1\",\n    \"slot\": 474909111\n  },\n  \"value\": [\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"extensions\": [\n              {\n                \"extension\": \"metadataPointer\",\n                \"state\": {\n                  \"authority\": null,\n                  \"metadataAddress\": \"EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y\"\n                }\n              },\n              {\n                \"extension\": \"tokenMetadata\",\n                \"state\": {\n                  \"additionalMetadata\": [],\n                  \"mint\": \"EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y\",\n                  \"name\": \"Tomo\",\n                  \"symbol\": \"TOMO\",\n                  \"updateAuthority\": null,\n                  \"uri\": \"https://ipfs.io/ipfs/bafkreihmukpl6vx6syitlyb7eva24vy74sxlpeuevgtflvbhlp5fhbvp4y\"\n                }\n              }\n            ],\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"953716648068110\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 406\n      },\n      \"executable\": false,\n      \"lamports\": 2712720,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 406\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"extensions\": [\n              {\n                \"extension\": \"metadataPointer\",\n                \"state\": {\n                  \"authority\": null,\n                  \"metadataAddress\": \"9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump\"\n                }\n              },\n              {\n                \"extension\": \"tokenMetadata\",\n                \"state\": {\n                  \"additionalMetadata\": [],\n                  \"mint\": \"9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump\",\n                  \"name\": \"The Black Bull\",\n                  \"symbol\": \"ANSEM\",\n                  \"updateAuthority\": null,\n                  \"uri\": \"https://meta.uxento.io/data/7f4c8448-c38e-4c34-aa37-a28cff9806d0\"\n                }\n              }\n            ],\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"997351545534225\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token-2022\",\n        \"space\": 401\n      },\n      \"executable\": false,\n      \"lamports\": 26201510966,\n      \"owner\": \"TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 401\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"830037197744551\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 82\n      },\n      \"executable\": false,\n      \"lamports\": 184321860,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    },\n    {\n      \"data\": {\n        \"parsed\": {\n          \"info\": {\n            \"decimals\": 6,\n            \"freezeAuthority\": null,\n            \"isInitialized\": true,\n            \"mintAuthority\": null,\n            \"supply\": \"999998739755971\"\n          },\n          \"type\": \"mint\"\n        },\n        \"program\": \"spl-token\",\n        \"space\": 82\n      },\n      \"executable\": false,\n      \"lamports\": 1350135340051,\n      \"owner\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n      \"rentEpoch\": 18446744073709552000,\n      \"space\": 82\n    }\n  ]\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  ]
+}

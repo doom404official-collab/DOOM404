@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {riskContributions,tokenInsights} from '../lib/tokenIntelligencePresentation.mjs';
+import {practicalAssessmentV2} from '../lib/practicalScoringV2.mjs';
+test('approved weighted contribution fixture and dynamic driver',()=>{const scores=Object.fromEntries(['token_security','holder_intelligence','liquidity_quality_safety','creator_intelligence'].map((id,i)=>[id,{riskScore:[0,17.28,24.47,6.64][i]}]));const rows=riskContributions(scores);assert.equal(rows[0].id,'liquidity_quality_safety');assert.ok(Math.abs(rows.reduce((n,r)=>n+r.weighted,0)-15.0765)<.00001);assert.deepEqual(rows.map(r=>r.percentage.toFixed(1)),['56.8','34.4','8.8','0.0']);scores.token_security.riskScore=100;assert.equal(riskContributions(scores)[0].id,'token_security');});
+test('zero contributions and missing evidence stay finite',()=>{assert.ok(riskContributions({}).every(r=>r.percentage===0));assert.ok(tokenInsights(practicalAssessmentV2({})).every(x=>x.name==='Critical finding'));});

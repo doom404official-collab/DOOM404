@@ -5,13 +5,55 @@
   "description": "DOOM404 Wallet Signal - Solana wallet analytics MVP",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "build": "npm run test:smoke && npm run validate:creator:evidence-persist && next build",
+    "start": "next start",
+    "test:smoke": "node --test tests/*.test.mjs",
+    "check": "npm run build",
+    "test:creator": "node --test tests/*creator*.test.mjs tests/pump-fun-creation.test.mjs tests/launchpad-creation-verifier.test.mjs",
+    "validate:creator:preview": "node scripts/preview-creator-validation.mjs",
+    "validate:creator:indexed": "node scripts/preview-indexed-creator-validation.mjs",
+    "validate:creator:helius-index": "node scripts/preview-helius-index-validation.mjs",
+    "validate:creator:pumpfun": "node scripts/preview-pumpfun-creator-validation.mjs",
+    "validate:creator:wallet": "node scripts/preview-creator-wallet-validation.mjs",
+    "validate:creator:evidence": "node scripts/preview-creation-evidence-audit.mjs",
+    "validate:creator:matrix": "node scripts/preview-creator-matrix.mjs",
+    "validate:creator:mint-matrix": "node scripts/preview-creator-mint-matrix.mjs",
+    "validate:creator:schema-matrix": "node scripts/preview-pumpfun-schema-matrix.mjs",
+    "validate:creator:timed": "node scripts/preview-helius-timed-validation.mjs",
+    "validate:creator:timed-matrix": "node scripts/preview-creator-timed-matrix.mjs",
+    "validate:vault:preview": "node scripts/preview-intelligence-vault-check.mjs",
+    "validate:vault:seed-once": "node scripts/preview-vault-seed-once.mjs",
+    "validate:creator:focused": "node scripts/preview-creator-focused-diagnostic.mjs",
+    "validate:creator:resume": "node scripts/preview-creator-resume-diagnostic.mjs",
+    "validate:creator:reject-review": "node scripts/preview-creator-reject-review.mjs",
+    "validate:creator:layout-audit": "node scripts/preview-creator-layout-audit.mjs",
+    "validate:creator:extra-accounts": "node scripts/preview-creator-extra-account-audit.mjs",
+    "validate:creator:argument-audit": "node scripts/preview-creator-argument-audit.mjs",
+    "validate:creator:final-layout": "node scripts/preview-creator-final-layout-audit.mjs",
+    "validate:creator:extra-context": "node scripts/preview-creator-extra-context.mjs",
+    "validate:creator:quote-curve": "node scripts/preview-creator-quote-curve-audit.mjs",
+    "validate:creator:slot-audit": "node scripts/preview-creator-slot-audit.mjs",
+    "validate:creator:app": "node scripts/preview-creator-app-verify.mjs",
+    "validate:creator:pnut": "node scripts/preview-pnut-creator-validation.mjs",
+    "validate:creator:pnut-reject": "node scripts/preview-pnut-rejected-audit.mjs",
+    "validate:creator:pnut-layout": "node scripts/preview-pnut-layout-audit.mjs",
+    "validate:creator:pnut-args": "node scripts/preview-pnut-argument-audit.mjs",
+    "validate:creator:pnut-historical": "node scripts/preview-pnut-historical-audit.mjs",
+    "validate:creator:goon": "node scripts/preview-goon-validation.mjs",
+    "validate:creator:evidence-persist": "node scripts/preview-evidence-persistence.mjs"
   },
   "dependencies": {
+    "@pump-fun/pump-swap-sdk": "2.1.0",
+    "@raydium-io/raydium-sdk-v2": "0.2.87-alpha",
     "@solana/web3.js": "^1.98.0",
     "next": "^15.0.0",
+    "pg": "8.23.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "8.5.23"
+    }
   }
 }

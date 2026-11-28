@@ -1,0 +1,296 @@
+# GLITCH historical recovery preflight — 2026-10-27
+
+Status: HOLD — offline engineering only. This document does not authorize workflow dispatch, live RPC, checkpoint changes, scoring promotion, or deployment.
+
+## Holder
+Frozen mint: 98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump.
+Historical observations only (not fresh execution authority): two running-status jobs had expired leases:
+- c670f393-31b0-470c-a01f-cb2b813a1219, version 2134, nextWalletIndex 18, 20 holders.
+- d07c0256-b472-4089-a237-99ed5e5c8cc4, version 1812, nextWalletIndex 4, 20 holders.
+Both have archiveCompletenessProven=false. Do not reset or merge their checkpoints.
+
+The deployed tick API currently calls getNextRunnable(), which selects the oldest eligible job rather than a pinned job. Use the separately gated explicitly pinned recovery path described below with an allowlisted job ID, mint and expected checkpoint version. Preserve the atomic claim, renewal and commit RPCs. Reject mismatches and concurrent claims fail-closed. Do not change the general scheduled worker's selection policy without a separate review.
+
+Offline acceptance:
+1. Correct pinned job selects only that job.
+2. Wrong job ID/mint/version returns an error before RPC.
+3. Expired lease can be atomically claimed; active lease cannot.
+4. Version conflict and failed renewal prevent checkpoint commit.
+5. RPC budget is bounded and duplicate evidence does not increase counts.
+6. No scoring promotion; snapshot and original checkpoint remain unchanged during tests.
+
+## Creator
+Current persisted job: stage selling, status partial, request_count_total 7189, creatorHistoryRpcExhausted=true, creatorHistoryComplete=false.
+Current sellingStatus=AWAITING_VERIFIED_INITIAL_ALLOCATION. initialAllocationEvidence.status=INITIAL_ALLOCATION_INCOMPLETE, coverageComplete=false, initialAttributableRaw=null.
+The selling stage consumes verifiedLaunchDistributions and launchDistributionCoverageComplete from checkpoint state; a producer for these inputs has not been verified. Do not infer zero allocation or set coverageComplete=true.
+
+Offline acceptance:
+1. Define instruction-level identity and deterministic deduplication contract for launch distributions.
+2. Verify source provenance, mint, recipient, amount, timestamp/slot and launch-window membership.
+3. Ensure replay/order invariance and reject conflicting same-signature evidence.
+4. Preserve Unknown for incomplete archive and selling windows.
+5. Verify producer-to-consumer integration against fixtures before a live run.
+
+## Operational gates
+Check GitHub workflow enabled state, final scheduled-run logs, Vercel preview commit and worker configuration, and Supabase snapshot/version before any approved bounded dispatch.
+Liquidity LQ-08 remains offline-only. No recurring scheduling or production deployment is authorized.
+
+## Holder H03 implementation evidence — 2026-10-27
+
+Draft PR #74 remains offline-only. Consolidated `runPinnedHolderRecovery` replaces both V1 and V2; V2 and its exception-only “valid scan” test are removed. `POST /api/holder-scan-recovery` calls this adapter explicitly. It requires Preview, the recovery branch ref, the dedicated `GLITCH_HOLDER_RECOVERY_ENABLED=true` opt-in and existing constant-time worker-token authentication. Recovery no longer requires the ordinary worker-enabled flag; keep it absent/false for recovery-only use. No flag or credential was changed. No workflow calls the new endpoint. No scheduler selection changes.
+
+Only the two job IDs above and the frozen mint are accepted. Caller must supply a freshly reviewed expected version; historical 2134/1812 are fixture examples, not permission to execute. Each job retains its own checkpoint. Max 20 provider calls, no transport retry, lease 90–180 seconds (route fixes 90). Invalid dependencies/budgets, missing or inconsistent lease metadata, active leases, malformed engine state and non-false archive flags fail closed. `getById` now includes owner/expiry. Explicit wrapper methods preserve prototype-bound stores.
+
+### Checkpoint and lease contract
+- Read returns complete lease metadata and checkpoint; adapter clones it before any work.
+- Existing SQL claim increments version **v → v+1** and is atomic on runnable status and null/expired lease. It has no expected-version argument. A concurrent change between read/claim can therefore acquire a lease, but exact post-claim job/mint/version/checkpoint comparison stops before provider RPC. No unsafe release/reset is attempted; let the short lease expire and obtain fresh authority. A schema-level compare-and-claim enhancement is outside this no-migration task.
+- Worker scans a private checkpoint copy. Its existing round-robin cursors, checked/pending signatures, failed history, edges, network evidence and snapshot survive. No checkpoint combining, pruning or scoring promotion is added.
+- Renewal checks owner, active expiry and exact version **v+1 → v+2**, with exact checkpoint equality; false or malformed renewal cannot commit. Provider requests stop once the observed lease expires; database time remains authoritative for renewal/commit.
+- Commit uses **v+2 → v+3**, preserving pre-existing summary fields (including score/methodology). Response must match identity, version, status, released lease, checkpoint and summary. SQL no-match is VERSION_CONFLICT. Transport failure or malformed success is COMMIT_OUTCOME_UNKNOWN, reconciliationRequired=true, retryAllowed=false (HTTP 503). Inspect persisted job/version/checkpoint read-only before any further authorized attempt; this path does not auto-retry or infer rollback.
+- A provider interruption can persist bounded progress through normal renewal/commit. Process termination before commit leaves prior persisted checkpoint intact; resume only after lease expiry with a fresh version. Lost commit responses may have persisted: never replay the old request.
+- Existing worker status `complete` means provider-observed exhaustion only. `archiveCompletenessProven:false` is retained; no historical completeness or accepted score follows.
+
+### Verification
+- 61 focused offline tests: `node --test tests/holder-pinned-recovery.test.mjs tests/holder-recovery*.test.mjs tests/holder-job-store.test.mjs`.
+- Actual history engine + realistic synthetic 20-holder checkpoint fixtures at separate cursor positions 18/4; actual REST store with mocked transport; prototype-bound store, both IDs, malformed metadata, race/concurrent claims, renewal loss/mismatch, stale commit, provider/process interruption, uncertain commits (persisted and not persisted), exact 20-call ceiling, duplicate decoded transfer replay and immutable prior history/snapshot/score.
+- Existing disposable PostgreSQL suite: `PGHOST=127.0.0.1 PGDATABASE=glitch_controlled_merge_test PSQL=/tmp/holder-psql python3 tests/fixtures/holder-atomic-merge/run-disposable-tests.py`: **25 checks passed**. PostgreSQL 17 container with `--network none`; wrapper executes local container psql. Tests use checked-in claim/renew/commit SQL fixtures, concurrency/rollback/expired lease/stale worker/readback cases. This verifies fixture SQL, not deployed schema, credentials or hosted database permissions. No Supabase branch/project created.
+- Final `NODE_OPTIONS=--require=/tmp/holder-offline-guard.cjs NEXT_TELEMETRY_DISABLED=1 npm run build`: **700/700 smoke tests passed**, Next build/lint/type phase passed, persistence helper SKIPPED_NOT_OPTED_IN. Guard blocks socket connects and default global fetch. Installed dependencies reused (Node 24); not a fresh dependency-install test. Existing compiled evidence-route script passed **21 no-network cases**; compiled recovery handler returned disabled/503 with zero network. No standalone lint/type script is configured. `git diff --check` passed.
+
+- Payload-size follow-up: parent read-only observation at 2026-10-27 08:58:24 UTC reported unchanged separate versions 2134/1812 and checkpoint sizes 8,275,819 / 7,559,667 bytes. Added an **8,242,958-byte synthetic fixture**, 13,000 retained transfers and 15,000 checked signatures: actual worker/adapter preserves the serialized prior network evidence, frozen snapshot, pending signature and score. Focused suite **61/61**; full outbound-guarded smoke rerun **701/701**. One local size test took ~433 ms; this is not a Vercel memory/latency guarantee. Production code is identical to the successful 700-test build above.
+- Parent separately inspected hosted claim/renew/commit read-only and corroborated the fixture's version advancement and non-CAS claim contract. This engineering task did not execute hosted functions; authorization and fresh live prerequisites remain with parent.
+
+### Branch reconciliation
+Assessment already contains snapshot-validity, controlled-merge uncertain-outcome, reconciliation-provenance, strict-flags and disposable-PostgreSQL branch work (ancestor checks passed). No duplicate implementation or merge added. Separate `fix/holder-tick-identity` (4dd8478) improves ordinary tick observability; it is not integrated here. Dashboard-integration, concentration-scoring and workflow-syntax branches remain separate; their source was inventoried, not merged. Recovery does not modify ordinary tick selection or introduce competing merge/reconciliation logic.
+
+### Workflow and trigger inventory
+Source reviewed at recovery base 1207f4c8, assessment 58195222, main fe5b845b and all nine existing Holder branches. Source schedules below are not proof that workflows are currently enabled. No dispatch/schedule edit occurred.
+
+- Assessment/recovery `glitch-holder-worker-auto`: hourly minute 17; manual worker shares `glitch-holder-investigation`, cancel-in-progress=false. Both call ordinary tick; automatic can start a missing job. Recovery never does.
+- Main `glitch-holder-worker-controlled-test`: minute 5,17,29,41,53; four bounded ordinary ticks declared in source; `glitch-holder-investigation`. **The older owner approval covered two ticks only. Source configuration does not extend that authority to four ticks. Do not dispatch this workflow under the older two-tick approval; separate reconciliation/approval is required.** Main “auto” is manual-only; main manual-worker YAML lacks that concurrency group (assessment copy has it). Cross-source discrepancy retained, not silently edited.
+- Main `glitch-controlled-network-merge`: manual, same holder concurrency group, three verified signatures via atomic claim/commit; no provider RPC. Existing reconciliation and frozen-cross-job tools are read-only/provenance-guarded; they are not substitutes for fresh pinned recovery authority.
+- Evidence validation: assessment `glitch-evidence-worker`, main `glitch-evidence-validation-manual`, every 30 minutes, separate `glitch-evidence-validation` group. Per-job/signature evidence leases are separate from the scan-job lease. This group does not serialize against recovery; atomic scan claim/renew/commit remains required.
+- History artifact scanner: manual, no workflow concurrency group; up to two 65-request batches, separate artifact checkpoint. Not the 20-call database recovery path; never used here.
+- Read-only diagnostics and snapshot/assessment writers are also inventoried below; “manual” does not mean harmless and none was invoked.
+
+Read-only run metadata: latest 100 runs returned no newer Holder scheduled run than **39752751653** (2026-10-22): successful, one partial tick with 20 requests, then idle; final running, 11,540 checked, 2,862 pending, 6 exhausted wallets, historyComplete=false. Evidence run **39748276525** successful: six requests/claims/processed, zero lease loss. These are historical logs, not fresh checkpoint or lease authority. Workflow enabled-state listing was unavailable: connector rejected `/actions/workflows` as unsupported; `gh api` returned Forbidden. Neither executed a mutation. Do not infer disabled schedules from missing newer runs.
+
+Publication safety: normal PR runs for the recovery base were 40451488620 (Scanner checks), 40451488550 (Evidence validation tests), 40451488526 (Sprint 1), all success. Source runs offline tests/build and disposable Postgres only. Branch-specific live push workflows do not match the recovery branch. Build persistence helper requires a different Creator branch and is skipped here. No vercel.json cron/config was found; all API handlers are request-driven. New recovery endpoint defaults disabled and no existing workflow targets it. Both projects previously reported Preview Ready on PR #74; exact new-commit statuses must be checked after publication. No production promotion, Preview API invocation or hosted writes authorized.
+
+| Source | Workflow | Trigger / concurrency declaration |
+|---|---|---|
+| assessment/recovery | `glitch-diab-cpi-readonly.yml` | workflow_dispatch: |
+| assessment/recovery | `glitch-evidence-validation-tests.yml` | workflow_dispatch:; pull_request:; push: |
+| assessment/recovery | `glitch-evidence-worker.yml` | workflow_dispatch:; schedule:; - cron: '*/30 * * * *'; group: glitch-evidence-validation |
+| assessment/recovery | `glitch-holder-assessment-tests.yml` | workflow_dispatch:; push: |
+| assessment/recovery | `glitch-holder-history-checkpoint.yml` | workflow_dispatch: |
+| assessment/recovery | `glitch-holder-worker-auto.yml` | workflow_dispatch:; schedule:; - cron: '17 * * * *'; group: glitch-holder-investigation |
+| assessment/recovery | `glitch-holder-worker-manual.yml` | workflow_dispatch:; group: glitch-holder-investigation |
+| assessment/recovery | `glitch-liquidity-evidence-worker.yml` | workflow_dispatch:; group: glitch-liquidity-evidence-${{ inputs.mint }} |
+| main | `glitch-controlled-network-merge.yml` | workflow_dispatch:; group: glitch-holder-investigation |
+| main | `glitch-diab-cpi-readonly.yml` | workflow_dispatch: |
+| main | `glitch-diab-vault-observation.yml` | workflow_dispatch: |
+| main | `glitch-evidence-validation-manual.yml` | workflow_dispatch:; schedule:; - cron: "*/30 * * * *"; group: glitch-evidence-validation |
+| main | `glitch-frozen-cross-job-readonly.yml` | workflow_dispatch: |
+| main | `glitch-holder-assessment-readonly.yml` | workflow_dispatch: |
+| main | `glitch-holder-h06-alchemy.yml` | workflow_dispatch:; group: glitch-holder-h06-alchemy-readonly |
+| main | `glitch-holder-h06-counterpart-roles.yml` | workflow_dispatch: |
+| main | `glitch-holder-h06-pump-operation.yml` | workflow_dispatch: |
+| main | `glitch-holder-h06-sensitivity.yml` | workflow_dispatch: |
+| main | `glitch-holder-h06-vault-history.yml` | workflow_dispatch:; group: glitch-h06-vault-readonly |
+| main | `glitch-holder-history-checkpoint.yml` | workflow_dispatch: |
+| main | `glitch-holder-worker-auto.yml` | workflow_dispatch:; group: glitch-holder-investigation |
+| main | `glitch-holder-worker-controlled-test.yml` | workflow_dispatch:; schedule:; - cron: '5,17,29,41,53 * * * *'; group: glitch-holder-investigation |
+| main | `glitch-holder-worker-manual.yml` | workflow_dispatch: |
+| main | `glitch-liquidity-evidence-worker.yml` | workflow_dispatch:; group: glitch-liquidity-evidence-${{ inputs.mint }} |
+| main | `helius-historical-throughput.yml` | workflow_dispatch:; group: helius-live-diagnostic |
+| main | `helius-low-impact-diagnostic.yml` | workflow_dispatch:; group: helius-low-impact-diagnostic |
+| main | `helius-staged-concurrency.yml` | workflow_dispatch:; group: helius-live-diagnostic |
+| main | `holder-concentration-live-assessment.yml` | workflow_dispatch: |
+| main | `holder-network-live-diagnostic.yml` | workflow_dispatch: |
+| main | `holder-snapshot-rpc-diagnostic.yml` | workflow_dispatch: |
+| main | `shared-rpc-capacity-diagnostic.yml` | workflow_dispatch: |
+| main | `top20-consolidated-assessment.yml` | workflow_dispatch: |
+| main | `top20-single-run.yml` | workflow_dispatch:; group: top20-${{ inputs.snapshot_id }} |
+| main | `top20-snapshot-write-read.yml` | workflow_dispatch: |
+| main | `top20-vault-connection.yml` | workflow_dispatch: |
+
+### Remaining H03 acceptance / proposed Issue #66 delta
+H03 remains IN_PROGRESS; Holder remains **4/11** accepted. Draft pinned recovery now has offline worker/store/lease coverage and disposable SQL evidence, but neither live job is complete or has an approved bounded cutoff. Owner authorization, fresh separate checkpoints/versions/leases, actual deployed SQL/Preview configuration, workflow enabled-state/concurrency and provider budget must be verified before any bounded live attempt. H04/H05 historical coverage/ownership, H08 retain-19-versus-versioned-replacement decision, H09 calibration/promotion, H10 dashboard acceptance and H11 release remain open/gated. H06 infrastructure classification only and H07 accepted observations remain unchanged; no repeat RPC.
+
+## Independent-review follow-up: elapsed budget and retained schema
+
+The recovery route still has maxDuration=60. A recovery-only monotonic budget now starts at POST entry, including input parsing: stop provider work at **30 seconds**, retain **20 seconds for renewal/commit/serialization**, and stop network operations by **50 seconds**, leaving a **10-second platform/CPU margin**. Each input/store/provider operation has an **8-second maximum**, shortened by its remaining phase budget. Slow preflight/read/claim consumes provider time rather than extending the execution. Provider pacing and response-body consumption share the cancellation signal. Store read/claim/renew/commit forward the signal through the actual REST adapter; the budget also races the full operation so a hung transport/body cannot prevent timeout handling. General worker selection, ordinary store callers without signals, schedules, 20-call cap and 90–180-second lease bounds remain unchanged.
+
+A provider timeout stops scanning and permits persistence of prior completed work using the reserved time. A late provider result is discarded and cannot mutate the worker checkpoint. A read timeout stops before claim; claim/renewal timeouts return explicit unknown outcome with reconciliationRequired=true and retryAllowed=false. Renewal timeout never starts commit. Commit timeout remains COMMIT_OUTCOME_UNKNOWN even when the server already persisted. Abort is not proof of database rollback; no timed-out mutation is retried automatically. JavaScript deadlines cannot preempt synchronous CPU work or a stalled event loop; post-operation deadline checks reject late values, but the safety margin is not a guarantee against platform termination or unbounded CPU starvation. Interrupted persistence still requires read-only reconciliation.
+
+Preflight now requires checkpoint.version=1. Existing network evidence must have version 1, object processed records, an array of transfers, retentionLimited=false, a matching exact identity from the shared existing holderNetworkSnapshotIdentity serializer, coherent per-signature retained transfer counts and checked states, and available retention capacity. Unsupported/malformed/mismatched evidence fails **before claim**, unchanged. No evidence migration/reset or inferred archive completeness is permitted. Absent network evidence remains supported for legacy checkpoints that have not begun network extraction.
+
+Legacy holders may omit amountRaw and the checkpoint may omit snapshot. The shared serializer preserves omitted holder properties and the existing null snapshot identity convention; recovery does not fabricate raw balances or supply. Parent read-only inspection reported matching retained legacy identities, version-1 schemas, retentionLimited=false, and 16,610/14,977 transfers with 3,022/2,788 processed signatures respectively. This report does not replace fresh preflight; any actual mismatch is a live blocker, not authority to repair hosted data.
+
+Deterministic tests cover slow successful providers/stores, the 30s provider cutoff and 50s total cutoff, hung fetch and hung response bodies at every store stage, abort during pacing, no requests after budget, late response isolation, commit timeout before/after persistence, schema/version/shape/identity rejection, and valid omitted-raw-balance legacy identity. The large fixture now includes coherent processed counts: **8,368,477 bytes**, 9,500 transfers and 15,000 checked/processed signatures (synthetic, not live evidence).
+
+H03 remains IN_PROGRESS, Holder 4/11; no live dispatch or schedule change. The four-versus-two tick authorization discrepancy is explicitly unresolved above.
+
+Follow-up verification: **88/88 focused tests**, **728/728 full smoke tests** with the outbound guard, Next build/lint/type validation passed (723 tests at build time; five additional transport/pacing tests subsequently passed in the full rerun). Compiled evidence route: **21 no-network cases**; compiled recovery endpoint: default disabled/503, no network. `git diff --check` passed. No schema/SQL changes; the existing 25-check disposable PostgreSQL suite remains in normal PR CI.
+
+## Parent operational review and H04 handoff — 2026-10-27
+H03 offline engineering at 72d48c6 was independently reviewed; full H03 remains open. Parent's read-only Preview inspection confirmed READY, but no recovery opt-in entry or recovery-branch worker flag/token scope. No configuration was changed. Approved live use requires separate flag/token scope review, fresh job/lease/budget prerequisites and workflow enabled-state access; the main workflow's four ticks remain outside the older two-tick approval.
+
+Subsequent H04 offline work uses the same branch and shared history engine. See the existing H04 section in [the master register](HOLDER_INTELLIGENCE_MASTER_CHECKLIST_2026_10_22.md) for discovery/decoding acceptance, new additive retry/cursor metadata and remaining authentic-history blockers. No H05 implementation or other attribute work was started.
+
+## Sequential H05 handoff — 2026-10-27
+Parent reviewed H04 engineering at c6f1d26 without accepting full history coverage. H05 now replaces snapshot-owner attribution with conservative transaction-local ownership and instruction identities; see the existing master register's H05 section for exact offline subgates and limits. Lifecycle ambiguity remains Unknown, legacy records are preserved, and the scorer is unchanged. H03/H04/H05 full acceptance remains open, Holder 4/11; H10 has not started.
+
+Push/PR trigger review remains unchanged: Sprint validation, Scanner checks (including disposable PostgreSQL), and evidence tests run offline on PR changes. Live Holder/evidence schedules and manual workers are not push triggers for this branch. The build persistence helper requires a different Creator branch and explicit opt-in; the local outbound-guarded build reports SKIPPED_NOT_OPTED_IN. No workflow or configuration file changed. The recovery route remains default-disabled. Existing workflow inventory and the unresolved enabled-state access/four-versus-two tick approval discrepancy above still govern; no dispatch is authorized by publication.
+
+H05 review follow-up centralizes version/instruction-entry validation in the shared decoder and distinguishes identified transaction failures from Unknown metadata in both evidence validators. See the existing register for exact error/identity contract and 841-test regression evidence. No live recovery, configuration or workflow change accompanies this correction.
+
+## Sequential H08 offline handoff — 2026-10-27
+H05 offline engineering was independently accepted at e694e8c; full H05 remains open. H08 reuses October 22 sensitivity/parity evidence and adds missing cross-job consistency/Unknown checks, frozen raw-input validation, explicit scenario eligible counts and direct-pair shape checks. The existing sensitivity script is guarded more strictly but was not run. No hosted read/write, RPC, history reset, exclusion promotion or policy choice occurred. Existing trigger inventory is unchanged; only ordinary offline PR tests/build and authorized Preview publication apply. The master register contains the 19-eligible-versus-versioned-replacement recommendation for owner decision and exact remaining blockers. Holder remains 4/11; H09/H10 have not started.
+
+## Sequential H09 offline handoff and approved eligible view — 2026-10-27
+Owner explicitly approved retain-19 at 10:16:40 UTC (`Sentinel_066b8879683c8191b27bf71130e93a9e`, replying to the scoped retain-19 request). The new pure eligible-view policy preserves the original frozen ranking/raw supply and excludes the accepted pool from the 19-entry view, with no replacement, historical rewrite or score computation. This resolves the H08 choice only, not history/calibration/promotion gates. H09 additionally tightens provenance boolean checks and computes original top-20 concentration from the raw aggregate before the existing conversion/formula. The master register records regression evidence and the unresolved mapping between original top-20 concentration and any future eligible-19 consolidated component. Existing schedules, budgets, live configuration and release restrictions remain unchanged; H10 has not started.
+
+## H09 clarification and H10 offline presentation
+The owner explicitly approved eligible-19 concentration and PR disclosure at 10:25:56 UTC (`Sentinel_77826a37be548191a0dd3d299d208769`). The scoped H09 component is committed separately and tested before H10 resumed; original-20 measurement and unchanged denominator/formula are retained. H10 updates only the existing Holder dashboard/map slices, with per-signature labels, Unknown handling, keyboard focus, provider state and distinct frozen20/eligible19 scope. Isolated real-component browser QA passed at mobile/desktop sizes with zero network requests; it is not live acceptance. Existing trigger inventory and live/configuration/release restrictions are unchanged.
+
+H10 actual-page follow-up reproduced and fixed stale same-mint assessment response restoration, removed the duplicate initial Holder-status request, and added identity-aware account deduplication. Full production-page browser tests use loopback assets and mock every API request, with a server preload blocking outbound traffic and API execution. See the existing register for commands, 915-test regression evidence, 16 transport/UI checkpoints and remaining authentic-input/acceptance limits. No PR metadata retry occurred after the latest denial.
+
+### H10 frozen observation delivery follow-up
+A separate read-only exact-ID/mint snapshot route now implements the retained sensitivity script's `glitch_top20_snapshots` contract, validating the approved raw inputs before returning observed concentration. The page recomputes original20 and approved eligible19 measurements independently of historical jobs. No association/provenance/final-score promotion is inferred. All 926 tests, build/lint/type checks, 8 compiled frozen-route cases, 27 compiled evidence-route cases and 22 mobile/desktop actual-page mock checkpoints passed. Actual hosted snapshot delivery remains untested; missing/invalid inputs stay Unknown. Library artifact transfer failed at tool discovery (network), with local captures/summary retained and no returned file IDs. H10 awaits review; live prerequisites and PR metadata pause are unchanged.
+
+H10 hosted-schema correction: parent inspection found `snapshot_slot BIGINT` and safe numeric ranking balances. The adapter now maps the actual slot column explicitly, canonicalizes only nonnegative safe integers to decimal strings, preserves ranks/source total-supply definition and rejects unsafe/malformed values. Stored data is untouched. Exact hosted-shape tests replace the inaccurate all-string/`slot` store mock. Direct approved endpoint verification encountered an environment tunnel 403, not an application status; no protection/configuration workaround was attempted.
+
+## H11 offline acceptance handoff — 2026-10-27
+The existing Holder master register now contains the current H01–H11 audit, source security/configuration review, worker/concurrency/budget limitations, monitoring and rollback boundaries, exact HTTP-tunnel/Library/metadata blockers and parent next actions. Accepted gates remain H01/H02/H06/H07 (4/11); H11 is BLOCKED, not completed by this audit. Retain19 and scoped eligible concentration decisions are resolved; authentic history/provenance/calibration and release remain open. Ordinary workers do not inherit the pinned recovery deadline or exact identity diagnostics. No broader worker activation or schedule change is authorized. The adapter comment now correctly describes safe numeric balance canonicalization; runtime behavior is unchanged from reviewed0524eb5. Reuse its947-test/build/CI/Preview evidence; focused safety tests were rerun for this handoff. Proposed PR text is staged locally only; publication remains paused.
+
+## H11 ordinary-worker bounded execution and operator runbook — 2026-10-27
+This supersedes the earlier ordinary-worker deadline gap; it does not activate any route or certify live operation. Existing entry points were reconciled in place:
+
+| Entry point | Selection / authorized ceiling retained | New execution boundary |
+|---|---|---|
+| holder-scan-worker | caller job ID, 25 provider calls, 90s lease | bounded claim/clone/provider/renew/commit, exact lease/version/identity response checks |
+| holder-scan-tick | existing oldest eligible selector, 20 calls, 90s lease | bounded selection and same ordinary worker wrapper; returns selected job ID and uncertainty without the large public view |
+| holder-scan-scheduler | existing oldest eligible selector; no provider/write | bounded cancellable lookup |
+| holder-evidence-tick | existing evidence selector, six claims/calls, existing evidence lease RPC | bounded selection/checkpoint/seed/claim/finish/health; provider retains stricter seven-second limit; stops at elapsed cutoff without burning attempts for unprocessed claims |
+| holder-network-merge-controlled | unchanged fixed job/three-signature set, no provider | cancellable bounded claim/read/evidence paging/commit; static non-secret failure logging; uncertain result still forbids retry |
+| holder-scan-recovery | existing two-job allowlist, 20 calls, 90–180s leases | unchanged reviewed behavior; shared budget permits only smaller per-operation limits |
+
+The ordinary scan wrapper reuses the reviewed monotonic envelope (provider cutoff 30s, total 50s, operations at most 8s, platform maxDuration 60s). Evidence provider operations remain at most 7s. Limits are ceilings, not promises to exhaust every call. No allowlist is imposed on ordinary selection. Full lease metadata and exact version progression are checked; prior summary fields and historical checkpoint evidence are retained. Claim/renew/commit transport errors, timeouts or inconsistent mutation responses yield explicit unknown outcome and retryAllowed:false. Null renewal/commit results yield LEASE_LOST/VERSION_CONFLICT and reconciliationRequired:true. Lost evidence finish leases stop the batch. Deadline-interrupted evidence batches retain completed finishes, leave remaining claims untouched and report partial/interrupted. Underlying REST calls receive abort signals, including evidence paging/body consumption. Late promise results cannot resume the caller or apply new local evidence.
+
+JavaScript cannot interrupt synchronous CPU parsing/cloning. The budget checks elapsed time after each operation and before subsequent provider/store work, rejecting late values; a ten-second margin remains. Platform termination or event-loop starvation can still prevent a response. Absence of a response is never proof of rollback. An already-started remote mutation may complete after local cancellation. No automatic mutation retry, release/reset, checkpoint overwrite or provider expansion was added.
+
+### Readiness procedure (no live action performed)
+1. Before any separately authorized bounded invocation, record exact reviewed/deployed SHA, route/selection mode, authorized request ceiling, current workflow enabled-state/concurrency and fresh job/checkpoint/version/lease evidence. A UI/HTTP observation is not worker authority. Keep the two investigations separate. Resolve main's old two-tick versus declared four-tick discrepancy; do not infer activation approval from code.
+2. Inspect response using existing facilities only. Healthy ordinary responses contain jobId/status/version/requestCount; ALREADY_CLAIMED is contention, not completed work. Evidence reports selected jobId, processed/claimed/leaseLost, requestCount and existing health counters. A partial/interrupted response means elapsed budget ended, not historical completeness. Store/request errors expose only fixed stage/status/code fields; never copy endpoint URLs, tokens, raw exception text or checkpoints into logs.
+3. On CLAIM/RENEW/COMMIT/SEED/FINISH_OUTCOME_UNKNOWN, EXECUTION_INTERRUPTED, lease loss/version conflict, generic503 or no response, do not repeat the write. Retain operation time, route, exact SHA, job ID, counts and safe code. Read the exact stored job or per-signature evidence row, version, lease owner/expiry, checkpoint/evidence hashes and status through separately permitted read-only access. Compare with the preflight record and expected version increment. Only the owner/reviewer may resolve a new attempt after determining whether the prior operation persisted. Do not treat cancellation as a rollback or manually release leases.
+4. Operational review should flag repeated provider/store timeouts, unavailable/retry-exhausted growth, lease losses/version conflicts, stalled pagination or unchanged checkpoint progress. Existing response health/stage fields support this review. No external alerts, dashboards, notification routes or infrastructure were activated; actual alert delivery/sustained monitoring remains untested.
+5. Code rollback readiness: retain parent493db698 and the reviewed successor SHA, plus exact deployment IDs and build evidence. First hold further dispatches; any schedule/flag/protection/deployment change requires applicable approval. Prepare a normal revert on the isolated branch and run affected offline tests before a reviewer chooses an authorized deployment rollback. Never force-push main/assessment or revert database history. Old code may lack the new safeguards, so rollback must not be followed by automatic worker reactivation. No live rollback drill or production deployment was executed.
+
+Offline rehearsal uses fake clocks and actual worker/store boundaries for slow/hung providers and stores, late response cancellation, checkpoint parsing delays, concurrent claims, lease/version rejection, saved-state resumption, strict seven/eight-second limits and 20/25 request ceilings. Compiled-route mocks verify auth/flags, unchanged oldest-job selection, selected identity reporting, lease loss and persisted-but-lost commit responses. Non-secret outputs are asserted. These prove code behavior under fixtures, not hosted latency, permission/configuration correctness or operational alerting.
+
+Caller retry reconciliation: the recovery/assessment automatic Holder workflow previously retried transient POST HTTP errors. Its existing helper now makes exactly one POST attempt, preserving three GET attempts. This closes uncertain-write replay at that caller without changing triggers, cron, tick count, concurrency, credentials or selection. A fake-opener test runs the actual embedded helper. Main is a separate lineage and is not modified or certified. Final local validation: 969 tests, build/lint/type checks, 13 compiled ordinary-route cases, 27 evidence cases, 8 frozen cases; no live calls. Parent must independently review this engineering before treating the gap as accepted.
+
+
+## Recovery-only activation isolation — 2026-10-27
+Offline correction: the dedicated recovery route no longer depends on `GLITCH_HOLDER_WORKER_ENABLED=true`. It still requires Preview, the exact recovery branch, `GLITCH_HOLDER_RECOVERY_ENABLED=true`, the existing worker token, exact allowlisted job/mint/fresh version and all reviewed lease/deadline/request safeguards. No authentication or allowlist/budget was weakened.
+
+Proposed recovery-only configuration, **not applied or approved for activation here**: the dedicated recovery opt-in plus a separately approved branch-scoped existing token; **ordinary `GLITCH_HOLDER_WORKER_ENABLED` must remain absent or false**. Do not set the general flag merely to make recovery work. Ordinary worker/tick/scheduler require that independent general opt-in, which is not authorized by a bounded pinned attempt. Other mutation flags likewise receive no activation authority. Fresh separate checkpoint/lease/deployment/budget prerequisites and the pending owner decision still apply; no credentials, environment values or schedules were changed.
+
+The compiled isolation harness checks both allowlisted jobs with the ordinary flag absent and false, verifies worker/tick/scheduler return disabled without touching the store/provider, and proves production/wrong-branch/missing-recovery-opt-in/bad-token/foreign-job requests cannot reach persistence. Enabling the general flag alone cannot enable recovery. Positive recovery tests use a fake atomic-claim contention response, so no provider requests or hosted writes occur. This proves gating independence, not live execution readiness or owner approval.
+
+## Server-enforced recovery window and sealed versions — 2026-10-27
+This closes the old-deployment activation boundary: Vercel retains environment values per deployment, so changing flags in a newer deployment alone does not close an older enabled one. Only a reviewed deployment containing this enforcement may be considered for the pending bounded window. No window, version, token or hosted setting was configured by this work.
+
+Required recovery-only configuration (placeholders must come from parent-approved fresh preflight, never historical examples):
+- `GLITCH_HOLDER_RECOVERY_START_AT` and `GLITCH_HOLDER_RECOVERY_EXPIRES_AT`: exact UTC `YYYY-MM-DDTHH:mm:ss.sssZ`, valid calendar instants, expiry strictly after start, duration at most 1,200,000 ms. Admission is start-inclusive and expiry-exclusive. Missing/malformed/closed/before-start/expired/oversized windows return disabled before store/provider activity.
+- `GLITCH_HOLDER_RECOVERY_JOB_C670_VERSION` and `GLITCH_HOLDER_RECOVERY_JOB_D07_VERSION`: canonical nonnegative decimal integer strings for the respective two allowlisted jobs. Both are required, safe integers and at most Number.MAX_SAFE_INTEGER minus three. No leading zeros, whitespace, signs, fractions or exponent notation. The request expectedVersion must equal the corresponding sealed value; callers cannot choose a later version.
+- Existing Preview/exact-branch/recovery opt-in/token gates remain; ordinary worker activation stays absent/false. The two-job allowlist, mint, 20-call ceiling per attempt, lease bounds and general-worker isolation remain unchanged. Do not enable any previous deployment lacking window enforcement.
+
+The immutable request-local window is checked before body processing and again before store construction; every budgeted operation is capped by the absolute expiry as well as the existing monotonic deadlines. Expiry cancels in-flight signals and prevents later read/claim/provider/renew/commit calls. The store rechecks the deadline after synchronous body serialization and immediately before fetch, covering a blocked event loop crossing expiry before the timer can fire. A previously started remote write may still persist after cancellation; its outcome remains unknown and must be reconciled read-only. No new commit is started after expiry merely to preserve progress. Avoid late-window starts; expiration may leave an expiring lease and uncommitted local progress.
+
+Successful atomic claim advances the stored version. Replaying the sealed version then fails the fresh preflight before any additional provider work; changing the request version is rejected by the configuration seal. Concurrent attempts still rely on the existing atomic claim and exact post-claim identity/version/checkpoint guards. This does not create a new attempt ledger: failed reads or claim contention are not evidence of a successful execution, and the operator still obeys the approved one-call-per-job/no-auto-retry procedure. Do not reseal advanced versions into another deployment to extend this window or repeat attempts without separate authorization.
+
+Closure procedure: stop sending attempts at the fixed expiry; the same old enabled deployment independently refuses later requests. Parent should verify closure using permitted read-only/configuration evidence and remove temporary scope under its authorization; do not infer closure solely from a later deployment's flag. Retain exact deployment ID/SHA, approved window and sealed versions in the private execution record. Existing uncertainty, monitoring and rollback rules continue to apply. Parent owns PR metadata; this task makes no metadata writes.
+
+## Manual GitHub Actions recovery path — 2026-10-27
+Parent verified the repository secret **names** SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and HELIUS_RPC_URL without viewing/copying values. Owner approved this alternative execution path in Sentinel_275f5310cc748191b225e10b1a42997c (2026-10-27 11:58:26 UTC), replying to the direct-Actions request Sentinel_c37d639172e48191856e368c215d090b. This is the same one-attempt-per-existing-job, 20 requests each/40 combined, maximum 20-minute scope. Parent retains dispatch responsibility after independent review and fresh preflight. **Vercel recovery remains disabled; no Vercel credential scope is needed or changed.**
+
+The existing registered `glitch-holder-worker-manual.yml` now has an explicit mode: disabled (default, no jobs), assessment (retains the existing assessment-only code), or recovery (recovery branch only). No trigger or recurring schedule is added. Existing `glitch-holder-investigation` concurrency/cancel-in-progress:false applies to both modes. Recovery is restricted to workflow_dispatch, exact repository/ref and first run attempt; Actions reruns are refused. Checkout uses the dispatch SHA, with persisted Git credentials disabled. The script checks dispatch SHA and actual `git rev-parse HEAD` against the supplied independently reviewed SHA. It uses only Node built-ins/local modules; no package installation or third-party recovery runner is needed.
+
+Before any network operation, recovery validates the fixed GLITCH hostname `acwmtobcbpkjfqiatyke.supabase.co` (HTTPS, no alternate path/query/auth/fragment), the official `mainnet.helius-rpc.com` HTTPS root with one nonempty api-key parameter, presence of the existing service credential, window syntax/duration and both sealed versions. Destinations and secret values are never printed. Redirects are refused. Before the first mutation, both job rows must pass the existing pinned preflight; each adapter then rechecks its own row and relies on atomic claim/version/lease safeguards at use time. Read failure, wrong project, stale version, active lease or malformed checkpoint blocks before the first mutation. Secret existence does not establish credential validity: database access is checked by these reads; provider entitlement/authentication is not probed separately and remains unverified until an actual budgeted provider request. A provider/response failure stops before the second job, without extra probes or retries.
+
+Each fixed job receives at most one sequential invocation of the reviewed adapter. Provider method allowlist is only existing history-page/transaction reads; every transport attempt counts toward both 20/job and 40/run ceilings. Existing pacing, per-job elapsed budget, fixed absolute expiry and sealed versions remain. No scheduler/start/reset/move/merge action is invoked. Any uncertain outcome, lease/version conflict, contention or interrupted attempt stops further jobs. No automatic POST/job retry. After a failed or cancelled run, do not click Re-run or dispatch again; read-only reconciliation and parent review are required. A second dispatch with already-used sealed versions cannot produce additional provider work after successful claim advancement, but dispatch authority is still single-use and not recreated by making a new run.
+
+### Parent invocation checklist (instructions only; not executed)
+1. Verify the exact published SHA, source and passing CI. Verify the registered manual workflow is available on the recovery ref and accepts its inputs; if the GitHub UI/API cannot resolve that ref/schema, stop rather than merging to a protected/default branch or substituting another workflow.
+2. Confirm enabled workflow/concurrency state and fresh independent job checkpoints/versions/leases. Parent reports the six inspected Holder workflow menus were enabled; that does not guarantee mutual exclusion across all writer groups. Atomic database guards remain final authority. Keep the existing jobs separate and preserve their histories. Correct secret names are present; actual project/auth/runtime validity must pass the runner's fail-closed checks.
+3. Select **GLITCH holder worker manual**, ref `fix/glitch-recovery-preflight-20261027`, with exactly these inputs: `mode=recovery`; `expected_sha=<independently reviewed full SHA>`; `starts_at=<approved canonical UTC start>`; `expires_at=<approved canonical UTC expiry, at most 20 minutes later>`; `c670_version=<fresh sealed version>`; `d07_version=<fresh sealed version>`. No live values have defaults. Start only inside the approved window; queue/setup delay does not extend expiry. Do not select assessment mode for this recovery.
+4. Parent may dispatch once only after its prerequisites pass. This engineer does not dispatch. Do not change Vercel flags, retrieve/copy its worker token, create secrets, or enable schedules. The workflow uses only existing GitHub repository secrets scoped to its recovery execution step.
+5. Inspect the fixed-field JSON receipt in the step output/artifact `holder-recovery-receipt-<run_id>` (three-day retention). Fields include reviewed SHA, fixed job IDs, expected/result versions, provider request counts, safe outcome/stop reason, retries=0 and reconciliation requirements. No checkpoints, wallet history, provider URLs, tokens or raw exceptions are emitted. `attempts_finished` means two bounded attempts returned, not history completeness or score acceptance. Missing receipt after cancellation/termination means outcome unknown; reconcile both jobs read-only. Artifact upload failure does not establish rollback.
+6. Record actual counts/results and compare checkpoint integrity through separately permitted read-only inspection. Do not promote evidence/scores or continue another attempt under this window. Parent closes the phase; H03/H04/H05/H08/H09/H10/H11 acceptance remains evidence-dependent.
+
+Push/PR safety: the modified workflow is manual-only; default mode is disabled, and recovery requires the exact recovery ref/event/first attempt plus explicit window/versions/reviewed SHA. Ordinary assessment body and its two-tick behavior remain intact behind explicit assessment mode. Existing schedules and general worker policies are unchanged. Normal CI imports only side-effect-free modules and runs mock transports. The new CLI is never invoked by build/CI; no live default inputs or secret values are embedded.
+
+Validation for the direct-Actions preparation: 1,025 full smoke tests, build/lint/type checks, 34 focused Actions-path tests, compiled window/isolation/evidence/frozen checks (11/17/27/8), YAML parsing and diff checks passed. Reviewed SHA equality is checked at job admission as well as script dispatch/checkout validation. Only mock transports were exercised. Runtime credential/project permissions and final fresh preflight remain parent-controlled prerequisites; no successful live recovery is claimed.
+
+
+## Bounded attempt reconciliation and offline diagnosis — 2026-10-27
+Parent dispatched run [40502861103](https://github.com/doom404official-collab/DOOM404/actions/runs/40502861103) once at `ac4f5769821e7cfe01e2bf1b7e5331a1b5842897`. The first pinned job consumed 20 requests and returned `COMMIT_OUTCOME_UNKNOWN`; the runner stopped with `RECONCILIATION_REQUIRED`, zero retries and no second-job attempt. This was not a successful checkpoint save.
+
+Parent's final read-only reconciliation at 12:22:19.937374 UTC established inactive leases, first-job version 2136 (claim + renewal), second-job version 1812, and unchanged checkpoint hashes/byte sizes for both. No historical advancement persisted. The bounded edge-log query found GET/claim/renew responses but no commit entry; absence in that result is limited evidence, not proof that no request reached any transport layer. A new live attempt requires new approval. The unused second-job allowance is not retry authority.
+
+Offline inspection found no mismatch between the retained commit SQL parameters and the adapter, and the Actions destination allowlist includes the commit path. A synthetic 8,248,689-byte JSONB checkpoint successfully passes claim, renewal and exact commit at versions 2135/2136/2137 in local PostgreSQL 17 under an eight-second statement limit, then rolls back. This establishes fixture behavior only; it does not reproduce hosted PostgREST, proxies, permissions or hosted timeouts. The exact live cause remains unresolved.
+
+The proven observability gap was that every commit exception lost its cause. Commit failures now retain only fixed diagnostic categories and phases, serialized byte count and HTTP status when received. Phases distinguish serialization, before transport, transport, response parsing and validation. The transport phase means the fetch boundary was entered, not proof of server receipt. No response bodies, exception text, endpoints, credentials or checkpoints enter the receipt. `COMMIT_OUTCOME_UNKNOWN`, reconciliation and no-retry behavior remain unchanged, including failures before transport. A lost response after persistence must still be reconciled independently.
+
+Large JSON-boundary tests cover successful round trips, HTTP rejection, transport failure, malformed response JSON/shape, response mismatch, serialization failure, deadline expiry before fetch, and deadlines before/after persistence. They retain prior history, snapshots and scoring. The local large-commit check is added to the existing disposable CI job only; no live workflow, scheduler, lease/request/time limit, secret scope or schema changed. Vercel recovery remains disabled; parent owns PR metadata and any future authorization.
+
+Diagnosis validation: **1,036 smoke tests**, **111 focused tests**, all **10 large JSON transport cases**, **25 disposable concurrency/rollback checks**, the additional **8,248,689-byte SQL commit check**, and compiled mock route suites (**11 window, 17 isolation, 27 evidence, 8 frozen**) passed. Build/lint/type checks passed with outbound networking blocked and telemetry disabled; the initial build attempt stopped only on the local read-only telemetry cache after all smoke tests passed. No hosted transport test or new live attempt was performed.
+
+
+## Superseding hosted timeout evidence and exact wrapper reproduction — 2026-10-27
+After the preceding diagnosis, parent obtained the definitive PostgreSQL log: at **12:20:16.228 UTC**, PostgREST 14.18's `glitch_commit_holder_scan` wrapper failed with **SQLSTATE 57014, “canceling statement due to statement timeout.”** The commit reached the database. The earlier bounded edge-log absence must not be used to infer pre-dispatch failure. The failure mechanism is now established as hosted statement timeout; the underlying time-consuming stage is not established.
+
+Read-only catalog evidence found authenticator statement_timeout=8s and lock_timeout=8s, service_role rolconfig null, and no non-internal triggers on the scan-job table. These are retained observations, not configuration changes or proof that no lock/resource contention existed at execution time.
+
+The new disposable test uses the exact logged parameterized PostgREST SQL wrapper, including json_to_record, its LIMIT 1, lateral function invocation, response projection and json_agg. A deterministic higher-entropy synthetic request is **10,679,572 bytes**, with 16,610 transfers and 3,022 processed signatures; it is a stress fixture, not copied historical evidence. Under the local eight-second statement limit it succeeds, invokes the function exactly once, returns the complete matching checkpoint at version 2137 with cleared lease, and rolls back. A separate local EXPLAIN ANALYZE reports only fixed stage timing/buffer metrics, never arguments or raw plan text. Local performance cannot establish hosted performance.
+
+A controlled local table lock reproduces the exact 57014 statement-timeout message inside the same wrapper and leaves the entire job unchanged. This is a negative control, not evidence that the hosted incident involved a lock. Both successful execution and timeout rollback are covered; no automatic retry occurs. A separate exploratory composite-expansion query invoked the function repeatedly, but that is not the actual logged lateral wrapper and is not attributed to this incident.
+
+No deterministic wrapper/contract defect has been demonstrated, so no timeout increase, weaker response verification, smaller evidence payload, schema change or new live attempt is justified by these tests. Remaining diagnosis requires evidence of the hosted statement's wait/execution/serialization costs or resource contention; present logs do not distinguish those stages. The earlier no-advancement reconciliation and requirement for fresh approval remain unchanged. Only offline tests, existing disposable CI and these registers changed in this follow-up; production code is still the reviewed diagnostic implementation at 0360e8b.
+
+
+## Second separately approved attempt and catalog comparison — 2026-10-27
+Parent alone dispatched run [40507295652](https://github.com/doom404official-collab/DOOM404/actions/runs/40507295652) at `d4abe69` under a separate owner approval. It stopped after the first job's 20 calls, with no second-job attempt or retry. Redacted commit diagnostics were phase `transport`, category `deadline`, requestBytes **8065874**, httpStatus null. The PostgreSQL log again confirms commit statement timeout (57014) at **12:53:46.458 UTC**.
+
+A read-only activity sample at 12:53:45.969962 UTC found the active Holder query at elapsed 7.546472 seconds, null wait event/type and no blocking PIDs. This single sample cannot exclude earlier waiting or identify a CPU bottleneck. Database checkpoint activity overlapping 12:53:39–41 wrote five buffers in 2.604 seconds; temporal overlap does not establish causality. Final parent reconciliation at **12:55:12.763976 UTC** established versions **2138/1812**, inactive leases, and both original checkpoint hashes unchanged. No historical advancement persisted, and no further live attempt is authorized.
+
+Fresh parent catalog evidence confirms the same simple commit function as the fixture, no non-internal triggers, and exactly three btree indexes: unique id, unique (mint,holder_set_hash), and (status,lease_expires_at,updated_at). There is no JSON index. The original disposable fixture represented only the primary key; the exact-wrapper performance regression now adds the other two indexes inside its rollback-only local transaction. The catalog-matched probe still returns the full exact checkpoint with one invocation. This excludes a deterministic fixture/wrapper failure in the tested local setting, not hosted resource limitations. No production function, index, schema, configuration, deadline or request budget changed.
+
+Remaining parent-only read-only comparisons are below. They expose sizes/configuration metadata rather than checkpoint contents, do not invoke the commit RPC, and perform no settings changes. Tuple statistics are estimates/cumulative values, not incident-time proof. The row-size query is bounded to the two existing IDs. If PostgreSQL is older than 14, omit the compression-specific fields/functions rather than changing configuration.
+
+```sql
+-- Proposed parent-only reads. No RPC invocation, checkpoint contents or settings changes.
+SELECT current_setting('server_version') AS server_version,
+       current_setting('default_toast_compression',true) AS default_toast_compression;
+SELECT attname,attstorage,attcompression
+FROM pg_attribute
+WHERE attrelid='public.glitch_holder_scan_jobs'::regclass
+  AND attname IN ('checkpoint','summary') AND NOT attisdropped;
+SELECT c.oid::regclass::text AS relation,c.reloptions,
+       pg_relation_size(c.oid) AS heap_bytes,
+       pg_total_relation_size(c.oid) AS total_bytes,
+       s.n_live_tup,s.n_dead_tup,s.n_tup_upd,s.n_tup_hot_upd,
+       s.last_autovacuum,s.last_autoanalyze
+FROM pg_class c LEFT JOIN pg_stat_all_tables s ON s.relid=c.oid
+WHERE c.oid='public.glitch_holder_scan_jobs'::regclass
+   OR c.oid=(SELECT reltoastrelid FROM pg_class WHERE oid='public.glitch_holder_scan_jobs'::regclass);
+SELECT id,pg_column_size(checkpoint) AS stored_checkpoint_bytes,
+       pg_column_compression(checkpoint) AS checkpoint_compression,
+       pg_column_size(summary) AS stored_summary_bytes
+FROM public.glitch_holder_scan_jobs
+WHERE id IN ('c670f393-31b0-470c-a01f-cb2b813a1219','d07c0256-b472-4089-a237-99ed5e5c8cc4');
+```
+
+Existing database dashboard CPU, memory, storage latency/throughput and database-log metrics for approximately 12:53:35–12:53:50 UTC would help distinguish resource pressure, if retained and accessible read-only. Do not enable tracing/extensions, run EXPLAIN ANALYZE on the hosted mutating function, vacuum/reindex, alter compression/settings, or launch another live reproduction as part of these checks. No meaningful production optimization is proposed without evidence identifying the expensive hosted stage.

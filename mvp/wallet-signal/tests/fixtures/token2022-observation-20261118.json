@@ -1,0 +1,34 @@
+{
+  "source": "Alchemy connector-returned observation supplied by parent; not original wire envelope",
+  "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+  "commitment": "finalized",
+  "before": {
+    "epoch": 1089,
+    "absoluteSlot": 470856042,
+    "observedAt": "2026-11-18T07:45:18.922Z"
+  },
+  "after": {
+    "epoch": 1089,
+    "absoluteSlot": 470856095,
+    "observedAt": "2026-11-18T07:45:30.394Z"
+  },
+  "context": {
+    "slot": 470856075
+  },
+  "observedAt": "2026-11-18T07:45:26.265Z",
+  "sha256": "24efc81948b2417955430b42afd176ca6e40f7e6bc217cc6de6376dd72116e29",
+  "account": {
+    "owner": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+    "executable": false,
+    "space": 390,
+    "data": [
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAxicq7TjtAgAGAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARIAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHjZ7UgLc4lfZtqqO3XEfXUagIrIUIpvxK34JqRe9tQvEwCYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeNntSAtziV9m2qo7dcR9dRqAishQim/ErfgmpF721C8EAAAAUGFpZAQAAABQQUlEQAAAAGh0dHBzOi8vbWV0YS51eGVudG8uaW8vZGF0YS9jNDg0OTlkZS0yMDk1LTQwMGMtYTAwYy00OWVjOGZiNTVkNDMAAAAA",
+      "base64"
+    ]
+  },
+  "limitations": [
+    "No executed-transfer verification",
+    "Connector retry and raw-envelope guarantees unavailable",
+    "No historical-state proof"
+  ]
+}

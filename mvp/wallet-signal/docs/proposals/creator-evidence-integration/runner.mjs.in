@@ -1,0 +1,16 @@
+// UNAPPLIED: proposed scripts/creator-evidence-synthetic-run.mjs, not installed.
+import {runCreatorSyntheticAttempt,requestCreatorActionsOidc} from '../lib/creatorEvidenceSyntheticRunner.mjs';
+const enabled=false; // Must remain false until independently reviewed publication/activation.
+if(!enabled){console.log(JSON.stringify({status:'DISABLED'}));}
+else{
+ const abort=new AbortController();
+ process.once('SIGINT',()=>abort.abort());process.once('SIGTERM',()=>abort.abort());
+ let result;
+ try{
+  const manifest=JSON.parse(process.env.CREATOR_TEST_RUN_MANIFEST);
+  const identity={repository:process.env.GITHUB_REPOSITORY,ref:process.env.GITHUB_REF,sha:process.env.GITHUB_SHA,workflow_ref:process.env.GITHUB_WORKFLOW_REF,run_id:process.env.GITHUB_RUN_ID,run_attempt:process.env.GITHUB_RUN_ATTEMPT,event_name:process.env.GITHUB_EVENT_NAME};
+  result=await runCreatorSyntheticAttempt({enabled:true,action:process.env.CREATOR_TEST_ACTION,manifest,identity,signal:abort.signal},{getOidcToken:({audience,signal})=>requestCreatorActionsOidc({requestUrl:process.env.ACTIONS_ID_TOKEN_REQUEST_URL,requestToken:process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN,audience,signal})});
+ }catch{result={status:'NOT_DISPATCHED',reconciliationRequired:false,retries:0};}
+ console.log(JSON.stringify(result)); // Receipt only, never token/capability/body/config.
+ if(!['UPLOAD_REPORTED','READBACK_VERIFIED'].includes(result.status))process.exitCode=1;
+}

@@ -1,0 +1,78 @@
+import {withConcentrationContext,hasAlignedConcentrationContext} from "./concentrationContext.mjs";
+import {observationTime} from './liquidityWorkerEvidenceGuards.mjs';
+import {mintAuthorityEvidence} from './mintAuthorityEvidence.mjs';
+import {scoreTokenSecurity,scoreHolderIntelligence,scoreCreatorIntelligence,scoreLiquidityQuality} from './glitchAttributeEnginesV11.mjs';
+import {resolveEpochFee,consistentEpochContext} from './tokenTransferFeeEvidence.mjs';
+import {attributes} from './glitchScoringV11.mjs';
+import {reconcileHolderSnapshot} from './reconcileHolderSnapshot.mjs';
+import {projectLiquidityScoring} from './liquidityScoringProjection.mjs';
+import {projectCurrentLpObservation} from './currentLpObservation.mjs';
+const finite=(v,max=100)=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=max;
+// Match the existing token-insights stale/undated presentation boundary. This is
+// only an evidence display guard, not a changed scoring threshold.
+export function evidenceFresh(updatedAt,now=Date.now()){
+ const at=typeof updatedAt==='string'?Date.parse(updatedAt):NaN;
+ return Number.isFinite(at)&&at<=now&&now-at<=60*60*1000;
+}
+// Account checks age from collection, not from a later persistence update.
+export const liquidityAccountObservationAt = evidence => Number.isFinite(observationTime(evidence?.observedAt)) ? evidence.observedAt : null;
+export function adaptDashboardEvidence({liquidity:reportedLiquidity,result,extensions,concentration,creatorEvidence,historicalHolders,verifiedHolderEnvelope,workerEvidence,now=Date.now()}={}){
+ concentration=withConcentrationContext(concentration);
+ const mint=result?.mint;
+ const same=x=>Boolean(mint&&x?.mint===mint);
+ const authorities=mintAuthorityEvidence(result,{parsed:!!mint&&result.authorityDetailsStatus!=='not_parsed'});
+ const parsed=authorities.authorityDetailsStatus==='available';
+ const ext=['token-2022','spl-token-2022'].includes(result?.tokenProgram)&&same(extensions)&&extensions?.verified===true&&evidenceFresh(extensions.observedAt,now)?extensions:null,fee=ext?.transferFee;
+ const context=ext?.epochContext;
+ const epochVerified=['confirmed','finalized'].includes(context?.commitment)&&consistentEpochContext({epoch:context.epoch,absoluteSlot:context.beforeSlot},{epoch:context.epoch,absoluteSlot:context.afterSlot},context.accountSlot,context.commitment);
+ const effectiveFee=fee?.status==='observed'&&epochVerified?resolveEpochFee({...fee,epoch:context.epoch}):null;
+ const security=scoreTokenSecurity({tokenProgram:result?.tokenProgram,authoritiesParsed:parsed,mintAuthority:authorities.mintAuthority,freezeAuthority:authorities.freezeAuthority,
+  feeExtensionVerified:ext?.verified===true,feeApplicable:fee?.status==='observed'?true:fee?.status==='not_observed'?false:undefined,
+  // Resolved schedule is evidence, not verified transfer behavior or a cap-adjusted score.
+  feeConfigAuthorityReported:ext?.verified===true&&fee?.configAuthorityReported===true,feeConfigAuthority:fee?.configAuthority});
+ const canonical=workerEvidence?.version==='1.1'&&same(workerEvidence)&&same(workerEvidence.canonicalHolder)&&workerEvidence.canonicalHolder.snapshotId==='0596510d6dc07e1dce934fba0dcf96a5594b38807383bd6d829d9d6fe441177b'&&workerEvidence.canonicalHolder.holderSetHash==='77f749040d291e057c546d1f4872f4de9432bdda4be512a0dc94bda14bc20daa'&&workerEvidence.canonicalHolder.contextSlots?.inventory===474029636&&workerEvidence.canonicalHolder.status==='canonical_observation'&&finite(workerEvidence.canonicalHolder.top20SharePct)?workerEvidence.canonicalHolder:null;
+ const top20=canonical?canonical.top20SharePct:same(concentration)&&finite(concentration.top20TokenAccountSharePct)?concentration.top20TokenAccountSharePct:undefined;
+ let holder=scoreHolderIntelligence({top20SharePct:top20});
+ const matchedHolder=hasAlignedConcentrationContext(concentration)&&same(concentration)&&same(historicalHolders)&&same(verifiedHolderEnvelope)&&
+  !!historicalHolders.jobId&&historicalHolders.jobId===verifiedHolderEnvelope.jobId&&
+  historicalHolders.updatedAt===verifiedHolderEnvelope.updatedAt&&
+  evidenceFresh(verifiedHolderEnvelope.updatedAt,now)&&
+  reconcileHolderSnapshot(concentration?.accounts,historicalHolders.holders).compatible&&
+  concentration.accounts.every(live=>historicalHolders.holders.some(saved=>saved.tokenAccount===live.tokenAccount&&saved.ownerWallet===live.ownerWallet&&saved.sharePct===live.sharePct));
+ const assessment=matchedHolder?verifiedHolderEnvelope.assessment:null;
+ // Consume the real v1.1 backend assessment, not graph counts or legacy scores.
+ const expected=attributes.find(a=>a.id==='holder_intelligence').components;
+ if(assessment?.version==='1.1'&&assessment.attribute==='holder_intelligence'&&Array.isArray(assessment.components)&&
+  assessment.components.length===Object.keys(expected).length&&Object.entries(expected).every(([id,max])=>assessment.components.filter(c=>c.id===id&&c.max===max&&(c.points===null||finite(c.points,max))).length===1)){
+  const components=holder.components.map(c=>c.id==='top20_holder_concentration'?c:assessment.components.find(p=>p.id===c.id));
+  holder={...holder,components,score:null,complete:components.every(c=>c.points!==null),calibrated:false,
+   coveragePct:components.reduce((n,c)=>n+(c.points!==null?c.max:0),0)};
+ }
+ const creatorVerified=same(creatorEvidence)&&creatorEvidence.status==='VERIFIED'&&creatorEvidence.independentlyReviewed===true&&!!creatorEvidence.creator;
+ const bridge=workerEvidence?.version==='1.1'&&same(workerEvidence)?workerEvidence:null;
+ const creator=bridge?.creator,liquidity=bridge?.liquidity;
+ const creatorCompatible=creatorVerified&&same(creator)&&creator.creator===creatorEvidence.creator&&evidenceFresh(creator.updatedAt,now);
+ const selling=creatorCompatible&&creator.selling?.historyComplete===true&&Array.isArray(creator.selling.percentages)&&creator.selling.percentages.length===3&&creator.selling.percentages.every(x=>finite(x))?creator.selling.percentages:null;
+ const creatorScore=scoreCreatorIntelligence({creatorVerified,creatorHistoryComplete:!!selling,soldPct1h:selling?.[0],soldPct24h:selling?.[1],soldPct7d:selling?.[2]});
+ const providerLiquidity=same(reportedLiquidity)&&evidenceFresh(reportedLiquidity.observedAt,now)&&['pools_reported','no_pools_reported'].includes(reportedLiquidity.status)?reportedLiquidity:null;
+ const reported={amount:finite(providerLiquidity?.reportedLiquidityUsd,Number.MAX_SAFE_INTEGER)?providerLiquidity.reportedLiquidityUsd:null,poolCount:Number.isSafeInteger(providerLiquidity?.poolCountReturned)&&providerLiquidity.poolCountReturned>=0?providerLiquidity.poolCountReturned:null};
+ let freshLiquidity=same(liquidity)&&evidenceFresh(liquidityAccountObservationAt(liquidity),now)&&['partial','account_checks_completed','complete'].includes(liquidity.status)?liquidity:null;
+ let liquidityScore=scoreLiquidityQuality({});
+ let lpObservation=null;
+ try{if(same(liquidity)&&evidenceFresh(liquidity.lpObservation?.observedAt,now))lpObservation=projectCurrentLpObservation(liquidity.lpObservation,mint);}catch{}
+ if(freshLiquidity?.schemaVersion===2){
+  try{liquidityScore=projectLiquidityScoring(freshLiquidity,mint).assessment;}
+  catch{freshLiquidity=null;}
+ }
+ return {scores:{token_security:security,holder_intelligence:holder,creator_intelligence:creatorScore,liquidity_quality_safety:liquidityScore},
+  fee, effectiveFee, top20,creatorVerified,matchedHolder,creator:creatorVerified&&same(creator)&&creator.creator===creatorEvidence.creator?creator:null,liquidity:freshLiquidity,lpObservation,
+  lq09Observation:same(liquidity?.lq09Observation)&&liquidity.lq09Observation.schemaVersion===1&&liquidity.lq09Observation.amountReconciled===true&&liquidity.lq09Observation.authorizationVerified===false&&liquidity.lq09Observation.scoreEligible===false&&Number.isSafeInteger(liquidity.lq09Observation.transactionSlot)&&typeof liquidity.lq09Observation.creatorRecipientMatchesHistoricalState==='boolean'&&typeof liquidity.lq09Observation.protocolRecipientMatchesHistoricalState==='boolean'?liquidity.lq09Observation:null,
+  canonicalHolderObservation:same(bridge?.canonicalHolder)&&bridge.canonicalHolder.schemaVersion===2&&bridge.canonicalHolder.status==='canonical_observation'&&bridge.canonicalHolder.scoreEligible===false&&bridge.canonicalHolder.historyComplete===false&&finite(bridge.canonicalHolder.top20SharePct)&&bridge.canonicalHolder.eligibleHolderCount===20&&Number.isSafeInteger(bridge.canonicalHolder.contextSlots?.inventory)&&Number.isFinite(Date.parse(bridge.canonicalHolder.observedAt))?bridge.canonicalHolder:null,
+  creatorLaunchObservation:same(creator)&&creator.launchObservation?.schemaVersion===1&&creator.launchObservation.creator===creator.creator&&
+   /^[1-9][0-9]*$/.test(creator.launchObservation.purchasedRaw||'')&&creator.launchObservation.decimals===6&&creator.launchObservation.scoreEligible===false&&creator.launchObservation.historyComplete===false&&
+   Number.isSafeInteger(creator.launchObservation.slot)&&creator.launchObservation.slot>=0&&Number.isSafeInteger(creator.launchObservation.timestamp)&&creator.launchObservation.timestamp>0&&
+   /^[1-9A-HJ-NP-Za-km-z]{64,88}$/.test(creator.launchObservation.signature||'')?creator.launchObservation:null,
+  creatorWalletObservation:creatorVerified&&creator?.creator===creatorEvidence.creator&&same(creator.currentWalletObservation)&&creator.currentWalletObservation.scope==='verified_creator_wallet_only'&&creator.currentWalletObservation.scoreEligible===false&&evidenceFresh(creator.currentWalletObservation.observedAt,now)?creator.currentWalletObservation:null,
+  reserveObservation:same(liquidity?.reserveObservation)&&liquidity.reserveObservation.schemaVersion===1&&evidenceFresh(liquidity.reserveObservation.observedAt,now)&&liquidity.reserveObservation.reservesVerified===true?liquidity.reserveObservation:null,
+  reportedLiquidity:reported,creatorCompatible,creatorMissing:creator?.missing||['Persisted creator evidence unavailable'],liquidityMissing:freshLiquidity?.missing||['Persisted liquidity evidence unavailable or stale']};
+}

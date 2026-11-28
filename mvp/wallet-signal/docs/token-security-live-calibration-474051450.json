@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "provider": "alchemy",
+  "commitment": "finalized",
+  "addresses": [
+    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "So11111111111111111111111111111111111111112",
+    "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump"
+  ],
+  "response": {
+    "context": {
+      "apiVersion": "4.4.1",
+      "slot": 474051450
+    },
+    "value": [
+      {
+        "data": [
+          "AQAAAJj+huiNm+Lqi8HMpIeLKYjCQPUrhCS/tA7Rot3LXhmbjK703Fp1HwAGAQEAAABicKqKWcWUBbRShshncubNEm6bil06OFNtN/e0FOi2Zw==",
+          "base64"
+        ],
+        "executable": false,
+        "lamports": 563203132089,
+        "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "rentEpoch": 18446744073709552000,
+        "space": 82
+      },
+      {
+        "data": [
+          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+          "base64"
+        ],
+        "executable": false,
+        "lamports": 1933514574904,
+        "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "rentEpoch": 18446744073709552000,
+        "space": 82
+      },
+      {
+        "data": [
+          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5KCXuEblAgAGAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARIAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHjZ7UgLc4lfZtqqO3XEfXUagIrIUIpvxK34JqRe9tQvEwCYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeNntSAtziV9m2qo7dcR9dRqAishQim/ErfgmpF721C8EAAAAUGFpZAQAAABQQUlEQAAAAGh0dHBzOi8vbWV0YS51eGVudG8uaW8vZGF0YS9jNDg0OTlkZS0yMDk1LTQwMGMtYTAwYy00OWVjOGZiNTVkNDMAAAAA",
+          "base64"
+        ],
+        "executable": false,
+        "lamports": 2967888706,
+        "owner": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "rentEpoch": 18446744073709552000,
+        "space": 390
+      }
+    ]
+  },
+  "expectedAuthorityScores": [
+    0,
+    100,
+    100
+  ],
+  "interpretation": "Control-risk calibration only: USDC has active issuer authorities. This does not imply fraud or compare liquidity, creator or holder risks. Wrapped SOL is a special native mint. Full product calibration is not accepted."
+}

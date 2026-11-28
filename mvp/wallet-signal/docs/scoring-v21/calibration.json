@@ -1,0 +1,671 @@
+{
+  "methodologyVersion": "2.1.0",
+  "source": "DOOM404_Universal_Token_Intelligence_Closure.html final browser acceptance observations, 27 Nov 2026",
+  "mode": "identical-evidence replay, 15 tokens",
+  "rows": [
+    {
+      "name": "Android FLOAT",
+      "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 17.45,
+          "coveragePct": 63
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 24.42,
+          "coveragePct": 100
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 60
+        }
+      },
+      "previous": {
+        "riskScore": 10.47,
+        "coveragePct": 80.75
+      },
+      "revised": {
+        "riskScore": 13.78,
+        "coveragePct": 80.9
+      },
+      "age": "Not retained in final browser score matrix; see supported origin evidence separately",
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 7.67,
+      "tokenProgram": "Not retained for this row",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": []
+    },
+    {
+      "name": "Android EMQ",
+      "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 44.77,
+          "coveragePct": 66.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 50,
+          "coveragePct": 100
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 60
+        }
+      },
+      "previous": {
+        "riskScore": 23.69,
+        "coveragePct": 81.63
+      },
+      "revised": {
+        "riskScore": 30.93,
+        "coveragePct": 81.95
+      },
+      "age": {
+        "creationTimestamp": 1794739086,
+        "slot": 469698780,
+        "signature": "4j7mGriw2qDghSDFxCwiiMFvvNSjo8MYvwUQSCWvimqKcEDCd7wtDNuP9j7WEW9eY43dLSiEtWZ4JxSMrvRGzq49",
+        "basis": "Verified mint creation in retained API receipt; trading start not established",
+        "observedAt": "2026-11-27T09:03:47.019Z"
+      },
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 5.49,
+      "tokenProgram": "spl-token-2022",
+      "liquidityProtocol": "pump_amm",
+      "retainedSupportingFlags": [
+        {
+          "id": "reference_exit_unavailable",
+          "severity": "critical",
+          "detail": "A defined reference sale cannot be funded by the real quote reserves under the current protocol calculation."
+        },
+        {
+          "id": "protocol_admin_controls",
+          "severity": "high",
+          "detail": "Protocol global operation controls remain separate from LP redemption exposure; a retained protocol administrator can change operation flags. Program upgrade authority is not certified by this calculation."
+        }
+      ]
+    },
+    {
+      "name": "USDC",
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 65,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 69.12,
+          "coveragePct": 42
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 50
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "previous": {
+        "riskScore": 33.53,
+        "coveragePct": 48
+      },
+      "revised": {
+        "riskScore": 30.49,
+        "coveragePct": 45.1
+      },
+      "age": "Not retained in final browser score matrix; see supported origin evidence separately",
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 4.39,
+      "tokenProgram": "spl-token",
+      "liquidityProtocol": "alchemy_executable_routes",
+      "retainedSupportingFlags": [
+        {
+          "id": "route_lp_controls_unassessed",
+          "severity": "high",
+          "detail": "Executable routes are quoted, but pool-specific LP custody and withdrawal controls remain unassessed."
+        },
+        {
+          "id": "mint_authority_active",
+          "category": "privileged_control",
+          "source": "retained mint observation"
+        },
+        {
+          "id": "freeze_authority_active",
+          "category": "privileged_control",
+          "source": "retained mint observation"
+        }
+      ]
+    },
+    {
+      "name": "PYUSD",
+      "mint": "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 100,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 70,
+          "coveragePct": 70
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 50
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "previous": {
+        "riskScore": 42.5,
+        "coveragePct": 55
+      },
+      "revised": {
+        "riskScore": 36,
+        "coveragePct": 53.5
+      },
+      "age": "Not retained in final browser score matrix; see supported origin evidence separately",
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 5.36,
+      "tokenProgram": "spl-token-2022",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": [
+        {
+          "id": "mint_authority_active",
+          "category": "privileged_control",
+          "source": "retained mint observation"
+        },
+        {
+          "id": "freeze_authority_active",
+          "category": "privileged_control",
+          "source": "retained mint observation"
+        }
+      ]
+    },
+    {
+      "name": "ORCA",
+      "mint": "orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 30,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 39.9,
+          "coveragePct": 63
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 50
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "previous": {
+        "riskScore": 17.48,
+        "coveragePct": 53.25
+      },
+      "revised": {
+        "riskScore": 16.47,
+        "coveragePct": 51.4
+      },
+      "age": "Not retained in final browser score matrix; see supported origin evidence separately",
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 4.83,
+      "tokenProgram": "spl-token",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": [
+        {
+          "id": "mint_authority_active",
+          "category": "privileged_control",
+          "source": "retained mint observation"
+        }
+      ]
+    },
+    {
+      "name": "JUP",
+      "mint": "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 1.28,
+          "coveragePct": 21
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 50
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "previous": {
+        "riskScore": 0.32,
+        "coveragePct": 42.75
+      },
+      "revised": {
+        "riskScore": 0.38,
+        "coveragePct": 38.8
+      },
+      "age": "Not retained in final browser score matrix; see supported origin evidence separately",
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 4.86,
+      "tokenProgram": "spl-token",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": []
+    },
+    {
+      "name": "USDT",
+      "mint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 65,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 100,
+          "coveragePct": 70
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 50
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "previous": {
+        "riskScore": 41.25,
+        "coveragePct": 55
+      },
+      "revised": {
+        "riskScore": 39.75,
+        "coveragePct": 53.5
+      },
+      "age": "Not retained in final browser score matrix; see supported origin evidence separately",
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 4.58,
+      "tokenProgram": "spl-token",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": [
+        {
+          "id": "mint_authority_active",
+          "category": "privileged_control",
+          "source": "retained mint observation"
+        },
+        {
+          "id": "freeze_authority_active",
+          "category": "privileged_control",
+          "source": "retained mint observation"
+        }
+      ]
+    },
+    {
+      "name": "Discovered CLMM 1",
+      "mint": "6Dyz9eEBoQaXMcU3SNhAva1rZ1EsfjADsaYJFMGnK52G",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 66.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 50
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "previous": {
+        "riskScore": 0,
+        "coveragePct": 54.13
+      },
+      "revised": {
+        "riskScore": 0,
+        "coveragePct": 52.45
+      },
+      "age": "Not retained in final browser score matrix; see supported origin evidence separately",
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 5.6,
+      "tokenProgram": "spl-token",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": []
+    },
+    {
+      "name": "Discovered CLMM 2",
+      "mint": "AyiQP43hqPXRfJNH1kcRVS7jq1AjbCqXK2E4jxmWVP5u",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 66.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "previous": {
+        "riskScore": 0,
+        "coveragePct": 41.63
+      },
+      "revised": {
+        "riskScore": 0,
+        "coveragePct": 34.95
+      },
+      "age": "Not retained in final browser score matrix; see supported origin evidence separately",
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 5.11,
+      "tokenProgram": "spl-token",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": []
+    },
+    {
+      "name": "Discovered CLMM 3",
+      "mint": "5vhw96LZoKA4K8kbBkTJXBYvJSN1RWJzJgJbYEorBChv",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 66.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "previous": {
+        "riskScore": 0,
+        "coveragePct": 41.63
+      },
+      "revised": {
+        "riskScore": 0,
+        "coveragePct": 34.95
+      },
+      "age": "Not retained in final browser score matrix; see supported origin evidence separately",
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 5.48,
+      "tokenProgram": "spl-token",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": []
+    },
+    {
+      "name": "Fresh launch 1",
+      "mint": "4jKrHtBMLt4TMEpiCa4uBEcMFgpA5R4t2EmTcWjfpump",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 66.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 50,
+          "coveragePct": 50
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 60
+        }
+      },
+      "previous": {
+        "riskScore": 12.5,
+        "coveragePct": 69.13
+      },
+      "revised": {
+        "riskScore": 17.5,
+        "coveragePct": 64.45
+      },
+      "age": {
+        "creationTimestamp": 1795768673,
+        "slot": 474485797,
+        "signature": "3WRaTjYciNez1oKFTwhU4Ee1sFPvP2nXmwRwmsZriXP4mWqZ7ev87KsFNsgwqCnMAuqKs1rBioCtPkEZCjiEip82",
+        "basis": "Verified mint creation in retained API receipt; trading start not established",
+        "observedAt": "2026-11-27T09:14:49.813Z"
+      },
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 4.74,
+      "tokenProgram": "spl-token-2022",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": []
+    },
+    {
+      "name": "Fresh launch 2",
+      "mint": "8xpaCNnuqywZKdCJy1jHNdHSRKxudhSJxcXZzQ65pump",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 63
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 50,
+          "coveragePct": 50
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 60
+        }
+      },
+      "previous": {
+        "riskScore": 12.5,
+        "coveragePct": 68.25
+      },
+      "revised": {
+        "riskScore": 17.5,
+        "coveragePct": 63.4
+      },
+      "age": {
+        "creationTimestamp": 1795768098,
+        "slot": 474483119,
+        "signature": "3u7hcTEKZYkH615cBZpDEjyYY7pjScHLkeRnVGxLip3uJ3BTVS2gXn4b3YRodk7ivvhHbUdMrAiW7ez68gSmXq5D",
+        "basis": "Verified mint creation in retained API receipt; trading start not established",
+        "observedAt": "2026-11-27T09:15:34.520Z"
+      },
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 4.47,
+      "tokenProgram": "spl-token-2022",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": []
+    },
+    {
+      "name": "Fresh launch 3",
+      "mint": "Ahc2DBPw4kyooS2D4XHdFmybbUmP1PR2vJs1gKVipump",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 27.6,
+          "coveragePct": 66.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 50,
+          "coveragePct": 50
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "previous": {
+        "riskScore": 19.4,
+        "coveragePct": 54.13
+      },
+      "revised": {
+        "riskScore": 25.78,
+        "coveragePct": 52.45
+      },
+      "age": "Not retained in final browser score matrix; see supported origin evidence separately",
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 5.46,
+      "tokenProgram": "spl-token-2022",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": []
+    },
+    {
+      "name": "Fresh launch 4",
+      "mint": "59J68geN6rWTM9csfPC4h23wV6g9hZ2kzubuvHBApump",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 5.28,
+          "coveragePct": 66.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 50,
+          "coveragePct": 50
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 60
+        }
+      },
+      "previous": {
+        "riskScore": 13.82,
+        "coveragePct": 69.13
+      },
+      "revised": {
+        "riskScore": 19.08,
+        "coveragePct": 64.45
+      },
+      "age": {
+        "creationTimestamp": 1795766267,
+        "slot": 474474584,
+        "signature": "EGaq2dYThLx1GiaEmoyFBgrHZxXqbNHSUD9YHj9ibe98KK7A6jyYqSrvcyhXfVgMc9k7xnFMp8mkok8DhTHQAgH",
+        "basis": "Verified mint creation in retained API receipt; trading start not established",
+        "observedAt": "2026-11-27T09:17:03.080Z"
+      },
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 4.54,
+      "tokenProgram": "spl-token-2022",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": []
+    },
+    {
+      "name": "Reference control",
+      "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+      "sourceCommit": "3546f2cc72e5144faa68fc878ed616fa2c05175a",
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 17.28,
+          "coveragePct": 70
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 24.33,
+          "coveragePct": 100
+        },
+        "creator_intelligence": {
+          "riskScore": 6.64,
+          "coveragePct": 60
+        }
+      },
+      "previous": {
+        "riskScore": 12.06,
+        "coveragePct": 82.5
+      },
+      "revised": {
+        "riskScore": 15.03,
+        "coveragePct": 83
+      },
+      "age": "Not retained in final browser score matrix; see supported origin evidence separately",
+      "criticalFlags": "See retainedSupportingFlags when available; final browser matrix did not retain complete flag lists. Flags not invented from score alone.",
+      "limitations": "Identical retained browser attribute outputs; not a current rescan or proof of historical completeness. Null scores are unassessed and contribute no observed points; denominator stays fixed.",
+      "changeExplanation": "Delta = -0.10 \u00d7 Security + 0.05 \u00d7 Holder + 0.10 \u00d7 Liquidity - 0.05 \u00d7 Creator.",
+      "initialSecondsPriorRelease": 3.81,
+      "tokenProgram": "spl-token-2022",
+      "liquidityProtocol": "Not retained / unavailable",
+      "retainedSupportingFlags": []
+    }
+  ]
+}

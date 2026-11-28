@@ -1,0 +1,2280 @@
+{
+  "scope": "Source-only snapshot of 90 remote branch heads on 2026-10-27; does not prove deployed/runtime writer state",
+  "repository": "doom404official-collab/DOOM404",
+  "runtimeVerified": false,
+  "searchedRoots": [
+    ".github/workflows",
+    "mvp/wallet-signal/lib",
+    "mvp/wallet-signal/app",
+    "mvp/wallet-signal/scripts",
+    "mvp/wallet-signal/db",
+    "mvp/wallet-signal/sql",
+    "mvp/wallet-signal/package.json",
+    "vercel.json",
+    "mvp/wallet-signal/vercel.json"
+  ],
+  "method": "git ls-remote --heads; git grep at each exact commit for job/Creator evidence APIs, plus Creator/indexed-origin workflow filenames; synthetic test scripts excluded from runtime writer classification",
+  "heads": [
+    {
+      "sha": "19402917c4638c79a33882a5084178062f884d6e",
+      "ref": "chore/fix-liquidity-controlled-worker-install"
+    },
+    {
+      "sha": "ac977f67f0b81ee915b85c60e7c4b9debe0ce748",
+      "ref": "chore/liquidity-lq08-offline-current-main"
+    },
+    {
+      "sha": "7e36f49fc1cb00e41c0c4a2002e32df2c88e4f61",
+      "ref": "chore/liquidity-lq08-runtime-current-main"
+    },
+    {
+      "sha": "dc721154abffe15291a9e2851a36fabd082243e6",
+      "ref": "chore/liquidity-lq08-runtime-current-main-v2"
+    },
+    {
+      "sha": "86d612b8859f272dd5b5d07e4a202140469b5545",
+      "ref": "chore/liquidity-lq08c-current-main"
+    },
+    {
+      "sha": "570c41ecc5556e546b62e1cb035b26928ad1671d",
+      "ref": "chore/liquidity-partial-recovery-current-main"
+    },
+    {
+      "sha": "b6422338eb66cc9eaf3796c663aaa17d7bccd65c",
+      "ref": "chore/liquidity-pr46-current-main-validation"
+    },
+    {
+      "sha": "6b79382935304249070d8f4204b69e8b12dbec8c",
+      "ref": "chore/liquidity-pr54-current-main-reconciled"
+    },
+    {
+      "sha": "c8c68e8866d353fc04a25473f5312a91e0d646b9",
+      "ref": "chore/liquidity-recovery-offline-main-20261021"
+    },
+    {
+      "sha": "ef9313e6520901af024558637d1a4a9c3fc31f3f",
+      "ref": "chore/liquidity-worker-offline-review-20261022"
+    },
+    {
+      "sha": "187536124107c764305cf708295bc0226098fd56",
+      "ref": "chore/register-glitch-liquidity-replay"
+    },
+    {
+      "sha": "500c6fe36c980ced3b31972f3c66fce08670aaea",
+      "ref": "chore/register-liquidity-controlled-worker"
+    },
+    {
+      "sha": "e679dc468d3dac5581b4df47c94ea166a4dfe07f",
+      "ref": "chore/register-liquidity-discovery-shadow"
+    },
+    {
+      "sha": "dc707f9bdb6ec76d1fd107268f54c62fc9036c5f",
+      "ref": "chore/register-liquidity-history-continuation"
+    },
+    {
+      "sha": "359db0f96f3897bf60bef588ed0e3c66a7f86d95",
+      "ref": "chore/register-liquidity-history-dispatch"
+    },
+    {
+      "sha": "b492df8d648f3a3eba2f32416a23b06a392bcdd1",
+      "ref": "chore/register-liquidity-history-shadow"
+    },
+    {
+      "sha": "2cf475fdfea57a548920d19ee640edfb2584e07a",
+      "ref": "chore/register-liquidity-partial-recovery"
+    },
+    {
+      "sha": "0e379727ab464891fd9c60abd075bae8d9f7559d",
+      "ref": "chore/register-liquidity-pending-recovery"
+    },
+    {
+      "sha": "68ed31c46ef85fb38abf282dda8a5691baef957e",
+      "ref": "chore/register-liquidity-replay-continuation"
+    },
+    {
+      "sha": "bed856e8416eba5fef8ef2acc0db33cbc2f8bd3f",
+      "ref": "chore/register-liquidity-shadow-current-main"
+    },
+    {
+      "sha": "00bc25f5cd371315dd5b0339d09b34bc617a275b",
+      "ref": "chore/register-liquidity-worker-current-main"
+    },
+    {
+      "sha": "b61d92eee40f819fdaa6e1d902eb510e51a91f75",
+      "ref": "feature/creator-history-worker-500"
+    },
+    {
+      "sha": "8b4a10f9d903d7c7888293cf622b270306c9b2aa",
+      "ref": "feature/creator-indexed-origin-cb02b"
+    },
+    {
+      "sha": "3f7628670f39477d513185deae9360ecf94b9715",
+      "ref": "feature/creator-origin-cb02c"
+    },
+    {
+      "sha": "b889e5186ca1569f315c47ab8ca1a92346f57966",
+      "ref": "feature/creator-origin-cb02d"
+    },
+    {
+      "sha": "a0148fb8c55a5011895dce11fbef6f23939fbe60",
+      "ref": "feature/creator-origin-cb02e"
+    },
+    {
+      "sha": "f8594d6b8b10056784a02dabb01493b8d4a6785a",
+      "ref": "feature/doom404-genesis-merch"
+    },
+    {
+      "sha": "58195222483621de5e2eee4c6be78704fe9c67b2",
+      "ref": "feature/glitch-assessment-sprint1"
+    },
+    {
+      "sha": "7a0de883dd2aa406ff2c35588cb6eae84f91dae6",
+      "ref": "feature/glitch-holder-dashboard-integration"
+    },
+    {
+      "sha": "ed90c53860918772d917fedcc4d7fdd4c84bc6cf",
+      "ref": "feature/glitch-liquidity-evidence-worker"
+    },
+    {
+      "sha": "2dbfca14ed04b4e913fd5af9fb15bbc7f495e60d",
+      "ref": "feature/glitch-v0-6-behavior-intelligence"
+    },
+    {
+      "sha": "b7aa45393e379ef697ec3f97ac72fd6ad8933c1f",
+      "ref": "feature/hd-mascot-wallet-signal"
+    },
+    {
+      "sha": "11314e2ff7d5e050592c6eae2b08ea76faa797a1",
+      "ref": "feature/holder-concentration-scoring"
+    },
+    {
+      "sha": "11f2fd229d9bde94c907c8be7f6d75238ff0f244",
+      "ref": "feature/liquidity-lq08-auto-worker-offline"
+    },
+    {
+      "sha": "3cb76d73b3e0ae23cdca925008eed525a583f2ae",
+      "ref": "feature/liquidity-lq08-runtime-contract-offline"
+    },
+    {
+      "sha": "dd47f59bf1fab859144586fc3fbcd3e8576f0348",
+      "ref": "feature/liquidity-lq08c-offline-execution-contract"
+    },
+    {
+      "sha": "221af3fbd879299dfb8be95d20c3897ac83afdb6",
+      "ref": "feature/mascot-experience-v1-1"
+    },
+    {
+      "sha": "18c1631e1b78a701625b907b915018a493a8eb61",
+      "ref": "feature/mascot-expressions-v2"
+    },
+    {
+      "sha": "3a6c46308dee007bc7026c975d543d147bf42101",
+      "ref": "feature/mascot-interaction-v3"
+    },
+    {
+      "sha": "2575161f5cd0ac9b5ebf50b149f60be347f3663a",
+      "ref": "feature/mascot-state-animations"
+    },
+    {
+      "sha": "5cb49f59c2226e19f6a91d46a7bce73ff77c2094",
+      "ref": "feature/original-mascot-motion"
+    },
+    {
+      "sha": "b8e9cf8ca160b1fcb8f301a9e0be95b97b89c1d5",
+      "ref": "feature/wallet-signal-3d-mascot"
+    },
+    {
+      "sha": "dee2c53fd91d45bf3edd4d4de953429b9b1aa1cd",
+      "ref": "feature/wallet-signal-risk-intelligence"
+    },
+    {
+      "sha": "f319c7c1c851235ff6a9aa64ab37f660ffca679f",
+      "ref": "feature/wallet-signal-rpc-reliability"
+    },
+    {
+      "sha": "55063ed97b05afc91a4339270ad487107f50dea1",
+      "ref": "feature/wallet-signal-trust-report-v1"
+    },
+    {
+      "sha": "ef79648a8290091c43a136018cbd2e45a9797ed0",
+      "ref": "feature/wallet-signal-v0-7-mascot"
+    },
+    {
+      "sha": "3e306fac230d44672b3259fc8cc50bab284fa66d",
+      "ref": "feature/wallet-signal-v0-8-coverage"
+    },
+    {
+      "sha": "b6c3889674913b01f1e9788b15e283af20dc1abf",
+      "ref": "feature/wallet-signal-v0-9-intelligence"
+    },
+    {
+      "sha": "0fa4bc63f3764f884da84910ef07b73c5f2c4f97",
+      "ref": "feature/wallet-signal-v1-0-deep-analysis"
+    },
+    {
+      "sha": "2f4a6440ba9f3d38ef33527e5667cf422999e9d9",
+      "ref": "feature/wallet-signal-v1-0-performance"
+    },
+    {
+      "sha": "140bb1bda4d7ed8039f3dd4db2736999a29c7e7f",
+      "ref": "feature/wallet-signal-v1-0-readiness"
+    },
+    {
+      "sha": "bc76446eb0d7cda86ae3efd5557e7a921a3b0c69",
+      "ref": "fix/cloud-npm-cache-lq08-tests"
+    },
+    {
+      "sha": "4e800e0f1cff17dc73c7ef81d0ce5072ae3601c8",
+      "ref": "fix/creator-archive-header-diagnostic"
+    },
+    {
+      "sha": "5ddc2b76ad104d94386b9383a93a40951235dd92",
+      "ref": "fix/creator-history-strict-status"
+    },
+    {
+      "sha": "561d1d724cbf4dd966e7e85f8410237c04d4af3d",
+      "ref": "fix/creator-initial-allocation-validation"
+    },
+    {
+      "sha": "5294b464c27b988600646421f4f90a74e2cd8154",
+      "ref": "fix/creator-ledger-input-validation"
+    },
+    {
+      "sha": "a8f3c30783c468bf4476aa82d4167ed348205c5e",
+      "ref": "fix/creator-retention-immutable-snapshot"
+    },
+    {
+      "sha": "469c97fef48e0e3186d68f2070b510edd61bb934",
+      "ref": "fix/creator-retention-integrity"
+    },
+    {
+      "sha": "db4ecf092f28db5e6f1dc10da54be39c646dff53",
+      "ref": "fix/creator-shadow-diagnostic-fixture"
+    },
+    {
+      "sha": "827a6ca8015576f44d5c98fc6e21806bd4c4b86b",
+      "ref": "fix/creator-strict-evidence-flags"
+    },
+    {
+      "sha": "3120957926c52c93b7e47bff83eef388879cc785",
+      "ref": "fix/dashboard-layout-focus-20261022"
+    },
+    {
+      "sha": "a6a7f0f77e5dde6ffbe71ee01fd764c432c65e1d",
+      "ref": "fix/desktop-hero-overlap"
+    },
+    {
+      "sha": "04965b73ca03b915cbc571cbca8757abc1b21dff",
+      "ref": "fix/glitch-canonical-score-weights"
+    },
+    {
+      "sha": "f2a436507fcbc6823cdd1c8bb9b88f0c968fb0ac",
+      "ref": "fix/glitch-evidence-validation"
+    },
+    {
+      "sha": "dac9f6f155e180d8ff663d757913d27bf41bd759",
+      "ref": "fix/glitch-historical-pump-program-id"
+    },
+    {
+      "sha": "97e216a9d5f7b53060e7ab83ecbb761acb70f0f7",
+      "ref": "fix/glitch-holder-snapshot-validity"
+    },
+    {
+      "sha": "512421efb79d0ba3d26d765c7b38be7080f259c7",
+      "ref": "fix/glitch-holder-workflow-syntax"
+    },
+    {
+      "sha": "8fc949427de8534f78b8bbf4bad7f4801506c84d",
+      "ref": "fix/glitch-liquidity-evidence-guards"
+    },
+    {
+      "sha": "0b478c28357a80efc03c8d7e8fd52cfd78c21968",
+      "ref": "fix/glitch-network-restoration"
+    },
+    {
+      "sha": "9a869d1618d2f23f7d16add542fdfa236598035b",
+      "ref": "fix/glitch-recovery-preflight-20261027"
+    },
+    {
+      "sha": "8a0b2d68f6012b8c88f55f04c087314efc4f5398",
+      "ref": "fix/glitch-verified-dashboard-adapters"
+    },
+    {
+      "sha": "0c18f69d8381d0f47356a9996e8125a2d57c482f",
+      "ref": "fix/holder-controlled-merge-uncertain-outcome"
+    },
+    {
+      "sha": "0ea69ac11c86f1a9fcfeb7fad97186c171503bd5",
+      "ref": "fix/holder-reconciliation-provenance-guard"
+    },
+    {
+      "sha": "9774654859b30f69c816ba03e6627b6de9bc3e1e",
+      "ref": "fix/holder-strict-flags-assessment"
+    },
+    {
+      "sha": "4dd8478107c3cfd49624ef4fb37cb6e6e0e5848a",
+      "ref": "fix/holder-tick-identity"
+    },
+    {
+      "sha": "8b4ac8ec22e52011f095c26603789b07ef35cbe5",
+      "ref": "fix/liquidity-failure-diagnostic-preservation"
+    },
+    {
+      "sha": "1f0884851b4d454858b7d6a3f4a6750556ec69e3",
+      "ref": "fix/liquidity-history-npm-install"
+    },
+    {
+      "sha": "d8ceeed61dbe47cfd06351f9c3ec54bf9a4242c3",
+      "ref": "fix/liquidity-offline-evidence-validation"
+    },
+    {
+      "sha": "0caacf79057fa5a0d0d7d952bc664403f57490fd",
+      "ref": "fix/liquidity-partial-offline-integration"
+    },
+    {
+      "sha": "a4037086b471db3c7734bfc794a29003d7c645f8",
+      "ref": "fix/liquidity-partial-recovery-safety"
+    },
+    {
+      "sha": "842696675328c587af7d17ed5a5011e0f4b2240b",
+      "ref": "fix/liquidity-reconciliation-input-safety"
+    },
+    {
+      "sha": "ffc9b75fd7221d9c3999671266dbba2e6a7f908f",
+      "ref": "fix/liquidity-strict-evidence-flags"
+    },
+    {
+      "sha": "2f8b896181222c809c38b42f862857af3c399a73",
+      "ref": "fix/token-authority-evidence-20261022"
+    },
+    {
+      "sha": "e20a5ac3c6c1b7a9356c77055157b0951b376c58",
+      "ref": "fix/token-security-effective-fees"
+    },
+    {
+      "sha": "1a4cbf54e87fc0e81750a593cf1a821531255ab5",
+      "ref": "fix/token-security-validation-20261022"
+    },
+    {
+      "sha": "fe5b845b8f0ecb618ff00770881ded26c0ee0e96",
+      "ref": "main"
+    },
+    {
+      "sha": "baf0b73a18993626af6103e4f6cbf17a640c7208",
+      "ref": "test/creator-settlement-ledger-gates"
+    },
+    {
+      "sha": "85ed2da93a8e3225e641e8721630d2150e4060c6",
+      "ref": "test/creator-token2022-program-id"
+    },
+    {
+      "sha": "0e20f037b6fcda0299296f035df99201c22267c9",
+      "ref": "test/holder-atomic-merge-postgres"
+    },
+    {
+      "sha": "5c37b585f7e8eea782d7f2743204841d2c699e3e",
+      "ref": "test/liquidity-lq07-offline-integration-20261022"
+    }
+  ],
+  "sources": [
+    {
+      "path": ".github/workflows/glitch-creator-buy-readonly-diagnostic.yml",
+      "blob": "7872c56035b5b2b05ff5fd90dc45765da7b06946",
+      "refs": [
+        "chore/fix-liquidity-controlled-worker-install",
+        "chore/liquidity-lq08-offline-current-main",
+        "chore/liquidity-lq08-runtime-current-main",
+        "chore/liquidity-lq08-runtime-current-main-v2",
+        "chore/liquidity-lq08c-current-main",
+        "chore/liquidity-partial-recovery-current-main",
+        "chore/liquidity-pr46-current-main-validation",
+        "chore/liquidity-pr54-current-main-reconciled",
+        "chore/liquidity-recovery-offline-main-20261021",
+        "chore/liquidity-worker-offline-review-20261022",
+        "chore/register-liquidity-controlled-worker",
+        "chore/register-liquidity-discovery-shadow",
+        "chore/register-liquidity-history-continuation",
+        "chore/register-liquidity-history-shadow",
+        "chore/register-liquidity-partial-recovery",
+        "chore/register-liquidity-pending-recovery",
+        "chore/register-liquidity-replay-continuation",
+        "chore/register-liquidity-shadow-current-main",
+        "chore/register-liquidity-worker-current-main",
+        "feature/liquidity-lq08-auto-worker-offline",
+        "feature/liquidity-lq08-runtime-contract-offline",
+        "feature/liquidity-lq08c-offline-execution-contract",
+        "fix/cloud-npm-cache-lq08-tests",
+        "fix/liquidity-offline-evidence-validation",
+        "main",
+        "test/liquidity-lq07-offline-integration-20261022"
+      ]
+    },
+    {
+      "path": ".github/workflows/glitch-creator-origin-diagnostic.yml",
+      "blob": "9c9beb9b85a57b739237c0ae4e1ba8c009ea47a0",
+      "refs": [
+        "chore/fix-liquidity-controlled-worker-install",
+        "chore/liquidity-lq08-offline-current-main",
+        "chore/liquidity-lq08-runtime-current-main",
+        "chore/liquidity-lq08-runtime-current-main-v2",
+        "chore/liquidity-lq08c-current-main",
+        "chore/liquidity-partial-recovery-current-main",
+        "chore/liquidity-pr46-current-main-validation",
+        "chore/liquidity-pr54-current-main-reconciled",
+        "chore/liquidity-recovery-offline-main-20261021",
+        "chore/liquidity-worker-offline-review-20261022",
+        "chore/register-glitch-liquidity-replay",
+        "chore/register-liquidity-controlled-worker",
+        "chore/register-liquidity-discovery-shadow",
+        "chore/register-liquidity-history-continuation",
+        "chore/register-liquidity-history-dispatch",
+        "chore/register-liquidity-history-shadow",
+        "chore/register-liquidity-partial-recovery",
+        "chore/register-liquidity-pending-recovery",
+        "chore/register-liquidity-replay-continuation",
+        "chore/register-liquidity-shadow-current-main",
+        "chore/register-liquidity-worker-current-main",
+        "feature/holder-concentration-scoring",
+        "feature/liquidity-lq08-auto-worker-offline",
+        "feature/liquidity-lq08-runtime-contract-offline",
+        "feature/liquidity-lq08c-offline-execution-contract",
+        "fix/cloud-npm-cache-lq08-tests",
+        "fix/liquidity-history-npm-install",
+        "fix/liquidity-offline-evidence-validation",
+        "main",
+        "test/liquidity-lq07-offline-integration-20261022"
+      ]
+    },
+    {
+      "path": ".github/workflows/glitch-creator-worker.yml",
+      "blob": "2ebf0e5305289309ab72e2de1b3843ff1463b60a",
+      "refs": [
+        "chore/fix-liquidity-controlled-worker-install",
+        "chore/liquidity-lq08-offline-current-main",
+        "chore/liquidity-lq08-runtime-current-main",
+        "chore/liquidity-lq08-runtime-current-main-v2",
+        "chore/liquidity-lq08c-current-main",
+        "chore/liquidity-partial-recovery-current-main",
+        "chore/liquidity-pr46-current-main-validation",
+        "chore/liquidity-pr54-current-main-reconciled",
+        "chore/liquidity-recovery-offline-main-20261021",
+        "chore/liquidity-worker-offline-review-20261022",
+        "chore/register-glitch-liquidity-replay",
+        "chore/register-liquidity-controlled-worker",
+        "chore/register-liquidity-discovery-shadow",
+        "chore/register-liquidity-history-continuation",
+        "chore/register-liquidity-history-dispatch",
+        "chore/register-liquidity-history-shadow",
+        "chore/register-liquidity-partial-recovery",
+        "chore/register-liquidity-pending-recovery",
+        "chore/register-liquidity-replay-continuation",
+        "chore/register-liquidity-shadow-current-main",
+        "chore/register-liquidity-worker-current-main",
+        "feature/liquidity-lq08-auto-worker-offline",
+        "feature/liquidity-lq08-runtime-contract-offline",
+        "feature/liquidity-lq08c-offline-execution-contract",
+        "fix/cloud-npm-cache-lq08-tests",
+        "fix/liquidity-history-npm-install",
+        "fix/liquidity-offline-evidence-validation",
+        "main",
+        "test/liquidity-lq07-offline-integration-20261022"
+      ]
+    },
+    {
+      "path": ".github/workflows/glitch-indexed-origin-diagnostic.yml",
+      "blob": "cc49c4e3542111aaeb29e30fbbda78134e68ee3b",
+      "refs": [
+        "chore/fix-liquidity-controlled-worker-install",
+        "chore/liquidity-lq08-offline-current-main",
+        "chore/liquidity-lq08-runtime-current-main",
+        "chore/liquidity-lq08-runtime-current-main-v2",
+        "chore/liquidity-lq08c-current-main",
+        "chore/liquidity-partial-recovery-current-main",
+        "chore/liquidity-pr46-current-main-validation",
+        "chore/liquidity-pr54-current-main-reconciled",
+        "chore/liquidity-recovery-offline-main-20261021",
+        "chore/liquidity-worker-offline-review-20261022",
+        "chore/register-glitch-liquidity-replay",
+        "chore/register-liquidity-controlled-worker",
+        "chore/register-liquidity-discovery-shadow",
+        "chore/register-liquidity-history-continuation",
+        "chore/register-liquidity-history-dispatch",
+        "chore/register-liquidity-history-shadow",
+        "chore/register-liquidity-partial-recovery",
+        "chore/register-liquidity-pending-recovery",
+        "chore/register-liquidity-replay-continuation",
+        "chore/register-liquidity-shadow-current-main",
+        "chore/register-liquidity-worker-current-main",
+        "feature/liquidity-lq08-auto-worker-offline",
+        "feature/liquidity-lq08-runtime-contract-offline",
+        "feature/liquidity-lq08c-offline-execution-contract",
+        "fix/cloud-npm-cache-lq08-tests",
+        "fix/liquidity-history-npm-install",
+        "fix/liquidity-offline-evidence-validation",
+        "main",
+        "test/liquidity-lq07-offline-integration-20261022"
+      ]
+    },
+    {
+      "path": ".github/workflows/glitch-creator-buy-readonly-diagnostic.yml",
+      "blob": "231563dfa1e6791598278249deb833ec6d87539e",
+      "refs": [
+        "chore/register-glitch-liquidity-replay"
+      ]
+    },
+    {
+      "path": ".github/workflows/creator-alchemy-archive-capability.yml",
+      "blob": "0300ab6d6faf17a910c56c622ac1f076a66672d2",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot"
+      ]
+    },
+    {
+      "path": ".github/workflows/creator-global-restricted-capture.yml",
+      "blob": "0e6c8ca3d5655e92faa3d11e4602532ec0d265f9",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot"
+      ]
+    },
+    {
+      "path": ".github/workflows/creator-historical-fee-probe.yml",
+      "blob": "49957edf9b23dfd25bd4db9bab1e846c8bd8cd0b",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot"
+      ]
+    },
+    {
+      "path": ".github/workflows/creator-postgres-replay-test.yml",
+      "blob": "54b0da97ac2b0a3df02de0bb7ac2b69c0e113b94",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation"
+      ]
+    },
+    {
+      "path": ".github/workflows/creator-token2022-regression.yml",
+      "blob": "d52dd62dbcbf0c661922aefa6bed6950735a206f",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation"
+      ]
+    },
+    {
+      "path": ".github/workflows/glitch-creator-buy-readonly-diagnostic.yml",
+      "blob": "89e05aa6abe353626b8637210cd67651b9a106a3",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/glitch-assessment-sprint1",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": ".github/workflows/glitch-creator-origin-diagnostic.yml",
+      "blob": "6bc801b599126ccdc19e3122b49b9f296149ce04",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": ".github/workflows/glitch-creator-worker-tests.yml",
+      "blob": "fbd83a0a5e541957bf05e7cde53d738407243319",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/glitch-assessment-sprint1",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": ".github/workflows/glitch-creator-worker.yml",
+      "blob": "f5f4244fcd9cd45e8d3a4576593dc5fee698ba1b",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/glitch-assessment-sprint1",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": ".github/workflows/glitch-indexed-origin-diagnostic.yml",
+      "blob": "adb10d81b3449bcec832cee556307b5d0d29150d",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/glitch-assessment-sprint1",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/app/api/creator-evidence/route.js",
+      "blob": "e5d142dd772071513a363b5f38a5c2f79e5d57f5",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/app/api/creator-holdings/route.js",
+      "blob": "0caa7fbb4c37e1241091caecf72de3c54fb1a234",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/app/api/creator/route.js",
+      "blob": "5231028500ffe01db9132ba0244b833154f360a9",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/token-security-effective-fees",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/app/page.js",
+      "blob": "1a33d363e0e528310b820c073a26a0779df891e4",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/db/migrations/001_intelligence_vault.sql",
+      "blob": "5a4175325ef90b43127610804933686e09a5d03c",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/db/migrations/002_intelligence_vault_private_rls.sql",
+      "blob": "1e73c2adc8b1046293d5cf7042e32f29ec050926",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/db/migrations/003_store_creator_evidence.sql",
+      "blob": "529b0f75c7e0deadc08c6aeecd8aa49bd9ba180d",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/creatorHistoricalPrivateRetention.mjs",
+      "blob": "2bc659a934c74c0266981182585bd778a775e0f8",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/creatorIntelligenceJobStore.mjs",
+      "blob": "368a4db573fa8a46cfd3dcb5e8f52991d88cc715",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/glitch-assessment-sprint1",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/creatorIntelligenceTick.mjs",
+      "blob": "1577f0d8d1c18c70243f17b839825373a7384dc9",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/glitch-assessment-sprint1",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/creatorLiquidityDisplayV11.mjs",
+      "blob": "2c38058449581064250755598aca64ed255cab42",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/creatorSignedUploadCoordinator.mjs",
+      "blob": "dda07de7b943a12b7422dd8b65a8888fa44277f0",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/creatorSignedUploadPolicy.mjs",
+      "blob": "5920637c6eca5ccac8e09c885b024a4cf2e3214f",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/creatorSupabaseEvidenceTransport.mjs",
+      "blob": "e198b9cfe8345f9f365879e48ba4a37e8a5e480b",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/creatorWorkflowOidcBoundary.mjs",
+      "blob": "c76e060f098cc63b30b5370be9109ff4d56a578b",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/decisionSummary.js",
+      "blob": "cdf08f8cddf30be90abc8e14684ff4716c4723e2",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/intelligenceVault.mjs",
+      "blob": "db10f10ce6c0fa9377bcd353b195ef47b19fce31",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/tokenAssessmentV11.js",
+      "blob": "76882f868568147d0d62ba9743a5ab55e0093958",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/creator-worker-run.mjs",
+      "blob": "631ec9a84deecbc2b09bf1f8036feefc23f069af",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/glitch-assessment-sprint1",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-creator-app-verify.mjs",
+      "blob": "e6c66261733ddb22fb3fb584792de4ca5fe98178",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-creator-argument-audit.mjs",
+      "blob": "77bc1cff9d8d2128e4d74f0f5bc798b9efa0e8d4",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-creator-extra-account-audit.mjs",
+      "blob": "f190058da26f3863a65c666f1e748a73ca753762",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-creator-extra-context.mjs",
+      "blob": "f60183d0aae22da04dba29429c36fb52bcef20c5",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-creator-final-layout-audit.mjs",
+      "blob": "9d5c038a0fd471cce2e1f48f9436df4bacf0b02e",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-creator-layout-audit.mjs",
+      "blob": "99707c9c9a6640fbb43b032a7d3e4187b90602ed",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-creator-quote-curve-audit.mjs",
+      "blob": "f4968db42bcc2574cb499231cce0a01ef6989b87",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-creator-reject-review.mjs",
+      "blob": "6e0381b5d924fc070f32b2e11542274c17633c14",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-creator-resume-diagnostic.mjs",
+      "blob": "ef641303001e18896ee247a762c5f690fb938970",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-creator-slot-audit.mjs",
+      "blob": "bdc668e296c5198357860e2303ec905a2051fd38",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-evidence-persistence.mjs",
+      "blob": "3d562e3379de12ccc2cb48119dc8ddf1efc67c0d",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-intelligence-vault-check.mjs",
+      "blob": "f29df2250cad6bf316918c359f7af5246328bd5b",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-pnut-argument-audit.mjs",
+      "blob": "ccb7c2cb7250d005a76e3da4de4bc9de0a6b6baa",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-pnut-historical-audit.mjs",
+      "blob": "f26eec9848d573538e9a9e4667535586a99026d6",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-pnut-layout-audit.mjs",
+      "blob": "d1d28b8c85d5919c39d3fd4784450f5349ddacee",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-pnut-rejected-audit.mjs",
+      "blob": "b756c1dba4b97fe45be8bc3f48edb1ea58796cd0",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/scripts/preview-vault-seed-once.mjs",
+      "blob": "3f68959dba220e88a4945ac0f625ff99f136d096",
+      "refs": [
+        "feature/creator-history-worker-500",
+        "feature/creator-origin-cb02e",
+        "feature/doom404-genesis-merch",
+        "feature/glitch-assessment-sprint1",
+        "feature/glitch-holder-dashboard-integration",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/creator-archive-header-diagnostic",
+        "fix/creator-history-strict-status",
+        "fix/creator-initial-allocation-validation",
+        "fix/creator-ledger-input-validation",
+        "fix/creator-retention-immutable-snapshot",
+        "fix/creator-retention-integrity",
+        "fix/creator-shadow-diagnostic-fixture",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-holder-workflow-syntax",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/creator-settlement-ledger-gates",
+        "test/creator-token2022-program-id",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/app/page.js",
+      "blob": "e4bda4002a70f670fe0fbf84e6a7aa533b18c845",
+      "refs": [
+        "feature/creator-origin-cb02e"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/decisionSummary.js",
+      "blob": "d62c1bdaca89c98e8844d359df48750a6c8cba38",
+      "refs": [
+        "feature/creator-origin-cb02e"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/app/page.js",
+      "blob": "6ff6a84dde1451c4ec8c83be3be2fd19074016d2",
+      "refs": [
+        "feature/doom404-genesis-merch",
+        "feature/glitch-liquidity-evidence-worker",
+        "fix/glitch-evidence-validation",
+        "fix/glitch-historical-pump-program-id",
+        "fix/glitch-liquidity-evidence-guards",
+        "fix/liquidity-failure-diagnostic-preservation",
+        "fix/liquidity-partial-offline-integration",
+        "fix/liquidity-partial-recovery-safety",
+        "fix/liquidity-reconciliation-input-safety"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/app/api/creator-evidence/route.js",
+      "blob": "8a66a73547940d9716587f375fc8557bdf074e2d",
+      "refs": [
+        "feature/glitch-assessment-sprint1",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-network-restoration",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/app/api/creator/route.js",
+      "blob": "2c7e279d5417e640456a805b2b6b8c9800d085ee",
+      "refs": [
+        "feature/glitch-assessment-sprint1",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-validation-20261022"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/app/page.js",
+      "blob": "5dac7e7d540a89b5265d7a05a3acd713e1901cb1",
+      "refs": [
+        "feature/glitch-assessment-sprint1",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-network-restoration",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/dashboardEvidenceBridge.mjs",
+      "blob": "d25885efe65cb5b0420d8b6f720b7f565bfe02a4",
+      "refs": [
+        "feature/glitch-assessment-sprint1",
+        "fix/creator-strict-evidence-flags",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-network-restoration",
+        "fix/glitch-verified-dashboard-adapters",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-effective-fees",
+        "fix/token-security-validation-20261022",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/glitchDashboardEvidenceV11.mjs",
+      "blob": "8ca71c715996c0020b39966bcf7163a06727bad3",
+      "refs": [
+        "feature/glitch-assessment-sprint1",
+        "fix/dashboard-layout-focus-20261022",
+        "fix/glitch-recovery-preflight-20261027",
+        "fix/holder-strict-flags-assessment",
+        "fix/holder-tick-identity",
+        "fix/liquidity-strict-evidence-flags",
+        "fix/token-authority-evidence-20261022",
+        "fix/token-security-validation-20261022"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/app/page.js",
+      "blob": "d530c5f7cfa380073e3ac09b08ff6767edff5207",
+      "refs": [
+        "feature/glitch-holder-dashboard-integration"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/tokenAssessment.js",
+      "blob": "9879f70c91f3085d2b5e119bc6cad0bcff9df6b0",
+      "refs": [
+        "feature/glitch-holder-dashboard-integration",
+        "fix/glitch-holder-workflow-syntax"
+      ]
+    },
+    {
+      "path": ".github/workflows/creator-token2022-regression.yml",
+      "blob": "81be34d6fbe029c3143949677f1e7c195ecb9d05",
+      "refs": [
+        "fix/creator-archive-header-diagnostic"
+      ]
+    },
+    {
+      "path": ".github/workflows/creator-token2022-regression.yml",
+      "blob": "1a901e8acbd09465844a9e5fcc71ee30a51b27dc",
+      "refs": [
+        "fix/creator-retention-immutable-snapshot"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/creatorIntelligenceTick.mjs",
+      "blob": "ed7b53fbc78f2f5c6bb0d9d8d431d0977db80475",
+      "refs": [
+        "fix/creator-retention-integrity"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/glitchDashboardEvidenceV11.mjs",
+      "blob": "b661285f8219f8a31b86685eeee316cf87b50984",
+      "refs": [
+        "fix/creator-strict-evidence-flags",
+        "fix/glitch-canonical-score-weights",
+        "fix/glitch-network-restoration",
+        "fix/holder-controlled-merge-uncertain-outcome",
+        "fix/holder-reconciliation-provenance-guard",
+        "fix/token-security-effective-fees",
+        "test/holder-atomic-merge-postgres"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/glitchDashboardEvidenceV11.mjs",
+      "blob": "7b4d8fa58a0c5f6c0981ad4dac142092b648b2b7",
+      "refs": [
+        "fix/glitch-holder-snapshot-validity",
+        "fix/glitch-verified-dashboard-adapters"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/app/page.js",
+      "blob": "4ec44606c4283c5790274b0bfe9c14538a497e74",
+      "refs": [
+        "fix/glitch-holder-workflow-syntax"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/app/page.js",
+      "blob": "1c7fcce558b163083eb26a6dbe2f419eece64acf",
+      "refs": [
+        "fix/glitch-recovery-preflight-20261027"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/creatorIntelligenceJobStore.mjs",
+      "blob": "0092734840e2e8571f303b96b76f0899c62bd12b",
+      "refs": [
+        "fix/glitch-recovery-preflight-20261027"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/creatorIntelligenceTick.mjs",
+      "blob": "9633b088b655fe7bc79bfeefbbebfacbe1a79a6e",
+      "refs": [
+        "fix/glitch-recovery-preflight-20261027"
+      ]
+    },
+    {
+      "path": "mvp/wallet-signal/lib/dashboardEvidenceBridge.mjs",
+      "blob": "6d8589a1823c77578742d07f51691289251495c6",
+      "refs": [
+        "fix/glitch-recovery-preflight-20261027"
+      ]
+    }
+  ]
+}

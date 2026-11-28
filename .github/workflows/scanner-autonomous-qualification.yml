@@ -1,0 +1,55 @@
+name: Scanner isolated autonomous core qualification
+on:
+  push:
+    branches: [qualification/autonomous-engine-20261128]
+    paths: ['mvp/wallet-signal/lib/**', 'mvp/wallet-signal/scripts/qualification/live-core.mjs', '.github/workflows/scanner-autonomous-qualification.yml']
+permissions:
+  contents: read
+concurrency:
+  group: ${{ !contains(github.event.head_commit.message, '[reference-only]') && 'scanner-autonomous-live' || format('scanner-core-skipped-{0}', github.sha) }}
+  cancel-in-progress: false
+jobs:
+  qualification:
+    if: github.repository == 'doom404official-collab/DOOM404' && !contains(github.event.head_commit.message, '[reference-only]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run test:smoke
+      - name: Required known fixtures and failed mechanisms through mint-only core
+        env:
+          ALCHEMY_RPC_URL: ${{ secrets.ALCHEMY_RPC_URL }}
+          ALCHEMY_SOLANA_ARCHIVE_RPC_URL: ${{ secrets.ALCHEMY_SOLANA_ARCHIVE_RPC_URL }}
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          QUALIFICATION_MINTS: '["98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump","EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y","4kjruqGHDsSqkMdFfCjV7Vb62HPFhtXyWc2t6JpQzDnz","9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump","DEW9dSN6QpWyNthphCpMmAbZP1Q4cEKR9xQXAri98WDP","Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr","6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN","3Tg6YnNrfPdFfsY14MaNsDMWLseAyrUDS3myJtbaJN6f","9hjBLBrc7WZW2H8UQvBAvG5WiTZotXUv2Bdcn4f4pump","Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump","436BcX8hF6ERozLniyL8d75bVJbRvxJJtdroKWC2pump","CQpb2WSz3GiS3geRyxukRrE1DyxxV8XBFwCaWuNwpump"]'
+        run: node scripts/qualification/live-core.mjs
+      - name: Fresh final ten-token holdout cold and warm without prior forensics
+        env:
+          ALCHEMY_RPC_URL: ${{ secrets.ALCHEMY_RPC_URL }}
+          ALCHEMY_SOLANA_ARCHIVE_RPC_URL: ${{ secrets.ALCHEMY_SOLANA_ARCHIVE_RPC_URL }}
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          QUALIFICATION_MINTS: '["PgFtGGquvnv2zEkjG2N2QPvBTBrafuExGYEqahRpump","47P6Y81cVuCQFYguHHrjMyVpHufkmTTTyuKxaPB5EC1E","6C9r2gzu8Pr54hTevHo3x5gSj9JqtpApj7obJnrtpump","7sgu7H7zP2xt1AXqRzjcWMrZYvip3ML1fH7vhixDpump","4KXCDChFWqgKdBWzYTaZa76SJAcip8p1n5ky2Pdopump","2GPWmqQNmaAL8Vj48ETdjeuXd62snKMyZXGyGWjd3Ugw","AASZr8AE3AK6nuSv7vJSdMgAUhKhsbg4iuRb1M81ETMN","FcjViE1oVbXFza5ry9Q7WZ9XNd95zu1LqEiSUdeJMPTP","488DGeMxRHmofoEtfrPE6geMT7EzwP9HMn76cDq5ZKwt","76aYNHbDfHemxSS7vmh6eJGfjodK8m7srCxiYCrKxzY1"]'
+        run: node scripts/qualification/live-core.mjs
+      - name: Independent final holdout reference collection after all captures
+        env:
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          REFERENCE_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+          REFERENCE_CANDIDATE_SHA: ${{ github.sha }}
+          REFERENCE_EXPECTED_MINTS: '["PgFtGGquvnv2zEkjG2N2QPvBTBrafuExGYEqahRpump","47P6Y81cVuCQFYguHHrjMyVpHufkmTTTyuKxaPB5EC1E","6C9r2gzu8Pr54hTevHo3x5gSj9JqtpApj7obJnrtpump","7sgu7H7zP2xt1AXqRzjcWMrZYvip3ML1fH7vhixDpump","4KXCDChFWqgKdBWzYTaZa76SJAcip8p1n5ky2Pdopump","2GPWmqQNmaAL8Vj48ETdjeuXd62snKMyZXGyGWjd3Ugw","AASZr8AE3AK6nuSv7vJSdMgAUhKhsbg4iuRb1M81ETMN","FcjViE1oVbXFza5ry9Q7WZ9XNd95zu1LqEiSUdeJMPTP","488DGeMxRHmofoEtfrPE6geMT7EzwP9HMn76cDq5ZKwt","76aYNHbDfHemxSS7vmh6eJGfjodK8m7srCxiYCrKxzY1"]'
+        run: node ../../tooling/glitch-qualification/independent-reference.mjs

@@ -1,0 +1,30 @@
+# WP-01 staged scan engineering evidence
+
+Baseline: `265359e477cc14e4e4aeae0556066f1fcf3818ac`. The previous frontend awaited bounded creator history and retained holder reads before current pool calculations and report publication. This is a directly observed code dependency, not a claim that every hosted delay comes from this dependency. Server timing spans now permit provider, quota, Vault and request latency attribution independently.
+
+The initial/current mint, holder, attribution, retained evidence and market reads now start independently. Reference sales depend on market pool discovery only. Stage 1 publishes verified current evidence or an explicitly incomplete bounded initial snapshot; decision-ready status requires centrally verified critical evidence or scored holder evidence plus current security and assessed sale depth. Invalid or stale holder observations cannot qualify readiness. Stage 2 runs the existing bounded worker, retained holder views and one expanded holder retrieval. A final retained evidence read updates the same saved report ID automatically. Reloading a saved report never starts a worker. Local report polling reads IndexedDB only. Closing the originating scanner ends client-driven updates; expired progress is displayed as stopped, not completed evidence.
+
+Source scheduling allows at most six concurrent endpoint reads, leaving two slots beneath the existing eight-client-lease limit. This grants no quota. A 60-second total pipeline deadline races every transport and save callback, aborts queued and active requests, and prevents late cross-token publication even for a noncooperative adapter. Immutable creator caching is implemented by the creator work package; dynamic mint, balance, pool and quote evidence remains current.
+
+## Verification
+
+- Focused staged pipeline, saved report, source contract and concentration-context tests: 32 passed, zero failures. Includes malformed/stale holders, provider failure, critical-first publication, missing depth, cancellation, a hung transport, six-read concurrency and mint identity preservation.
+- Final Next production compilation passed (`/tmp/wp01-next-build-last.log`). Full regression is coordinated by the release manager.
+- Actual Next application, deterministic intercepted provider responses, Chromium 390×844: first verified display 154 ms, initial report rendered 341 ms, final bounded update 3730 ms; 12 logical endpoint requests, zero JavaScript errors. Verified initial report precedes the deliberately delayed historical response, event-count update reaches 19, one worker request, one expanded holder request, same saved ID on reload, no provider reads on saved reload, critical alert and no horizontal overflow. Evidence: `/tmp/doom-staged-report/acceptance.json`, `initial-390.png`, `complete-390.png`.
+- `docs/wp01-dependency-benchmark.json` records three repeated PAID retained-fixture trials for cold and warm simulated transport delays. It compares identical responses against the previous dependency graph. Cold baseline report median 195.20 ms; staged initial median 21.17 ms; bounded median 117 ms. Warm baseline median 59.58 ms; initial median 7.12 ms; bounded median 40 ms. These are synthetic architecture experiments, not current token measurements or hosted performance qualification.
+
+## Remaining qualification
+
+Hosted cold/warm user-visible response, provider consumption and full bounded completion must be measured on the consolidated exact-SHA candidate. The original full-report ten-second requirement is not waived or qualified by these experiments. First-in-process server instrumentation does not prove a Vercel cold start. Background transport completion does not imply complete historical coverage. Independent live verification and physical Android acceptance remain separate release gates.
+
+## Hosted cache-boundary defect caught before final acceptance
+
+First hosted candidate4a488d8: PAID first mint4.17s, initial saved6.45s, decision-ready8.54s, bounded12.51s. Its final scoring-evidence read was a durable cache hit to the earlier initial snapshot (451ms server), and the prior-revision worker cache suppressed the new history code. Corrected final read to one fixed bounded_final phase key while retaining the same route policy; added exact-row, completed-only CAS expiry for old algorithm revisions before the existing durable advisory-lock claim. Raw observations are preserved for receipt reuse; running/current-revision investigations are never invalidated. No quota/permission/schema change. This initial probe is excluded from final candidate latency aggregates.
+
+Trace: initial request quota_admit1.59–1.69s, each provider debit~0.61–0.71s, quota_finish~0.65–0.87s; actual chain RPC response~18–77ms, market response83ms. These overlapping spans must not be summed as walltime. First-in-process indication is not complete platform cold-start measurement.
+
+The Vault is confirmed in Supabase ap-northeast-2 (Seoul), while the intermediate functions ran in iad1 (Washington). The final preview uses a single existing icn1 function region to co-locate durable admission and evidence reads, without a new service, database, parallel region or security bypass. Hosted before/after traces must verify its effect; no assumed improvement is counted as qualification. Vercel's official regions guidance recommends locating functions near their data source (https://vercel.com/docs/functions/configuring-functions/region).
+
+## Final engineering closure
+
+The quota failure observed during live replay was correctlyfailclosed but its reason was discarded by the initialmint task. The staged engine now preserves the original fataladmission error/code/Retry-After; the homepage reports the requestwindow and does not emit a tokenassessment. Acknowledgementpaint is measured in the actualUI harness (43ms) instead of storing an assumedzero as a measurement. Stagedsaved report replay passed afterthiscorrection. NewmaterialStreamflowcontrols andindexedCLMMidentity do not add unrelatedfeatures orchangeapprovedweights. ExactfinalSHA/build/hostedtimings arein the qualificationartifact.

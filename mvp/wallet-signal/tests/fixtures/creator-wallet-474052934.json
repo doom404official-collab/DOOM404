@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "provider": "alchemy",
+  "network": "solana-mainnet",
+  "method": "getTokenAccountsByOwner",
+  "commitment": "finalized",
+  "observedAt": "2026-11-26T06:49:54.573Z",
+  "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+  "creator": "6RKsroTt2NgJvyUyhUcKqANrpHwDw6eE52X9TMBsQ7WC",
+  "response": {
+    "context": {
+      "apiVersion": "4.4.1",
+      "slot": 474052934
+    },
+    "value": [
+      {
+        "account": {
+          "data": [
+            "eNntSAtziV9m2qo7dcR9dRqAishQim/ErfgmpF721C9Qhbfb00kWnMueXeB1ouR2bblJ1yhjOqvbilQWuoTKbUAjVHmLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgcAAAA=",
+            "base64"
+          ],
+          "executable": false,
+          "lamports": 1513840,
+          "owner": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+          "rentEpoch": 18446744073709552000,
+          "space": 170
+        },
+        "pubkey": "E1pSP2NaMpEvof3vPoYJtPaxE5nANPvFcfKXpt6HfPsb"
+      }
+    ]
+  },
+  "scope": "Attributed creator wallet token accounts only; no linked-wallet, acquisition or selling completeness claim."
+}

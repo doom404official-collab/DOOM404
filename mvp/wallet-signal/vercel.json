@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": [
+    "icn1"
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "qualification/autonomous-engine-20261128": false,
+      "integration/glitch-app-main-20261118": false
+    }
+  }
+}
