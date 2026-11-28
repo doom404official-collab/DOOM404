@@ -1,0 +1,97 @@
+[
+  {
+    "mint": "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN",
+    "name": "OFFICIAL TRUMP",
+    "symbol": "TRUMP",
+    "source": "Owner-retained Android observations matched to retained scanner mint records and current market metadata; not a complete report-input fixture.",
+    "observations": {
+      "risk": null,
+      "coverage": 50.35,
+      "share": 19.51,
+      "largest": 5.7
+    }
+  },
+  {
+    "mint": "Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr",
+    "name": "FLOAT",
+    "symbol": "FLOAT",
+    "source": "Owner-retained Android observations matched to retained scanner mint records and current market metadata; not a complete report-input fixture.",
+    "observations": {
+      "risk": null,
+      "share": 33.59,
+      "largest": 6.01,
+      "creatorTokens": 49890000
+    }
+  },
+  {
+    "mint": "DEW9dSN6QpWyNthphCpMmAbZP1Q4cEKR9xQXAri98WDP",
+    "name": "Super Inu",
+    "symbol": "SI",
+    "source": "Owner-retained Android observations matched to retained scanner mint records and current market metadata; not a complete report-input fixture.",
+    "observations": {
+      "risk": null,
+      "coverage": 52.45,
+      "share": 27.52,
+      "largest": 2.9,
+      "configuredFeePct": 1
+    }
+  },
+  {
+    "mint": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump",
+    "name": "The Black Bull",
+    "symbol": "ANSEM",
+    "source": "Owner-retained Android observations matched to retained scanner mint records and current market metadata; not a complete report-input fixture.",
+    "observations": {
+      "risk": 27.08,
+      "coverage": 71,
+      "share": 60.89,
+      "largest": 49.23
+    }
+  },
+  {
+    "mint": "4kjruqGHDsSqkMdFfCjV7Vb62HPFhtXyWc2t6JpQzDnz",
+    "name": "GTA VI",
+    "symbol": "GTA6",
+    "source": "Owner-retained Android observations matched to retained scanner mint records and current market metadata; not a complete report-input fixture.",
+    "observations": {
+      "risk": null,
+      "coverage": 51.4,
+      "share": 13.67,
+      "largest": 2.23,
+      "shortfalls": [
+        1.99,
+        2.68,
+        6.54
+      ]
+    }
+  },
+  {
+    "mint": "EMQGeopasoZZUqiPDErvSL1QqvGr5WfZ1hbcvmAf8C3Y",
+    "name": "Tomo",
+    "symbol": "TOMO",
+    "source": "Owner-retained Android observations matched to retained scanner mint records and current market metadata; not a complete report-input fixture.",
+    "observations": {
+      "risk": 31.05,
+      "coverage": 81.95,
+      "share": 47.27,
+      "largest": 8.46,
+      "quoteValues": [
+        3.76,
+        21.65,
+        null
+      ]
+    }
+  },
+  {
+    "mint": "98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump",
+    "name": "Paid",
+    "symbol": "PAID",
+    "source": "Owner-retained Android observations matched to retained scanner mint records and current market metadata; not a complete report-input fixture.",
+    "observations": {
+      "risk": 14.76,
+      "coverage": 83,
+      "share": 24.54,
+      "largest": 2.12
+    }
+  }
+]

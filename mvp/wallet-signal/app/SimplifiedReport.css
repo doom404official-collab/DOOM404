@@ -501,3 +501,6 @@ body .g11.ti-report {
 .simple-risks article[data-category="Unresolved evidence"] strong{color:#ccc}
 .ti-report .simple-risks article[data-category="Observed risk factor"]>span svg{color:#d6a34f}
 .ti-report .simple-risk-heading>span{color:#bbb}
+
+.simple-critical-status {color:#ff6570;font-weight:800;border-left:3px solid #ff6570;padding:8px;}
+.simple-risks article[data-category="High risk"]>span,.ti-report .simple-risks article[data-category="High risk"]>span svg {color:#efbd63;}

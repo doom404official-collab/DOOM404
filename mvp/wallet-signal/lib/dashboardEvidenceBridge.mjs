@@ -121,6 +121,7 @@ export async function readDashboardEvidence({mint,url,key,fetchImpl=fetch}={}){
   read('scanner_token_investigations','mint,status,observation,updated_at,lease_until,expires_at',row=>publicInvestigation(row))]);
  const freshCreator=investigation?.mint===mint&&investigation.creator?.attribution?.verified===true&&(!creator.creator||creator.creator===investigation.creator.creator)?investigation.creator:null;
  const mergedBehaviour=freshCreator?projectCreatorBehaviourV2({...retainedCreatorRow?.state,creatorVerifiedAcquisitionEvents:[...(retainedCreatorRow?.state?.creatorVerifiedAcquisitionEvents||[]),...(freshCreator.events||[])],creatorProcessedSignatures:[...new Set([...(retainedCreatorRow?.state?.creatorProcessedSignatures||[]),...(freshCreator.behaviourV2?.signatures||[])])]},mint,freshCreator.creator):null;
+ if(mergedBehaviour){mergedBehaviour.investigationStopReason=freshCreator.behaviourV2?.investigationStopReason||investigation.execution?.stopReason;mergedBehaviour.creatorInvestigation=investigation.creatorInvestigation;}
  if(mergedBehaviour)mergedBehaviour.processedHistoricalSignatures=Math.max(mergedBehaviour.processedHistoricalSignatures,freshCreator.behaviourV2.processedHistoricalSignatures);
  return {version:'1.1',methodologyVersion:RISK_METHODOLOGY_VERSION,weights:RISK_WEIGHTS,mint,creator:freshCreator?{...creator,mint,attribution:freshCreator.attribution,behaviourV2:mergedBehaviour}:creator,
   liquidity,canonicalHolder,holderRelationships:holderRelationships||investigation?.holderRelationships||null,investigation};

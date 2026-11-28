@@ -27,13 +27,13 @@ async function handle(request){
     try{const saved=publicInvestigation(await createTokenInvestigationStore().read(mint));const proof=saved?.creator?.attribution;if(proof?.verified===true&&proof.mint===mint&&proof.verification==='transaction_local_protocol_creator')attribution={status:'ONCHAIN_PROTOCOL_CREATOR',boundedProof:true,creator:proof.creator,proof};}catch{}
    }
    if(!attribution.boundedProof&&(attribution.status!=='VERIFIED'||attribution.independentlyReviewed!==true)){
-    // At most one indexed historical transaction. Never paginate or backfill.
+    // One indexed page of at most twelve historical candidates. Never backfill.
     const indexConnection=createReliableConnection({primary:process.env.ALCHEMY_RPC_URL||process.env.ALCHEMY_SOLANA_ARCHIVE_RPC_URL||process.env.SOLANA_RPC_URL||process.env.HELIUS_RPC_URL,timeoutMs:2500,retries:0,maxResponseBytes:2000000,fetchImpl:scopedFetch});
-    const indexed=await indexConnection._rpcRequest('getTransactionsForAddress',[mint,{transactionDetails:'full',sortOrder:'asc',limit:3,commitment:'finalized',encoding:'jsonParsed',maxSupportedTransactionVersion:1,filters:{status:'succeeded'}}]);
+    const indexed=await indexConnection._rpcRequest('getTransactionsForAddress',[mint,{transactionDetails:'full',sortOrder:'asc',limit:12,commitment:'finalized',encoding:'jsonParsed',maxSupportedTransactionVersion:1,filters:{status:'succeeded'}}]);
     if(indexed.error){const code=Number.isSafeInteger(indexed.error.code)?indexed.error.code:null;console.info('GLITCH_ORIGIN_PROVIDER_STATUS',JSON.stringify({code}));return {mint,status:'bounded_origin_provider_unavailable',providerStatus:code===-32601?'indexed_method_unavailable':code===-32602?'indexed_request_rejected':code===-32015?'unsupported_transaction_version':'indexed_provider_error'};}
     const proofs=(indexed.result?.data||[]).map(tx=>verifyBoundedCreatorOrigin(tx,mint)).filter(Boolean);const proof=proofs[0];
     if(new Set(proofs.map(p=>p.creator)).size>1)return {mint,status:'attribution_conflict'};
-    if(!proof)return {mint,status:'unsupported_protocol',reason:'No verified supported creation instruction among three earliest indexed transactions; generic SPL authority and fee-payer roles do not establish a creator.'};
+    if(!proof)return {mint,status:'unsupported_protocol',reason:'No verified supported creation instruction among twelve earliest indexed transactions; generic SPL authority and fee-payer roles do not establish a creator.'};
     attribution={creator:proof.creator,status:'ONCHAIN_PROTOCOL_CREATOR',proof};
    }
    const rows=await connection.getParsedTokenAccountsByOwner(new PublicKey(attribution.creator),{mint:new PublicKey(mint)},'finalized');

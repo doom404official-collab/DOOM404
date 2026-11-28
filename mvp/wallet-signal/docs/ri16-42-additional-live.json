@@ -1,0 +1,1890 @@
+{
+  "observedDate": "2026-11-28",
+  "mode": "live connected Alchemy account reads; bounded security and concentration subset",
+  "completeStageB": false,
+  "rows": [
+    {
+      "mint": "HmGQsYJyeiWrV6jABUY2Cb3bEmVxwk6LzVxCchsCpump",
+      "name": "We Literally Fuck Investors",
+      "observedAt": "2026-11-28T08:04:25.624Z",
+      "slot": 474878916,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 9,
+      "excludedProgramAuthorities": 1,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 22.2648,
+      "largestEligibleSharePct": 4.0548,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 10.17,
+          "coveragePct": 31.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "HmGQsYJyeiWrV6jABUY2Cb3bEmVxwk6LzVxCchsCpump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "972378487641495",
+          "contextSlot": 474878916,
+          "observedAt": "2026-11-28T08:04:25.624Z"
+        },
+        "extensions": {
+          "mint": "HmGQsYJyeiWrV6jABUY2Cb3bEmVxwk6LzVxCchsCpump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:25.624Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878916,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "HmGQsYJyeiWrV6jABUY2Cb3bEmVxwk6LzVxCchsCpump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 9,
+            "observedSharePct": 22.2648,
+            "largestSharePct": 4.0548,
+            "supplyRaw": "972378487641495",
+            "wallets": [
+              {
+                "wallet": "5aJQzjespMdoEmcMfzigxTB23VWgyJPd6ro4pXvMqxGi",
+                "amountRaw": "39428493515307"
+              },
+              {
+                "wallet": "28bhQwjKppn7ckDLiq7uBfkVBx4LwT8qoGfeBowoXWpy",
+                "amountRaw": "29998340519725"
+              },
+              {
+                "wallet": "CE44oKS3wpUerx8afyeii56u5oQjBLZknzm4Q2CYHUz9",
+                "amountRaw": "28704443814773"
+              },
+              {
+                "wallet": "3pghKsT3eaghQw9VsJJQMw5arjAmdjh72tbq8WZFGrou",
+                "amountRaw": "26923059716767"
+              },
+              {
+                "wallet": "77xVCPjHHZ4qwy1xtbJV4SqVvo4pSLxMziJNt9U3VFy",
+                "amountRaw": "20283999251768"
+              },
+              {
+                "wallet": "CRwjThpc6X7M6bhqhchZC2SPCTvFeFHvYRjvrZmSW8FK",
+                "amountRaw": "20200599639406"
+              },
+              {
+                "wallet": "Be24Gbf5KisDk1LcWWZsBn8dvB816By7YzYF5zWZnRR6",
+                "amountRaw": "19626131176490"
+              },
+              {
+                "wallet": "DuARUpsEzdVbVpSnbGipLJvWxaXUCPLDJDjNov6Rc6s6",
+                "amountRaw": "17001317932134"
+              },
+              {
+                "wallet": "736GaY2NqQmXisJ8aNAbMVUEXN5nHaoSTZvUppew1iSn",
+                "amountRaw": "14332655245289"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:25.624Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 1,
+            "contextSlots": {
+              "mint": 474878916,
+              "sampledAccounts": 474878916
+            }
+          }
+        },
+        "now": 1795853065624
+      }
+    },
+    {
+      "mint": "ArrsHWAybe2qPLwMFpmcxf5GaT19ZQJ7bnPSyKhJFsEt",
+      "name": "gondola",
+      "observedAt": "2026-11-28T08:04:25.634Z",
+      "slot": 474878916,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 7,
+      "excludedProgramAuthorities": 3,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 13.9629,
+      "largestEligibleSharePct": 3.5934,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 6.2,
+          "coveragePct": 24.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "ArrsHWAybe2qPLwMFpmcxf5GaT19ZQJ7bnPSyKhJFsEt",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "999989705970333",
+          "contextSlot": 474878916,
+          "observedAt": "2026-11-28T08:04:25.634Z"
+        },
+        "extensions": {
+          "mint": "ArrsHWAybe2qPLwMFpmcxf5GaT19ZQJ7bnPSyKhJFsEt",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:25.634Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878916,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "ArrsHWAybe2qPLwMFpmcxf5GaT19ZQJ7bnPSyKhJFsEt",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 7,
+            "observedSharePct": 13.9629,
+            "largestSharePct": 3.5934,
+            "supplyRaw": "999989705970333",
+            "wallets": [
+              {
+                "wallet": "jmemehQbZXX7QqNE7Eyi81MdTZw6cEAT6TU4Kinwtru",
+                "amountRaw": "35933739552802"
+              },
+              {
+                "wallet": "CSBdC39CnsYPBXFneqa37uXe94iNwGgx1oyjKB9wEgFn",
+                "amountRaw": "29841051572852"
+              },
+              {
+                "wallet": "FcZBS2jpSLvZVxNEaH7NCAJeWheEhnaEo2Af8Vbft3hG",
+                "amountRaw": "28756771949920"
+              },
+              {
+                "wallet": "sssssDdMNAWKingjpEojkTNdVuZrBe7FsJLaGtexe7d",
+                "amountRaw": "14891867313004"
+              },
+              {
+                "wallet": "2XXadndv5xZsMwXhgAQtB2K9zwsMhumZ1VPZj4eTniag",
+                "amountRaw": "14195791574766"
+              },
+              {
+                "wallet": "8k3ttVYqrSpE6gUMP7axkXLuB1zgXSxF29zrmmggUuHp",
+                "amountRaw": "11184913236847"
+              },
+              {
+                "wallet": "3ZAvE1B8P5ZqGag8TuAVXCViUsTcdY6wJAtiy5LBU21E",
+                "amountRaw": "4824064665193"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:25.634Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 3,
+            "contextSlots": {
+              "mint": 474878916,
+              "sampledAccounts": 474878916
+            }
+          }
+        },
+        "now": 1795853065634
+      }
+    },
+    {
+      "mint": "EjdrRG2si1FQ3Bme5g6WSYNHJDrsKUrbGB4Z5xaopump",
+      "name": "Shit Piss Skin Can",
+      "observedAt": "2026-11-28T08:04:26.995Z",
+      "slot": 474878923,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 9,
+      "excludedProgramAuthorities": 1,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 25.7234,
+      "largestEligibleSharePct": 4.8655,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 15.01,
+          "coveragePct": 31.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "EjdrRG2si1FQ3Bme5g6WSYNHJDrsKUrbGB4Z5xaopump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "967102878681468",
+          "contextSlot": 474878923,
+          "observedAt": "2026-11-28T08:04:26.995Z"
+        },
+        "extensions": {
+          "mint": "EjdrRG2si1FQ3Bme5g6WSYNHJDrsKUrbGB4Z5xaopump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:26.995Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878923,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "EjdrRG2si1FQ3Bme5g6WSYNHJDrsKUrbGB4Z5xaopump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 9,
+            "observedSharePct": 25.7234,
+            "largestSharePct": 4.8655,
+            "supplyRaw": "967102878681468",
+            "wallets": [
+              {
+                "wallet": "JD8ET3unTf4sCzQQsyKxL9ZKDawRnE6GbH1RZvw2YfRb",
+                "amountRaw": "47055045073947"
+              },
+              {
+                "wallet": "E5AQiZuaX9TFRkhHNea5oAK1zvxeXho3UQhQ7NhHAuQB",
+                "amountRaw": "27985889304950"
+              },
+              {
+                "wallet": "HNbLtuxayHSJz1nQ1oHofpzsteZ2xa6eWJ9ReAmgr7EJ",
+                "amountRaw": "27838696038092"
+              },
+              {
+                "wallet": "HP2ZzCnMP8NKFngqtpjvt6qR5YRDm3c3rubbAUvQMsqL",
+                "amountRaw": "27582082507485"
+              },
+              {
+                "wallet": "HTYho9ioTJcS4Dymi57HB65RBFu549gjyQ7kncfkknti",
+                "amountRaw": "26909753347377"
+              },
+              {
+                "wallet": "CtTqJD71iFEoF6PNwDfKDnUKzDfJWnRHtomRspZiVpJM",
+                "amountRaw": "25057615565645"
+              },
+              {
+                "wallet": "GpGJDGppXZW8Q5NGWdcjS7GqUFTTZ7Dhru1VTb3uJYhT",
+                "amountRaw": "23077029338814"
+              },
+              {
+                "wallet": "8a683UoGsqTsfDtLzmBojPdKhzByCojiWRCaZuqDjN4D",
+                "amountRaw": "22337099746201"
+              },
+              {
+                "wallet": "6DGahjNa4mTuhEzhdDDzTvXYAComSFAhXXoGKSv6wnjN",
+                "amountRaw": "20928873860802"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:26.995Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 1,
+            "contextSlots": {
+              "mint": 474878923,
+              "sampledAccounts": 474878923
+            }
+          }
+        },
+        "now": 1795853066995
+      }
+    },
+    {
+      "mint": "ACP9Kkvh3ShCawmVcEJQ7mr93uNF1uvTP1yvvivApump",
+      "name": "AirCoin",
+      "observedAt": "2026-11-28T08:04:26.546Z",
+      "slot": 474878921,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 9,
+      "excludedProgramAuthorities": 1,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 18.9835,
+      "largestEligibleSharePct": 3.8021,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 7.01,
+          "coveragePct": 31.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "ACP9Kkvh3ShCawmVcEJQ7mr93uNF1uvTP1yvvivApump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "970187760298759",
+          "contextSlot": 474878921,
+          "observedAt": "2026-11-28T08:04:26.546Z"
+        },
+        "extensions": {
+          "mint": "ACP9Kkvh3ShCawmVcEJQ7mr93uNF1uvTP1yvvivApump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:26.546Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878921,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "ACP9Kkvh3ShCawmVcEJQ7mr93uNF1uvTP1yvvivApump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 9,
+            "observedSharePct": 18.9835,
+            "largestSharePct": 3.8021,
+            "supplyRaw": "970187760298759",
+            "wallets": [
+              {
+                "wallet": "BVdGMAny2JAiWr8jPAK2SQF2G6Y9DxJehSQuKHpVM84H",
+                "amountRaw": "36888406812539"
+              },
+              {
+                "wallet": "FvHwFeRcGUU14qsi2a5Zbu1b5MMWQvgjJ8CwXpsndZkW",
+                "amountRaw": "26628435704638"
+              },
+              {
+                "wallet": "6gRWkuSvGbVJbkBs7pVDqQU8nK6dcSsskKmUuEtqvJ7m",
+                "amountRaw": "21040028684376"
+              },
+              {
+                "wallet": "D4zstmB4o7c7TPbukGg2eP3BYooWppeX85eXZhso1NbN",
+                "amountRaw": "20587512547356"
+              },
+              {
+                "wallet": "BK3rPMjm3HCGCUCuqLKiNn7kC3UcPr1mJ69RWkYGNRKe",
+                "amountRaw": "19784336143638"
+              },
+              {
+                "wallet": "5Ah8Lg6VZwNxVS4Sr8mYxk25V8PL8JTs79GQXfP2Kh8Y",
+                "amountRaw": "17362920398905"
+              },
+              {
+                "wallet": "DuARUpsEzdVbVpSnbGipLJvWxaXUCPLDJDjNov6Rc6s6",
+                "amountRaw": "16833777727923"
+              },
+              {
+                "wallet": "5yBFrJcjxG2Mh3jHQpxbmpvucQjeFZc817yJ5YdW1tyT",
+                "amountRaw": "13306878259718"
+              },
+              {
+                "wallet": "HLdwa5tiB2YQi3YTL9wA2u1kkJnqm5tddKzrzobSmaMJ",
+                "amountRaw": "11743915963931"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:26.546Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 1,
+            "contextSlots": {
+              "mint": 474878921,
+              "sampledAccounts": 474878921
+            }
+          }
+        },
+        "now": 1795853066546
+      }
+    },
+    {
+      "mint": "4HEfa8ytHJk75E4qdThEbtNdyGRg2qfQHMo8nu2Cpump",
+      "name": "We Literally Fuck Investors",
+      "observedAt": "2026-11-28T08:04:27.874Z",
+      "slot": 474878927,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 7,
+      "excludedProgramAuthorities": 3,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 0.125,
+      "largestEligibleSharePct": 0.0537,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 24.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "4HEfa8ytHJk75E4qdThEbtNdyGRg2qfQHMo8nu2Cpump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "993765812337379",
+          "contextSlot": 474878927,
+          "observedAt": "2026-11-28T08:04:27.874Z"
+        },
+        "extensions": {
+          "mint": "4HEfa8ytHJk75E4qdThEbtNdyGRg2qfQHMo8nu2Cpump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:27.874Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878927,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "4HEfa8ytHJk75E4qdThEbtNdyGRg2qfQHMo8nu2Cpump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 7,
+            "observedSharePct": 0.125,
+            "largestSharePct": 0.0537,
+            "supplyRaw": "993765812337379",
+            "wallets": [
+              {
+                "wallet": "9UnZnrFJ1CXCmCorgGU9NvYkX5np1h4v4ympx3Nrdw3v",
+                "amountRaw": "533765382110"
+              },
+              {
+                "wallet": "BuUv2qYNqz4vzvPYoeew5CYvAcX7Wz7FSFaAWTUCLqf8",
+                "amountRaw": "402831553734"
+              },
+              {
+                "wallet": "9Q98AeWbAvGCsoTNHFP2ymTb2dZKTvDtWVc5Tp3rAo6F",
+                "amountRaw": "118735291655"
+              },
+              {
+                "wallet": "6bJAa9XbzTbptw4kwwuj9kkd8fBFjKsBf1cJTRQFoekN",
+                "amountRaw": "86872355855"
+              },
+              {
+                "wallet": "ByHUUDmUiAkkapEUpFQUfm8YT2rABoZ1SBMb7CfSAhQE",
+                "amountRaw": "77489063870"
+              },
+              {
+                "wallet": "9kvpAPjwQ42St9m2qGi7rTPFnVqfCcLfNiCV2TvoCmzH",
+                "amountRaw": "21748647206"
+              },
+              {
+                "wallet": "GBhHPwEQpWBN1T8255SnhE94iU7NG1REbdy4zy2T9RNe",
+                "amountRaw": "855882001"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:27.874Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 3,
+            "contextSlots": {
+              "mint": 474878927,
+              "sampledAccounts": 474878927
+            }
+          }
+        },
+        "now": 1795853067874
+      }
+    },
+    {
+      "mint": "WZVWLfThgm14NN8HRDoyiEeXVvdUDMzGMHUS3VLpump",
+      "name": "FINGART",
+      "observedAt": "2026-11-28T08:04:28.176Z",
+      "slot": 474878928,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 8,
+      "excludedProgramAuthorities": 2,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 6.7606,
+      "largestEligibleSharePct": 0.9812,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 28
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "WZVWLfThgm14NN8HRDoyiEeXVvdUDMzGMHUS3VLpump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "961893887777894",
+          "contextSlot": 474878928,
+          "observedAt": "2026-11-28T08:04:28.176Z"
+        },
+        "extensions": {
+          "mint": "WZVWLfThgm14NN8HRDoyiEeXVvdUDMzGMHUS3VLpump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:28.176Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878928,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "WZVWLfThgm14NN8HRDoyiEeXVvdUDMzGMHUS3VLpump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 8,
+            "observedSharePct": 6.7606,
+            "largestSharePct": 0.9812,
+            "supplyRaw": "961893887777894",
+            "wallets": [
+              {
+                "wallet": "3fa4wbKxwPS36GZRENMHmRdpEHmyCU4wD3gJbD6CZ3Ss",
+                "amountRaw": "9438719800925"
+              },
+              {
+                "wallet": "HWiovbVVWsSNmJXF8ADaHueXjBBFYjLCeB21hXLNvhv9",
+                "amountRaw": "8639902281511"
+              },
+              {
+                "wallet": "6BqJwy6qnJgTHDU7QNJT1uDRZjv8XKY8XpqzUdFDEsNi",
+                "amountRaw": "8184430122492"
+              },
+              {
+                "wallet": "HtJKi7rD8SNoDerJxTa48riwwPA2PaqS91UE7SpCQVqa",
+                "amountRaw": "8109265288943"
+              },
+              {
+                "wallet": "5MRh9FAiznnb9utY19Xn3gXDSn5n978dTCCb71Ehr6uU",
+                "amountRaw": "7950155112859"
+              },
+              {
+                "wallet": "DQgXnBAoh7xyeVPWf3UvSfBvjHhFXNQbZGUaVtUos8iK",
+                "amountRaw": "7657327550063"
+              },
+              {
+                "wallet": "6keTLEyNzfRekm7qt8p3SRry6yNqZAheQBEzwFz6j7gh",
+                "amountRaw": "7560937561621"
+              },
+              {
+                "wallet": "4DMB4faWBz6azQ95R4EkTJdPtqpbq6NpqWB5W4zczDrB",
+                "amountRaw": "7489220974571"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:28.176Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 2,
+            "contextSlots": {
+              "mint": 474878928,
+              "sampledAccounts": 474878928
+            }
+          }
+        },
+        "now": 1795853068176
+      }
+    },
+    {
+      "mint": "F3HApvwPahFZmmAMQ8Vp4yqzFs2bihT9mjm2NwGKpump",
+      "name": "1 coin can change your life",
+      "observedAt": "2026-11-28T08:04:29.556Z",
+      "slot": 474878935,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 8,
+      "excludedProgramAuthorities": 2,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 0.3194,
+      "largestEligibleSharePct": 0.1124,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 28
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "F3HApvwPahFZmmAMQ8Vp4yqzFs2bihT9mjm2NwGKpump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "999995179230997",
+          "contextSlot": 474878935,
+          "observedAt": "2026-11-28T08:04:29.556Z"
+        },
+        "extensions": {
+          "mint": "F3HApvwPahFZmmAMQ8Vp4yqzFs2bihT9mjm2NwGKpump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:29.556Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878935,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "F3HApvwPahFZmmAMQ8Vp4yqzFs2bihT9mjm2NwGKpump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 8,
+            "observedSharePct": 0.3194,
+            "largestSharePct": 0.1124,
+            "supplyRaw": "999995179230997",
+            "wallets": [
+              {
+                "wallet": "CJkNcDbNomh3NXtSTgdrN7z6qoEdCUhQu4irUW5a7TvQ",
+                "amountRaw": "1124703197419"
+              },
+              {
+                "wallet": "8KoGmazyAMJYNe65rHxH4KYZMDfRFbXgc7wesu8Yw7Gc",
+                "amountRaw": "619466265826"
+              },
+              {
+                "wallet": "AsipuYseuMSDTRg5y2goXerwDjbNGA461Ya9gq3LnwNM",
+                "amountRaw": "493279554567"
+              },
+              {
+                "wallet": "3o26rbp8UoPz9qSy5anToNzEVdserpeQGTXxHWKj2xEe",
+                "amountRaw": "226629544934"
+              },
+              {
+                "wallet": "BCV1cAakGcxMgPsfDk764Tb4eeyuEWSHLmdrr56pNH86",
+                "amountRaw": "224457597886"
+              },
+              {
+                "wallet": "E7mZ6My6rEYqLnniU8q8tqCDNEe9h4FkBvmfad7EjokJ",
+                "amountRaw": "217973856015"
+              },
+              {
+                "wallet": "GSvCXuQ1qaSTNu9hg2aKNREVNq46jKsLbGNYSSyuZmsJ",
+                "amountRaw": "200053906063"
+              },
+              {
+                "wallet": "46MwyBAig5EtrSmRVtPT4UNYUj4EMgAwh2693fHufenp",
+                "amountRaw": "87673246747"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:29.556Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 2,
+            "contextSlots": {
+              "mint": 474878935,
+              "sampledAccounts": 474878935
+            }
+          }
+        },
+        "now": 1795853069556
+      }
+    },
+    {
+      "mint": "9QWaXqTJ8VxKwbxP3T36vdpXDv1SPEEEUCzxhm8Mpump",
+      "name": "Groo",
+      "observedAt": "2026-11-28T08:04:29.279Z",
+      "slot": 474878933,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 8,
+      "excludedProgramAuthorities": 2,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 1.3087,
+      "largestEligibleSharePct": 0.4764,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 28
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "9QWaXqTJ8VxKwbxP3T36vdpXDv1SPEEEUCzxhm8Mpump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "957322975823585",
+          "contextSlot": 474878933,
+          "observedAt": "2026-11-28T08:04:29.279Z"
+        },
+        "extensions": {
+          "mint": "9QWaXqTJ8VxKwbxP3T36vdpXDv1SPEEEUCzxhm8Mpump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:29.279Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878933,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "9QWaXqTJ8VxKwbxP3T36vdpXDv1SPEEEUCzxhm8Mpump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 8,
+            "observedSharePct": 1.3087,
+            "largestSharePct": 0.4764,
+            "supplyRaw": "957322975823585",
+            "wallets": [
+              {
+                "wallet": "55yzFgEUMRxQYZ4V7ozFPgUiAJ2DWo5ByDfJufjnije8",
+                "amountRaw": "4561383940452"
+              },
+              {
+                "wallet": "6LQdGJzYkfF3Qvo76P2vxQ5Dm21jyZWcKaqXsWWsAjHd",
+                "amountRaw": "1451555099677"
+              },
+              {
+                "wallet": "4DKBxGuKHAG5zZDEkRwfqZBB9Eqo8pbDPDeBRvTP8x8Z",
+                "amountRaw": "1223484643140"
+              },
+              {
+                "wallet": "GLcfdWSxt3QsbXpB62RGawe9tYi7ekzBeejvoQ2gvJV9",
+                "amountRaw": "1152760651895"
+              },
+              {
+                "wallet": "9tN6vvLkmzKXx4Hc9pwoGuvvsR8kP2nQSm3mDXX19xPU",
+                "amountRaw": "1146436280387"
+              },
+              {
+                "wallet": "BEXUdKmyQKednqTQLazpy1gzh7kdkueikKDQhZ4BnZmG",
+                "amountRaw": "1116954447214"
+              },
+              {
+                "wallet": "G4MCF5uqZY7D73AD4bFboMtZhxuiyz5kCsKbrJqqSpgA",
+                "amountRaw": "1092770099696"
+              },
+              {
+                "wallet": "C41dkBoDyro1ZdwqNr7HNHm8QvdZwSs8fuuVPwbhRycX",
+                "amountRaw": "783770680092"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:29.279Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 2,
+            "contextSlots": {
+              "mint": 474878933,
+              "sampledAccounts": 474878933
+            }
+          }
+        },
+        "now": 1795853069279
+      }
+    },
+    {
+      "mint": "BukpdtkjwyEZSyVaXZoPyv7qKLKuybkZDt5AFJpipump",
+      "name": "conjectures.fun",
+      "observedAt": "2026-11-28T08:04:30.436Z",
+      "slot": 474878939,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 8,
+      "excludedProgramAuthorities": 2,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 0.9647,
+      "largestEligibleSharePct": 0.6262,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 28
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "BukpdtkjwyEZSyVaXZoPyv7qKLKuybkZDt5AFJpipump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "1000000000000000",
+          "contextSlot": 474878939,
+          "observedAt": "2026-11-28T08:04:30.436Z"
+        },
+        "extensions": {
+          "mint": "BukpdtkjwyEZSyVaXZoPyv7qKLKuybkZDt5AFJpipump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:30.436Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878939,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "BukpdtkjwyEZSyVaXZoPyv7qKLKuybkZDt5AFJpipump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 8,
+            "observedSharePct": 0.9647,
+            "largestSharePct": 0.6262,
+            "supplyRaw": "1000000000000000",
+            "wallets": [
+              {
+                "wallet": "6btcCbEdYnCUyuzV3JEMDpw9YbbF1tPFzNSN2Sfwg5eT",
+                "amountRaw": "6262990714234"
+              },
+              {
+                "wallet": "EN3htAuLxaAsTYs32AnB5qrTwmu7rh7tjAJVM1HGazG7",
+                "amountRaw": "1015932409894"
+              },
+              {
+                "wallet": "46mrWiiSHnG6qDyinpcZ5XcDBGkNrfvaCBDzCzVcRt8N",
+                "amountRaw": "739560121973"
+              },
+              {
+                "wallet": "F8rPMY5Ahksqwm73nwehzWbexYXM62aFWAh2ioLoYpaK",
+                "amountRaw": "500568967473"
+              },
+              {
+                "wallet": "8psNvWTrdNTiVRNzAgsou9kETXNJm2SXZyaKuJraVRtf",
+                "amountRaw": "461594972558"
+              },
+              {
+                "wallet": "H9VFxp21oNs3DGPrDiGUn9DMz9aZ2Ym6UzdZvcTdswGS",
+                "amountRaw": "245260486996"
+              },
+              {
+                "wallet": "7b71AJbMxHgZ2DPQV3Vj3nZQ2ky4AUNopTmcfZQE2paQ",
+                "amountRaw": "214006682361"
+              },
+              {
+                "wallet": "3ZAamYpEqhVKcbWBKmE2N8XbK2DK6vx3UTLMhTHS7Qu2",
+                "amountRaw": "207503994806"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:30.436Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 2,
+            "contextSlots": {
+              "mint": 474878939,
+              "sampledAccounts": 474878939
+            }
+          }
+        },
+        "now": 1795853070436
+      }
+    },
+    {
+      "mint": "AzHmsArsXu6LVjHeeBQTamYVnAV5Z18b5t6k2DoGpump",
+      "name": "NOOB",
+      "observedAt": "2026-11-28T08:04:30.370Z",
+      "slot": 474878938,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 9,
+      "excludedProgramAuthorities": 1,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 2.641,
+      "largestEligibleSharePct": 2.374,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 1.45,
+          "coveragePct": 31.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "AzHmsArsXu6LVjHeeBQTamYVnAV5Z18b5t6k2DoGpump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "1000000000000000",
+          "contextSlot": 474878938,
+          "observedAt": "2026-11-28T08:04:30.370Z"
+        },
+        "extensions": {
+          "mint": "AzHmsArsXu6LVjHeeBQTamYVnAV5Z18b5t6k2DoGpump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:30.370Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878938,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "AzHmsArsXu6LVjHeeBQTamYVnAV5Z18b5t6k2DoGpump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 9,
+            "observedSharePct": 2.641,
+            "largestSharePct": 2.374,
+            "supplyRaw": "1000000000000000",
+            "wallets": [
+              {
+                "wallet": "4XN7QzPhrfeV6yXQVTVsaxvuavCeixWTKNh2xuW2w9FG",
+                "amountRaw": "23740159314555"
+              },
+              {
+                "wallet": "CGa85yJMnRK1B4xFzzaCUsbqNB5vkRTiNUR5aGSpvwhG",
+                "amountRaw": "1034729560624"
+              },
+              {
+                "wallet": "2v6GrXeE3R7MDW4Rizhh6f9bi6oJXESrB8pwBKkexL1V",
+                "amountRaw": "528624875704"
+              },
+              {
+                "wallet": "GCHkY8zJQArFKoLWYTgQ47GPPb1N8EVY44UTadnZKxLE",
+                "amountRaw": "327102898844"
+              },
+              {
+                "wallet": "7svgWLox84eXG6KQdmxHJ7uN34wgJQS9xtLsMvMx1tS1",
+                "amountRaw": "271083537215"
+              },
+              {
+                "wallet": "5gy615pigjB8SUnRnprUpY3AzoAxo8dLG96t56N4Gs7L",
+                "amountRaw": "239041132556"
+              },
+              {
+                "wallet": "6fKwRQ6UR7mKAp8Ty1z2S8Lcqi4ywhH2bD8PxKQ5tPxY",
+                "amountRaw": "153040056476"
+              },
+              {
+                "wallet": "5M4HtUQ5Ns7TE5BpoS8S8enmVo42HVu2HgM2Cp3sontu",
+                "amountRaw": "83685938686"
+              },
+              {
+                "wallet": "G7f57ykzdW8k8pyEu2X8EQzriMBs7B8c8hYxNf8UFt8m",
+                "amountRaw": "32643335800"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:30.370Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 1,
+            "contextSlots": {
+              "mint": 474878938,
+              "sampledAccounts": 474878938
+            }
+          }
+        },
+        "now": 1795853070370
+      }
+    },
+    {
+      "mint": "66WtdGBwzHL1kJodjvhWUj1Uo3UycFVRhLWQ96uwpump",
+      "name": "COMMODITY",
+      "observedAt": "2026-11-28T08:04:31.477Z",
+      "slot": 474878944,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 6,
+      "excludedProgramAuthorities": 4,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 4.3001,
+      "largestEligibleSharePct": 1.88,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 21
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "66WtdGBwzHL1kJodjvhWUj1Uo3UycFVRhLWQ96uwpump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "1000000000000000",
+          "contextSlot": 474878944,
+          "observedAt": "2026-11-28T08:04:31.477Z"
+        },
+        "extensions": {
+          "mint": "66WtdGBwzHL1kJodjvhWUj1Uo3UycFVRhLWQ96uwpump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:31.477Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878944,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "66WtdGBwzHL1kJodjvhWUj1Uo3UycFVRhLWQ96uwpump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 6,
+            "observedSharePct": 4.3001,
+            "largestSharePct": 1.88,
+            "supplyRaw": "1000000000000000",
+            "wallets": [
+              {
+                "wallet": "AnSprCKVpzujWaiGi7w4wBZcHmNfZTX3zFxzySov7kEo",
+                "amountRaw": "18800533129360"
+              },
+              {
+                "wallet": "5sRKE47WyJRosDFCMcMuocPe81agqt8tubdJdzXDZUzg",
+                "amountRaw": "12342873693495"
+              },
+              {
+                "wallet": "417yy2ifhKkAvXViuC5uyYPTNKRMGKVZ9Db1rvsCCmrt",
+                "amountRaw": "4687729855363"
+              },
+              {
+                "wallet": "CTqHxqv2Zw7kPT9K6fBY6PPnzbTQs5t3BiRZSnTXnbkU",
+                "amountRaw": "3891905850687"
+              },
+              {
+                "wallet": "85BenyA1nRPvDwtvSTV8pm4vdWmeyhmoTHTuqsK7Sp3W",
+                "amountRaw": "1680354077764"
+              },
+              {
+                "wallet": "3udabUG7cAwugsvrKL5gNkR8BD4PUhbUMmC3mu1Q7Adn",
+                "amountRaw": "1597701414114"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:31.477Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 4,
+            "contextSlots": {
+              "mint": 474878944,
+              "sampledAccounts": 474878944
+            }
+          }
+        },
+        "now": 1795853071477
+      }
+    },
+    {
+      "mint": "8vRpccP2dRn8mpwCQGJTsmDPxbroxXHdsvXzoQ8Hpump",
+      "name": "The American Scheme",
+      "observedAt": "2026-11-28T08:04:31.285Z",
+      "slot": 474878943,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 9,
+      "excludedProgramAuthorities": 1,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 4.5204,
+      "largestEligibleSharePct": 2.4494,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 1.75,
+          "coveragePct": 31.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "8vRpccP2dRn8mpwCQGJTsmDPxbroxXHdsvXzoQ8Hpump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "999999999996957",
+          "contextSlot": 474878943,
+          "observedAt": "2026-11-28T08:04:31.285Z"
+        },
+        "extensions": {
+          "mint": "8vRpccP2dRn8mpwCQGJTsmDPxbroxXHdsvXzoQ8Hpump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:31.285Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878943,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "8vRpccP2dRn8mpwCQGJTsmDPxbroxXHdsvXzoQ8Hpump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 9,
+            "observedSharePct": 4.5204,
+            "largestSharePct": 2.4494,
+            "supplyRaw": "999999999996957",
+            "wallets": [
+              {
+                "wallet": "7XURCfraWRfNoNBk9wNqFmoWUdCGrDZXrGoWSc7WE5Nv",
+                "amountRaw": "24494420174896"
+              },
+              {
+                "wallet": "B16FRd1YUE6Ktfxej2vxauKVnTpYjGNoSkRfjdMntaap",
+                "amountRaw": "4831401941847"
+              },
+              {
+                "wallet": "22bupDXWNVZ69mcPX83otyJ7ikhTBE17Tu6FcnwcEMAn",
+                "amountRaw": "4808511028185"
+              },
+              {
+                "wallet": "4XQykGNvV7cbdnwyGRm57ptZQbsS4nigxRfJGZj6xVYC",
+                "amountRaw": "4787512193704"
+              },
+              {
+                "wallet": "3XLSKsmdtB1UJicrre52KWtA8zhBZsSCZbjcrs1sneUq",
+                "amountRaw": "3694954263255"
+              },
+              {
+                "wallet": "8hd1MHcNJxG3aTE6Xfbo9A8sWD5WKH8SK1xYyimSgKA6",
+                "amountRaw": "1339367070144"
+              },
+              {
+                "wallet": "A23fq3bBYjRzGrPrGjj9e2FnKLZLKYProYTCLGtx8W9z",
+                "amountRaw": "448821816005"
+              },
+              {
+                "wallet": "66EbVDa9FuP7Lz3KJYWdjkszpGDYHrFSqKhTyeh4Puhm",
+                "amountRaw": "444768106500"
+              },
+              {
+                "wallet": "EJWPusvLxL2xEGwUGBmwiKuJLEi9Z2beYR7XU1mRnHCH",
+                "amountRaw": "355028023218"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:31.285Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 1,
+            "contextSlots": {
+              "mint": 474878943,
+              "sampledAccounts": 474878943
+            }
+          }
+        },
+        "now": 1795853071285
+      }
+    },
+    {
+      "mint": "ATbAsdCwrhhVg23DRnWpjqx6kx7ivoK5o8ysNmu1pump",
+      "name": "Bitcoin Inu",
+      "observedAt": "2026-11-28T08:04:32.578Z",
+      "slot": 474878948,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 9,
+      "excludedProgramAuthorities": 1,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 15.3487,
+      "largestEligibleSharePct": 1.7242,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 0.49,
+          "coveragePct": 31.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "ATbAsdCwrhhVg23DRnWpjqx6kx7ivoK5o8ysNmu1pump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "996739193039393",
+          "contextSlot": 474878948,
+          "observedAt": "2026-11-28T08:04:32.578Z"
+        },
+        "extensions": {
+          "mint": "ATbAsdCwrhhVg23DRnWpjqx6kx7ivoK5o8ysNmu1pump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:32.578Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878948,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "ATbAsdCwrhhVg23DRnWpjqx6kx7ivoK5o8ysNmu1pump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 9,
+            "observedSharePct": 15.3487,
+            "largestSharePct": 1.7242,
+            "supplyRaw": "996739193039393",
+            "wallets": [
+              {
+                "wallet": "8utzAe3HrEM1RmuXx8ytb5dAcQvPwyR6gEkjY2x9x1RH",
+                "amountRaw": "17186065231422"
+              },
+              {
+                "wallet": "7GWGc1Y7gGKNRgbEg6THQtn5zNit1oyQxJy63m31zxgw",
+                "amountRaw": "17152987011742"
+              },
+              {
+                "wallet": "FRihjeh7mn6cGnBjPCLAJD1LcDzVFNx1wbdi5vNdYABa",
+                "amountRaw": "17066427780217"
+              },
+              {
+                "wallet": "BjgsjpcoKvJxYLAzDSuWMRu6hsZZRsPejtVUGdQwGYzU",
+                "amountRaw": "16974311892583"
+              },
+              {
+                "wallet": "4jrhCVnnJhP3wFARQ5KTH31ZbgeaS8pG7QWWJrfP8gSS",
+                "amountRaw": "16952392075315"
+              },
+              {
+                "wallet": "5VLigPgiZ9RjPegZbsaQn1FTgNTwopQP18WjLe3WB135",
+                "amountRaw": "16949626451750"
+              },
+              {
+                "wallet": "5FvoN1DbNnAeX8hRzGULGqXeG9ziA4pkWBvx5tzd1Qtx",
+                "amountRaw": "16949496065252"
+              },
+              {
+                "wallet": "64RViFvYAAvj7wuSmZsYTPMnkTpt8qX1Lf2RrEjdCP9k",
+                "amountRaw": "16891918299428"
+              },
+              {
+                "wallet": "AqAXhWNZWYp6FWgFFMWmxfU9uyi3zxfPEzKA3dG9hZrW",
+                "amountRaw": "16863720620839"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:32.578Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 1,
+            "contextSlots": {
+              "mint": 474878948,
+              "sampledAccounts": 474878948
+            }
+          }
+        },
+        "now": 1795853072578
+      }
+    },
+    {
+      "mint": "HpN63T13XBcp2xmM6yRkGPB5HMwxtXTghCQjooS8pump",
+      "name": "Memes Corporation",
+      "observedAt": "2026-11-28T08:04:32.288Z",
+      "slot": 474878948,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 9,
+      "excludedProgramAuthorities": 1,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 23.2198,
+      "largestEligibleSharePct": 5.5741,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 13.9,
+          "coveragePct": 31.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "HpN63T13XBcp2xmM6yRkGPB5HMwxtXTghCQjooS8pump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "946486517571536",
+          "contextSlot": 474878948,
+          "observedAt": "2026-11-28T08:04:32.288Z"
+        },
+        "extensions": {
+          "mint": "HpN63T13XBcp2xmM6yRkGPB5HMwxtXTghCQjooS8pump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:32.288Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878948,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "HpN63T13XBcp2xmM6yRkGPB5HMwxtXTghCQjooS8pump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 9,
+            "observedSharePct": 23.2198,
+            "largestSharePct": 5.5741,
+            "supplyRaw": "946486517571536",
+            "wallets": [
+              {
+                "wallet": "FgJnmGran66cfPhvPhFV4Ky4abLMAX7d3d3ZA5biCqLH",
+                "amountRaw": "52758514636267"
+              },
+              {
+                "wallet": "4Hq9UkSXjEwDZDBMAo9Lnri7VnbQCoomRAdrT6NGMh1c",
+                "amountRaw": "39188124886042"
+              },
+              {
+                "wallet": "J5kQviP18KxyKAnrcouvz2uSN9AzL5tWq3AiaEAqB3cr",
+                "amountRaw": "29406462000828"
+              },
+              {
+                "wallet": "4b3ZctHLzPBQt3biFbDWp12hf6ADkaruQx4aj9kiDQKh",
+                "amountRaw": "27141932293744"
+              },
+              {
+                "wallet": "3PDpqJbD9gv3B4X9khaavagzwVhqKcbzbPcrcT2wbYp1",
+                "amountRaw": "23116377127783"
+              },
+              {
+                "wallet": "88Af8Lf5tg8mRfnuRZgjcEX4royDoi1xzc6oMJELfxGb",
+                "amountRaw": "17091257815983"
+              },
+              {
+                "wallet": "2jsjeQ6UKyHBW7Ck6a57cP7ZwkUd5sMkpJVGwPkiPy1g",
+                "amountRaw": "13014879463142"
+              },
+              {
+                "wallet": "5Evb9RZjVL8gRHshFbAgLnXcpv8PWiZG7CoXzzKkcXcz",
+                "amountRaw": "10053877497870"
+              },
+              {
+                "wallet": "8WNhQ57aeHrEu3abRciRWANCUkM6gCPvdaPRwVzYtTBz",
+                "amountRaw": "8001255913671"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:32.288Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 1,
+            "contextSlots": {
+              "mint": 474878948,
+              "sampledAccounts": 474878948
+            }
+          }
+        },
+        "now": 1795853072288
+      }
+    },
+    {
+      "mint": "3rVr2RBzEXXKf1cVvZ6HBvFg2XmBK4iMgZv9q9q4pump",
+      "name": "Ricecoin",
+      "observedAt": "2026-11-28T08:04:33.514Z",
+      "slot": 474878954,
+      "accountSampleSize": 10,
+      "candidateAccountsReturned": 20,
+      "eligibleWallets": 7,
+      "excludedProgramAuthorities": 3,
+      "unresolvedAccounts": 0,
+      "observedEligibleSharePct": 18.2753,
+      "largestEligibleSharePct": 3.535,
+      "scores": {
+        "token_security": {
+          "riskScore": 0,
+          "coveragePct": 100
+        },
+        "holder_intelligence": {
+          "riskScore": 5.97,
+          "coveragePct": 24.5
+        },
+        "liquidity_quality_safety": {
+          "riskScore": 0,
+          "coveragePct": 0
+        },
+        "creator_intelligence": {
+          "riskScore": 0,
+          "coveragePct": 0
+        }
+      },
+      "criticalFlags": [],
+      "overallPublished": false,
+      "limitations": [
+        "Atomic subset of ten discovered largest token accounts; not a complete Top-20 or independence proof.",
+        "Security and holder concentration only. Liquidity, protocol classification and creator history were not live-tested for this row."
+      ],
+      "input": {
+        "result": {
+          "mint": "3rVr2RBzEXXKf1cVvZ6HBvFg2XmBK4iMgZv9q9q4pump",
+          "tokenProgram": "spl-token-2022",
+          "authorityDetailsStatus": "available",
+          "mintAuthority": null,
+          "freezeAuthority": null,
+          "supplyRaw": "977750041160707",
+          "contextSlot": 474878954,
+          "observedAt": "2026-11-28T08:04:33.514Z"
+        },
+        "extensions": {
+          "mint": "3rVr2RBzEXXKf1cVvZ6HBvFg2XmBK4iMgZv9q9q4pump",
+          "verified": true,
+          "observedAt": "2026-11-28T08:04:33.514Z",
+          "configuration": {
+            "version": 2,
+            "slot": 474878954,
+            "commitment": "finalized",
+            "mintAuthority": null,
+            "freezeAuthority": null,
+            "permissions": {},
+            "unknownExtensions": [],
+            "extensionTypes": [
+              "metadataPointer",
+              "tokenMetadata"
+            ],
+            "scope": "Mint-level controls; account-specific freezes and actual transfer execution are separate evidence."
+          },
+          "transferFee": {
+            "status": "not_observed"
+          }
+        },
+        "concentration": {
+          "mint": "3rVr2RBzEXXKf1cVvZ6HBvFg2XmBK4iMgZv9q9q4pump",
+          "sampledWalletObservation": {
+            "version": 2,
+            "atomicSubset": true,
+            "eligibleWallets": 7,
+            "observedSharePct": 18.2753,
+            "largestSharePct": 3.535,
+            "supplyRaw": "977750041160707",
+            "wallets": [
+              {
+                "wallet": "BAr5csYtpWoNpwhUjixX7ZPHXkUciFZzjBp9uNxZXJPh",
+                "amountRaw": "34564267345362"
+              },
+              {
+                "wallet": "794KgMaCJ4ozxHJAq9TuGB4uz7xbcYt1BRrkUL7MyNiW",
+                "amountRaw": "30659319527428"
+              },
+              {
+                "wallet": "28bhQwjKppn7ckDLiq7uBfkVBx4LwT8qoGfeBowoXWpy",
+                "amountRaw": "27451128345079"
+              },
+              {
+                "wallet": "G1PHbRsT9wwqC4zmjwy3H62taYZqDjdqzz7KktY59Lnk",
+                "amountRaw": "25249849243157"
+              },
+              {
+                "wallet": "3jd8kwnov9L9sh1trewDXLQNmJBoNYAbTvWNDyZE8knL",
+                "amountRaw": "24471575547270"
+              },
+              {
+                "wallet": "7J4hoyaMTE5CSHLf5n9xjnvYvePtLCPezuUAMXHru9F4",
+                "amountRaw": "18538560295074"
+              },
+              {
+                "wallet": "HxFvfapJP17Bgrr6nNsszbb14SRALZ1fWpfvUxgxmjXH",
+                "amountRaw": "17752354790212"
+              }
+            ],
+            "observedAt": "2026-11-28T08:04:33.514Z",
+            "returnedAccounts": 10,
+            "resolvedSampleAccounts": 10,
+            "excludedSampleAccounts": 3,
+            "contextSlots": {
+              "mint": 474878954,
+              "sampledAccounts": 474878954
+            }
+          }
+        },
+        "now": 1795853073514
+      }
+    }
+  ]
+}

@@ -38,10 +38,10 @@ test('all ten criterion names are readable and their risk points match each engi
  assert.match(render(assessment,'liquidity_quality_safety'),/Liquidity backing/);
  assert.match(render(assessment,'creator_intelligence'),/Creator sales and transfers/);
 });
-test('critical warnings open by default while no new score severity thresholds are introduced',()=>{
+test('critical warnings open by default while numerical score remains a risk floor',()=>{
  const a=practicalAssessmentV2(replay());a.flags.unshift({id:'reference_exit_unavailable',severity:'critical',detail:'Reference sale unavailable.'});
  const html=render(a);assert.match(html,/role="alert"/);assert.match(html,/Reference sale unavailable/);
- assert.match(html,/higher means greater risk/);assert.doesNotMatch(html,/Low risk|Medium risk|High risk|safe rating/);
+ assert.match(html,/higher means greater risk/);assert.doesNotMatch(html,/Low risk|Medium risk|safe rating/);
 });
 test('sparse evidence stays visibly incomplete and generic disclaimers do not repeat in panels',()=>{
  const a=practicalAssessmentV2({result:{mint:replay().result.mint}});

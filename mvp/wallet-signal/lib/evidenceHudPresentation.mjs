@@ -1,3 +1,4 @@
+import {canonicalQuote} from './riskCalibrationV1.mjs';
 import {validSecurityConfiguration} from './securityConfigurationV2.mjs';
 export function assessmentDisplay(assessment,selected){
  const attribute=assessment.scores[selected];
@@ -5,7 +6,7 @@ export function assessmentDisplay(assessment,selected){
  const assessed=coverage>0&&(!!attribute||coverage>=60&&assessment.scores.token_security.coveragePct>=65);
  return {assessed,coverage,score:assessed?(attribute?attribute.riskScore:assessment.riskScore):null,label:coverage===0?'Not assessed':assessed?null:'Insufficient evidence'};
 }
-export const holderSampleLabel=n=>Number.isSafeInteger(n)&&n<20?'Sampled '+n+' wallets':'Top-20 wallets';
+export const holderSampleLabel=n=>!Number.isSafeInteger(n)?'Wallet sample not established':n<20?'Sampled '+n+' wallets':'Top-20 wallets';
 /** Display-only formatting. No score calculation, evidence promotion or network access. */
 export function formatMetric(value,suffix=''){
  return typeof value==='number'&&Number.isFinite(value)?value.toLocaleString('en-US',{maximumFractionDigits:value>0&&value<0.01?6:2})+suffix:'Not assessed';
@@ -17,13 +18,9 @@ export function formatTokenQuantity(raw,decimals,compact=true){
  for(const [threshold,suffix] of [[1000000000n,'B'],[1000000n,'M'],[1000n,'K']])if(whole>=threshold){const scaled=n*100n/(base*threshold);return formatMetric(Number(scaled)/100)+suffix;}
  return whole.toLocaleString('en-US')+(fraction?'.'+fraction.slice(0,6)+(fraction.length>6?'…':''):'');
 }
-export function exitQuoteValue(q){
- if(q?.executable===false)return null;
- const n=q?.impactIncludingFeesPct??q?.quoteRecoveryShortfallPct??q?.providerPriceImpactPct;
- return typeof n==='number'&&Number.isFinite(n)&&n>=0?n:null;
-}
+export function exitQuoteValue(q){return canonicalQuote(q).value;}
 
-export function protocolName(id){return ({pump_amm:'PumpSwap',pump_swap:'PumpSwap',alchemy_executable_routes:'Executable routes (Alchemy)','spl-token-2022':'Solana Token-2022','token-2022':'Solana Token-2022','spl-token':'Solana Token Program',raydium_amm:'Raydium AMM',raydium_cpmm:'Raydium CPMM',raydium_clmm:'Raydium CLMM',orca_whirlpool:'Orca Whirlpools'})[id]||(['PumpSwap','Raydium','Orca','Raydium AMM','Raydium CPMM','Raydium CLMM','Orca Whirlpools'].includes(id)?id:'Unidentified program');}
+export function protocolName(id){return ({pump_amm:'PumpSwap',pump_swap:'PumpSwap',alchemy_executable_routes:'Underlying protocol unresolved (routed quote)','spl-token-2022':'Solana Token-2022','token-2022':'Solana Token-2022','spl-token':'Solana Token Program',raydium_amm:'Raydium AMM',raydium_cpmm:'Raydium CPMM',raydium_clmm:'Raydium CLMM',orca_whirlpool:'Orca Whirlpools'})[id]||(['PumpSwap','Raydium','Orca','Raydium AMM','Raydium CPMM','Raydium CLMM','Orca Whirlpools'].includes(id)?id:'Unidentified program');}
 export function chartMaximum(values){const max=Math.max(0,...values.filter(v=>typeof v==='number'&&Number.isFinite(v)&&v>=0));if(max===0)return 1;const unit=10**Math.floor(Math.log10(max));return Math.ceil(max/unit/0.25)*unit*0.25;}
 export function securityControls(a,result,extensions){
  const flags=new Set((a.flags||[]).map(f=>f.id)),known=id=>a.components?.find(c=>c.id===id)?.complete===true;

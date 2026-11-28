@@ -27,7 +27,7 @@ export function assessSecurityV2({tokenProgram,authoritiesParsed,mintAuthority,f
  let feeRisk=spl&&parsed||known&&fee?.status==='not_observed'?0:null;
  if(c&&fee?.status==='observed'&&fee.configAuthorityReported===true&&authority!==undefined){
   feeRisk=authority!==null?1:finite(rate)?rate===0?0:rate<=1?0.2:rate<=3?0.52:rate<=5?0.8:1:null;
-  if(authority)flag('mutable_transfer_fee','Authority can change future transfer fees.','high');
+  if(authority)flag('mutable_transfer_fee','Active Token-2022 fee configuration authority can change both basis points (protocol ceiling 100%) and the raw per-transfer maximum fee. Current fee '+(finite(rate)?rate+'%':'unresolved')+' is not a ceiling on future fees. Changes use the program epoch schedule; no malicious intent is established.','critical');
   if(finite(rate)&&rate>0)flag('transfer_fee','Observed configured fee rate: '+rate+'%; amount-dependent caps may reduce it.','high');
  }
  const exitRestricted=parsed&&!!fa||restriction||feeRisk===1;
