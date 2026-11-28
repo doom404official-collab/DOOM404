@@ -12,7 +12,7 @@ concurrency:
 jobs:
   security:
     name: scanner-security
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 8
     services:
       postgres:
@@ -39,7 +39,9 @@ jobs:
       - name: Test isolated PostgreSQL privileges and cross-instance admission
         env:
           SCANNER_TEST_DATABASE_URL: postgresql://scanner_fixture:scanner_fixture_only@127.0.0.1:5432/scanner_security_test
-        run: node tests/security/scanner-postgres-concurrency.mjs
+        run: |
+          node tests/security/scanner-postgres-concurrency.mjs
+          node tests/security/scanner-intelligence-persistence.mjs
       - name: Publish required Vercel security status
         if: always() && github.ref == 'refs/heads/integration/glitch-app-main-20261118'
         env:
@@ -49,7 +51,7 @@ jobs:
         run: node scripts/security/publish-release-status.mjs
   regression:
     name: scanner-regression
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     defaults:
       run:
