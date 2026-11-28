@@ -5,7 +5,8 @@
   ],
   "git": {
     "deploymentEnabled": {
-      "qualification/autonomous-engine-20261128": false
+      "qualification/autonomous-engine-20261128": false,
+      "integration/glitch-app-main-20261118": false
     }
   }
 }

@@ -48,8 +48,12 @@ Origin retrieval tries primary indexed evidence, existing Helius indexed fallbac
 
 Token-account history resumes bounded indexed cursors, replays after decoder epoch changes, refreshes exhausted windows, and preserves historical associations. Missing pagination metadata never certifies completion. General historical secondary-provider/account-index fallback remains incomplete.
 
-Normal runtime CAS observations persist events, receipt provenance and private continuation checkpoints. Public projections strip raw transaction cache and private cursors. Immutable normalized lifetime archiving and comprehensive automatic provenance ingestion remain unqualified. A separate append-only, service-only qualification table retains isolated cold/warm observations without reading, deleting or seeding production token records.
+Normal runtime CAS observations persist events, receipt provenance and private continuation checkpoints. Public projections strip raw transaction cache and private cursors. An append-only normalized creator evidence archive now receives verified events atomically with the normal CAS finish; runtime and qualification namespaces are distinct. Isolated PostgreSQL tests verify exact raw amounts, idempotence, role restrictions and a 15-second expiry for unfinished cursors. Hosted normal-runtime and comprehensive ingestion qualification remain open. A separate append-only, service-only qualification table retains isolated cold/warm observations without reading, deleting or seeding production token records.
 
 ## Acceptance boundaries
 
 Local regression/build and exact-source CI are engineering evidence. Known-token live core checks do not constitute blind unseen-token, full-dashboard, fresh-holdout, physical Android or ten-second full-report acceptance. No universal coverage, complete lifetime recall or release-ready claim is made.
+
+Exact-source CI at 6e42379886bf8f715c7325477e6e32cc935fc8ef passed 2,431 tests, production build, 31 focused security tests, PostgreSQL concurrency/archive checks and 128 saved-report browser checks over five tabs/eight widths. Earlier browser installation failed on ubuntu-latest26.04 with pinned Playwright1.56.1; pinning the supported Ubuntu24.04 runner fixed the environment without weakening assertions.
+
+Automatic deployments for qualification and integration branches are disabled during qualification. This does not authorize production promotion. A consolidated protected preview must be created explicitly only after the qualification gate is satisfied.

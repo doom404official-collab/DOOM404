@@ -10,6 +10,6 @@ create table public.scanner_qualification_observations(
  primary key(run_id,candidate_sha,mint,phase)
 );
 alter table public.scanner_qualification_observations enable row level security;
-revoke all on public.scanner_qualification_observations from public,anon,authenticated;
+revoke all on public.scanner_qualification_observations from public,anon,authenticated,service_role;
 grant select,insert on public.scanner_qualification_observations to service_role;
 comment on table public.scanner_qualification_observations is 'Private append-only backend qualification observations; not production cache, not proof of full application qualification.';

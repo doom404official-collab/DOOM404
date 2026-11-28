@@ -16,6 +16,8 @@ try{
  assert.deepEqual((await db.query('select namespace from public.scanner_creator_evidence order by namespace')).rows.map(r=>r.namespace),['qualification:1-1','runtime']);
  const malformed=structuredClone(observation);malformed.creator.events[0].evidenceProvenance.mint='9'.repeat(32);await assert.rejects(db.query("select public.scanner_retain_creator_evidence_v1('runtime',$1)",[malformed]),/EVIDENCE_IDENTITY_MISMATCH/);
  await assert.rejects(db.query('delete from public.scanner_creator_evidence'),/permission denied/);
+ await assert.rejects(db.query('delete from public.scanner_qualification_observations'),/permission denied/);
+ await assert.rejects(db.query("update public.scanner_qualification_observations set metrics='{}'::jsonb"),/permission denied/);
  for(const role of ['anon','authenticated']){await db.query('reset role');await db.query('set role '+role);await assert.rejects(db.query('select * from public.scanner_creator_evidence'),/permission denied/);await assert.rejects(db.query("select public.scanner_retain_creator_evidence_v1('runtime',$1)",[observation]),/permission denied/);}
  console.log(JSON.stringify({status:'PASS',atomicRuntimePersistence:true,exactRawAmount:true,idempotentArchive:true,qualificationNamespaceIsolated:true,partialCursorTtlSeconds:15,publicAccessDenied:true,providerRequests:0}));
 }finally{await db.end();}
