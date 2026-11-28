@@ -1,3 +1,7 @@
+import {recoverCreatorOriginCandidates} from './autonomousOriginFallback.mjs';
+import {retainCreatorEventProvenance} from './creatorEventProvenance.mjs';
+import {materialTransferRecipient,investigateMaterialRecipient} from './materialTransferRecipient.mjs';
+import {inspectRoutedTokenTrade} from './routedTokenTrade.mjs';
 import {selectMaterialSelfAuthority,recoverMaterialAccountGenesis,verifyStreamflowCreatorEscrowTransfer} from './streamflowCreatorMovement.mjs';
 import {verifyStreamflowAllocationControls,normalizeStreamflowEscrowAccount,verifyStreamflowUpgradeControl,STREAMFLOW_PROGRAM,STREAMFLOW_PROGRAM_DATA} from './streamflowAllocationControls.mjs';
 import {creatorOriginPage} from './sharedCreatorOriginV1.mjs';
@@ -27,22 +31,22 @@ const key=x=>typeof x==='string'?x:x?.pubkey?.toBase58?.()||x?.pubkey;
  * 1 origin read + 2 snapshot reads + 1 classifications + 3 holder histories +
  * 1 current creator inventory + 1 token-specific indexed page + 8 transaction
  * reads = at most 17 logical requests, within the existing 18-request limit. */
-export async function investigateToken({mint,rpc,now=Date.now,maxTransactions=8,previousObservation=null}={}){
+export async function investigateToken({mint,rpc,now=Date.now,maxTransactions=8,previousObservation=null,providerName='admitted_rpc',alternateProviderName=null}={}){
  new PublicKey(mint);if(typeof rpc!=='function'||!Number.isInteger(maxTransactions)||maxTransactions<1||maxTransactions>8)throw Error('INVALID_INVESTIGATION');
- let requests=0;const attempted=[],failures=[];
- const read=async(method,params)=>{if(requests>=18)throw Error('BOUNDED_REQUEST_LIMIT');requests++;attempted.push(method);return rpc(method,params);};
- const observation={version:1,investigationRevision:9,mint,status:'investigation_completed',observedAt:new Date(now()).toISOString(),scope:'One bounded recent window plus verified creation; histories remain incomplete',historyComplete:false,historicalEvidenceProvenance:{decoderVersion:'creator-token-history-v2-balance-mint-binding',source:'admitted_finalized_rpc',immutableReceiptsRevalidated:true}};
+ let requests=0;const attempted=[],failures=[],receiptSources=new Map();
+ const read=async(method,params,provider='primary')=>{if(requests>=18)throw Error('BOUNDED_REQUEST_LIMIT');requests++;attempted.push(method);const result=await rpc(method,params,{provider});for(const tx of method==='getTransactionsForAddress'?(result?.data||[]):method==='getTransaction'?[result]:[]){const sig=tx?.transaction?.signatures?.[0];if(typeof sig==='string'&&tx.meta?.err===null&&Number.isSafeInteger(tx.slot))receiptSources.set(sig,{provider:provider==='secondary'?alternateProviderName:providerName,method});}return result;};
+ const observation={version:1,investigationRevision:10,mint,status:'investigation_completed',observedAt:new Date(now()).toISOString(),scope:'One bounded recent window plus verified creation; histories remain incomplete',historyComplete:false,historicalEvidenceProvenance:{decoderVersion:'creator-token-history-v2-balance-mint-binding',source:'admitted_finalized_rpc',immutableReceiptsRevalidated:true}};
  let origin=null,originFailure=null,originCandidateCount=0;const originDiagnostics=[];
  try{const retainedOrigin=previousObservation?.mint===mint&&Array.isArray(previousObservation.transactionCache)?previousObservation.transactionCache.find(tx=>verifyBoundedCreatorOrigin(tx,mint)?.creator===previousObservation.creator?.creator):null;
- const r=retainedOrigin?(traceEvent('creator_origin_durable_cache_hit'),{data:[retainedOrigin]}):await traceSpan('creator_origin',()=>creatorOriginPage(mint,()=>read('getTransactionsForAddress',[mint,{transactionDetails:'full',sortOrder:'asc',limit:12,commitment:'finalized',encoding:'jsonParsed',maxSupportedTransactionVersion:1,filters:{status:'succeeded'}}])));if(!Array.isArray(r?.data)||r.data.length>12)throw Error('INVALID_ORIGIN_PAGE');const txs=r.data;originCandidateCount=txs.length;for(const tx of txs){originDiagnostics.push(diagnoseBoundedCreatorOrigin(tx,mint));const proof=verifyBoundedCreatorOrigin(tx,mint);if(proof){if(origin&&origin.proof.creator!==proof.creator)throw Error('CONFLICTING_CREATOR_EVIDENCE');origin={proof,tx};}}}
+ const r=retainedOrigin?(traceEvent('creator_origin_durable_cache_hit'),{data:[retainedOrigin]}):await traceSpan('creator_origin',()=>creatorOriginPage(mint,()=>recoverCreatorOriginCandidates({mint,read,alternateProvider:!!alternateProviderName})));if(!Array.isArray(r?.data)||r.data.length>12)throw Error('INVALID_ORIGIN_PAGE');observation.originRetrieval=r.originRetrieval||{terminalReason:'retained_protocol_origin_receipt'};if(r.originRetrieval?.terminalReason==='origin_retrieval_unavailable'&&!r.originRetrieval.attempts.some(a=>a.status==='returned')){originFailure=r.originRetrieval.attempts.some(a=>a.status==='indexed_method_unsupported')?'indexed_method_unsupported':'provider_temporarily_unavailable';failures.push({producer:'creator_origin',reason:originFailure});}const txs=r.data;originCandidateCount=txs.length;for(const tx of txs){originDiagnostics.push(diagnoseBoundedCreatorOrigin(tx,mint));const proof=verifyBoundedCreatorOrigin(tx,mint);if(proof){if(origin&&origin.proof.creator!==proof.creator)throw Error('CONFLICTING_CREATOR_EVIDENCE');origin={proof,tx};}}}
  catch(e){origin=null;originFailure=e.message==='CONFLICTING_CREATOR_EVIDENCE'?'conflicting_evidence':e.message==='INVALID_ORIGIN_PAGE'?'invalid_provider_response':e.code===-32601?'indexed_method_unsupported':'provider_temporarily_unavailable';failures.push({producer:'creator_origin',reason:originFailure});}
  const creator=origin?.proof.creator;let events=previousObservation?.mint===mint&&previousObservation?.creator?.creator===origin?.proof.creator?[...(previousObservation.creator.events||[])]:[];const transactions=new Map(),signatures=new Map(),creatorSignatures=new Set();
  if(origin){transactions.set(origin.proof.creationSignature,origin.tx);const launch=reconcileCreatorLaunchTransaction({mint,creator,signature:origin.proof.creationSignature,transaction:origin.tx});if(launch.event)events.push(launch.event);}
- let holders=[],supply=null,snapshotSlot=null,mintDecimals=null,materialCandidate=null,holderHistories=0;
+ let holders=[],supply=null,snapshotSlot=null,mintDecimals=null,materialCandidate=null,holderHistories=0,largestSampleTokenAccount=null;
  const materialProofs=[];
  try{
   const largest=await read('getTokenLargestAccounts',[mint,{commitment:'finalized'}]);
-  const addresses=(largest?.value||[]).slice(0,20).map(x=>x.address);
+  const addresses=(largest?.value||[]).slice(0,20).map(x=>x.address);largestSampleTokenAccount=addresses[0]||null;
   if(!addresses.length)throw Error('NO_HOLDER_ACCOUNTS');
   const sample=await read('getMultipleAccounts',[[mint,...addresses],{encoding:'jsonParsed',commitment:'finalized',minContextSlot:largest.context.slot}]);
   const m=sample?.value?.[0],mi=m?.data?.parsed?.info;
@@ -75,7 +79,7 @@ export async function investigateToken({mint,rpc,now=Date.now,maxTransactions=8,
  // Extra token-specific pages replace holder receipt reads; the existing total
  // request ceiling and provider guard remain unchanged.
  const extraHistoryReads=Math.max(0,(observation.adaptiveCreator.additionalRequests||0)-2);
- const selected=priority.slice(0,Math.max(0,maxTransactions-extraHistoryReads));
+ const selected=priority.slice(0,Math.min(Math.max(0,maxTransactions-extraHistoryReads),Math.max(0,17-requests)));
  for(const [signature] of selected){if(transactions.has(signature))continue;if(requests>=18){observation.earlyStop='bounded_request_budget_exhausted';break;}try{const tx=await read('getTransaction',[signature,{encoding:'jsonParsed',commitment:'finalized',maxSupportedTransactionVersion:1}]);if(tx?.transaction?.signatures?.[0]===signature&&tx.meta?.err===null){transactions.set(signature,tx);
    const network=extractHolderNetworkTransfers({transaction:tx,signature});
    const eligible=new Map(holders.map(h=>[h.wallet,BigInt(h.amountRaw)]));
@@ -84,6 +88,7 @@ export async function investigateToken({mint,rpc,now=Date.now,maxTransactions=8,
   }else failures.push({producer:'transaction',reason:'transaction_unavailable_or_failed'});}catch{failures.push({producer:'transaction',reason:'provider_temporarily_unavailable'});break;}}
  // Token-specific indexed pages contain complete transactions; no separate
  // per-signature fetch is charged for the same immutable transaction.
+ observation.routedTradeDiagnostics=[];
  const memberSet=new Set(holders.map(h=>h.wallet)),members=new Set(),relationships=[],fundingObservations=[];
  for(const [signature,tx] of transactions){
   // An escrow sender is not automatically the original token creator.
@@ -91,6 +96,7 @@ export async function investigateToken({mint,rpc,now=Date.now,maxTransactions=8,
   const escrow=typeof fundingSigner==='string'?verifyStreamflowCreatorEscrowTransfer({mint,creator:fundingSigner,transaction:tx}):null;
   if(escrow?.verified)materialProofs.push({...escrow,fundingSigner,signature,slot:tx.slot});
   if(creator){await traceSpan('creator_transaction_decoding',async()=>{
+   const routed=inspectRoutedTokenTrade({mint,creator,signature,transaction:tx});if(routed.event)events.push(routed.event);observation.routedTradeDiagnostics.push({signature,slot:tx.slot,status:routed.status,reason:routed.reason,decoderVersion:'pump-trade-cpi-boundary-v1'});
    const receipt=verifyCreatorDirectMovement({mint,creator,signature,transaction:tx})||reconcileCreatorReceipt({mint,creator,signature,transaction:tx})||verifyPumpHolderRewardReceipt({mint,creator,signature,transaction:tx});if(receipt)events.push(receipt);
    const independentSettlement=extractIndependentPumpFunBuySettlement({mint,creator,signature,transaction:tx});
    if(independentSettlement){const buy=promotePumpFunCreatorBuy({mint,creator,signature,transaction:tx,independentSettlement});if(buy.status==='VERIFIED')events.push(buy.event);}
@@ -123,9 +129,14 @@ export async function investigateToken({mint,rpc,now=Date.now,maxTransactions=8,
   if(!controlEvidence)observation.materialAllocationEvidence.limitations.push('Fresh allocation controls could not be verified against the supported metadata layout.');
  }catch{observation.materialAllocationEvidence.limitations.push('Fresh allocation metadata or escrow account retrieval unavailable; funding transfer remains verified, current release controls unresolved.');}}
  else if(proof)observation.materialAllocationEvidence.limitations.push('Existing investigation budget exhausted before current allocation control refresh.');
+ observation.materialTransferInvestigations=[];
+ if(creator&&!proof&&requests<18){
+  const recipients=events.map(event=>materialTransferRecipient({mint,creator,event,transaction:transactions.get(event.signature),supplyRaw:supply})).filter(Boolean).sort((a,b)=>BigInt(a.amountRaw)>BigInt(b.amountRaw)?-1:1);
+  if(recipients.length)observation.materialTransferInvestigations.push(await investigateMaterialRecipient({target:recipients[0],read,now,minContextSlot:snapshotSlot??0,largestSampleTokenAccount}));
+ }
  const holderSetHash=createHash('sha256').update(JSON.stringify(holders.map(h=>[h.wallet,h.amountRaw]).sort())).digest('hex');
  observation.holderRelationships=holders.length?{version:2,mint,sampleWallets:holders,holderSetHash,snapshotSlot,supplyRaw:supply,observedAt:observation.observedAt,eligibleWallets:holders.length,connectedExposurePct:Number(holders.filter(h=>members.has(h.wallet)).reduce((n,h)=>n+BigInt(h.amountRaw),0n)*1000000n/BigInt(supply))/10000,relationshipCount:relationships.length,relationships,fundingObservations,historyComplete:false,commonOwnershipEstablished:false,coverageScope:'Recent seven days; up to three eligible wallet histories (two when replaced by a material account genesis read) and eight prioritized transactions, plus token-specific creator history. No wallet-independence claim.'}:null;
- events=deduplicateCreatorEvents(events);
+ events=retainCreatorEventProvenance(deduplicateCreatorEvents(events),{mint,creator,transactions,sources:receiptSources,observedAt:observation.observedAt,attributionBasis:origin?.proof.attributionMethod||null});
  const ledger=creator?summarizeCreatorAcquisitionLedger({mint,creator,events,historyComplete:false,attributionComplete:false}):null;
  observation.creator=creator?{creator,attribution:origin.proof,status:'evidence_available',behaviourV2:{version:2,mint,creator,currentWallet:observation.adaptiveCreator.currentWallet,ledger:{acceptedCount:ledger.acceptedCount,purchasedRaw:ledger.purchasedRaw,verifiedSoldRaw:ledger.verifiedSoldRaw,burnedRaw:ledger.burnedRaw,externalTransferredOutRaw:ledger.externalTransferredOutRaw},signatures:[...transactions.keys()],processedHistoricalSignatures:transactions.size,tokenHistoryDiagnostics:observation.adaptiveCreator.diagnostics,tokenAccountsDiscovered:observation.adaptiveCreator.tokenAccountsDiscovered??0,tokenSpecificTransactionsRecovered:creatorSignatures.size,verifiedEventsRecovered:ledger.acceptedCount,investigationStopReason:observation.earlyStop||(observation.adaptiveCreator.paginationRemaining?'token_account_page_budget_exhausted':observation.creatorHistoryCheckpoint?.addressWindowExhausted?'target_token_account_window_exhausted_other_accounts_unassessed':'bounded_transaction_cap_or_candidate_window'),historyStatus:ledger.acceptedCount?'incomplete_history_with_recovered_events':'no_matching_events_in_incomplete_history',directMintReceivedRaw:ledger.directMintReceivedRaw,launchRaw:ledger.launchRaw,externalReceivedRaw:ledger.externalReceivedRaw,rewardReceivedRaw:ledger.rewardReceivedRaw,ordinaryIncomingRaw:ledger.ordinaryIncomingRaw,totalAcquiredRaw:ledger.totalAcquiredRaw,historyComplete:false,lifetimeSellingPct:null,limitations:['Creation plus a bounded token-account-specific page and recent material holder window; acquisitions and disposals remain incomplete.','Unsupported swap instructions never become verified sales; burns and external transfers remain distinct.']},events}: {status:originFailure==='conflicting_evidence'?'attribution_conflict':originFailure?'provider_temporarily_unavailable':'attribution_inconclusive',reason:originFailure||creatorOriginLimitation(originDiagnostics)};
  observation.creatorAccounting=creator?reconcileCreatorHistoryWindow({mint,creator,events,closingBalanceRaw:observation.adaptiveCreator.currentWallet?.rawBalance,closingVerified:!!observation.adaptiveCreator.currentWallet}):null;

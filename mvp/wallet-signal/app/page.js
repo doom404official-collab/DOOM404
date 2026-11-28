@@ -8,8 +8,6 @@ import { useEffect, useRef, useState } from "react";
 import {readDashboardEvidenceResponse} from '../lib/dashboardEvidenceRead.mjs';
 import {createLiquidityReadController} from '../lib/liquidityReadController.mjs';
 import HolderBubbleMap from "./HolderBubbleMap";
-import {HOLDER_RETAIN19_POLICY,assessApprovedHolderEligibleConcentration} from '../lib/holderEligibleViewPolicy.mjs';
-import {verifyHolderCollectionLineage} from '../lib/holderCollectionLineage.mjs';
 import GlitchV11Dashboard from "./GlitchV11Dashboard";
 import {reconcileHolderSnapshot} from "../lib/reconcileHolderSnapshot.mjs";
 import {scoreHolderIntelligenceForDisplay as scoreHolderConcentration} from "../lib/holderIntelligenceDisplayV11.mjs";

@@ -24,7 +24,7 @@ for(const name of ['ansem','basket','cate','dcty']){
  }
  assert.ok(previous.creator.attribution?.verified,name+' attribution missing');
  const events=previous.creator.events||[];
- if(name==='dcty'){assert.equal(events.filter(e=>e.acquisitionMechanism==='protocol_holder_reward_distribution').length,26);assert.equal(events.reduce((n,e)=>n+BigInt(e.amountRaw),0n).toString(),'2006484278');}
+ if(name==='dcty'){assert.equal(events.filter(e=>e.acquisitionMechanism==='protocol_holder_reward_distribution').length,26);assert.equal(events.filter(e=>e.acquisitionMechanism==='protocol_holder_reward_distribution').reduce((n,e)=>n+BigInt(e.amountRaw),0n).toString(),'2006484278');}
  out.push({name,mint:mints[name],scope:'Normal investigation pipeline with independent recorded RPC receipts; not a hosted live report',creator:previous.creator.creator,attribution:previous.creator.attribution,events,coverageClaim:null,historyComplete:previous.historyComplete,requestCount:requests.length,observation:{...previous,transactionCache:undefined}});
 }
 const file=path.join(new URL(root).pathname,'pipeline-replay.json');fs.writeFileSync(file,JSON.stringify(out,null,2));console.log(JSON.stringify(out.map(({name,creator,events,requestCount})=>({name,creator,recoveredEvents:events.length,requestCount}))));

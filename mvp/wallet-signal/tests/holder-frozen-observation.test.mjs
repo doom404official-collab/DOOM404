@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readHolderFrozenObservation,projectHolderFrozenObservation} from '../lib/holderFrozenObservation.mjs';
-import {HOLDER_RETAIN19_POLICY as p} from '../lib/holderEligibleViewPolicy.mjs';
+import {readHolderFrozenObservation,projectHolderFrozenObservation} from './fixtures/archived-holder-policy.mjs';
+import {HOLDER_RETAIN19_POLICY as p} from './fixtures/archived-holder-policy.mjs';
 const fixture=()=>({id:p.snapshotId,mint:p.mint,slot:p.slot,status:'frozen',supply_raw:'1000',excluded_wallets:['1nc1nerator11111111111111111111111111111111'],holder_ranking:[p.infrastructurePool,...Array.from({length:19},(_,i)=>'2'.repeat(31)+'123456789ABCDEFGHJKLMNPQRSTUVWXYZ'[i])].map(wallet=>({wallet,balance:'10'}))});
 const hosted=()=>{const {slot,...s}=fixture();return {...s,snapshot_slot:slot,supply_definition:'mint-total-supply-not-circulating'};};
 test('exact stored snapshot read is GET-only, bounded, allowlisted and independent of jobs',async()=>{

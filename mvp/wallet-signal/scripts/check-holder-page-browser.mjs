@@ -3,7 +3,7 @@ import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
 import {setTimeout as delay} from 'node:timers/promises';
 import {mkdir} from 'node:fs/promises';
-import {HOLDER_RETAIN19_POLICY as frozenPolicy} from '../lib/holderEligibleViewPolicy.mjs';
+import {HOLDER_RETAIN19_POLICY as frozenPolicy} from '../tests/fixtures/archived-holder-policy.mjs';
 import {assessVerifiedHolderConcentration} from '../lib/verifiedHolderConcentrationAssessment.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const base=process.env.HOLDER_PAGE_BASE_URL||'http://127.0.0.1:3110';

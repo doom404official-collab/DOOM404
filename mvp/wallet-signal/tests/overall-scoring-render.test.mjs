@@ -23,7 +23,7 @@ test('actual GET projections, adapters and JSX withhold fabricated complete scor
   const baseline=structuredClone(raw),calls=[];
   const GET=api(async(url,o)=>{calls.push(o);return {ok:true,json:async()=>url.includes('creator_intelligence_jobs')?[raw]:[]};});
   const response=await GET(new Request('https://example.invalid/api/scoring-evidence?mint='+mint));
-  assert.equal(response.headers['Cache-Control'],'no-store');assert.equal(calls.length,3);assert.ok(calls.every(c=>c.method==='GET'));
+  assert.equal(response.headers['Cache-Control'],'no-store');assert.equal(calls.length,5);assert.ok(calls.every(c=>c.method==='GET'));
   const workerEvidence=JSON.parse(JSON.stringify(response.body));
   const props={result,workerEvidence,creatorEvidence:{mint,creator,status:'VERIFIED',independentlyReviewed:reviewed}};
   const adapted=adaptDashboardEvidence({...props,now:Date.parse(now)});

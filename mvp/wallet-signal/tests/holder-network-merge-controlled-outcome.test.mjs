@@ -3,7 +3,7 @@ import {createHolderWorkerBudget,boundedHolderStore} from "../lib/holderWorkerEx
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
-const source=withScannerAdmissionFixture(await readFile(new URL("../app/api/holder-network-merge-controlled/route.js",import.meta.url),"utf8"));
+const source=withScannerAdmissionFixture(await readFile(new URL("./fixtures/archived-routes/holder-network-merge-controlled.mjs",import.meta.url),"utf8"));
 async function load(merge){
  const body=source.replace(/^import .*;\n/gm,"");
  return new Function("createHolderWorkerBudget","boundedHolderStore","NextResponse","timingSafeEqual","createHolderJobStore","createHolderEvidenceStore","commitExternalNetworkEvidence",body.replace(/export const /g,"const ").replace("export async function POST","async function POST")+"\nreturn POST;")(createHolderWorkerBudget,boundedHolderStore,{json:(body,options={})=>({body,...options})},(a,b)=>a.equals(b),()=>({}),()=>({}),merge);

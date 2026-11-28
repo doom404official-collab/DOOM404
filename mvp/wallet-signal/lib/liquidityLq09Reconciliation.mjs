@@ -1,18 +1,25 @@
 import {createHash} from 'node:crypto';import {decodeArchivedPumpAccount} from './liquidityArchiveStateDecoder.mjs';import {extractFeeSweepAccounts} from './liquidityFeeSweepAccounts.mjs';import {inspectFeeSettlementTransfers} from './liquidityFeeSettlementTransfers.mjs';import {assessFeeSettlement} from './liquidityFeeSettlementAssessment.mjs';import {assessHistoricalFeeAuthorization} from './liquidityHistoricalFeeAuthorization.mjs';
-const POOL='6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA',GLOBAL='ADyA8hdefvWN2dbGGWFotbzWxrAvLW83WG6QCVXvJKqw',MINT='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump';
+import {PublicKey} from '@solana/web3.js';
+import {GLOBAL_CONFIG_PDA,poolPda} from '@pump-fun/pump-swap-sdk';
+import {decodePumpAmmPoolState} from './pumpAmmPoolState.mjs';
 /** Reconcile retained provider-attested historical bytes and parsed transfers.
  * An as-of-slot account is not transaction-index-specific state or a proof of
  * instruction authorization. Eligibility mismatch remains an explicit limitation. */
-export function reconcileLiquidityLq09(evidence){
+export function reconcileLiquidityLq09(evidence,expectedMint=null){
  const a=evidence,tx=a?.transaction,slot=a?.requestedSlot;
- if(a?.schemaVersion!==1||a.provider!=='alchemy'||a.historicalAccountReads!==2||a.transactionReads!==1||slot!==458811200||tx?.slot!==slot||tx?.transaction?.signatures?.[0]!==a.signature||tx?.meta?.err!==null||!Array.isArray(a.records)||a.records.length!==2)throw Error('LQ09_IDENTITY_UNVERIFIED');
+ if(a?.schemaVersion!==1||a.provider!=='alchemy'||a.historicalAccountReads!==2||a.transactionReads!==1||(!Number.isSafeInteger(slot)||slot<0)||tx?.slot!==slot||tx?.transaction?.signatures?.[0]!==a.signature||tx?.meta?.err!==null||!Array.isArray(a.records)||a.records.length!==2)throw Error('LQ09_IDENTITY_UNVERIFIED');
+ const poolRecord=a.records.find(r=>r.role==='pump_amm_pool');
+ const POOL=poolRecord?.address,GLOBAL=GLOBAL_CONFIG_PDA.toBase58();new PublicKey(POOL);
  const decoded={};for(const [role,address] of [['pump_amm_pool',POOL],['pump_amm_global_config',GLOBAL]]){
   const rows=a.records.filter(r=>r.role===role&&r.address===address);if(rows.length!==1)throw Error('LQ09_ACCOUNT_IDENTITY_UNVERIFIED');const r=rows[0];
   if(r.contextSlot!==slot||r.requestedSlot!==slot||r.providerHistoricalSlotSemanticsConfirmed!==true||r.account?.executable!==false||!Array.isArray(r.account?.data)||r.account.data[1]!=='base64')throw Error('LQ09_HISTORICAL_CONTEXT_UNVERIFIED');
   const bytes=Buffer.from(r.account.data[0],'base64');if(bytes.toString('base64')!==r.account.data[0]||createHash('sha256').update(bytes).digest('hex')!==r.accountDataSha256)throw Error('LQ09_BYTES_UNVERIFIED');
   decoded[role]=decodeArchivedPumpAccount(r.account,role);if(decoded[role].status!=='DECODED')throw Error('LQ09_LAYOUT_UNVERIFIED');
  }
- if(decoded.pump_amm_pool.baseMint!==MINT)throw Error('LQ09_MINT_MISMATCH');
+ const MINT=decoded.pump_amm_pool.baseMint;
+ if(expectedMint!==null&&MINT!==expectedMint)throw Error('LQ09_MINT_MISMATCH');
+ const pool=decodePumpAmmPoolState(Buffer.from(poolRecord.account.data[0],'base64'),poolRecord.account.owner);
+ if(!pool||poolPda(pool.index,new PublicKey(pool.creator),new PublicKey(pool.baseMint),new PublicKey(pool.quoteMint)).toBase58()!==POOL)throw Error('LQ09_POOL_IDENTITY_UNVERIFIED');
  const sweeps=extractFeeSweepAccounts(tx,POOL);const matched=sweeps.sweeps.filter(s=>s.poolMatched);
  if(matched.length!==2||matched.some(s=>s.globalConfigAddress!==GLOBAL))throw Error('LQ09_SWEEP_CONTEXT_UNVERIFIED');
  const transferEvidence=inspectFeeSettlementTransfers(tx,sweeps,{signature:a.signature,slot});

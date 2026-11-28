@@ -1,11 +1,15 @@
 import {createHash} from 'node:crypto';
 import {PublicKey} from '@solana/web3.js';
-const MINT='98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump',HASH='77f749040d291e057c546d1f4872f4de9432bdda4be512a0dc94bda14bc20daa';
 export function projectHolderRelationshipsV2(row,mint){
  try{
   const c=row?.checkpoint;
-  if(!row||row.mint!==mint||mint!==MINT||row.holder_set_hash!==HASH||c?.snapshot?.holderSetHash!==HASH||c.snapshot.id!=='0596510d6dc07e1dce934fba0dcf96a5594b38807383bd6d829d9d6fe441177b'||c.snapshot.slot!==474029636||c.holders?.length!==20||!Array.isArray(c.networkEvidence?.transfers))return null;
-  const wallets=new Map(c.holders.map(h=>[h.ownerWallet,BigInt(h.amountRaw)]));if(wallets.size!==20||createHash('sha256').update(JSON.stringify(c.holders.map(h=>[h.ownerWallet,h.amountRaw]).sort((a,b)=>a[0]<b[0]?-1:a[0]>b[0]?1:0))).digest('hex')!=='ed8a282ebcdc77c9cb226cc776b4dea05e3d60df5f34e8723278177d39c179bc')return null;
+  if(!row||row.mint!==mint||c?.mint!==mint||c.snapshot?.canonicalSchemaVersion!==2||c.snapshot?.hashAlgorithm!=='sha256-ordered-eligible-wallet-token-accounts-v2'||!/^[a-f0-9]{64}$/.test(c.snapshot.id||'')||!Number.isSafeInteger(c.snapshot.slot)||c.snapshot.slot<0||c.holders?.length!==20||!Array.isArray(c.networkEvidence?.transfers))return null;
+  const uint=x=>typeof x==='string'&&/^(0|[1-9][0-9]*)$/.test(x)&&BigInt(x)<=18446744073709551615n;
+  if(!uint(c.snapshot.supplyRaw)||BigInt(c.snapshot.supplyRaw)===0n)return null;
+  const accounts=new Set();for(const h of c.holders){new PublicKey(h.ownerWallet);if(!uint(h.amountRaw)||!Array.isArray(h.tokenAccounts)||!h.tokenAccounts.length)return null;let sum=0n;for(const t of h.tokenAccounts){new PublicKey(t.tokenAccount);if(accounts.has(t.tokenAccount)||!uint(t.amountRaw))return null;accounts.add(t.tokenAccount);sum+=BigInt(t.amountRaw);}if(sum.toString()!==h.amountRaw)return null;}
+  const hash=createHash('sha256').update(JSON.stringify({version:2,mint,holders:c.holders.map(h=>[h.ownerWallet,h.tokenAccounts.map(t=>t.tokenAccount)])})).digest('hex');
+  if(hash!==row.holder_set_hash||hash!==c.snapshot.holderSetHash)return null;
+  const wallets=new Map(c.holders.map(h=>[h.ownerWallet,BigInt(h.amountRaw)]));if(wallets.size!==20||[...wallets.values()].reduce((n,a)=>n+a,0n)>BigInt(c.snapshot.supplyRaw))return null;
   const supply=BigInt(c.snapshot.supplyRaw),seen=new Set(),edges=[],members=new Set();
   for(const t of c.networkEvidence.transfers){
    const checked=c.networkEvidence.processed?.[t.signature];if(checked?.valid!==true||checked.extractorRevision!=='HOLDER_TRANSFER_CONTEXT_V2_2026_11_18'||!Number.isSafeInteger(t.outerInstructionIndex)||t.outerInstructionIndex<0||!['11111111111111111111111111111111','TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA','TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'].includes(t.programId)||t.assetType==='SOL'&&t.innerInstructionIndex!==null)continue;
@@ -18,6 +22,6 @@ export function projectHolderRelationshipsV2(row,mint){
    edges.push({signature:t.signature,slot:t.slot,from:t.from,to:t.to,assetType:t.assetType,amountRaw:t.amountRaw,relation:'observed_material_transfer',commonOwnershipEstablished:false});
   }
   const exposure=[...members].reduce((n,w)=>n+wallets.get(w),0n);
-  return {version:2,mint,holderSetHash:HASH,snapshotSlot:474029636,connectedExposurePct:Number(exposure*1000000n/supply)/10000,relationships:edges,relationshipCount:new Set(edges.map(e=>[e.from,e.to].sort().join('|'))).size,connectedWalletCount:members.size,historyComplete:false,coverageScope:'Retained individually verified transactions, not an exhaustive historical window.',excluded:['dust below 0.05 SOL or 0.01% mint supply','non-reference token transfers','program sponsors outside the eligible holder set'],commonOwnershipEstablished:false};
+  return {version:2,mint,holderSetHash:hash,snapshotSlot:c.snapshot.slot,connectedExposurePct:Number(exposure*1000000n/supply)/10000,relationships:edges,relationshipCount:new Set(edges.map(e=>[e.from,e.to].sort().join('|'))).size,connectedWalletCount:members.size,historyComplete:false,coverageScope:'Retained individually verified transactions, not an exhaustive historical window.',excluded:['dust below 0.05 SOL or 0.01% mint supply','non-reference token transfers','program sponsors outside the eligible holder set'],commonOwnershipEstablished:false};
  }catch{return null;}
 }

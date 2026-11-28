@@ -4,7 +4,7 @@ import {readFile,mkdtemp,writeFile,rm} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {assessApprovedHolderEligibleConcentration,HOLDER_RETAIN19_POLICY as policy} from '../lib/holderEligibleViewPolicy.mjs';
+import {assessApprovedHolderEligibleConcentration,HOLDER_RETAIN19_POLICY as policy} from './fixtures/archived-holder-policy.mjs';
 const require=createRequire(import.meta.url);
 const {transformSync}=require('next/dist/build/swc');
 // Compile the actual dashboard and its JSX child with Next's installed compiler.

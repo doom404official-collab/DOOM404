@@ -20,7 +20,7 @@ test('expired or absent durable workers never remain indefinitely pending',()=>{
 });
 test('an empty origin page finishes with an explicit limitation without inventing attribution or independence',async()=>{
  const calls=[];const r=await investigateToken({mint,rpc:async(method)=>{calls.push(method);if(method==='getTransactionsForAddress')return {data:[]};if(method==='getTokenLargestAccounts')return {value:[]};throw Error('unexpected');}});
- assert.equal(r.status,'investigation_completed');assert.equal(r.creator.status,'attribution_inconclusive');assert.equal(r.creator.reason,'original_launch_transaction_unavailable');assert.equal(r.holderRelationships,null);assert.equal(r.historyComplete,false);assert.equal(r.execution.requests,2);assert.deepEqual(calls,['getTransactionsForAddress','getTokenLargestAccounts']);
+ assert.equal(r.status,'investigation_completed');assert.equal(r.creator.status,'attribution_inconclusive');assert.equal(r.creator.reason,'original_launch_transaction_unavailable');assert.equal(r.holderRelationships,null);assert.equal(r.historyComplete,false);assert.equal(r.execution.requests,3);assert.deepEqual(calls,['getTransactionsForAddress','getSignaturesForAddress','getTokenLargestAccounts']);
 });
 test('provider method failures are distinct from unsupported protocol',async()=>{
  const r=await investigateToken({mint,rpc:async()=>{const e=Error('unsupported');e.code=-32601;throw e;}});

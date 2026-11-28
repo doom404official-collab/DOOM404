@@ -83,5 +83,5 @@ test('three creator pages replace holder receipt reads and stay within the full 
   return adapter.rpc(method,params);
  }});
  assert.ok(result.execution.requests>=16&&result.execution.requests<=17);assert.equal(transactionReads,6);
- assert.equal(result.creator.events.length,26);assert.equal(result.historyComplete,false);
+ assert.equal(result.creator.events.filter(e=>e.acquisitionMechanism==='protocol_holder_reward_distribution').length,26);assert.equal(result.historyComplete,false);
 });

@@ -1,7 +1,7 @@
 // Compiled route contract test; every outbound call is replaced with a strict mock.
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import {HOLDER_RETAIN19_POLICY as p} from '../lib/holderEligibleViewPolicy.mjs';
+import {HOLDER_RETAIN19_POLICY as p} from '../tests/fixtures/archived-holder-policy.mjs';
 const require=createRequire(import.meta.url);
 Object.assign(process.env,{SUPABASE_URL:'https://database.invalid',SUPABASE_SERVICE_ROLE_KEY:'offline-only'});
 const {GET}=require('../.next/server/app/api/holder-frozen-observation/route.js').routeModule.userland;

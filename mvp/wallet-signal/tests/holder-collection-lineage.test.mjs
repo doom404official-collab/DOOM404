@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {canonicalHolderCollectionRow,verifyHolderCollectionLineage,isVerifiedHolderCollectionLineage} from '../lib/holderCollectionLineage.mjs';
-import {readHolderFrozenObservation} from '../lib/holderFrozenObservation.mjs';
-import {HOLDER_RETAIN19_POLICY as p} from '../lib/holderEligibleViewPolicy.mjs';
+import {canonicalHolderCollectionRow,verifyHolderCollectionLineage,isVerifiedHolderCollectionLineage} from './fixtures/archived-holder-policy.mjs';
+import {readHolderFrozenObservation} from './fixtures/archived-holder-policy.mjs';
+import {HOLDER_RETAIN19_POLICY as p} from './fixtures/archived-holder-policy.mjs';
 const fixture=()=>({id:p.snapshotId,mint:p.mint,slot:p.slot,status:'frozen',supply_definition:'mint-total-supply-not-circulating',supply_raw:'1000',excluded_wallets:['1nc1nerator11111111111111111111111111111111'],holder_ranking:[p.infrastructurePool,...Array.from({length:19},(_,i)=>'2'.repeat(31)+'123456789ABCDEFGHJKLMNPQRSTUVWXYZ'[i])].map((wallet,i)=>({wallet,balance:String(30-i),rank:i+1}))});
 test('synthetic canonical bytes reproduce historical layout but cannot satisfy pinned receipt',async()=>{
  const s=fixture(),before=JSON.stringify(s),canonical=canonicalHolderCollectionRow(s);

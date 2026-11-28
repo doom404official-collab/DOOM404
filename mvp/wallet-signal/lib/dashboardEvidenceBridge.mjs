@@ -11,7 +11,7 @@ import {projectLiquidityScoring} from './liquidityScoringProjection.mjs';
 import {projectCurrentLpObservation} from './currentLpObservation.mjs';
 import {validateLiquidityCheckpoint} from './liquidityEvidenceCheckpoint.mjs';
 import {reconcileCreatorLaunchTransaction} from './creatorLaunchTransactionReconciliation.mjs';
-import {CANONICAL_HOLDER_BASELINE,projectCanonicalHolderObservation} from './canonicalHolderObservation.mjs';
+import {projectCanonicalHolderObservation} from './canonicalHolderObservation.mjs';
 import {summarizeCreatorSellingLedger} from './creatorSellingLedgerEvidence.mjs';
 import {reconcileLiquidityLq09} from './liquidityLq09Reconciliation.mjs';
 /** Read-only projections of existing worker checkpoints. Never expose raw state,
@@ -82,7 +82,7 @@ export function projectLiquidityCheckpoint(row,mint){
  validateLiquidityCheckpoint(e);
  const scoring=e.schemaVersion===2?projectLiquidityScoring(e,mint):null;
  let lq09Observation=null;
- try{if(e.lq09Reconciliation?.raw){const r=reconcileLiquidityLq09(e.lq09Reconciliation.raw);if(r.mint===mint)lq09Observation={schemaVersion:1,mint,transactionSlot:r.transactionSlot,observedAt:r.observedAt,amountReconciled:r.amounts.amountReconciled,totalTransferRaw:r.amounts.totalTransferRaw,creatorRecipientMatchesHistoricalState:r.creatorRecipientMatchesHistoricalState,protocolRecipientMatchesHistoricalState:r.protocolRecipientMatchesHistoricalState,authorizationVerified:false,withdrawalConfirmed:false,scoreEligible:false,historicalAccountReads:r.historicalAccountReads};}}catch{}
+ try{if(e.lq09Reconciliation?.raw){const r=reconcileLiquidityLq09(e.lq09Reconciliation.raw,mint);if(r.mint===mint)lq09Observation={schemaVersion:1,mint,transactionSlot:r.transactionSlot,observedAt:r.observedAt,amountReconciled:r.amounts.amountReconciled,totalTransferRaw:r.amounts.totalTransferRaw,creatorRecipientMatchesHistoricalState:r.creatorRecipientMatchesHistoricalState,protocolRecipientMatchesHistoricalState:r.protocolRecipientMatchesHistoricalState,authorizationVerified:false,withdrawalConfirmed:false,scoreEligible:false,historicalAccountReads:r.historicalAccountReads};}}catch{}
  return {mint,schemaVersion:e.schemaVersion,status:['partial','account_checks_completed','complete'].includes(e.status)?e.status:'unknown',
   updatedAt:stamp(row.updated_at),observedAt:stamp(e.observedAt),checkedPoolCount:e.pools.length,
   reportedPoolCount:count(e.providerReportedPools),failedBatchCount:e.batchErrors.length,
@@ -117,8 +117,8 @@ export async function readDashboardEvidence({mint,url,key,fetchImpl=fetch}={}){
  const [creator,liquidity,canonicalHolder,holderRelationships,investigation]=await Promise.all([
   read('creator_intelligence_jobs','mint,status,stage,state,updated_at',(row,mint)=>{retainedCreatorRow=row;return projectCreatorCheckpoint(row,mint);}),
   read('liquidity_evidence_checkpoints','mint,evidence,updated_at',projectLiquidityCheckpoint),
-  mint===CANONICAL_HOLDER_BASELINE.mint?read('glitch_top20_snapshots','id,mint,status,snapshot_slot,supply_raw,holder_ranking,observation',projectCanonicalHolderObservation,'&id=eq.'+CANONICAL_HOLDER_BASELINE.snapshotId):Promise.resolve({mint,status:'not_started'}),
-  mint===CANONICAL_HOLDER_BASELINE.mint?read('glitch_holder_scan_jobs','mint,holder_set_hash,version,checkpoint,updated_at',projectHolderRelationshipsV2,'&id=eq.49feee9f-7c79-4d6f-9767-151db38e1fca'):Promise.resolve(null),
+  read('glitch_top20_snapshots','id,mint,status,snapshot_slot,supply_raw,holder_ranking,observation',projectCanonicalHolderObservation,'&status=eq.frozen&observation->>schemaVersion=eq.2&order=snapshot_slot.desc'),
+  read('glitch_holder_scan_jobs','mint,holder_set_hash,version,checkpoint,updated_at',projectHolderRelationshipsV2,'&checkpoint->snapshot->>canonicalSchemaVersion=eq.2&order=updated_at.desc'),
   read('scanner_token_investigations','mint,status,observation,updated_at,lease_until,expires_at',row=>publicInvestigation(row))]);
  const freshCreator=investigation?.mint===mint&&investigation.creator?.attribution?.verified===true&&(!creator.creator||creator.creator===investigation.creator.creator)?investigation.creator:null;
  const mergedBehaviour=freshCreator?projectCreatorBehaviourV2({...retainedCreatorRow?.state,creatorVerifiedAcquisitionEvents:[...(retainedCreatorRow?.state?.creatorVerifiedAcquisitionEvents||[]),...(freshCreator.events||[])],creatorProcessedSignatures:[...new Set([...(retainedCreatorRow?.state?.creatorProcessedSignatures||[]),...(freshCreator.behaviourV2?.signatures||[])])]},mint,freshCreator.creator):null;

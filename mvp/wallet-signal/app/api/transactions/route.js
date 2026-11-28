@@ -34,7 +34,7 @@ function classifyTransaction(transaction) {
     "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
 
   const token2022Program =
-    "TokenzQdBNbLqP5VEhdkAS6EPFfC4V6Q3QY3FZx";
+    "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
 
   let category = "Other / Unknown";
 

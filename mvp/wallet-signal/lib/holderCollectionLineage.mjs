@@ -1,10 +1,6 @@
-import {HOLDER_RETAIN19_POLICY as policy} from './holderEligibleViewPolicy.mjs';
-// Reviewed historical receipt, not an API-supplied attestation or raw RPC proof.
-const receipt=Object.freeze({scope:'collection_to_persistence',snapshotId:policy.snapshotId,
- runId:'38769967061',jobId:'116542887337',sourceCommit:'0fa974337ae4bdfd657628ec674be5555433fd9a',
- receiptObservedAt:'2026-10-15T16:33:50.3944072Z'});
+// Generic content/receipt consistency, not independently authenticated chain proof.
 const verified=new WeakSet();
-const unavailable=()=>Object.freeze({status:'unverified',scope:receipt.scope});
+const unavailable=()=>Object.freeze({status:'unverified',scope:'collection_to_persistence'});
 const dense=(a,n)=>Array.isArray(a)&&a.length===n&&Array.from({length:n},(_,i)=>Object.hasOwn(a,i)).every(Boolean);
 const address=x=>typeof x==='string'&&/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(x);
 const uint=x=>{
@@ -12,8 +8,8 @@ const uint=x=>{
  const n=Number(x);if(!Number.isSafeInteger(n)||n<0||String(n)!==x)throw Error('INVALID_LINEAGE_INTEGER');return n;
 };
 // Exact historical freezer field order and numeric representation. No inferred ranks.
-export function canonicalHolderCollectionRow(s){
- if(!s||s.id!==receipt.snapshotId||s.mint!==policy.mint||s.slot!==policy.slot||s.status!=='frozen'||
+export function canonicalHolderCollectionRow(s,receipt=s?.collectionReceipt){
+ if(!s||!receipt||s.id!==receipt.snapshotId||s.mint!==receipt.mint||s.slot!==receipt.slot||s.status!=='frozen'||
  s.supply_definition!=='mint-total-supply-not-circulating'||!dense(s.holder_ranking,20)||
  !dense(s.excluded_wallets,1)||s.excluded_wallets[0]!=='1nc1nerator11111111111111111111111111111111')throw Error('INVALID_LINEAGE_SCOPE');
  const supply=uint(s.supply_raw);if(supply<=0)throw Error('INVALID_LINEAGE_SUPPLY');
@@ -26,10 +22,10 @@ export function canonicalHolderCollectionRow(s){
  if(total>BigInt(supply))throw Error('INVALID_LINEAGE_SUPPLY');
  return JSON.stringify({mint:s.mint,slot:s.slot,supply,eligible,excludedWallets:[...s.excluded_wallets].sort()});
 }
-export async function verifyHolderCollectionLineage(snapshot,{signal}={}){
+export async function verifyHolderCollectionLineage(snapshot,{signal,receipt=snapshot?.collectionReceipt}={}){
  try{
-  if(signal?.aborted||!globalThis.crypto?.subtle?.digest)return unavailable();
-  const bytes=new TextEncoder().encode(canonicalHolderCollectionRow(snapshot));
+  if(signal?.aborted||!globalThis.crypto?.subtle?.digest||!receipt||!/^[a-f0-9]{40}$/.test(receipt.sourceCommit||'')||!/^\d{1,20}$/.test(receipt.runId||'')||!/^\d{1,20}$/.test(receipt.jobId||'')||!Number.isFinite(Date.parse(receipt.receiptObservedAt)))return unavailable();
+  const bytes=new TextEncoder().encode(canonicalHolderCollectionRow(snapshot,receipt));
   const digest=await globalThis.crypto.subtle.digest('SHA-256',bytes);
   if(signal?.aborted)return unavailable();
   const hash=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');

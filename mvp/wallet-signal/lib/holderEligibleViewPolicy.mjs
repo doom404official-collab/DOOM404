@@ -1,18 +1,12 @@
 import {scoreHolderIntelligence} from './glitchAttributeEnginesV11.mjs';
 import {readFrozenHolderSnapshot} from './frozenHolderSnapshot.mjs';
 // Owner-approved view only; not a snapshot migration, scoring calibration or release.
-export const HOLDER_RETAIN19_POLICY=Object.freeze({
- id:'HOLDER_FROZEN_RETAIN19_V1',
- snapshotId:'1379bcb43b07be4b783dd4aa67bcabab50cc363cf36c4ca31c943204ccda0153',
- mint:'98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump',slot:457305617,
- infrastructurePool:'6e3jZLtf4tQbWZm3f7A66jF8tfZn6MRQVrbDFgcNWarA',
- approvalReference:'Sentinel_066b8879683c8191b27bf71130e93a9e',approvedAt:'2026-10-27T10:16:40Z'
-});
+export const HOLDER_RETAIN19_POLICY=Object.freeze({id:'HOLDER_FROZEN_RETAIN19_V1'});
 const incinerator='1nc1nerator11111111111111111111111111111111';
 /** Pure approved eligibility projection. Never edits historical inputs or computes a score. */
-export function buildApprovedHolderEligibleView(snapshot){
- const {snapshotIdentity}=readFrozenHolderSnapshot(snapshot),policy=HOLDER_RETAIN19_POLICY;
- if(snapshot.id!==policy.snapshotId||snapshot.mint!==policy.mint||snapshot.slot!==policy.slot||
+export function buildApprovedHolderEligibleView(snapshot,policy=snapshot?.archivedEligibilityPolicy){
+ const {snapshotIdentity}=readFrozenHolderSnapshot(snapshot);
+ if(!policy||policy.id!==HOLDER_RETAIN19_POLICY.id||snapshot.id!==policy.snapshotId||snapshot.mint!==policy.mint||snapshot.slot!==policy.slot||
   snapshot.holder_ranking[0].wallet!==policy.infrastructurePool||snapshot.excluded_wallets.length!==1||snapshot.excluded_wallets[0]!==incinerator)
   throw Error('RETAIN19_POLICY_SCOPE_MISMATCH');
  const exclusions=[incinerator,policy.infrastructurePool];
@@ -33,8 +27,8 @@ export const HOLDER_ELIGIBLE_CONCENTRATION_POLICY=Object.freeze({
  approvalReference:'Sentinel_77826a37be548191a0dd3d299d208769',approvedAt:'2026-10-27T10:25:56Z'
 });
 /** Scoped observed component only; original frozen top-20 measurement is retained separately. */
-export function assessApprovedHolderEligibleConcentration(snapshot){
- const view=buildApprovedHolderEligibleView(snapshot),supply=BigInt(view.supplyRaw);
+export function assessApprovedHolderEligibleConcentration(snapshot,policy=snapshot?.archivedEligibilityPolicy){
+ const view=buildApprovedHolderEligibleView(snapshot,policy),supply=BigInt(view.supplyRaw);
  const measure=ranking=>{const raw=ranking.reduce((sum,h)=>sum+BigInt(h.balance),0n);return {holderCount:ranking.length,numeratorRaw:String(raw),supplyRaw:view.supplyRaw,sharePct:Number(raw*1000000n/supply)/10000};};
  const originalTop20={label:'Original frozen top-20 concentration',...measure(view.frozenRanking)};
  const eligible={label:HOLDER_ELIGIBLE_CONCENTRATION_POLICY.label,...measure(view.eligibleRanking)};

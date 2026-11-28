@@ -1,0 +1,37 @@
+name: Scanner isolated autonomous core qualification
+on:
+  push:
+    branches: [qualification/autonomous-engine-20261128]
+    paths: ['mvp/wallet-signal/**', '.github/workflows/scanner-autonomous-qualification.yml']
+permissions:
+  contents: read
+concurrency:
+  group: scanner-autonomous-live
+  cancel-in-progress: false
+jobs:
+  qualification:
+    if: github.repository == 'doom404official-collab/DOOM404'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: mvp/wallet-signal
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run test:smoke
+      - name: Known-fixture mint-only core cold and warm capture
+        env:
+          ALCHEMY_RPC_URL: ${{ secrets.ALCHEMY_RPC_URL }}
+          ALCHEMY_SOLANA_ARCHIVE_RPC_URL: ${{ secrets.ALCHEMY_SOLANA_ARCHIVE_RPC_URL }}
+          HELIUS_RPC_URL: ${{ secrets.HELIUS_RPC_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          QUALIFICATION_MINTS: '["9hjBLBrc7WZW2H8UQvBAvG5WiTZotXUv2Bdcn4f4pump"]'
+        run: node scripts/qualification/live-core.mjs
