@@ -223,7 +223,7 @@
   ],
   "validation": {
     "localRegression": {
-      "passed": 2301,
+      "passed": 2306,
       "failed": 0
     },
     "dashboard": {
@@ -245,5 +245,6 @@
       "scope": "Actual Next UI with mocked transport, not live latency qualification."
     }
   },
-  "qualificationSprint": "2026-11-28 final performance and intelligence mandate"
+  "qualificationSprint": "2026-11-28 final performance and intelligence mandate",
+  "hostedCacheBoundary": "Intermediate4a488d8 probe caught initial/final read cache aliasing and older-algorithm observation reuse. Corrected before final candidate acceptance."
 }

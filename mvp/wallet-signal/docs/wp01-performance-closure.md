@@ -16,3 +16,11 @@ Source scheduling allows at most six concurrent endpoint reads, leaving two slot
 ## Remaining qualification
 
 Hosted cold/warm user-visible response, provider consumption and full bounded completion must be measured on the consolidated exact-SHA candidate. The original full-report ten-second requirement is not waived or qualified by these experiments. First-in-process server instrumentation does not prove a Vercel cold start. Background transport completion does not imply complete historical coverage. Independent live verification and physical Android acceptance remain separate release gates.
+
+## Hosted cache-boundary defect caught before final acceptance
+
+First hosted candidate4a488d8: PAID first mint4.17s, initial saved6.45s, decision-ready8.54s, bounded12.51s. Its final scoring-evidence read was a durable cache hit to the earlier initial snapshot (451ms server), and the prior-revision worker cache suppressed the new history code. Corrected final read to one fixed bounded_final phase key while retaining the same route policy; added exact-row, completed-only CAS expiry for old algorithm revisions before the existing durable advisory-lock claim. Raw observations are preserved for receipt reuse; running/current-revision investigations are never invalidated. No quota/permission/schema change. This initial probe is excluded from final candidate latency aggregates.
+
+Trace: initial request quota_admit1.59–1.69s, each provider debit~0.61–0.71s, quota_finish~0.65–0.87s; actual chain RPC response~18–77ms, market response83ms. These overlapping spans must not be summed as walltime. First-in-process indication is not complete platform cold-start measurement.
+
+The Vault is confirmed in Supabase ap-northeast-2 (Seoul), while the intermediate functions ran in iad1 (Washington). The final preview uses a single existing icn1 function region to co-locate durable admission and evidence reads, without a new service, database, parallel region or security bypass. Hosted before/after traces must verify its effect; no assumed improvement is counted as qualification. Vercel's official regions guidance recommends locating functions near their data source (https://vercel.com/docs/functions/configuring-functions/region).

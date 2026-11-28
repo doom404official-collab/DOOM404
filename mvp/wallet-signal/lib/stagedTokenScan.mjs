@@ -83,7 +83,7 @@ export async function runStagedTokenScan({mint,read,signal:parentSignal,onUpdate
   // Exactly one final read-back after worker completion; no new worker on reload.
   if(snapshot.investigationState?.status==='investigation_completed')await Promise.allSettled([
    snapshot.currentCreator?.status==='verified_current_wallet'&&snapshot.currentCreator.creator===(snapshot.investigationState.creator?.creator||snapshot.investigationState.creator?.attribution?.creator)?Promise.resolve():task('final_creator_evidence',()=>get('/api/current-creator'),value=>{if(value?.version===2)snapshot.currentCreator=value;}),
-   task('final_retained_evidence',()=>get('/api/scoring-evidence'),value=>{snapshot.workerEvidence=value;})
+   task('final_retained_evidence',()=>get('/api/scoring-evidence?phase=bounded_final'),value=>{snapshot.workerEvidence=value;})
   ]);
   check();timing.boundedReportMs=Math.round(now()-started);closed=true;
   const final={...snapshot,evidenceRevision:++revision,inspectionTiming:{...timing,stages:[...timing.stages]},investigationProgress:{...progress(),...(snapshot.investigationState?.status==='assessment_in_progress'?{stage:'bounded_stopped',reason:'worker_lease_still_running'}:{}),decisionReady:readiness().decision}};

@@ -10,6 +10,7 @@ export async function GET(request){
   const store=createTokenInvestigationStore();
   if(u.searchParams.get('run')!=='1')return Response.json({mint,...publicInvestigation(await store.read(mint))});
   const previous=await store.read(mint);
+  await store.expirePriorRevision(mint,previous);
   const claim=await store.claim(mint);
   if(claim.status==='cached')return Response.json({...publicTokenObservation(claim.observation),cached:true});
   if(claim.status!=='claimed')return Response.json({mint,status:claim.status},{status:202});
