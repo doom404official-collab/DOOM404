@@ -504,3 +504,16 @@ body .g11.ti-report {
 
 .simple-critical-status {color:#ff6570;font-weight:800;border-left:3px solid #ff6570;padding:8px;}
 .simple-risks article[data-category="High risk"]>span,.ti-report .simple-risks article[data-category="High risk"]>span svg {color:#efbd63;}
+
+/* RI-43–46: risk bands, individual severity and independent critical override. */
+.ti-report .simple-risk .simple-risk-classification {font-size:19px!important;font-weight:700;line-height:1.25;overflow-wrap:anywhere}
+.ti-report .simple-attribute-classification {font-size:19px;font-weight:700;line-height:1.2;overflow-wrap:anywhere}
+.ti-report .simple-attribute-score {font-size:19px;font-weight:700;line-height:1.1}
+.ti-report .simple-attribute-score small {color:#ccc;font-size:11px;font-weight:400}
+.ti-report .g11-verdict[data-critical-risk="true"] {border-left:3px solid #EF4444!important;border-color:#EF4444!important}
+.ti-report .simple-critical-status {color:#EF4444;font-size:14px;font-weight:800;line-height:1.4;border-left:3px solid #EF4444;padding:8px;text-align:left;overflow-wrap:anywhere}
+.ti-report .simple-risks article[data-finding-severity]>span,.ti-report .simple-risks article[data-finding-severity]>span svg,.ti-report .simple-risks article[data-finding-severity]>div>strong {color:var(--finding-color)}
+.ti-report .simple-risks article[data-finding-severity="critical"] {border-left:3px solid #EF4444;padding-left:10px}
+.ti-report .simple-finding-status {color:var(--finding-color)}
+
+.ti-report .simple-risk-summary {min-width:0}

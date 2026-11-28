@@ -1,4 +1,4 @@
-# RI-16–RI-42 calibration candidate — 28 November 2026
+# RI-16–RI-46 calibration candidate — 28 November 2026
 
 Baseline: 44e3d6ee900b05787e03a5a1f3530795eaaea722. Production promotion is prohibited without explicit owner authorization. This candidate is **not a completed release gate**.
 
@@ -16,7 +16,7 @@ These are product policy thresholds, not universal standards. Eligible observed 
 
 Quote severity explicitly names the metric: fee-inclusive exit estimate, quote recovery shortfall or provider price impact. A shortfall is never promoted to a fully fee-inclusive total cost. Proceeds require a compatible valuation basis and fee-inclusive estimate. One route's limitation never establishes that all routes fail. Provider errors and unavailable quotes do not create a verified inability-to-sell warning.
 
-Score colours: <30 light green, 30–<60 amber, ≥60 red; these indicate observed numerical risk only. A separate red critical status can coexist with a low or unpublished overall score. Coverage colours: 0 grey; >0–<50 muted red; 50–<80 amber; 80–<100 light green; 100 green. Coverage measures evidence completeness, never token safety.
+RI-43 numerical score colours: 0–19.99 Low observed risk #35C759; 20–39.99 Moderate #EAB308; 40–59.99 Elevated #F97316; 60–79.99 High #EF4444; 80–100 Critical #DC2626. Unassessed scores use #808080. Low observed scores with partial or materially unresolved evidence use neutral #808080 rather than green. A verified critical finding overrides the card colour/status to #EF4444 and “Critical finding present”; the calculated score and its numerical band remain unchanged. A separate CRITICAL RISK IDENTIFIED alert is shown directly under the score card, including unpublished overall assessments. Coverage colours: 0 grey; >0–<50 muted red; 50–<80 amber; 80–<100 light green; 100 green. Coverage measures evidence completeness, never token safety.
 
 ## Correction register
 
@@ -49,6 +49,10 @@ Score colours: <30 light green, 30–<60 amber, ≥60 red; these indicate observ
 | 40 | Completed and verified for methodology audit | 59.5/63/66.5/70 = 17/18/19/20 × 3.5 distribution coverage, separate from relationship criterion. Saturation exception removed. Eligibility-classification limitations remain as RI-35. |
 | 41 | Completed and verified | Zero-coverage attributes are unassessed; partial zero points include missing-criteria explanation. Critical alerts remain independent. |
 | 42 | Completed and verified in emulation | Coverage text and bar follow requested completeness bands; text semantics retained. Physical Android review remains required. |
+| 43 | Implemented but awaiting physical verification | One numerical-band policy drives arcs, numbers, attribute bars and classification labels across five tabs. Exact HEX bands and neutral low/partial exception are regression-tested. Numerical scores and coverage calculations unchanged. |
+| 44 | Implemented but awaiting physical verification | Individual icons, headings, status labels and critical left border use evidence-specific severity. Unresolved uses grey question mark, context grey information, low/unclassified positive points muted neutral. Known quote and fee criterion tiers remain distinct from overall risk. |
+| 45 | Implemented but awaiting physical verification | Verified critical finding triggers the red assessment accent and CRITICAL RISK IDENTIFIED banner below its score, overrides reassuring colour/status and sorts before every other finding. Score retained, even when overall score unpublished. |
+| 46 | Implemented but awaiting physical verification | Frozen panel/tab structure preserved. Numerical boundary, five-tab, mixed-severity, incomplete/zero/critical, mobile/desktop and accessible contrast checks passed in browser emulation. Owner physical Android acceptance remains open. |
 
 ## Validation limits
 

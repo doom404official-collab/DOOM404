@@ -1,0 +1,1350 @@
+{
+  "rows": [
+    {
+      "mode": "before",
+      "width": 390,
+      "scroll": 390,
+      "tab": "Overview",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "15.15",
+      "coverage": "83"
+    },
+    {
+      "mode": "before",
+      "width": 390,
+      "scroll": 390,
+      "tab": "Token Security",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "0",
+      "coverage": "100"
+    },
+    {
+      "mode": "before",
+      "width": 390,
+      "scroll": 390,
+      "tab": "Holder Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "17.28",
+      "coverage": "70"
+    },
+    {
+      "mode": "before",
+      "width": 390,
+      "scroll": 390,
+      "tab": "Liquidity & Safety",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "24.67",
+      "coverage": "100"
+    },
+    {
+      "mode": "before",
+      "width": 390,
+      "scroll": 390,
+      "tab": "Creator Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "6.64",
+      "coverage": "60"
+    },
+    {
+      "mode": "before",
+      "width": 1440,
+      "scroll": 1440,
+      "tab": "Overview",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "15.15",
+      "coverage": "83"
+    },
+    {
+      "mode": "before",
+      "width": 1440,
+      "scroll": 1440,
+      "tab": "Token Security",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "0",
+      "coverage": "100"
+    },
+    {
+      "mode": "before",
+      "width": 1440,
+      "scroll": 1440,
+      "tab": "Holder Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "17.28",
+      "coverage": "70"
+    },
+    {
+      "mode": "before",
+      "width": 1440,
+      "scroll": 1440,
+      "tab": "Liquidity & Safety",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "24.67",
+      "coverage": "100"
+    },
+    {
+      "mode": "before",
+      "width": 1440,
+      "scroll": 1440,
+      "tab": "Creator Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "6.64",
+      "coverage": "60"
+    },
+    {
+      "mode": "after",
+      "width": 320,
+      "scroll": 320,
+      "tab": "Overview",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "15.15",
+      "coverage": "83"
+    },
+    {
+      "mode": "after",
+      "width": 320,
+      "scroll": 320,
+      "tab": "Token Security",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "0",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 320,
+      "scroll": 320,
+      "tab": "Holder Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "17.28",
+      "coverage": "70"
+    },
+    {
+      "mode": "after",
+      "width": 320,
+      "scroll": 320,
+      "tab": "Liquidity & Safety",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "24.67",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 320,
+      "scroll": 320,
+      "tab": "Creator Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "6.64",
+      "coverage": "60"
+    },
+    {
+      "mode": "after",
+      "width": 337,
+      "scroll": 337,
+      "tab": "Overview",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "15.15",
+      "coverage": "83"
+    },
+    {
+      "mode": "after",
+      "width": 337,
+      "scroll": 337,
+      "tab": "Token Security",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "0",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 337,
+      "scroll": 337,
+      "tab": "Holder Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "17.28",
+      "coverage": "70"
+    },
+    {
+      "mode": "after",
+      "width": 337,
+      "scroll": 337,
+      "tab": "Liquidity & Safety",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "24.67",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 337,
+      "scroll": 337,
+      "tab": "Creator Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "6.64",
+      "coverage": "60"
+    },
+    {
+      "mode": "after",
+      "width": 360,
+      "scroll": 360,
+      "tab": "Overview",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "15.15",
+      "coverage": "83"
+    },
+    {
+      "mode": "after",
+      "width": 360,
+      "scroll": 360,
+      "tab": "Token Security",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "0",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 360,
+      "scroll": 360,
+      "tab": "Holder Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "17.28",
+      "coverage": "70"
+    },
+    {
+      "mode": "after",
+      "width": 360,
+      "scroll": 360,
+      "tab": "Liquidity & Safety",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "24.67",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 360,
+      "scroll": 360,
+      "tab": "Creator Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "6.64",
+      "coverage": "60"
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "scroll": 390,
+      "tab": "Overview",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "15.15",
+      "coverage": "83"
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "scroll": 390,
+      "tab": "Token Security",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "0",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "scroll": 390,
+      "tab": "Holder Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "17.28",
+      "coverage": "70"
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "scroll": 390,
+      "tab": "Liquidity & Safety",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "24.67",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "scroll": 390,
+      "tab": "Creator Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "6.64",
+      "coverage": "60"
+    },
+    {
+      "mode": "after",
+      "width": 449,
+      "scroll": 449,
+      "tab": "Overview",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "15.15",
+      "coverage": "83"
+    },
+    {
+      "mode": "after",
+      "width": 449,
+      "scroll": 449,
+      "tab": "Token Security",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "0",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 449,
+      "scroll": 449,
+      "tab": "Holder Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "17.28",
+      "coverage": "70"
+    },
+    {
+      "mode": "after",
+      "width": 449,
+      "scroll": 449,
+      "tab": "Liquidity & Safety",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "24.67",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 449,
+      "scroll": 449,
+      "tab": "Creator Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "6.64",
+      "coverage": "60"
+    },
+    {
+      "mode": "after",
+      "width": 768,
+      "scroll": 768,
+      "tab": "Overview",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "15.15",
+      "coverage": "83"
+    },
+    {
+      "mode": "after",
+      "width": 768,
+      "scroll": 768,
+      "tab": "Token Security",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "0",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 768,
+      "scroll": 768,
+      "tab": "Holder Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "17.28",
+      "coverage": "70"
+    },
+    {
+      "mode": "after",
+      "width": 768,
+      "scroll": 768,
+      "tab": "Liquidity & Safety",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "24.67",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 768,
+      "scroll": 768,
+      "tab": "Creator Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "6.64",
+      "coverage": "60"
+    },
+    {
+      "mode": "after",
+      "width": 1024,
+      "scroll": 1024,
+      "tab": "Overview",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "15.15",
+      "coverage": "83"
+    },
+    {
+      "mode": "after",
+      "width": 1024,
+      "scroll": 1024,
+      "tab": "Token Security",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "0",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 1024,
+      "scroll": 1024,
+      "tab": "Holder Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "17.28",
+      "coverage": "70"
+    },
+    {
+      "mode": "after",
+      "width": 1024,
+      "scroll": 1024,
+      "tab": "Liquidity & Safety",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "24.67",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 1024,
+      "scroll": 1024,
+      "tab": "Creator Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "6.64",
+      "coverage": "60"
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "scroll": 1440,
+      "tab": "Overview",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "15.15",
+      "coverage": "83"
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "scroll": 1440,
+      "tab": "Token Security",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "0",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "scroll": 1440,
+      "tab": "Holder Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "17.28",
+      "coverage": "70"
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "scroll": 1440,
+      "tab": "Liquidity & Safety",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "24.67",
+      "coverage": "100"
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "scroll": 1440,
+      "tab": "Creator Intelligence",
+      "disclaimers": 1,
+      "targets": true,
+      "risk": "6.64",
+      "coverage": "60"
+    }
+  ],
+  "scenarioRows": [
+    {
+      "query": "missing",
+      "tab": "Overview",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "missing",
+      "tab": "Token Security",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "missing",
+      "tab": "Holder Intelligence",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "missing",
+      "tab": "Liquidity & Safety",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "missing",
+      "tab": "Creator Intelligence",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "missing",
+      "tab": "Overview",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "missing",
+      "tab": "Token Security",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "missing",
+      "tab": "Holder Intelligence",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "missing",
+      "tab": "Liquidity & Safety",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "missing",
+      "tab": "Creator Intelligence",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "missing",
+      "tab": "Overview",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "missing",
+      "tab": "Token Security",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "missing",
+      "tab": "Holder Intelligence",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "missing",
+      "tab": "Liquidity & Safety",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "missing",
+      "tab": "Creator Intelligence",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "missing",
+      "tab": "Overview",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "missing",
+      "tab": "Token Security",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "missing",
+      "tab": "Holder Intelligence",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "missing",
+      "tab": "Liquidity & Safety",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "missing",
+      "tab": "Creator Intelligence",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "missing",
+      "tab": "Overview",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "missing",
+      "tab": "Token Security",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "missing",
+      "tab": "Holder Intelligence",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "missing",
+      "tab": "Liquidity & Safety",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "missing",
+      "tab": "Creator Intelligence",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "missing",
+      "tab": "Overview",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "missing",
+      "tab": "Token Security",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "missing",
+      "tab": "Holder Intelligence",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "missing",
+      "tab": "Liquidity & Safety",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "missing",
+      "tab": "Creator Intelligence",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "missing",
+      "tab": "Overview",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "missing",
+      "tab": "Token Security",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "missing",
+      "tab": "Holder Intelligence",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "missing",
+      "tab": "Liquidity & Safety",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "missing",
+      "tab": "Creator Intelligence",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "missing",
+      "tab": "Overview",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "missing",
+      "tab": "Token Security",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "missing",
+      "tab": "Holder Intelligence",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "missing",
+      "tab": "Liquidity & Safety",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "missing",
+      "tab": "Creator Intelligence",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "long",
+      "tab": "Overview",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "long",
+      "tab": "Token Security",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "long",
+      "tab": "Holder Intelligence",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "long",
+      "tab": "Liquidity & Safety",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "long",
+      "tab": "Creator Intelligence",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "long",
+      "tab": "Overview",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "long",
+      "tab": "Token Security",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "long",
+      "tab": "Holder Intelligence",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "long",
+      "tab": "Liquidity & Safety",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "long",
+      "tab": "Creator Intelligence",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "long",
+      "tab": "Overview",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "long",
+      "tab": "Token Security",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "long",
+      "tab": "Holder Intelligence",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "long",
+      "tab": "Liquidity & Safety",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "long",
+      "tab": "Creator Intelligence",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "long",
+      "tab": "Overview",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "long",
+      "tab": "Token Security",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "long",
+      "tab": "Holder Intelligence",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "long",
+      "tab": "Liquidity & Safety",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "long",
+      "tab": "Creator Intelligence",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "long",
+      "tab": "Overview",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "long",
+      "tab": "Token Security",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "long",
+      "tab": "Holder Intelligence",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "long",
+      "tab": "Liquidity & Safety",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "long",
+      "tab": "Creator Intelligence",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "long",
+      "tab": "Overview",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "long",
+      "tab": "Token Security",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "long",
+      "tab": "Holder Intelligence",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "long",
+      "tab": "Liquidity & Safety",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "long",
+      "tab": "Creator Intelligence",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "long",
+      "tab": "Overview",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "long",
+      "tab": "Token Security",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "long",
+      "tab": "Holder Intelligence",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "long",
+      "tab": "Liquidity & Safety",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "long",
+      "tab": "Creator Intelligence",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "long",
+      "tab": "Overview",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "long",
+      "tab": "Token Security",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "long",
+      "tab": "Holder Intelligence",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "long",
+      "tab": "Liquidity & Safety",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "long",
+      "tab": "Creator Intelligence",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "critical",
+      "tab": "Overview",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "critical",
+      "tab": "Token Security",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "critical",
+      "tab": "Holder Intelligence",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "critical",
+      "tab": "Liquidity & Safety",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "critical",
+      "tab": "Creator Intelligence",
+      "width": 320,
+      "scroll": 320
+    },
+    {
+      "query": "critical",
+      "tab": "Overview",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "critical",
+      "tab": "Token Security",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "critical",
+      "tab": "Holder Intelligence",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "critical",
+      "tab": "Liquidity & Safety",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "critical",
+      "tab": "Creator Intelligence",
+      "width": 337,
+      "scroll": 337
+    },
+    {
+      "query": "critical",
+      "tab": "Overview",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "critical",
+      "tab": "Token Security",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "critical",
+      "tab": "Holder Intelligence",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "critical",
+      "tab": "Liquidity & Safety",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "critical",
+      "tab": "Creator Intelligence",
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "query": "critical",
+      "tab": "Overview",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "critical",
+      "tab": "Token Security",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "critical",
+      "tab": "Holder Intelligence",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "critical",
+      "tab": "Liquidity & Safety",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "critical",
+      "tab": "Creator Intelligence",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "query": "critical",
+      "tab": "Overview",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "critical",
+      "tab": "Token Security",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "critical",
+      "tab": "Holder Intelligence",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "critical",
+      "tab": "Liquidity & Safety",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "critical",
+      "tab": "Creator Intelligence",
+      "width": 449,
+      "scroll": 449
+    },
+    {
+      "query": "critical",
+      "tab": "Overview",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "critical",
+      "tab": "Token Security",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "critical",
+      "tab": "Holder Intelligence",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "critical",
+      "tab": "Liquidity & Safety",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "critical",
+      "tab": "Creator Intelligence",
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "query": "critical",
+      "tab": "Overview",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "critical",
+      "tab": "Token Security",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "critical",
+      "tab": "Holder Intelligence",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "critical",
+      "tab": "Liquidity & Safety",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "critical",
+      "tab": "Creator Intelligence",
+      "width": 1024,
+      "scroll": 1024
+    },
+    {
+      "query": "critical",
+      "tab": "Overview",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "critical",
+      "tab": "Token Security",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "critical",
+      "tab": "Holder Intelligence",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "critical",
+      "tab": "Liquidity & Safety",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "query": "critical",
+      "tab": "Creator Intelligence",
+      "width": 1440,
+      "scroll": 1440
+    }
+  ],
+  "perf": [
+    {
+      "mode": "before",
+      "width": 390,
+      "resources": [
+        {
+          "name": "before.js",
+          "bytes": 2852528
+        }
+      ],
+      "domNodes": 280,
+      "loadMs": 398
+    },
+    {
+      "mode": "before",
+      "width": 1440,
+      "resources": [
+        {
+          "name": "before.js",
+          "bytes": 2852528
+        }
+      ],
+      "domNodes": 280,
+      "loadMs": 132
+    },
+    {
+      "mode": "after",
+      "width": 320,
+      "resources": [
+        {
+          "name": "after.js",
+          "bytes": 2850239
+        }
+      ],
+      "domNodes": 298,
+      "loadMs": 144
+    },
+    {
+      "mode": "after",
+      "width": 337,
+      "resources": [
+        {
+          "name": "after.js",
+          "bytes": 2850239
+        }
+      ],
+      "domNodes": 298,
+      "loadMs": 142
+    },
+    {
+      "mode": "after",
+      "width": 360,
+      "resources": [
+        {
+          "name": "after.js",
+          "bytes": 2850239
+        }
+      ],
+      "domNodes": 298,
+      "loadMs": 101
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "resources": [
+        {
+          "name": "after.js",
+          "bytes": 2850239
+        }
+      ],
+      "domNodes": 298,
+      "loadMs": 111
+    },
+    {
+      "mode": "after",
+      "width": 449,
+      "resources": [
+        {
+          "name": "after.js",
+          "bytes": 2850239
+        }
+      ],
+      "domNodes": 298,
+      "loadMs": 78
+    },
+    {
+      "mode": "after",
+      "width": 768,
+      "resources": [
+        {
+          "name": "after.js",
+          "bytes": 2850239
+        }
+      ],
+      "domNodes": 298,
+      "loadMs": 98
+    },
+    {
+      "mode": "after",
+      "width": 1024,
+      "resources": [
+        {
+          "name": "after.js",
+          "bytes": 2850239
+        }
+      ],
+      "domNodes": 298,
+      "loadMs": 120
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "resources": [
+        {
+          "name": "after.js",
+          "bytes": 2850239
+        }
+      ],
+      "domNodes": 298,
+      "loadMs": 112
+    }
+  ],
+  "errors": [],
+  "external": []
+}
