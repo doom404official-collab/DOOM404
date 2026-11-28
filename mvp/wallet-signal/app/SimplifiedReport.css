@@ -486,3 +486,5 @@ body .g11.ti-report {
 .ti-report .simple-attributes button {
   grid-template-columns:minmax(110px,1.15fr) minmax(0,1fr) 60px}
 }
+
+.ti-report .hud-creator-core>.hud-kicker { display:block!important; color:#bbb; font-size:12px; margin-bottom:8px; }
